@@ -7,7 +7,8 @@
   <meta name="description" content="Complete your purchase with Krabe Kollection. Doorstep nationwide delivery or in-store Lagos studio pickup with secure Paystack payment.">
 
   <!-- Favicon -->
-  <link rel="icon" type="image/png" href="assets/brand/kraberefined-logo-blue.png">
+  <link rel="icon" type="image/svg+xml" href="assets/brand/krabe main logo.svg">
+  <link rel="alternate icon" type="image/png" href="assets/brand/kraberefined-logo-blue.png">
 
   <!-- Google Web Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -228,14 +229,9 @@
         <div class="checkout-summary-box">
           <h2 class="summary-title">Order Summary</h2>
 
-          <!-- Items List -->
-          <div class="summary-line-item">
-            <img src="Krabe Cloth Concepts_230226_205405_1.jpg" alt="Signature 3-Piece Agbada Luxe Set" class="summary-item-img">
-            <div class="summary-item-info">
-              <div class="summary-item-title">Signature 3-Piece Agbada Luxe Set</div>
-              <div class="summary-item-variant">Midnight Blue &bull; Size L &bull; Qty: 1</div>
-              <div class="summary-item-price">₦185,000</div>
-            </div>
+          <!-- Dynamic Line Items Container -->
+          <div id="checkoutItemsList">
+            <!-- Rendered dynamically from localStorage ('krabe_cart') -->
           </div>
 
           <!-- Coupon Promo Code -->
@@ -339,20 +335,104 @@
   </div>
 
   <script>
-    let subtotal = 185000;
+    const KRABE_CART_STORAGE_KEY = 'krabe_cart';
+
+    function getStoredCart() {
+      try {
+        const raw = localStorage.getItem(KRABE_CART_STORAGE_KEY);
+        if (raw) {
+          const parsed = JSON.parse(raw);
+          if (Array.isArray(parsed)) return parsed;
+        }
+      } catch (e) {
+        console.warn('[Checkout] Failed reading cart:', e);
+      }
+      return [];
+    }
+
+    let cart = getStoredCart();
+    let subtotal = 0;
     let shipping = 0;
     let discount = 0;
     let currentFulfillment = 'delivery';
 
     function formatNaira(num) {
-      return '₦' + Number(num).toLocaleString('en-NG');
+      return '₦' + Number(num || 0).toLocaleString('en-NG');
+    }
+
+    function renderCheckoutItems() {
+      const container = document.getElementById('checkoutItemsList');
+      const btnPlaceOrder = document.getElementById('btnPlaceOrder');
+      if (!container) return;
+
+      if (!cart || cart.length === 0) {
+        container.innerHTML = `
+          <div style="text-align: center; padding: 32px 12px; color: var(--color-text-muted);">
+            <svg style="width: 44px; height: 44px; margin-bottom: 12px; opacity: 0.4;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/>
+            </svg>
+            <p style="font-size: 13.5px; margin-bottom: 16px;">Your shopping bag is currently empty.</p>
+            <a href="shop.html" class="btn btn-outline" style="font-size: 11px; padding: 10px 18px; letter-spacing: 1.5px; text-transform: uppercase;">
+              Explore Collections &rarr;
+            </a>
+          </div>
+        `;
+        subtotal = 0;
+        shipping = 0;
+        discount = 0;
+        if (btnPlaceOrder) {
+          btnPlaceOrder.disabled = true;
+          btnPlaceOrder.style.opacity = '0.5';
+          btnPlaceOrder.style.cursor = 'not-allowed';
+          btnPlaceOrder.innerHTML = 'Shopping Bag is Empty';
+        }
+      } else {
+        container.innerHTML = cart.map(item => `
+          <div class="summary-line-item">
+            <img src="${item.image || 'assets/brand/krabe main logo.svg'}" alt="${item.title}" class="summary-item-img">
+            <div class="summary-item-info">
+              <div class="summary-item-title">${item.title}</div>
+              <div class="summary-item-variant">${item.variant || `${item.color || 'Standard'} • Size ${item.size || 'M'}`} &bull; Qty: ${item.qty || 1}</div>
+              <div class="summary-item-price">${formatNaira((Number(item.price) || 0) * (Number(item.qty) || 1))}</div>
+            </div>
+          </div>
+        `).join('');
+
+        subtotal = cart.reduce((sum, item) => sum + ((Number(item.price) || 0) * (Number(item.qty) || 1)), 0);
+
+        if (btnPlaceOrder) {
+          btnPlaceOrder.disabled = false;
+          btnPlaceOrder.style.opacity = '1';
+          btnPlaceOrder.style.cursor = 'pointer';
+        }
+      }
+
+      // Dynamic Free Shipping evaluation (₦150k threshold)
+      if (currentFulfillment === 'delivery') {
+        if (subtotal >= 150000 || subtotal === 0) {
+          shipping = 0;
+          document.getElementById('summaryShipping').textContent = 'FREE';
+        } else {
+          // If subtotal under 150k, default Lagos courier fee is ₦3,500
+          shipping = 3500;
+          document.getElementById('summaryShipping').textContent = formatNaira(shipping);
+        }
+      } else {
+        shipping = 0;
+        document.getElementById('summaryShipping').textContent = 'FREE';
+      }
+
+      document.getElementById('summarySubtotal').textContent = formatNaira(subtotal);
+      calculateTotal();
     }
 
     function calculateTotal() {
-      const total = subtotal - discount + shipping;
+      const total = Math.max(0, subtotal - discount + shipping);
       document.getElementById('summaryTotal').textContent = formatNaira(total);
-      document.getElementById('btnPayAmount').textContent = formatNaira(total);
-      document.getElementById('confirmTotalCharged').textContent = formatNaira(total);
+      const btnPay = document.getElementById('btnPayAmount');
+      if (btnPay) btnPay.textContent = formatNaira(total);
+      const confTotal = document.getElementById('confirmTotalCharged');
+      if (confTotal) confTotal.textContent = formatNaira(total);
     }
 
     function selectFulfillment(mode) {
@@ -368,6 +448,13 @@
         delFields.style.display = 'block';
         pickInfo.style.display = 'none';
         document.getElementById('confirmFulfillmentMethod').textContent = 'Doorstep Delivery (Lekki Phase 1, Lagos)';
+        if (subtotal >= 150000 || subtotal === 0) {
+          shipping = 0;
+          document.getElementById('summaryShipping').textContent = 'FREE';
+        } else {
+          shipping = 3500;
+          document.getElementById('summaryShipping').textContent = formatNaira(shipping);
+        }
       } else {
         optPick.classList.add('active');
         optDel.classList.remove('active');
@@ -376,8 +463,8 @@
         shipping = 0;
         document.getElementById('summaryShipping').textContent = 'FREE';
         document.getElementById('confirmFulfillmentMethod').textContent = 'Lagos Studio Pickup (Victoria Island Flagship)';
-        calculateTotal();
       }
+      calculateTotal();
     }
 
     function updateShipping(fee) {
@@ -402,6 +489,7 @@
     }
 
     function applyPromoCode() {
+      if (subtotal === 0) return;
       const val = document.getElementById('couponInput').value.trim().toUpperCase();
       if (val === 'KRABEVIP10') {
         discount = subtotal * 0.10;
@@ -414,21 +502,125 @@
       }
     }
 
+    async function loadCheckoutCart() {
+      const client = window.krabeClient || (window.KRABE_CONFIG && typeof window.KRABE_CONFIG.getClient === 'function' ? window.KRABE_CONFIG.getClient() : null);
+      const user = window.krabeUser || (window.KrabeAuth && typeof window.KrabeAuth.getUser === 'function' ? window.KrabeAuth.getUser() : null);
+
+      if (user && user.id && client) {
+        try {
+          const { data, error } = await client
+            .from('cart_item')
+            .select(`
+              id,
+              quantity,
+              unit_price,
+              selected_size,
+              product_variation_id,
+              product_variation:product_variation_id (
+                id,
+                color,
+                price,
+                main_image,
+                product:product_id (
+                  id,
+                  title
+                )
+              )
+            `)
+            .eq('user_id', user.id);
+
+          if (!error && Array.isArray(data) && data.length > 0) {
+            cart = data.map(row => {
+              const pv = row.product_variation || {};
+              const prod = pv.product || {};
+              const itemSize = row.selected_size || 'M';
+              return {
+                id: row.id,
+                variant_id: row.product_variation_id,
+                product_variation_id: row.product_variation_id,
+                title: prod.title || 'Signature Garment',
+                variant: `${pv.color || 'Standard'} • Size ${itemSize}`,
+                size: itemSize,
+                price: Number(row.unit_price) || Number(pv.price) || 0,
+                qty: Number(row.quantity) || 1,
+                image: pv.main_image || 'assets/brand/krabe main logo.svg'
+              };
+            });
+            renderCheckoutItems();
+            return;
+          }
+        } catch (e) {
+          console.warn('[Checkout] Failed fetching DB cart:', e);
+        }
+      }
+
+      // Guest cart fallback from localStorage
+      cart = getStoredCart();
+      renderCheckoutItems();
+    }
+
     function processCheckout(e) {
       e.preventDefault();
+      if (!cart || cart.length === 0) {
+        alert('Your shopping bag is empty.');
+        return;
+      }
+
       const btn = document.getElementById('btnPlaceOrder');
       btn.textContent = 'Processing Payment via Paystack...';
       btn.style.opacity = '0.7';
       btn.disabled = true;
 
-      setTimeout(() => {
+      setTimeout(async () => {
+        // Clear stored cart upon confirmed checkout
+        try {
+          localStorage.removeItem(KRABE_CART_STORAGE_KEY);
+        } catch (err) {}
+
+        const client = window.krabeClient || (window.KRABE_CONFIG && typeof window.KRABE_CONFIG.getClient === 'function' ? window.KRABE_CONFIG.getClient() : null);
+        const user = window.krabeUser || (window.KrabeAuth && typeof window.KrabeAuth.getUser === 'function' ? window.KrabeAuth.getUser() : null);
+        if (user && user.id && client) {
+          try {
+            await client.from('cart_item').delete().eq('user_id', user.id);
+          } catch (err) {}
+        }
+
+        window.dispatchEvent(new CustomEvent('krabe:cart:updated', { detail: { cart: [] } }));
+
         document.getElementById('checkoutFlowContainer').style.display = 'none';
         document.getElementById('orderSuccessScreen').style.display = 'block';
         window.scrollTo({ top: 0, behavior: 'smooth' });
       }, 1200);
     }
+
+    // Listen for storage changes across windows
+    window.addEventListener('storage', (e) => {
+      if (e.key === KRABE_CART_STORAGE_KEY) {
+        cart = getStoredCart();
+        renderCheckoutItems();
+      }
+    });
+
+    // Database Cart Sync Events
+    window.addEventListener('krabe:cart:synced', () => {
+      loadCheckoutCart();
+    });
+
+    window.addEventListener('krabe:session:changed', () => {
+      loadCheckoutCart();
+    });
+
+    // Initial render
+    document.addEventListener('DOMContentLoaded', () => {
+      loadCheckoutCart();
+    });
   </script>
+  <!-- Supabase SDK & Krabe Stack -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/config.js"></script>
   <script src="js/header.js"></script>
   <script src="js/auth-modal.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/main.js"></script>
 </body>
 </html>

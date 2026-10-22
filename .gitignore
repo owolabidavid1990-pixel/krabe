@@ -1,0 +1,12 @@
+# Environment & secret keys
+.env
+.env.*
+keys.env
+keys.txt
+credentials/
+*.local
+
+# macOS & system files
+.DS_Store
+Thumbs.db
+

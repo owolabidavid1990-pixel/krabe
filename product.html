@@ -7,7 +7,8 @@
   <meta name="description" content="Shop the Signature 3-Piece Agbada Set by Krabe Kollection. Ceremonial Nigerian craftsmanship, hand-embroidered, available in standard sizing or custom bespoke tailoring.">
 
   <!-- Favicon -->
-  <link rel="icon" type="image/png" href="assets/brand/kraberefined-logo-blue.png">
+  <link rel="icon" type="image/svg+xml" href="assets/brand/krabe main logo.svg">
+  <link rel="alternate icon" type="image/png" href="assets/brand/kraberefined-logo-blue.png">
 
   <!-- Google Web Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -16,6 +17,45 @@
 
   <!-- Core Stylesheet -->
   <link rel="stylesheet" href="css/styles.css">
+  <style>
+    .variant-thumbnails-grid {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .variant-thumb-card {
+      width: 54px;
+      height: 66px;
+      padding: 2px;
+      border: 1.5px solid var(--color-border, #E2E8F0);
+      border-radius: var(--radius-sm, 4px);
+      background: #FFFFFF;
+      cursor: pointer;
+      overflow: hidden;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .variant-thumb-card:hover {
+      border-color: var(--color-primary, #44637B);
+      transform: translateY(-1px);
+    }
+    .variant-thumb-card.active {
+      border-color: var(--color-obsidian, #121212);
+      box-shadow: 0 0 0 1.5px var(--color-obsidian, #121212);
+    }
+    .variant-thumb-card img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: 2px;
+    }
+    .pdp-thumbnails .thumb-btn.active {
+      border-color: var(--color-obsidian, #121212);
+      box-shadow: 0 0 0 1px var(--color-obsidian, #121212);
+    }
+  </style>
 </head>
 <body>
 
@@ -93,6 +133,7 @@
             <button type="button" class="size-btn" onclick="selectSize(this)">L</button>
             <button type="button" class="size-btn" onclick="selectSize(this)">XL</button>
             <button type="button" class="size-btn" onclick="selectSize(this)">XXL</button>
+            <button type="button" class="size-btn" onclick="selectSize(this)">Custom</button>
           </div>
         </div>
 
@@ -109,7 +150,17 @@
           </div>
         </div>
 
-        <!-- Add To Bag & Bespoke Options -->
+        <!-- Variants Visual Cards (Small images labelled Variants, no redundant text) -->
+        <div class="picker-group" id="variantsPickerGroup" style="margin-top: 14px;">
+          <div class="picker-header" style="margin-bottom: 8px;">
+            <span class="picker-title" style="font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: var(--color-text-muted);">Variants</span>
+          </div>
+          <div class="variant-thumbnails-grid" id="variantThumbnailsGrid">
+            <!-- Dynamically populated variant image cards -->
+          </div>
+        </div>
+
+        <!-- Add To Bag -->
         <div class="pdp-actions-row">
           <div class="qty-control">
             <button type="button" class="cart-qty-btn" onclick="adjustPdpQty(-1)">−</button>
@@ -118,21 +169,19 @@
           </div>
 
           <button type="button" class="btn-add-bag js-quick-add" 
+                  data-product-id="prod-agbada-signature"
+                  data-variant-id="var-agbada-midnight-blue"
+                  data-variation-id="var-agbada-midnight-blue"
                   data-title="Signature 3-Piece Agbada Set" 
                   data-price="195000" 
                   data-image="Krabe Cloth Concepts_230226_205405_1.jpg">
             Add to Shopping Bag
           </button>
-
-          <a href="bespoke.html" class="btn-bespoke-opt">
-            <svg style="width: 16px; height: 16px;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"/></svg>
-            Prefer Custom Measurements? Order in Bespoke &rarr;
-          </a>
         </div>
 
         <!-- Trust Badges -->
         <div style="background: var(--color-sand); padding: 18px 20px; border-radius: var(--radius-sm); margin-bottom: 30px; font-size: 13px; color: #4A5568; display: flex; flex-direction: column; gap: 8px;">
-          <div>✓ <strong>Crafted On Demand:</strong> Hand-tailored from our limited fabric archive; ready for dispatch within 48 hours.</div>
+          <div>✓ <strong>Crafted On Demand:</strong> Hand-tailored from our limited fabric archive; ready for dispatch within 72 hours. <span style="font-size: 12px; opacity: 0.9;">(For large quantities, production timeline may exceed 72 hours.)</span></div>
           <div>✓ <strong>Doorstep Delivery:</strong> 1-2 business days in Lagos; 3-5 business days across Nigeria.</div>
           <div>✓ <strong>Studio Pickup:</strong> Try on &amp; collect at our Victoria Island Lagos atelier.</div>
           <div>✓ <strong>Complimentary Alteration Guarantee:</strong> Free fitting adjustments within Lagos.</div>
@@ -152,19 +201,10 @@
 
           <div class="accordion-item">
             <button type="button" class="accordion-header" onclick="toggleAccordion(this)">
-              Sizing &amp; Fit Notes <span>+</span>
-            </button>
-            <div class="accordion-body">
-              Relaxed ceremonial cut. Model is 6 ft 1 in (185 cm) with a 40-inch chest, wearing size Large. If you prefer a closer, tailored European fit, we recommend sizing down or ordering via our Bespoke channel.
-            </div>
-          </div>
-
-          <div class="accordion-item">
-            <button type="button" class="accordion-header" onclick="toggleAccordion(this)">
               Made-to-Order, Pickup &amp; Returns <span>+</span>
             </button>
             <div class="accordion-body">
-              Every garment is crafted on demand from our curated fabric vault upon receipt of your order. Please allow 48 hours for cutting, tailoring, and quality inspection, after which your order is immediately dispatched via courier (1-2 days Lagos, 3-5 days nationwide). Returns or size exchanges are accepted within 3 days of delivery provided garments remain unworn with original tags attached.
+              Every garment is crafted on demand from our curated fabric vault upon receipt of your order. Please allow 72 hours for cutting, tailoring, and quality inspection (for large quantities, production timeline may exceed 72 hours), after which your order is immediately dispatched via courier (1-2 days Lagos, 3-5 days nationwide). Returns or size exchanges are accepted within 3 days of delivery provided garments remain unworn with original tags attached.
             </div>
           </div>
 
@@ -345,7 +385,7 @@
     <div class="container">
       <div class="footer-top">
         <div class="footer-brand">
-          <img src="assets/brand/kraberefinedimage2.png" alt="Krabe Kollection" style="height: 44px; margin-bottom: 14px;">
+          <img src="assets/brand/krabe main logo.svg" alt="Krabe Kollection" style="height: 44px; margin-bottom: 14px;">
           <p>Premium Nigerian unisex fashion house combining ancestral textile heritage with contemporary minimalist tailoring and luxury streetwear.</p>
         </div>
         <div>
@@ -460,40 +500,224 @@
       <div class="cart-drawer-footer">
         <div class="cart-subtotal-row">
           <span class="cart-subtotal-label">Subtotal</span>
-          <span class="cart-subtotal-amount">₦185,000</span>
+          <span class="cart-subtotal-amount">₦0</span>
         </div>
         <a href="checkout.html" class="btn-checkout">Proceed to Checkout &rarr;</a>
       </div>
     </div>
   </div>
 
+  <!-- Supabase SDK & Krabe Stack -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/config.js"></script>
   <script src="js/header.js"></script>
   <script src="js/auth-modal.js"></script>
+  <script src="js/auth.js"></script>
   <script src="js/main.js"></script>
   <script>
-    // PDP Specific Interactions
+    // PDP Central State (Initialized with fallback defaults, updated by Supabase when loaded)
+    let currentProduct = {
+      id: 'prod-agbada-signature',
+      title: 'Signature 3-Piece Agbada Set'
+    };
+    let currentVariant = {
+      id: 'var-agbada-midnight-blue',
+      color: 'Midnight Blue',
+      color_code: '#2F475A',
+      price: 195000,
+      main_image: 'Krabe Cloth Concepts_230226_205405_1.jpg'
+    };
+
     function swapPdpImg(btn, imgSrc) {
-      document.querySelectorAll('.thumb-btn').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('.pdp-thumbnails .thumb-btn').forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
-      document.getElementById('mainPdpImg').src = imgSrc;
+      const mainImg = document.getElementById('mainPdpImg');
+      if (mainImg) mainImg.src = imgSrc;
     }
 
     function selectSize(btn) {
       document.querySelectorAll('.size-btn').forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
+      pdpQty = 1;
+      syncPdpQtyWithCart();
     }
 
-    function selectColor(btn, label) {
+    function selectColor(btn, colorName) {
       document.querySelectorAll('.swatch-circle-btn').forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
-      document.getElementById('colorLabel').textContent = label;
+      const colorLabel = document.getElementById('colorLabel');
+      if (colorLabel) colorLabel.textContent = colorName;
+      if (currentVariant) {
+        currentVariant.color = colorName;
+      }
+      pdpQty = 1;
+      syncPdpQtyWithCart();
+    }
+
+    function selectVariant(variantId) {
+      if (!currentProduct || !Array.isArray(currentProduct.product_variation)) return;
+      const variations = currentProduct.product_variation;
+      const target = variations.find(v => String(v.id) === String(variantId)) || variations[0];
+      if (!target) return;
+
+      currentVariant = target;
+
+      // 1. Sync active state on round color swatches
+      document.querySelectorAll('.swatch-circle-btn').forEach(btn => {
+        btn.classList.toggle('active', String(btn.dataset.variantId) === String(target.id));
+      });
+
+      // 2. Sync active state on variant image cards
+      document.querySelectorAll('.variant-thumb-card').forEach(card => {
+        card.classList.toggle('active', String(card.dataset.variantId) === String(target.id));
+      });
+
+      // 3. Update single Color Label text (no extra label on cards as requested)
+      const colorLabel = document.getElementById('colorLabel');
+      if (colorLabel) colorLabel.textContent = target.color || 'Standard';
+
+      // 4. Update Big Display Image to this variant's main_image
+      const mainImg = document.getElementById('mainPdpImg');
+      if (mainImg && target.main_image) {
+        mainImg.src = target.main_image;
+      }
+
+      // 5. Update Thumbnails strip below main image (main_image + gallery_images, max 4)
+      const allPhotos = [target.main_image, ...(target.gallery_images || [])].filter(Boolean).slice(0, 4);
+      const thumbStrip = document.querySelector('.pdp-thumbnails');
+      if (thumbStrip) {
+        if (allPhotos.length > 0) {
+          thumbStrip.innerHTML = allPhotos.map((imgUrl, idx) => `
+            <button type="button" class="thumb-btn ${idx === 0 ? 'active' : ''}" onclick="swapPdpImg(this, '${imgUrl}')">
+              <img src="${imgUrl}" alt="${target.color || 'Garment'} view ${idx + 1}">
+            </button>
+          `).join('');
+          thumbStrip.style.display = 'grid';
+        } else {
+          thumbStrip.style.display = 'none';
+        }
+      }
+
+      // 6. Update Price Display
+      const displayPrice = Number(target.price) || 0;
+      const priceEl = document.querySelector('.pdp-price-current');
+      if (priceEl) priceEl.textContent = '₦' + displayPrice.toLocaleString('en-NG');
+      const usdEl = document.querySelector('.pdp-price-usd');
+      if (usdEl) usdEl.textContent = `($${Math.round(displayPrice / 1300)} USD approx.)`;
+
+      // 7. Update Add to Bag button
+      const addBtn = document.querySelector('.btn-add-bag');
+      if (addBtn) {
+        addBtn.dataset.productId = currentProduct.id;
+        addBtn.dataset.variantId = target.id;
+        addBtn.dataset.variationId = target.id;
+        addBtn.dataset.price = displayPrice;
+        addBtn.dataset.title = currentProduct.title;
+        addBtn.dataset.image = target.main_image;
+      }
+
+      // 8. Sync quantity counter with cart for this variant (defaults staging to 1 if not in cart)
+      pdpQty = 1;
+      syncPdpQtyWithCart();
     }
 
     let pdpQty = 1;
-    function adjustPdpQty(diff) {
-      pdpQty = Math.max(1, pdpQty + diff);
-      document.getElementById('pdpQtyVal').textContent = pdpQty;
+
+    function findPdpCartItem() {
+      const activeSizeBtn = document.querySelector('.size-btn.active');
+      const activeSize = activeSizeBtn ? activeSizeBtn.textContent.trim() : 'M';
+      const variantId = currentVariant?.id;
+      const title = currentProduct?.title || document.querySelector('.pdp-title')?.textContent.trim();
+      const color = document.getElementById('colorLabel')?.textContent.trim() || currentVariant?.color;
+
+      if (window.KrabeCart && typeof window.KrabeCart.getItem === 'function') {
+        const item = window.KrabeCart.getItem(variantId, activeSize, title, color);
+        if (item) return item;
+      }
+
+      if (typeof getStoredCart === 'function') {
+        const stored = getStoredCart();
+        return stored.find(i => {
+          const sizeMatches = String(i.size || 'M').toLowerCase() === String(activeSize).toLowerCase();
+          if (!sizeMatches) return false;
+          if (variantId && (String(i.variant_id) === String(variantId) || String(i.product_variation_id) === String(variantId) || String(i.id) === String(variantId))) {
+            return true;
+          }
+          if (title && i.title && String(i.title).toLowerCase() === String(title).toLowerCase()) {
+            if (!color || !i.color || String(i.color).toLowerCase() === String(color).toLowerCase()) {
+              return true;
+            }
+          }
+          return false;
+        });
+      }
+      return null;
     }
+
+    function syncPdpQtyWithCart() {
+      const cartItem = findPdpCartItem();
+      const addBtn = document.querySelector('.btn-add-bag');
+      const wasInCart = addBtn && (addBtn.dataset.inCart === 'true' || addBtn.classList.contains('is-in-cart'));
+
+      if (cartItem && Number(cartItem.qty) > 0) {
+        pdpQty = Math.min(100, Number(cartItem.qty));
+        if (addBtn) {
+          addBtn.textContent = 'Remove from Shopping Bag';
+          addBtn.classList.add('is-in-cart');
+          addBtn.dataset.inCart = 'true';
+        }
+      } else {
+        // Item is not in cart
+        // If it was previously in the cart (just removed by clicking Remove or by clicking the bin icon in the cart drawer), default back to 1
+        if (wasInCart || !pdpQty) {
+          pdpQty = 1;
+        }
+        if (addBtn) {
+          addBtn.textContent = 'Add to Shopping Bag';
+          addBtn.classList.remove('is-in-cart');
+          addBtn.dataset.inCart = 'false';
+        }
+      }
+      const qtyValEl = document.getElementById('pdpQtyVal');
+      if (qtyValEl) qtyValEl.textContent = pdpQty;
+    }
+
+    async function adjustPdpQty(diff) {
+      const activeSizeBtn = document.querySelector('.size-btn.active');
+      const activeSize = activeSizeBtn ? activeSizeBtn.textContent.trim() : 'M';
+      const cartItem = findPdpCartItem();
+
+      if (cartItem && Number(cartItem.qty) > 0) {
+        // Item is in cart: update cart directly in real-time (cart is single source of truth, capped at 100)
+        const newQty = Math.min(100, Math.max(1, Number(cartItem.qty) + diff));
+        pdpQty = newQty;
+        const qtyValEl = document.getElementById('pdpQtyVal');
+        if (qtyValEl) qtyValEl.textContent = pdpQty;
+
+        if (window.KrabeCart && typeof window.KrabeCart.setQuantity === 'function') {
+          await window.KrabeCart.setQuantity({
+            id: cartItem.id,
+            variant_id: cartItem.variant_id || currentVariant?.id,
+            product_variation_id: cartItem.product_variation_id || currentVariant?.id,
+            size: activeSize,
+            qty: newQty,
+            title: cartItem.title || currentProduct?.title,
+            price: cartItem.price || currentVariant?.price,
+            image: cartItem.image || currentVariant?.main_image,
+            color: cartItem.color || currentVariant?.color,
+            product_id: cartItem.product_id || currentProduct?.id
+          });
+        }
+      } else {
+        // Item is NOT in cart: stage quantity locally on the page (1 to 100)
+        pdpQty = Math.min(100, Math.max(1, pdpQty + diff));
+        const qtyValEl = document.getElementById('pdpQtyVal');
+        if (qtyValEl) qtyValEl.textContent = pdpQty;
+      }
+    }
+
+    // Real-time listener: if item is adjusted in cart drawer, update PDP counter in sync
+    window.addEventListener('krabe:cart:updated', syncPdpQtyWithCart);
 
     function toggleAccordion(btn) {
       const item = btn.parentElement;
@@ -511,6 +735,181 @@
       document.getElementById('sizeGuideModal').classList.remove('active');
       document.body.style.overflow = '';
     }
+
+    // Dynamic Product Loader from Supabase
+    async function loadProductFromDatabase() {
+      const client = window.krabeClient || (window.KRABE_CONFIG && typeof window.KRABE_CONFIG.getClient === 'function' ? window.KRABE_CONFIG.getClient() : null);
+      if (!client) {
+        setTimeout(loadProductFromDatabase, 150);
+        return;
+      }
+
+      const urlParams = new URLSearchParams(window.location.search);
+      const targetId = urlParams.get('id');
+
+      try {
+        let query = client.from('product').select(`
+          id,
+          title,
+          category,
+          gender,
+          type,
+          description,
+          slug,
+          is_featured,
+          is_new_arrival,
+          product_variation (
+            id,
+            color,
+            color_code,
+            price,
+            main_image,
+            gallery_images,
+            available
+          )
+        `);
+
+        if (targetId) {
+          query = query.eq('id', targetId);
+        }
+
+        const { data, error } = await query.limit(1).maybeSingle();
+        if (error) throw error;
+
+        const prod = data;
+        if (!prod) return;
+
+        currentProduct = prod;
+
+        // Populate Main Product Details
+        const titleEl = document.querySelector('.pdp-title');
+        if (titleEl) titleEl.textContent = prod.title;
+
+        const eyebrowEl = document.querySelector('.pdp-eyebrow');
+        if (eyebrowEl) eyebrowEl.textContent = `${(prod.category || 'Native').toUpperCase()} WEAR • ${(prod.type || 'Made to Order').toUpperCase()}`;
+
+        const descEl = document.querySelector('.pdp-description-text');
+        if (descEl && prod.description) descEl.textContent = prod.description;
+
+        const variations = prod.product_variation || [];
+
+        if (variations.length > 0) {
+          // 1. Populate Color Circles dynamically from variants
+          const swatchesContainer = document.querySelector('.color-swatches-grid');
+          if (swatchesContainer) {
+            swatchesContainer.innerHTML = variations.map(v => `
+              <button type="button" 
+                      class="swatch-circle-btn" 
+                      style="background-color: ${v.color_code || '#2F475A'};" 
+                      title="${v.color || 'Standard'}" 
+                      data-variant-id="${v.id}"
+                      onclick="selectVariant('${v.id}')">
+              </button>
+            `).join('');
+          }
+
+          // 2. Populate Variants Visual Cards below color circles (no duplicate text label)
+          const varThumbGrid = document.getElementById('variantThumbnailsGrid');
+          if (varThumbGrid) {
+            varThumbGrid.innerHTML = variations.map(v => `
+              <button type="button" 
+                      class="variant-thumb-card" 
+                      data-variant-id="${v.id}"
+                      title="${v.color || 'Variant'}"
+                      onclick="selectVariant('${v.id}')">
+                <img src="${v.main_image || 'assets/brand/krabe main logo.svg'}" alt="${v.color || 'Variant'}">
+              </button>
+            `).join('');
+          }
+
+          // 3. Determine initial variant (from URL param if navigating from cart "Edit", or first variant)
+          const preselectedColor = urlParams.get('color');
+          let initialVariant = variations[0];
+          if (preselectedColor) {
+            const matched = variations.find(v => v.color && v.color.toLowerCase() === preselectedColor.toLowerCase());
+            if (matched) initialVariant = matched;
+          }
+
+          // Set initial PDP custom state
+          selectVariant(initialVariant.id);
+
+          // 4. Preselect size if navigating from cart "Edit" link
+          const preselectedSize = urlParams.get('size');
+          if (preselectedSize) {
+            const sizeBtns = document.querySelectorAll('.size-btn');
+            sizeBtns.forEach(btn => {
+              if (btn.textContent.trim().toLowerCase() === preselectedSize.toLowerCase()) {
+                selectSize(btn);
+              }
+            });
+          }
+        }
+
+        // Populate Related Products at bottom of PDP
+        const { data: relatedProducts } = await client
+          .from('product')
+          .select(`
+            id,
+            title,
+            category,
+            gender,
+            product_variation (
+              id,
+              color,
+              color_code,
+              price,
+              main_image
+            )
+          `)
+          .neq('id', prod.id)
+          .limit(4);
+
+        const relGrid = document.querySelector('.products-grid');
+        if (relGrid && relatedProducts && relatedProducts.length > 0) {
+          relGrid.innerHTML = relatedProducts.map(rp => {
+            const rVars = rp.product_variation || [];
+            const rDef = rVars[0] || {};
+            const rPrice = Number(rDef.price) || 0;
+            const rImg = rDef.main_image || 'assets/brand/krabe main logo.svg';
+            return `
+              <div class="product-card" data-category="${rp.category || 'native'}">
+                <div class="product-media">
+                  <a href="product.html?id=${rp.id}" style="display: block; width: 100%; height: 100%;">
+                    <img src="${rImg}" alt="${rp.title}">
+                  </a>
+                  <div class="quick-add-overlay">
+                    <button type="button" class="btn-quick-add js-quick-add" 
+                            data-product-id="${rp.id}"
+                            data-variant-id="${rDef.id || ''}"
+                            data-variation-id="${rDef.id || ''}"
+                            data-title="${rp.title}" 
+                            data-price="${rPrice}" 
+                            data-size="M"
+                            data-color="${rDef.color || 'Standard'}"
+                            data-image="${rImg}">
+                      + Quick Add (M)
+                    </button>
+                  </div>
+                </div>
+                <div class="product-info">
+                  <span class="product-category-label">${(rp.category || 'Native').toUpperCase()}</span>
+                  <h3 class="product-title"><a href="product.html?id=${rp.id}">${rp.title}</a></h3>
+                  <div class="product-price-row">
+                    <span class="product-price">₦${rPrice.toLocaleString('en-NG')}</span>
+                  </div>
+                </div>
+              </div>
+            `;
+          }).join('');
+        }
+      } catch (err) {
+        console.warn('[Product PDP] Could not fetch product details from DB:', err);
+      }
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+      loadProductFromDatabase();
+    });
   </script>
 </body>
 </html>

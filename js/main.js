@@ -2,122 +2,461 @@
  * Krabe Kollection — Global Storefront Interactions & Cart Drawer
  */
 
+const KRABE_CART_STORAGE_KEY = 'krabe_cart';
+
+function getSupabaseClient() {
+  if (window.krabeClient) return window.krabeClient;
+  if (window.KRABE_CONFIG && typeof window.KRABE_CONFIG.getClient === 'function') {
+    return window.KRABE_CONFIG.getClient();
+  }
+  return null;
+}
+
+function getSupabaseUser() {
+  if (window.krabeUser) return window.krabeUser;
+  if (window.KrabeAuth && typeof window.KrabeAuth.getUser === 'function') {
+    return window.KrabeAuth.getUser();
+  }
+  return null;
+}
+
+function getStoredCart() {
+  try {
+    const raw = localStorage.getItem(KRABE_CART_STORAGE_KEY);
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      if (Array.isArray(parsed)) return parsed;
+    }
+  } catch (e) {
+    console.warn('[Krabe Cart] Could not parse stored cart:', e);
+  }
+  return [];
+}
+
+function setStoredCart(cartItems) {
+  try {
+    localStorage.setItem(KRABE_CART_STORAGE_KEY, JSON.stringify(cartItems));
+  } catch (e) {
+    console.warn('[Krabe Cart] Could not save cart to localStorage:', e);
+  }
+  window.dispatchEvent(new CustomEvent('krabe:cart:updated', { detail: { cart: cartItems } }));
+}
+
 document.addEventListener('DOMContentLoaded', () => {
   // --- Cart State & Elements ---
   const cartOverlay = document.getElementById('cartOverlay');
   const cartDrawer = document.getElementById('cartDrawer');
   const cartOpenBtns = document.querySelectorAll('.js-open-cart');
   const cartCloseBtn = document.getElementById('cartCloseBtn');
-  const cartBadge = document.querySelector('.cart-badge');
   const cartBody = document.querySelector('.cart-drawer-body');
-  const cartSubtotalEl = document.querySelector('.cart-subtotal-amount');
 
   // Mobile Nav Elements
   const navToggleBtn = document.getElementById('navToggleBtn');
   const mobileNavDrawer = document.getElementById('mobileNavDrawer');
   const mobileNavClose = document.getElementById('mobileNavClose');
 
-  // Initial Mock Cart Data
-  let cart = [
-    {
-      id: 1,
-      title: 'Signature Agbada Luxe Set',
-      variant: 'Midnight Blue / L',
-      price: 185000,
-      qty: 1,
-      image: 'Krabe Cloth Concepts_230226_205405_1.jpg'
-    }
-  ];
+  // Dynamic Cart State (Loaded from LocalStorage, zero hardcoded mock data)
+  let cart = getStoredCart();
 
   function formatNaira(amount) {
-    return '₦' + Number(amount).toLocaleString('en-NG');
+    return '₦' + Number(amount || 0).toLocaleString('en-NG');
   }
 
   function updateCartUI() {
-    // Total count
-    const totalCount = cart.reduce((sum, item) => sum + item.qty, 0);
-    if (cartBadge) {
-      cartBadge.textContent = totalCount;
-      cartBadge.style.display = totalCount > 0 ? 'flex' : 'none';
+    window.krabeCartItems = cart;
+    window.dispatchEvent(new CustomEvent('krabe:cart:updated', { detail: { cart } }));
+
+    // 1. Total Count Badge across all headers
+    const totalCount = cart.reduce((sum, item) => sum + (Number(item.qty) || 1), 0);
+    const badges = document.querySelectorAll('.cart-badge');
+    badges.forEach(badge => {
+      badge.textContent = totalCount;
+      badge.style.display = totalCount > 0 ? 'inline-flex' : 'none';
+    });
+
+    // 2. Subtotal Calculation
+    const subtotal = cart.reduce((sum, item) => sum + ((Number(item.price) || 0) * (Number(item.qty) || 1)), 0);
+    const subtotalEls = document.querySelectorAll('.cart-subtotal-amount, #summarySubtotal');
+    subtotalEls.forEach(el => {
+      el.textContent = formatNaira(subtotal);
+    });
+
+    // Free delivery indicator (threshold: ₦150,000)
+    const freeShippingEl = document.querySelector('.cart-free-shipping');
+    if (freeShippingEl) {
+      if (subtotal >= 150000) {
+        freeShippingEl.innerHTML = '✓ You qualify for <strong>Free Nationwide Delivery</strong>';
+        freeShippingEl.style.color = '#15803D';
+      } else if (subtotal > 0) {
+        const remaining = 150000 - subtotal;
+        freeShippingEl.innerHTML = `Add <strong>${formatNaira(remaining)}</strong> more for Free Delivery`;
+        freeShippingEl.style.color = 'var(--color-primary, #44637B)';
+      } else {
+        freeShippingEl.innerHTML = '✓ Free Nationwide Delivery on orders over ₦150,000';
+        freeShippingEl.style.color = '';
+      }
     }
 
-    // Subtotal
-    const subtotal = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
-    if (cartSubtotalEl) {
-      cartSubtotalEl.textContent = formatNaira(subtotal);
-    }
-
-    // Line items
+    // 3. Line Items Rendering in Cart Drawer
     if (cartBody) {
       if (cart.length === 0) {
         cartBody.innerHTML = `
-          <div style="text-align: center; padding: 48px 12px; color: #6E7175;">
-            <svg style="width: 44px; height: 44px; margin-bottom: 12px; opacity: 0.4;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/>
+          <div style="text-align: center; padding: 48px 16px; color: var(--color-text-muted, #6E7175);">
+            <svg style="width: 48px; height: 48px; margin: 0 auto 14px; opacity: 0.35; display: block;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.4" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/>
             </svg>
-            <p style="font-size: 15px; font-weight: 600; margin-bottom: 6px; color: #161616;">Your shopping bag is empty</p>
-            <p style="font-size: 13px;">Explore our made-to-order collections or commission a bespoke outfit.</p>
+            <p style="font-size: 15px; font-weight: 700; margin-bottom: 6px; color: var(--color-obsidian, #161616); letter-spacing: 0.5px;">Your shopping bag is empty</p>
+            <p style="font-size: 12.5px; line-height: 1.5; max-width: 260px; margin: 0 auto 18px;">Explore our tailored native wear, bespoke suits, or luxury streetwear.</p>
+            <a href="shop.html" onclick="document.getElementById('cartCloseBtn') && document.getElementById('cartCloseBtn').click();" style="display: inline-block; padding: 10px 22px; background: var(--color-primary, #44637B); color: #ffffff; font-size: 11.5px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.2px; border-radius: 4px; text-decoration: none;">
+              Explore Collections &rarr;
+            </a>
           </div>
         `;
+
+        const checkoutBtn = document.querySelector('.btn-checkout');
+        if (checkoutBtn) {
+          checkoutBtn.style.pointerEvents = 'none';
+          checkoutBtn.style.opacity = '0.45';
+        }
       } else {
+        const checkoutBtn = document.querySelector('.btn-checkout');
+        if (checkoutBtn) {
+          checkoutBtn.style.pointerEvents = 'auto';
+          checkoutBtn.style.opacity = '1';
+        }
+
         cartBody.innerHTML = cart.map(item => `
           <div class="cart-item" data-id="${item.id}">
-            <img src="${item.image}" alt="${item.title}" class="cart-item-img">
+            <img src="${item.image || 'assets/brand/krabe main logo.svg'}" alt="${item.title}" class="cart-item-img">
             <div class="cart-item-details">
               <h4>${item.title}</h4>
-              <div class="cart-item-meta">${item.variant}</div>
+              <div class="cart-item-meta" style="display: flex; align-items: center; flex-wrap: wrap; gap: 6px;">
+                <span>${item.color || 'Standard'} &bull; Size: <strong>${item.size || 'M'}</strong></span>
+                ${item.product_id ? `
+                  <a href="product.html?id=${item.product_id}&size=${encodeURIComponent(item.size || 'M')}&color=${encodeURIComponent(item.color || '')}" class="js-cart-edit-link" style="color: var(--color-primary, #44637B); font-size: 11px; font-weight: 600; text-decoration: underline;">
+                    Edit
+                  </a>
+                ` : ''}
+              </div>
               <div class="cart-item-price">${formatNaira(item.price)}</div>
               <div class="cart-qty-ctrl">
-                <button type="button" class="cart-qty-btn js-qty-minus" data-id="${item.id}">−</button>
+                <button type="button" class="cart-qty-btn js-qty-minus" data-id="${item.id}" aria-label="Decrease quantity">−</button>
                 <span class="cart-qty-val">${item.qty}</span>
-                <button type="button" class="cart-qty-btn js-qty-plus" data-id="${item.id}">+</button>
+                <button type="button" class="cart-qty-btn js-qty-plus" data-id="${item.id}" aria-label="Increase quantity">+</button>
               </div>
             </div>
             <button type="button" class="cart-item-del js-del-item" data-id="${item.id}" aria-label="Remove item">
-              <svg style="width: 18px; height: 18px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg style="width: 17px; height: 17px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
               </svg>
             </button>
           </div>
         `).join('');
 
-        // Attach listeners for line item controls
+        // Attach listeners for Line Item Plus
         cartBody.querySelectorAll('.js-qty-plus').forEach(btn => {
-          btn.addEventListener('click', () => {
-            const id = Number(btn.dataset.id);
-            const target = cart.find(i => i.id === id);
-            if (target) {
-              target.qty += 1;
-              updateCartUI();
-            }
-          });
-        });
-
-        cartBody.querySelectorAll('.js-qty-minus').forEach(btn => {
-          btn.addEventListener('click', () => {
-            const id = Number(btn.dataset.id);
-            const target = cart.find(i => i.id === id);
-            if (target) {
-              if (target.qty > 1) {
-                target.qty -= 1;
+          btn.addEventListener('click', async () => {
+            const id = btn.dataset.id;
+            const target = cart.find(i => String(i.id) === String(id));
+            if (target && target.qty < 100) {
+              target.qty = Math.min(100, target.qty + 1);
+              const user = getSupabaseUser();
+              const client = getSupabaseClient();
+              if (user && user.id && client && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id)) {
+                await client.from('cart_item').update({ quantity: target.qty, updated_at: new Date().toISOString() }).eq('id', id);
               } else {
-                cart = cart.filter(i => i.id !== id);
+                setStoredCart(cart);
               }
               updateCartUI();
             }
           });
         });
 
+        // Attach listeners for Line Item Minus
+        cartBody.querySelectorAll('.js-qty-minus').forEach(btn => {
+          btn.addEventListener('click', async () => {
+            const id = btn.dataset.id;
+            const target = cart.find(i => String(i.id) === String(id));
+            if (target) {
+              const user = getSupabaseUser();
+              const client = getSupabaseClient();
+              const isDbId = user && user.id && client && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id);
+
+              if (target.qty > 1) {
+                target.qty -= 1;
+                if (isDbId) {
+                  await client.from('cart_item').update({ quantity: target.qty, updated_at: new Date().toISOString() }).eq('id', id);
+                } else {
+                  setStoredCart(cart);
+                }
+              } else {
+                cart = cart.filter(i => String(i.id) !== String(id));
+                if (isDbId) {
+                  await client.from('cart_item').delete().eq('id', id);
+                } else {
+                  setStoredCart(cart);
+                }
+              }
+              updateCartUI();
+            }
+          });
+        });
+
+        // Attach listeners for Line Item Delete
         cartBody.querySelectorAll('.js-del-item').forEach(btn => {
-          btn.addEventListener('click', () => {
-            const id = Number(btn.dataset.id);
-            cart = cart.filter(i => i.id !== id);
+          btn.addEventListener('click', async () => {
+            const id = btn.dataset.id;
+            cart = cart.filter(i => String(i.id) !== String(id));
+            const user = getSupabaseUser();
+            const client = getSupabaseClient();
+            if (user && user.id && client && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id)) {
+              await client.from('cart_item').delete().eq('id', id);
+            } else {
+              setStoredCart(cart);
+            }
             updateCartUI();
+          });
+        });
+        // Attach listeners for Edit link
+        cartBody.querySelectorAll('.js-cart-edit-link').forEach(link => {
+          link.addEventListener('click', () => {
+            closeCart();
           });
         });
       }
     }
   }
+
+  // Load active cart (Supabase database if logged in, localStorage if guest)
+  async function loadActiveCart() {
+    const user = getSupabaseUser();
+    const client = getSupabaseClient();
+
+    if (user && user.id && client) {
+      try {
+        const { data, error } = await client
+          .from('cart_item')
+          .select(`
+            id,
+            quantity,
+            unit_price,
+            selected_size,
+            product_variation_id,
+            product_variation:product_variation_id (
+              id,
+              color,
+              color_code,
+              price,
+              main_image,
+              product:product_id (
+                id,
+                title
+              )
+            )
+          `)
+          .eq('user_id', user.id);
+
+        if (!error && Array.isArray(data)) {
+          cart = data.map(row => {
+            const pv = row.product_variation || {};
+            const prod = pv.product || {};
+            const itemSize = row.selected_size || 'M';
+            return {
+              id: row.id,
+              product_id: prod.id || null,
+              variant_id: row.product_variation_id,
+              product_variation_id: row.product_variation_id,
+              title: prod.title || 'Signature Garment',
+              variant: `${pv.color || 'Standard'} / ${itemSize}`,
+              size: itemSize,
+              color: pv.color || 'Standard',
+              price: Number(row.unit_price) || Number(pv.price) || 0,
+              qty: Number(row.quantity) || 1,
+              image: pv.main_image || 'assets/brand/krabe main logo.svg'
+            };
+          });
+          updateCartUI();
+          return;
+        }
+      } catch (err) {
+        console.warn('[Krabe Cart] Could not fetch DB cart:', err);
+      }
+    }
+
+    // Guest fallback
+    cart = getStoredCart();
+    updateCartUI();
+  }
+
+  // Add Item to Cart Function (handles DB persistence for logged-in, localStorage for guest with variant_id + size deduplication, capped at 100)
+  async function addToCart({ id, variant_id, product_variation_id, product_id, title, price, image, size, color, qty, setExact = false, skipOpen = false }) {
+    const targetVariantId = variant_id || product_variation_id || id;
+    const chosenSize = size || 'M';
+    const chosenColor = color || 'Standard';
+    const chosenQty = Math.min(100, Math.max(1, Number(qty) || 1));
+    const variantLabel = `${chosenColor} / ${chosenSize}`;
+
+    const user = getSupabaseUser();
+    const client = getSupabaseClient();
+
+    // 1. Logged-in user: Persist directly into Supabase cart_item using variant_id & selected_size
+    if (user && user.id && client && targetVariantId) {
+      try {
+        const { data: existing } = await client
+          .from('cart_item')
+          .select('id, quantity')
+          .eq('user_id', user.id)
+          .eq('product_variation_id', targetVariantId)
+          .eq('selected_size', chosenSize)
+          .maybeSingle();
+
+        if (existing && existing.id) {
+          const newQty = Math.min(100, Math.max(1, setExact ? chosenQty : ((Number(existing.quantity) || 0) + chosenQty)));
+          await client
+            .from('cart_item')
+            .update({
+              quantity: newQty,
+              unit_price: Number(price) || 0,
+              updated_at: new Date().toISOString()
+            })
+            .eq('id', existing.id);
+        } else {
+          await client
+            .from('cart_item')
+            .insert({
+              user_id: user.id,
+              product_variation_id: targetVariantId,
+              selected_size: chosenSize,
+              quantity: chosenQty,
+              unit_price: Number(price) || 0,
+              slug: title ? title.toLowerCase().replace(/[^a-z0-9]+/g, '-') : null
+            });
+        }
+        await loadActiveCart();
+        if (!skipOpen) openCart();
+        return;
+      } catch (dbErr) {
+        console.warn('[Krabe Cart] Error saving cart item to DB:', dbErr);
+      }
+    }
+
+    // 2. Guest user: Persist to localStorage with deduplication strictly by id / variant_id / title AND chosen size
+    const existingIndex = cart.findIndex(item => {
+      if (id && String(item.id) === String(id)) return true;
+      const matchSize = String(item.size || 'M').toLowerCase() === String(chosenSize).toLowerCase();
+      if (!matchSize) return false;
+      if (targetVariantId && (String(item.variant_id) === String(targetVariantId) || String(item.product_variation_id) === String(targetVariantId) || String(item.id) === String(targetVariantId))) {
+        return true;
+      }
+      if (title && item.title && String(item.title).toLowerCase() === String(title).toLowerCase()) {
+        if (!chosenColor || !item.color || String(item.color).toLowerCase() === String(chosenColor).toLowerCase()) {
+          return true;
+        }
+      }
+      return false;
+    });
+
+    if (existingIndex > -1) {
+      cart[existingIndex].qty = Math.min(100, Math.max(1, setExact ? chosenQty : (cart[existingIndex].qty + chosenQty)));
+    } else {
+      cart.push({
+        id: targetVariantId ? `${targetVariantId}-${chosenSize}` : Date.now(),
+        product_id: product_id || null,
+        variant_id: targetVariantId,
+        product_variation_id: targetVariantId,
+        title,
+        variant: variantLabel,
+        size: chosenSize,
+        color: chosenColor,
+        price: Number(price) || 0,
+        qty: chosenQty,
+        image: image || 'assets/brand/krabe main logo.svg'
+      });
+    }
+
+    setStoredCart(cart);
+    updateCartUI();
+    if (!skipOpen) openCart();
+  }
+
+  // Remove Item from Cart Function (handles DB persistence for logged-in, localStorage for guest)
+  async function removeFromCart({ id, variant_id, product_variation_id, size, title, color }) {
+    const targetVariantId = variant_id || product_variation_id;
+    const targetSize = size || 'M';
+    const user = getSupabaseUser();
+    const client = getSupabaseClient();
+
+    if (user && user.id && client) {
+      try {
+        let query = client.from('cart_item').delete().eq('user_id', user.id);
+        if (id && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id)) {
+          query = query.eq('id', id);
+        } else if (targetVariantId) {
+          query = query.eq('product_variation_id', targetVariantId).eq('selected_size', targetSize);
+        }
+        await query;
+        await loadActiveCart();
+        return;
+      } catch (dbErr) {
+        console.warn('[Krabe Cart] Error deleting item from DB:', dbErr);
+      }
+    }
+
+    cart = cart.filter(item => {
+      if (id && String(item.id) === String(id)) return false;
+      const matchSize = String(item.size || 'M').toLowerCase() === String(targetSize).toLowerCase();
+      if (!matchSize) return true;
+      if (targetVariantId && (String(item.variant_id) === String(targetVariantId) || String(item.product_variation_id) === String(targetVariantId))) {
+        return false;
+      }
+      if (title && item.title && String(item.title).toLowerCase() === String(title).toLowerCase()) {
+        if (!color || !item.color || String(item.color).toLowerCase() === String(color).toLowerCase()) {
+          return false;
+        }
+      }
+      return true;
+    });
+    setStoredCart(cart);
+    updateCartUI();
+  }
+
+  // Global Cart API for page synchronization
+  window.KrabeCart = {
+    getCart: () => cart,
+    getItem: (variantId, size, title, color) => cart.find(i => {
+      const matchSize = String(i.size || 'M').toLowerCase() === String(size || 'M').toLowerCase();
+      if (!matchSize) return false;
+      if (variantId && (String(i.variant_id) === String(variantId) || String(i.product_variation_id) === String(variantId) || String(i.id) === String(variantId))) {
+        return true;
+      }
+      if (title && i.title && String(i.title).toLowerCase() === String(title).toLowerCase()) {
+        if (!color || !i.color || String(i.color).toLowerCase() === String(color).toLowerCase()) {
+          return true;
+        }
+      }
+      return false;
+    }),
+    setQuantity: (params) => addToCart({ ...params, setExact: true, skipOpen: true }),
+    addToCart: (params) => addToCart(params),
+    removeFromCart: (params) => removeFromCart(params),
+    clearCart: async () => {
+      cart = [];
+      const user = getSupabaseUser();
+      const client = getSupabaseClient();
+      if (user && user.id && client) {
+        try {
+          await client.from('cart_item').delete().eq('user_id', user.id);
+        } catch (err) {}
+      }
+      setStoredCart(cart);
+      updateCartUI();
+    },
+    refreshUserCart: () => loadActiveCart(),
+    loadActiveCart: () => loadActiveCart(),
+    updateCartUI: () => updateCartUI(),
+    openCart: () => openCart(),
+    closeCart: () => closeCart()
+  };
 
   // Open & Close Drawer
   function openCart() {
@@ -229,7 +568,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
-  // Mobile Menu
+  // Mobile Menu Drawer
   if (navToggleBtn && mobileNavDrawer) {
     navToggleBtn.addEventListener('click', () => {
       mobileNavDrawer.classList.add('active');
@@ -241,30 +580,76 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // Quick Add To Cart Buttons
-  document.querySelectorAll('.js-quick-add').forEach(btn => {
-    btn.addEventListener('click', (e) => {
+  // 1. PDP "Add / Remove Shopping Bag" Button (Takes active size, color & quantity from UI, toggles between Add and Remove)
+  const pdpAddBtn = document.querySelector('.btn-add-bag');
+  if (pdpAddBtn) {
+    pdpAddBtn.addEventListener('click', async (e) => {
       e.preventDefault();
-      const productTitle = btn.dataset.title;
-      const productPrice = Number(btn.dataset.price);
-      const productImage = btn.dataset.image;
+      e.stopPropagation();
 
-      const existing = cart.find(i => i.title === productTitle);
-      if (existing) {
-        existing.qty += 1;
+      const activeSizeBtn = document.querySelector('.size-btn.active');
+      const variant_id = pdpAddBtn.dataset.variantId || pdpAddBtn.dataset.variationId || activeSizeBtn?.dataset.variantId || activeSizeBtn?.dataset.variationId;
+      const product_id = pdpAddBtn.dataset.productId || null;
+      const title = pdpAddBtn.dataset.title || document.querySelector('.pdp-title')?.textContent.trim() || 'Signature Garment';
+      const price = Number(pdpAddBtn.dataset.price) || Number(activeSizeBtn?.dataset.price) || 195000;
+      const image = pdpAddBtn.dataset.image || document.getElementById('mainPdpImg')?.getAttribute('src') || 'Krabe Cloth Concepts_230226_205405_1.jpg';
+      
+      const size = activeSizeBtn?.textContent.trim() || 'M';
+      const color = document.getElementById('colorLabel')?.textContent.trim() || 'Standard';
+
+      const existingCartItem = cart.find(i => {
+        const matchSize = String(i.size || 'M').toLowerCase() === String(size).toLowerCase();
+        if (!matchSize) return false;
+        if (variant_id && (String(i.variant_id) === String(variant_id) || String(i.product_variation_id) === String(variant_id) || String(i.id) === String(variant_id))) {
+          return true;
+        }
+        if (title && i.title && String(i.title).toLowerCase() === String(title).toLowerCase()) {
+          if (!color || !i.color || String(i.color).toLowerCase() === String(color).toLowerCase()) {
+            return true;
+          }
+        }
+        return false;
+      });
+
+      if (existingCartItem) {
+        // In cart: remove item from shopping bag
+        await removeFromCart({ id: existingCartItem.id, variant_id, size, title, color });
+        const qtyValEl = document.getElementById('pdpQtyVal');
+        if (qtyValEl) qtyValEl.textContent = '1';
       } else {
-        cart.push({
-          id: Date.now(),
-          title: productTitle,
-          variant: 'Standard / M',
-          price: productPrice,
-          qty: 1,
-          image: productImage
-        });
+        // Not in cart: add exact staged quantity to bag (capped at 100)
+        const qtyValEl = document.getElementById('pdpQtyVal');
+        const stagedQty = Math.min(100, Math.max(1, Number(qtyValEl?.textContent.trim()) || 1));
+        await addToCart({ variant_id, product_variation_id: variant_id, product_id, title, price, image, size, color, qty: stagedQty, setExact: true });
       }
+    });
+  }
 
-      updateCartUI();
-      openCart();
+  // 2. Catalog & Quick Add Buttons (Delegated event listener so dynamic products work seamlessly)
+  document.addEventListener('click', (e) => {
+    const btn = e.target.closest('.js-quick-add:not(.btn-add-bag)');
+    if (!btn) return;
+    e.preventDefault();
+    e.stopPropagation();
+
+    const productTitle = btn.dataset.title || 'Signature Piece';
+    const productPrice = Number(btn.dataset.price) || 0;
+    const productImage = btn.dataset.image;
+    const variantId = btn.dataset.variantId || btn.dataset.variationId;
+    const productId = btn.dataset.productId || null;
+    const size = btn.dataset.size || 'M';
+    const color = btn.dataset.color || 'Standard';
+
+    addToCart({
+      variant_id: variantId,
+      product_variation_id: variantId,
+      product_id: productId,
+      title: productTitle,
+      price: productPrice,
+      image: productImage,
+      size,
+      color,
+      qty: 1
     });
   });
 
@@ -288,6 +673,23 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
-  // Initial render
-  updateCartUI();
+  // Cross-Window / Tab Storage Sync
+  window.addEventListener('storage', (e) => {
+    if (e.key === KRABE_CART_STORAGE_KEY) {
+      cart = getStoredCart();
+      updateCartUI();
+    }
+  });
+
+  // Database Cart Sync Events
+  window.addEventListener('krabe:cart:synced', () => {
+    loadActiveCart();
+  });
+
+  window.addEventListener('krabe:session:changed', () => {
+    loadActiveCart();
+  });
+
+  // Initial active cart load on page mount
+  loadActiveCart();
 });

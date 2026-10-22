@@ -26,59 +26,62 @@
       <header class="site-header" id="krabeSiteHeader">
         <div class="container header-inner">
           
-          <!-- Mobile Hamburger Toggle -->
-          <button type="button" class="nav-toggle" id="navToggleBtn" aria-label="Open mobile menu">
-            <span></span>
-            <span></span>
-            <span></span>
-          </button>
-
-          <!-- Desktop Primary Navigation -->
-          <nav class="nav-links" id="krabeDesktopNav" aria-label="Main Navigation">
-            <a href="shop.html" class="nav-link" data-link="shop">Made-to-Order</a>
-            <a href="bespoke.html" class="nav-link bespoke-highlight" data-link="bespoke">Bespoke</a>
-            <a href="shop.html?category=native" class="nav-link" data-link="native">Native Wear</a>
-            <a href="shop.html?category=streetwear" class="nav-link" data-link="streetwear">Streetwear</a>
-            <a href="lookbook.html" class="nav-link" data-link="lookbook">Lookbook</a>
-            <a href="about.html" class="nav-link" data-link="about">Our Story</a>
-          </nav>
-
-          <!-- Official Brand Wordmark Logo -->
+          <!-- Official Brand Wordmark Logo (Left Positioned) -->
           <div class="brand-logo-wrap">
             <a href="index.html" aria-label="Krabe Kollection Home">
-              <img src="assets/brand/kraberefinedimage1.png" alt="Krabe Kollection" class="brand-logo-img">
+              <img src="assets/brand/krabe main logo.svg" alt="Krabe Kollection" class="brand-logo-img">
             </a>
           </div>
 
-          <!-- Header Utilities (Search, Account, WhatsApp, Cart) -->
+          <!-- Primary Navigation Links -->
+          <nav class="nav-links" id="krabeDesktopNav" aria-label="Main Navigation">
+            <a href="shop.html" class="nav-link nav-link-always" data-link="shop">Made-to-Order</a>
+            <a href="bespoke.html" class="nav-link bespoke-highlight nav-link-always" data-link="bespoke">Bespoke</a>
+            <a href="shop.html?category=native" class="nav-link nav-link-extra" data-link="native">Native Wear</a>
+            <a href="shop.html?category=streetwear" class="nav-link nav-link-extra" data-link="streetwear">Streetwear</a>
+            <a href="lookbook.html" class="nav-link nav-link-extra" data-link="lookbook">Lookbook</a>
+            <a href="about.html" class="nav-link nav-link-always" data-link="about">Our Story</a>
+          </nav>
+
+          <!-- Header Utilities (Search, Account, WhatsApp, Cart, 3-Dot Menu) -->
           <div class="header-actions">
             <!-- Search Trigger -->
             <button type="button" class="action-btn js-open-search" id="searchOpenBtn" aria-label="Search Collection">
-              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width: 20px; height: 20px;">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
               </svg>
             </button>
 
             <!-- Customer Account Portal -->
             <a href="account.html" class="action-btn js-account-btn" id="headerAccountBtn" aria-label="Customer Account">
-              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width: 20px; height: 20px;">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
               </svg>
             </a>
 
-            <!-- Direct WhatsApp Concierge -->
+            <!-- Direct WhatsApp Concierge (Official Speech Bubble Icon) -->
             <a href="https://wa.me/2348000000000?text=Hello%20Krabe%20Kollection,%20I%20would%20like%20to%20inquire%20about%20a%20piece" target="_blank" rel="noopener" class="action-btn" aria-label="WhatsApp Stylist" title="Chat with Stylist">
-              <svg style="color: #25D366;" fill="currentColor" viewBox="0 0 24 24">
-                <path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.582 2.128 2.182-.573c.978.58 1.911.928 3.145.929 3.178 0 5.767-2.587 5.768-5.766.001-3.187-2.575-5.771-5.764-5.771zm3.392 8.244c-.144.405-.837.774-1.17.824-.312.045-.694.078-1.921-.432-.988-.41-1.637-1.397-1.688-1.464-.049-.067-.406-.541-.406-1.034 0-.493.255-.733.348-.834.093-.1.203-.125.27-.125.068 0 .135.001.194.004.062.003.146-.023.228.174.084.202.29.708.315.76.026.052.043.112.008.178-.035.067-.053.109-.106.171-.053.063-.111.14-.159.188-.052.052-.107.108-.046.213.061.104.272.449.584.726.402.358.741.469.845.521.105.052.167.045.228-.025.062-.07.269-.313.342-.42.072-.107.144-.089.243-.053.099.035.626.295.733.349.108.053.18.08.207.125.027.045.027.261-.117.666z"/>
+              <svg viewBox="0 0 24 24" style="width: 22px; height: 22px;" fill="none">
+                <path d="M12.004 2C6.486 2 2 6.486 2 12.004c0 1.98.577 3.829 1.575 5.394L2.3 22l4.743-1.244A9.957 9.957 0 0012.004 22C17.522 22 22 17.522 22 12.004 22 6.486 17.522 2 12.004 2z" fill="#25D366"/>
+                <path d="M17.472 14.382c-.301-.15-1.78-.879-2.056-.98-.276-.1-.476-.15-.677.15-.2.301-.777.98-.952 1.18-.175.201-.351.226-.652.076-.301-.15-1.272-.469-2.423-1.496-.896-.799-1.502-1.787-1.678-2.088-.175-.301-.019-.464.132-.614.135-.135.301-.351.451-.527.15-.175.2-.301.301-.501.1-.2.05-.376-.025-.526-.075-.15-.677-1.632-.927-2.235-.244-.588-.493-.509-.677-.518-.175-.009-.376-.009-.577-.009-.2 0-.526.075-.802.376-.276.301-1.053 1.028-1.053 2.508 0 1.48 1.078 2.909 1.229 3.11.15.2 2.122 3.24 5.14 4.544.718.31 1.278.496 1.716.634.721.23 1.376.197 1.895.12.578-.087 1.78-.727 2.03-1.43.251-.703.251-1.304.176-1.43-.075-.126-.276-.201-.577-.351z" fill="#ffffff"/>
               </svg>
             </a>
 
             <!-- Slide-Out Shopping Bag Trigger -->
             <button type="button" class="action-btn js-open-cart" aria-label="View Shopping Bag">
-              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width: 20px; height: 20px;">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/>
               </svg>
               <span class="cart-badge" style="display: none;">0</span>
+            </button>
+
+            <!-- 3-Dot Navigation Menu Toggle (Appears on <= 1200px screens) -->
+            <button type="button" class="action-btn nav-toggle-dots" id="navToggleBtn" aria-label="Open mobile menu" title="More Menu">
+              <svg style="width: 20px; height: 20px;" fill="currentColor" viewBox="0 0 24 24">
+                <circle cx="12" cy="5" r="2.2"/>
+                <circle cx="12" cy="12" r="2.2"/>
+                <circle cx="12" cy="19" r="2.2"/>
+              </svg>
             </button>
           </div>
 
@@ -91,7 +94,7 @@
     return `
       <div class="mobile-nav-drawer" id="mobileNavDrawer" role="dialog" aria-modal="true">
         <div class="mobile-nav-header">
-          <img src="assets/brand/kraberefinedimage1.png" alt="Krabe Logo" style="height: 38px;">
+          <img src="assets/brand/krabe main logo.svg" alt="Krabe Logo" style="height: 34px;">
           <button type="button" class="cart-close-btn" id="mobileNavClose" aria-label="Close Menu">
             <svg style="width: 22px; height: 22px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>

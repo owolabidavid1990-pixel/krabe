@@ -61,7 +61,7 @@ EXCEPTION WHEN duplicate_object THEN null; END $$;
 
 DO $$ BEGIN
   CREATE TYPE product_type AS ENUM (
-    'bespoke', 'ready to wear'
+    'bespoke', 'made to order'
   );
 EXCEPTION WHEN duplicate_object THEN null; END $$;
 
@@ -123,7 +123,7 @@ CREATE TABLE IF NOT EXISTS public.collection (
   CONSTRAINT collection_pkey PRIMARY KEY (id)
 );
 
--- Table 4: Products (Ready to wear and bespoke catalog items)
+-- Table 4: Products (Made to order and bespoke catalog items)
 CREATE TABLE IF NOT EXISTS public.product (
   id uuid NOT NULL DEFAULT gen_random_uuid(),
   created_at timestamp with time zone DEFAULT now(),
@@ -132,8 +132,6 @@ CREATE TABLE IF NOT EXISTS public.product (
   category clothing_category NOT NULL,
   gender gender_type NOT NULL,
   description text,
-  main_image text,
-  gallery_images text[] DEFAULT '{}'::text[],
   is_featured boolean DEFAULT false,
   is_new_arrival boolean DEFAULT false,
   sold_out boolean DEFAULT false,
@@ -146,16 +144,18 @@ CREATE TABLE IF NOT EXISTS public.product (
   CONSTRAINT products_collection_fkey FOREIGN KEY (collection) REFERENCES public.collection(id) ON DELETE SET NULL
 );
 
--- Table 5: Product Variations (Sizes, fabrics, colors, prices)
+-- Table 5: Product Variations (Colors, color codes, fabrics, prices, images)
 CREATE TABLE IF NOT EXISTS public.product_variation (
   id uuid NOT NULL DEFAULT gen_random_uuid(),
   created_at timestamp with time zone DEFAULT now(),
   updated_at timestamp with time zone DEFAULT now(),
   product_id uuid NOT NULL,
-  product_size clothing_size NOT NULL,
   color text,
+  color_code text DEFAULT '#2F475A',
   fabric fabric_type,
   price numeric NOT NULL,
+  main_image text,
+  gallery_images text[] DEFAULT '{}'::text[],
   available boolean DEFAULT true,
   favorited_count integer DEFAULT 0,
   slug text,
@@ -170,13 +170,14 @@ CREATE TABLE IF NOT EXISTS public.cart_item (
   updated_at timestamp with time zone DEFAULT now(),
   user_id uuid NOT NULL DEFAULT auth.uid(),
   product_variation_id uuid NOT NULL,
+  selected_size text NOT NULL DEFAULT 'M',
   quantity integer NOT NULL DEFAULT 1,
   unit_price numeric NOT NULL,
   slug text,
   CONSTRAINT cart_item_pkey PRIMARY KEY (id),
   CONSTRAINT cart_items_user_id_fkey FOREIGN KEY (user_id) REFERENCES auth.users(id) ON DELETE CASCADE,
   CONSTRAINT cart_items_product_variation_id_fkey FOREIGN KEY (product_variation_id) REFERENCES public.product_variation(id) ON DELETE CASCADE,
-  CONSTRAINT unique_user_cart_item UNIQUE (user_id, product_variation_id)
+  CONSTRAINT unique_user_cart_item UNIQUE (user_id, product_variation_id, selected_size)
 );
 
 -- Table 7: Chart Display (Measurement guide diagrams by gender)
@@ -303,7 +304,7 @@ CREATE TABLE IF NOT EXISTS public.profile (
   CONSTRAINT profiles_id_fkey FOREIGN KEY (id) REFERENCES auth.users(id) ON DELETE CASCADE
 );
 
--- Table 13: Ready to Wear Orders (Checkout sales)
+-- Table 13: Made to Order Orders (Checkout sales)
 CREATE TABLE IF NOT EXISTS public.ready_to_wear_order (
   id uuid NOT NULL DEFAULT gen_random_uuid(),
   created_at timestamp with time zone DEFAULT now(),
@@ -331,6 +332,7 @@ CREATE TABLE IF NOT EXISTS public.rtw_order_item (
   updated_at timestamp with time zone DEFAULT now(),
   parent_order_id uuid NOT NULL,
   product_variant_id uuid NOT NULL,
+  selected_size text NOT NULL DEFAULT 'M',
   price numeric NOT NULL,
   quantity integer DEFAULT 1,
   slug text,

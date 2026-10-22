@@ -37,7 +37,7 @@
           
           <!-- Brand Header -->
           <div class="krabe-auth-header">
-            <img src="assets/brand/kraberefinedimage1.png" alt="Krabe Logo" class="krabe-auth-logo">
+            <img src="assets/brand/krabe main logo.svg" alt="Krabe Logo" class="krabe-auth-logo">
             <h2 class="krabe-auth-title" id="krabeAuthTitle">Client Access</h2>
             <p class="krabe-auth-subtitle" id="krabeAuthSubtitle">Sign in to manage tailored measurements, active commissions, and order history.</p>
           </div>
@@ -83,12 +83,20 @@
 
             <button type="submit" class="btn btn-primary krabe-auth-btn" id="krabeSignInSubmit">
               <span class="spinner"></span>
-              <span class="btn-text">Sign In to Portal</span>
+              <span class="btn-text">Sign In &rarr;</span>
             </button>
           </form>
 
           <!-- VIEW 2: CREATE ACCOUNT FORM -->
           <form id="krabeRegisterForm" class="krabe-auth-view" autocomplete="on">
+            <!-- Pending OTP Resume Banner -->
+            <div id="krabePendingResumeNotice" style="display: none; background: rgba(212, 175, 55, 0.12); border: 1px solid var(--color-gold-light); padding: 10px 14px; border-radius: 6px; margin-bottom: 16px; font-size: 12px; line-height: 1.4; color: var(--color-obsidian);">
+              <span>Code pending for <strong id="krabePendingResumeEmail"></strong>.</span>
+              <button type="button" id="krabeResumeOtpBtn" style="background: none; border: none; color: var(--color-primary); font-weight: 700; cursor: pointer; text-decoration: underline; margin-left: 6px;">
+                Enter code &rarr;
+              </button>
+            </div>
+
             <div class="form-group">
               <label class="form-label" for="krabeRegFullName">Full Name <span class="req">*</span></label>
               <input type="text" id="krabeRegFullName" name="fullName" class="form-input" placeholder="e.g. Adebayo Adeleke" required autocomplete="name">
@@ -154,6 +162,39 @@
             </div>
           </form>
 
+          <!-- VIEW 4: EMAIL OTP CONFIRMATION VIEW -->
+          <form id="krabeOtpForm" class="krabe-auth-view" autocomplete="off">
+            <div style="text-align: center; margin-bottom: 20px;">
+              <p style="font-size: 14px; color: var(--color-obsidian); font-weight: 700; margin-bottom: 6px; letter-spacing: 0.5px;">
+                6-Digit Code
+              </p>
+              <p style="font-size: 12.5px; color: var(--color-text-muted); line-height: 1.5;">
+                Sent to <strong id="krabeOtpEmailDisplay" style="color: var(--color-obsidian);">your email</strong>.
+              </p>
+            </div>
+
+            <div class="form-group" style="margin-bottom: 16px;">
+              <input type="text" id="krabeOtpCode" name="otpCode" class="form-input" 
+                     placeholder="• • • • • •" maxlength="6" pattern="[0-9]{6}" inputmode="numeric" 
+                     required autocomplete="one-time-code"
+                     style="text-align: center; font-size: 24px; font-weight: 700; letter-spacing: 8px; padding: 12px 16px;">
+            </div>
+
+            <button type="submit" class="btn btn-primary krabe-auth-btn" id="krabeOtpSubmit">
+              <span class="spinner"></span>
+              <span class="btn-text">Confirm Code &rarr;</span>
+            </button>
+
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 18px; font-size: 12px;">
+              <button type="button" id="krabeBackToRegBtn" style="background: none; border: none; color: var(--color-text-muted); cursor: pointer; padding: 0;">
+                &larr; Edit details
+              </button>
+              <button type="button" id="krabeResendOtpBtn" style="background: none; border: none; color: var(--color-primary); font-weight: 600; cursor: pointer; padding: 0;">
+                Resend code
+              </button>
+            </div>
+          </form>
+
           <!-- Legal & Privacy Disclaimer Footer -->
           <div class="krabe-auth-footer">
             By proceeding, you agree to Krabe Kollection's 
@@ -192,9 +233,10 @@
     const formSignIn = document.getElementById('krabeSignInForm');
     const formRegister = document.getElementById('krabeRegisterForm');
     const formForgot = document.getElementById('krabeForgotForm');
+    const formOtp = document.getElementById('krabeOtpForm');
 
     // Remove active from all forms
-    [formSignIn, formRegister, formForgot].forEach(f => f && f.classList.remove('active'));
+    [formSignIn, formRegister, formForgot, formOtp].forEach(f => f && f.classList.remove('active'));
 
     if (view === 'signin') {
       if (tabsContainer) tabsContainer.style.display = 'flex';
@@ -210,12 +252,51 @@
       if (formRegister) formRegister.classList.add('active');
       if (titleEl) titleEl.textContent = 'Create Account';
       if (subtitleEl) subtitleEl.textContent = 'Join Krabe Kollection for personalized tailoring profiles and bespoke tracking.';
+
+      // Check if user has an uncompleted OTP registration in localStorage
+      const pendingNotice = document.getElementById('krabePendingResumeNotice');
+      const pendingEmailSpan = document.getElementById('krabePendingResumeEmail');
+      let storedEmail = null;
+      try {
+        storedEmail = localStorage.getItem('krabe_pending_otp_email');
+      } catch (_) {}
+
+      if (pendingNotice && storedEmail) {
+        pendingNotice.style.display = 'block';
+        if (pendingEmailSpan) pendingEmailSpan.textContent = storedEmail;
+        const regEmailInput = document.getElementById('krabeRegEmail');
+        if (regEmailInput && !regEmailInput.value) regEmailInput.value = storedEmail;
+      } else if (pendingNotice) {
+        pendingNotice.style.display = 'none';
+      }
     } else if (view === 'forgot') {
       if (tabsContainer) tabsContainer.style.display = 'none'; // Hide tabs on forgot view
       if (formForgot) formForgot.classList.add('active');
       if (titleEl) titleEl.textContent = 'Account Recovery';
       if (subtitleEl) subtitleEl.textContent = 'Follow the steps below to restore access to your account.';
+    } else if (view === 'otp') {
+      if (tabsContainer) tabsContainer.style.display = 'none'; // Hide tabs on OTP view
+      if (formOtp) formOtp.classList.add('active');
+      if (titleEl) titleEl.textContent = 'Verification';
+      if (subtitleEl) subtitleEl.textContent = 'Enter the 6-digit code sent to your inbox.';
     }
+  }
+
+  let pendingEmail = '';
+
+  function promptOtp(email) {
+    ensureMounted();
+    pendingEmail = (email || '').trim();
+    if (pendingEmail) {
+      try {
+        localStorage.setItem('krabe_pending_otp_email', pendingEmail);
+      } catch (_) {}
+    }
+    const emailDisplay = document.getElementById('krabeOtpEmailDisplay');
+    if (emailDisplay && pendingEmail) emailDisplay.textContent = pendingEmail;
+    const otpInput = document.getElementById('krabeOtpCode');
+    if (otpInput) otpInput.value = '';
+    switchView('otp');
   }
 
   function open(view = 'signin') {
@@ -387,6 +468,78 @@
         window.dispatchEvent(event);
       });
     }
+
+    // OTP Verification & Resend
+    const formOtp = document.getElementById('krabeOtpForm');
+    if (formOtp) {
+      formOtp.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const code = document.getElementById('krabeOtpCode').value.trim();
+        if (code.length !== 6) {
+          showAlert('Please enter the complete 6-digit verification code.', 'error');
+          return;
+        }
+
+        let email = pendingEmail;
+        if (!email) {
+          try { email = localStorage.getItem('krabe_pending_otp_email') || ''; } catch (_) {}
+        }
+        if (!email) {
+          const regInput = document.getElementById('krabeRegEmail');
+          if (regInput) email = regInput.value.trim();
+        }
+
+        const event = new CustomEvent('krabe:auth:verify-otp', {
+          detail: {
+            email,
+            token: code
+          }
+        });
+        window.dispatchEvent(event);
+      });
+    }
+
+    const backToRegBtn = document.getElementById('krabeBackToRegBtn');
+    if (backToRegBtn) {
+      backToRegBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        switchView('register');
+      });
+    }
+
+    const resumeOtpBtn = document.getElementById('krabeResumeOtpBtn');
+    if (resumeOtpBtn) {
+      resumeOtpBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        let stored = null;
+        try {
+          stored = localStorage.getItem('krabe_pending_otp_email');
+        } catch (_) {}
+        if (stored) {
+          promptOtp(stored);
+          showAlert('Enter your 6-digit verification code below. Note: Your active password remains the one set during your initial sign-up.', 'info');
+        }
+      });
+    }
+
+    const resendOtpBtn = document.getElementById('krabeResendOtpBtn');
+    if (resendOtpBtn) {
+      resendOtpBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        let email = pendingEmail;
+        if (!email) {
+          try { email = localStorage.getItem('krabe_pending_otp_email') || ''; } catch (_) {}
+        }
+        if (!email) {
+          const regInput = document.getElementById('krabeRegEmail');
+          if (regInput) email = regInput.value.trim();
+        }
+        const event = new CustomEvent('krabe:auth:resend-otp', {
+          detail: { email }
+        });
+        window.dispatchEvent(event);
+      });
+    }
   }
 
   // Keyboard Escape listener
@@ -421,6 +574,7 @@
     open,
     close,
     switchView,
+    promptOtp,
     showAlert,
     clearAlert,
     setLoading

@@ -7,7 +7,8 @@
   <meta name="description" content="Discover modernised African fashion, crafted-on-demand luxury collections, and custom-made bespoke tailoring by Krabe Kollection. Handcrafted in Lagos, delivered worldwide.">
 
   <!-- Favicon / Web Icon -->
-  <link rel="icon" type="image/png" href="assets/brand/kraberefined-logo-blue.png">
+  <link rel="icon" type="image/svg+xml" href="assets/brand/krabe main logo.svg">
+  <link rel="alternate icon" type="image/png" href="assets/brand/kraberefined-logo-blue.png">
 
   <!-- Google Web Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -116,7 +117,7 @@
       <div class="section-header">
         <span class="section-tag">Current Releases</span>
         <h2 class="section-title">Crafted on Demand Collections</h2>
-        <p class="section-desc">Hand-finished garments ready for dispatch within 48 hours, or personalized to your tailored fit.</p>
+        <p class="section-desc">Hand-finished garments ready for dispatch within 72 hours, or personalized to your tailored fit.</p>
       </div>
 
       <!-- Category Filter Tabs -->
@@ -127,8 +128,8 @@
         <button type="button" class="filter-chip" data-filter="streetwear">Streetwear Drops</button>
       </div>
 
-      <!-- Products Grid -->
-      <div class="products-grid">
+      <!-- Products Grid (Dynamically Populated from Supabase) -->
+      <div class="products-grid" id="homeFeaturedGrid">
         
         <!-- Product 1 -->
         <div class="product-card" data-category="streetwear">
@@ -440,7 +441,7 @@
       
       <div class="footer-top">
         <div class="footer-brand">
-          <img src="assets/brand/kraberefinedimage2.png" alt="Krabe Kollection" style="height: 44px; margin-bottom: 14px;">
+          <img src="assets/brand/krabe main logo.svg" alt="Krabe Kollection" style="height: 44px; margin-bottom: 14px;">
           <p>
             Premium Nigerian unisex fashion house combining ancestral textile heritage with contemporary minimalist tailoring and luxury streetwear.
           </p>
@@ -595,7 +596,7 @@
       <div class="cart-drawer-footer">
         <div class="cart-subtotal-row">
           <span class="cart-subtotal-label">Subtotal</span>
-          <span class="cart-subtotal-amount">₦185,000</span>
+          <span class="cart-subtotal-amount">₦0</span>
         </div>
         <a href="checkout.html" class="btn-checkout">Proceed to Checkout &rarr;</a>
         <div style="text-align: center; margin-top: 10px;">
@@ -609,8 +610,93 @@
   </div>
 
   <!-- Global Application Scripts -->
+  <!-- Supabase SDK & Krabe Stack -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/config.js"></script>
   <script src="js/header.js"></script>
   <script src="js/auth-modal.js"></script>
+  <script src="js/auth.js"></script>
   <script src="js/main.js"></script>
+  <script>
+    async function loadHomeFeaturedFromDatabase() {
+      const grid = document.getElementById('homeFeaturedGrid');
+      if (!grid) return;
+
+      const client = window.krabeClient || (window.KRABE_CONFIG && typeof window.KRABE_CONFIG.getClient === 'function' ? window.KRABE_CONFIG.getClient() : null);
+      if (!client) {
+        setTimeout(loadHomeFeaturedFromDatabase, 150);
+        return;
+      }
+
+      try {
+        const { data: products, error } = await client
+          .from('product')
+          .select(`
+            id,
+            title,
+            category,
+            gender,
+            is_featured,
+            is_new_arrival,
+            product_variation (
+              id,
+              price,
+              color,
+              color_code,
+              main_image
+            )
+          `)
+          .limit(6);
+
+        if (!error && products && products.length > 0) {
+          grid.innerHTML = products.map(prod => {
+            const variations = prod.product_variation || [];
+            const defaultVar = variations[0] || {};
+            const displayPrice = Number(defaultVar.price) || 0;
+            const displayImage = defaultVar.main_image || 'assets/brand/krabe main logo.svg';
+            const variantId = defaultVar.id || '';
+            const badgeHTML = prod.is_new_arrival 
+              ? `<span class="product-badge badge-new">New Drop</span>` 
+              : (prod.is_featured ? `<span class="product-badge badge-bespoke">Ceremonial</span>` : '');
+
+            return `
+              <div class="product-card" data-category="${prod.category || 'native'}">
+                <div class="product-media">
+                  ${badgeHTML}
+                  <a href="product.html?id=${prod.id}" style="display: block; width: 100%; height: 100%;">
+                    <img src="${displayImage}" alt="${prod.title}">
+                  </a>
+                  <div class="quick-add-overlay">
+                    <button type="button" class="btn-quick-add js-quick-add" 
+                            data-product-id="${prod.id}"
+                            data-variant-id="${variantId}"
+                            data-variation-id="${variantId}"
+                            data-title="${prod.title}" 
+                            data-price="${displayPrice}" 
+                            data-size="M"
+                            data-color="${defaultVar.color || 'Standard'}"
+                            data-image="${displayImage}">
+                      + Quick Add (M)
+                    </button>
+                  </div>
+                </div>
+                <div class="product-info">
+                  <span class="product-category-label">${(prod.category || 'MADE TO ORDER').toUpperCase()} &bull; ${(prod.gender || 'Unisex').toUpperCase()}</span>
+                  <h3 class="product-title"><a href="product.html?id=${prod.id}">${prod.title}</a></h3>
+                  <div class="product-price-row">
+                    <span class="product-price">₦${displayPrice.toLocaleString('en-NG')}</span>
+                  </div>
+                </div>
+              </div>
+            `;
+          }).join('');
+        }
+      } catch (e) {
+        console.warn('[Home] Could not load featured products from DB:', e);
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', loadHomeFeaturedFromDatabase);
+  </script>
 </body>
 </html>

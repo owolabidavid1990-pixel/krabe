@@ -7,7 +7,8 @@
   <meta name="description" content="Manage your Krabe Kollection orders, saved tailoring measurement profiles, studio appointments, and delivery addresses.">
 
   <!-- Favicon -->
-  <link rel="icon" type="image/png" href="assets/brand/kraberefined-logo-blue.png">
+  <link rel="icon" type="image/svg+xml" href="assets/brand/krabe main logo.svg">
+  <link rel="alternate icon" type="image/png" href="assets/brand/kraberefined-logo-blue.png">
 
   <!-- Google Web Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -58,9 +59,9 @@
         <button type="button" class="btn btn-outline-light" style="padding: 10px 18px; font-size: 12px;" onclick="openMeasurementModal()">
           + Record Measurements
         </button>
-        <a href="index.html" class="btn btn-outline-light" style="padding: 10px 18px; font-size: 12px; border-color: rgba(255,255,255,0.2); color: #94A3B8;">
+        <button type="button" class="btn btn-outline-light" style="padding: 10px 18px; font-size: 12px; border-color: rgba(255,255,255,0.2); color: #94A3B8;" onclick="window.krabeSignOut()">
           Log Out
-        </a>
+        </button>
       </div>
     </div>
   </section>
@@ -660,66 +661,6 @@
     </div>
   </div>
 
-  <!-- Modal C: Sign In / Register Demo View -->
-  <div class="modal-overlay" id="authModal" aria-hidden="true" onclick="closeModalOnBackdrop(event, 'authModal')">
-    <div class="modal-card" style="max-width: 480px; padding: 40px 32px;">
-      <button type="button" class="modal-close" onclick="closeModal('authModal')" aria-label="Close">✕</button>
-      
-      <div style="text-align: center; margin-bottom: 24px;">
-        <img src="assets/brand/kraberefinedimage1.png" alt="Krabe Logo" style="height: 38px; margin-bottom: 12px;">
-        <h3 style="font-family: var(--font-serif); font-size: 24px; font-weight: 700; color: var(--color-obsidian);">Client Access</h3>
-        <p style="font-size: 13px; color: var(--color-text-muted);">Sign in to access saved tailoring measurements and active orders.</p>
-      </div>
-
-      <!-- Auth Tabs: Sign In vs Register -->
-      <div style="display: flex; border-bottom: 1px solid var(--color-border); margin-bottom: 24px;">
-        <button type="button" id="authTabSignIn" class="pill-btn active" style="flex: 1; border-radius: 0; border: none; border-bottom: 2px solid var(--color-primary); background: transparent; color: var(--color-primary); font-weight: 700;" onclick="toggleAuthTab('signin')">Sign In</button>
-        <button type="button" id="authTabRegister" class="pill-btn" style="flex: 1; border-radius: 0; border: none; border-bottom: 2px solid transparent; background: transparent; color: var(--color-text-muted);" onclick="toggleAuthTab('register')">Create Account</button>
-      </div>
-
-      <!-- Sign In Form -->
-      <form id="signInForm" onsubmit="event.preventDefault(); alert('Signed in!'); closeModal('authModal');">
-        <div class="form-group">
-          <label for="loginEmail">Email Address</label>
-          <input type="email" id="loginEmail" class="form-input" value="david.adeleke@example.com" required>
-        </div>
-        <div class="form-group">
-          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
-            <label for="loginPass" style="margin-bottom: 0;">Password</label>
-            <a href="javascript:void(0)" onclick="alert('Password reset link sent to your email.');" style="font-size: 11px; color: var(--color-primary);">Forgot Password?</a>
-          </div>
-          <input type="password" id="loginPass" class="form-input" value="••••••••••••" required>
-        </div>
-        <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 8px;">Sign In to Portal</button>
-      </form>
-
-      <!-- Register Form -->
-      <form id="registerForm" style="display: none;" onsubmit="event.preventDefault(); alert('Account created! Welcome to Krabe Kollection.'); closeModal('authModal');">
-        <div class="form-group">
-          <label for="regName">Full Name</label>
-          <input type="text" id="regName" class="form-input" placeholder="e.g. David Adeleke" required>
-        </div>
-        <div class="form-group">
-          <label for="regEmail">Email Address</label>
-          <input type="email" id="regEmail" class="form-input" placeholder="david@example.com" required>
-        </div>
-        <div class="form-group">
-          <label for="regPhone">Phone / WhatsApp</label>
-          <input type="tel" id="regPhone" class="form-input" placeholder="+234 800 000 0000" required>
-        </div>
-        <div class="form-group">
-          <label for="regPass">Create Password</label>
-          <input type="password" id="regPass" class="form-input" placeholder="At least 8 characters" required>
-        </div>
-        <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 8px;">Create Krabe Account</button>
-      </form>
-
-      <div style="text-align: center; margin-top: 20px; font-size: 12px; color: var(--color-text-muted);">
-        By signing in, you agree to our <a href="help.html#terms" style="color: var(--color-primary); text-decoration: underline;">Terms of Service</a> &amp; <a href="help.html#privacy" style="color: var(--color-primary); text-decoration: underline;">Privacy Policy</a>.
-      </div>
-    </div>
-  </div>
-
   <!-- =========================================================================
        8. GLOBAL SEARCH POPUP MODAL
        ========================================================================= -->
@@ -803,7 +744,7 @@
       <div class="cart-drawer-footer">
         <div class="cart-subtotal-row">
           <span class="cart-subtotal-label">Subtotal</span>
-          <span class="cart-subtotal-amount">₦185,000</span>
+          <span class="cart-subtotal-amount">₦0</span>
         </div>
         <a href="checkout.html" class="btn-checkout">Proceed to Checkout &rarr;</a>
       </div>
@@ -817,7 +758,7 @@
     <div class="container">
       <div class="footer-top">
         <div class="footer-brand">
-          <img src="assets/brand/kraberefinedimage2.png" alt="Krabe Kollection" style="height: 44px; margin-bottom: 14px;">
+          <img src="assets/brand/krabe main logo.svg" alt="Krabe Kollection" style="height: 44px; margin-bottom: 14px;">
           <p>Premium Nigerian unisex fashion house combining ancestral textile heritage with contemporary minimalist tailoring.</p>
         </div>
         <div>
@@ -850,8 +791,12 @@
     </div>
   </footer>
 
+  <!-- Supabase SDK & Krabe Stack -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/config.js"></script>
   <script src="js/header.js"></script>
   <script src="js/auth-modal.js"></script>
+  <script src="js/auth.js"></script>
   <script src="js/main.js"></script>
   <script>
     // Tab Switching Logic
@@ -888,10 +833,10 @@
       document.body.style.overflow = 'hidden';
     }
 
-    function openAuthModal() {
-      const m = document.getElementById('authModal');
-      m.classList.add('active');
-      document.body.style.overflow = 'hidden';
+    function openAuthModal(view = 'signin') {
+      if (window.KrabeAuthModal) {
+        window.KrabeAuthModal.open(view);
+      }
     }
 
     function closeModal(modalId) {
@@ -908,39 +853,12 @@
       }
     }
 
-    function toggleAuthTab(type) {
-      const btnIn = document.getElementById('authTabSignIn');
-      const btnReg = document.getElementById('authTabRegister');
-      const formIn = document.getElementById('signInForm');
-      const formReg = document.getElementById('registerForm');
-
-      if (type === 'signin') {
-        btnIn.classList.add('active');
-        btnIn.style.borderBottomColor = 'var(--color-primary)';
-        btnIn.style.color = 'var(--color-primary)';
-        btnReg.classList.remove('active');
-        btnReg.style.borderBottomColor = 'transparent';
-        btnReg.style.color = 'var(--color-text-muted)';
-        formIn.style.display = 'block';
-        formReg.style.display = 'none';
-      } else {
-        btnReg.classList.add('active');
-        btnReg.style.borderBottomColor = 'var(--color-primary)';
-        btnReg.style.color = 'var(--color-primary)';
-        btnIn.classList.remove('active');
-        btnIn.style.borderBottomColor = 'transparent';
-        btnIn.style.color = 'var(--color-text-muted)';
-        formReg.style.display = 'block';
-        formIn.style.display = 'none';
-      }
-    }
-
     // Keyboard Esc Modal close
     document.addEventListener('keydown', (e) => {
       if (e.key === 'Escape') {
         closeModal('measurementModal');
         closeModal('alterationModal');
-        closeModal('authModal');
+        if (window.KrabeAuthModal) window.KrabeAuthModal.close();
       }
     });
   </script>

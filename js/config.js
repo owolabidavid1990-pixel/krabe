@@ -12,22 +12,27 @@
 (function () {
   'use strict';
 
+  // Helper to normalize Supabase URL (strip /rest/v1 or trailing slashes)
+  function normalizeUrl(url) {
+    if (!url) return '';
+    return url.replace(/\/rest\/v1\/?$/, '').replace(/\/+$/, '');
+  }
+
   // =========================================================================
-  // 1. SUPABASE PROJECT CREDENTIALS
-  // (Paste your project credentials here — only use PUBLIC ANON keys, never service_role!)
+  // 1. SUPABASE PROJECT CREDENTIALS (TWO SEPARATE FREE PROJECTS)
   // =========================================================================
   const ENV_CONFIGS = {
-    // Development Environment (used when running on VS Code Live Server / localhost)
+    // Development Project (used when running on VS Code Live Server / localhost)
     development: {
-      supabaseUrl: 'https://myqtjagrzcgchfxhlxzw.supabase.co', // Dev Project: Krabe dev (main)
-      supabaseAnonKey: 'YOUR_DEV_SUPABASE_ANON_KEY',           // <--- Paste Dev Anon Key here
+      supabaseUrl: normalizeUrl('https://myqtjagrzcgchfxhixzw.supabase.co/rest/v1/'),
+      publishableKey: 'sb_publishable_VYAE1NTo38INYJzHE0j8CQ_Nd6jUSx6',
       envName: 'Development (Live Server / Localhost)'
     },
 
-    // Production Environment (used when running on live hosted domain / Vercel / Netlify)
+    // Production Project (used when running on live hosted domain / Vercel / Netlify)
     production: {
-      supabaseUrl: 'YOUR_PROD_SUPABASE_URL',                   // <--- Paste Prod URL here
-      supabaseAnonKey: 'YOUR_PROD_SUPABASE_ANON_KEY',           // <--- Paste Prod Anon Key here
+      supabaseUrl: normalizeUrl('https://gwknzycxxafhcyubtpps.supabase.co/rest/v1/'),
+      publishableKey: 'sb_publishable_4M35YS4iivlnHaLcbvlKRA_I5id9F_k',
       envName: 'Production (Live Storefront)'
     }
   };
@@ -72,13 +77,14 @@
       return null;
     }
 
-    if (!activeConfig.supabaseAnonKey || activeConfig.supabaseAnonKey.startsWith('YOUR_')) {
-      console.warn(`[Krabe Config] Supabase Anon Key is not set for ${activeEnv}.`);
+    const apiKey = activeConfig.publishableKey || activeConfig.supabaseAnonKey;
+    if (!apiKey || apiKey.startsWith('YOUR_')) {
+      console.warn(`[Krabe Config] Supabase Publishable Key is not set for ${activeEnv}.`);
       return null;
     }
 
     try {
-      client = window.supabase.createClient(activeConfig.supabaseUrl, activeConfig.supabaseAnonKey, {
+      client = window.supabase.createClient(activeConfig.supabaseUrl, apiKey, {
         auth: {
           persistSession: true,
           autoRefreshToken: true,
@@ -110,8 +116,15 @@
     }
   };
 
-  // Convenient app-wide alias
-  window.krabeClient = window.KRABE_CONFIG.client;
+  // Convenient app-wide getter so window.krabeClient is always up to date
+  try {
+    Object.defineProperty(window, 'krabeClient', {
+      get: () => client || initClient(),
+      configurable: true
+    });
+  } catch (e) {
+    window.krabeClient = window.KRABE_CONFIG.client;
+  }
 
 })();
 

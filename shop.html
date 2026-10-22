@@ -7,7 +7,8 @@
   <meta name="description" content="Browse the Krabe Kollection catalog. Native wear, Kaftans, tailored suiting, and luxury streetwear. Mobile-first shopping experience.">
 
   <!-- Favicon -->
-  <link rel="icon" type="image/png" href="assets/brand/kraberefined-logo-blue.png">
+  <link rel="icon" type="image/svg+xml" href="assets/brand/krabe main logo.svg">
+  <link rel="alternate icon" type="image/png" href="assets/brand/kraberefined-logo-blue.png">
 
   <!-- Google Web Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -73,154 +74,15 @@
   </div>
 
   <!-- =========================================================================
-       4. PRODUCT CATALOG GRID
+       4. PRODUCT CATALOG GRID (Dynamically populated from Supabase)
        ========================================================================= -->
   <main class="container">
     <div class="simplified-catalog-grid" id="catalogProductGrid">
-      
-      <!-- Product 1 -->
-      <div class="product-card" data-gender="unisex" data-category="streetwear" data-sizes="S,M,L,XL">
-        <div class="product-media">
-          <span class="product-badge badge-new">New Drop</span>
-          <img src="Krabe Cloth Concepts_230226_205405_1.jpg" alt="Krabe Signature Script Tee">
-          <div class="quick-add-overlay">
-            <button type="button" class="btn-quick-add js-quick-add" 
-                    data-title="Krabe Signature Script Tee" 
-                    data-price="45000" 
-                    data-image="Krabe Cloth Concepts_230226_205405_1.jpg">
-              + Quick Add
-            </button>
-          </div>
-        </div>
-        <div class="product-info">
-          <span class="product-category-label">Streetwear &bull; Unisex</span>
-          <h3 class="product-title"><a href="product.html">Krabe Signature Script Tee</a></h3>
-          <div class="product-price-row">
-            <span class="product-price">₦45,000</span>
-            <span class="product-price-alt">($35 USD)</span>
-          </div>
-        </div>
+      <div style="grid-column: 1 / -1; text-align: center; padding: 48px 16px; color: var(--color-text-muted);">
+        <p style="font-size: 14px;">Loading collection from atelier...</p>
       </div>
-
-      <!-- Product 2 -->
-      <div class="product-card" data-gender="men" data-category="formal" data-sizes="M,L,XL">
-        <div class="product-media">
-          <span class="product-badge badge-bespoke">Made to Order</span>
-          <img src="Krabe Cloth Concepts_230226_205405_2.jpg" alt="Artisan Serif Minimalist Shirt">
-          <div class="quick-add-overlay">
-            <button type="button" class="btn-quick-add js-quick-add" 
-                    data-title="Artisan Serif Minimalist Shirt" 
-                    data-price="78000" 
-                    data-image="Krabe Cloth Concepts_230226_205405_2.jpg">
-              + Quick Add
-            </button>
-          </div>
-        </div>
-        <div class="product-info">
-          <span class="product-category-label">English Wear &bull; Men</span>
-          <h3 class="product-title"><a href="product.html">Artisan Serif Minimalist Shirt</a></h3>
-          <div class="product-price-row">
-            <span class="product-price">₦78,000</span>
-            <span class="product-price-alt">($60 USD)</span>
-          </div>
-        </div>
-      </div>
-
-      <!-- Product 3 -->
-      <div class="product-card" data-gender="unisex" data-category="streetwear" data-sizes="S,M,L">
-        <div class="product-media">
-          <span class="product-badge badge-bespoke">Gold Edition</span>
-          <img src="Krabe Cloth Concepts_230226_205405_3.jpg" alt="Metallic Gold Brush Tee">
-          <div class="quick-add-overlay">
-            <button type="button" class="btn-quick-add js-quick-add" 
-                    data-title="Metallic Gold Brush Tee" 
-                    data-price="55000" 
-                    data-image="Krabe Cloth Concepts_230226_205405_3.jpg">
-              + Quick Add
-            </button>
-          </div>
-        </div>
-        <div class="product-info">
-          <span class="product-category-label">Streetwear &bull; Unisex</span>
-          <h3 class="product-title"><a href="product.html">Metallic Gold Brush Tee</a></h3>
-          <div class="product-price-row">
-            <span class="product-price">₦55,000</span>
-            <span class="product-price-alt">($42 USD)</span>
-          </div>
-        </div>
-      </div>
-
-      <!-- Product 4 -->
-      <div class="product-card" data-gender="men" data-category="native" data-sizes="M,L,XL,XXL">
-        <div class="product-media">
-          <span class="product-badge badge-new">Artisan Native</span>
-          <img src="Krabe Cloth Concepts_230226_205405_6.jpg" alt="Krabe Structured Modern Kaftan">
-          <div class="quick-add-overlay">
-            <button type="button" class="btn-quick-add js-quick-add" 
-                    data-title="Krabe Structured Modern Kaftan" 
-                    data-price="120000" 
-                    data-image="Krabe Cloth Concepts_230226_205405_6.jpg">
-              + Quick Add
-            </button>
-          </div>
-        </div>
-        <div class="product-info">
-          <span class="product-category-label">Native Wear &bull; Men</span>
-          <h3 class="product-title"><a href="product.html">Krabe Structured Modern Kaftan</a></h3>
-          <div class="product-price-row">
-            <span class="product-price">₦120,000</span>
-            <span class="product-price-alt">($92 USD)</span>
-          </div>
-        </div>
-      </div>
-
-      <!-- Product 5 (Agbada) -->
-      <div class="product-card" data-gender="men" data-category="native" data-sizes="L,XL,XXL">
-        <div class="product-media">
-          <span class="product-badge badge-bespoke">Ceremonial</span>
-          <img src="Krabe Cloth Concepts_230226_205405_1.jpg" alt="Signature 3-Piece Agbada Set">
-          <div class="quick-add-overlay">
-            <button type="button" class="btn-quick-add js-quick-add" 
-                    data-title="Signature 3-Piece Agbada Set" 
-                    data-price="195000" 
-                    data-image="Krabe Cloth Concepts_230226_205405_1.jpg">
-              + Quick Add
-            </button>
-          </div>
-        </div>
-        <div class="product-info">
-          <span class="product-category-label">Native Wear &bull; Men</span>
-          <h3 class="product-title"><a href="product.html">Signature 3-Piece Agbada Set</a></h3>
-          <div class="product-price-row">
-            <span class="product-price">₦195,000</span>
-            <span class="product-price-alt">($150 USD)</span>
-          </div>
-        </div>
-      </div>
-
-      <!-- Product 6 (Women's / Unisex Kaftan) -->
-      <div class="product-card" data-gender="women" data-category="native" data-sizes="S,M,L">
-        <div class="product-media">
-          <span class="product-badge badge-new">Ceremonial</span>
-          <img src="Krabe Cloth Concepts_230226_205405_6.jpg" alt="Elegance Silk Kaftan Dress">
-          <div class="quick-add-overlay">
-            <button type="button" class="btn-quick-add js-quick-add" 
-                    data-title="Elegance Silk Kaftan Dress" 
-                    data-price="135000" 
-                    data-image="Krabe Cloth Concepts_230226_205405_6.jpg">
-              + Quick Add
-            </button>
-          </div>
-        </div>
-        <div class="product-info">
-          <span class="product-category-label">Native Wear &bull; Women</span>
-          <h3 class="product-title"><a href="product.html">Elegance Silk Kaftan Dress</a></h3>
-          <div class="product-price-row">
-            <span class="product-price">₦135,000</span>
-            <span class="product-price-alt">($104 USD)</span>
-          </div>
-        </div>
-      </div>
+    </div>
+  </main>
 
     </div>
   </main>
@@ -232,7 +94,7 @@
     <div class="container">
       <div class="footer-top">
         <div class="footer-brand">
-          <img src="assets/brand/kraberefinedimage2.png" alt="Krabe Kollection" style="height: 44px; margin-bottom: 14px;">
+          <img src="assets/brand/krabe main logo.svg" alt="Krabe Kollection" style="height: 44px; margin-bottom: 14px;">
           <p>Premium Nigerian unisex fashion house combining ancestral textile heritage with contemporary minimalist tailoring.</p>
         </div>
         <div>
@@ -342,21 +204,124 @@
       <div class="cart-drawer-footer">
         <div class="cart-subtotal-row">
           <span class="cart-subtotal-label">Subtotal</span>
-          <span class="cart-subtotal-amount">₦185,000</span>
+          <span class="cart-subtotal-amount">₦0</span>
         </div>
         <a href="checkout.html" class="btn-checkout">Proceed to Checkout &rarr;</a>
       </div>
     </div>
   </div>
 
+  <!-- Supabase SDK & Krabe Stack -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/config.js"></script>
   <script src="js/header.js"></script>
   <script src="js/auth-modal.js"></script>
+  <script src="js/auth.js"></script>
   <script src="js/main.js"></script>
   <script>
     // Live Filter Logic (Gender, Category, Size)
     let currentGender = 'all';
     let currentCategory = 'all';
     let currentSize = 'all';
+
+    async function loadCatalogFromDatabase() {
+      const grid = document.getElementById('catalogProductGrid');
+      if (!grid) return;
+
+      const client = window.krabeClient || (window.KRABE_CONFIG && typeof window.KRABE_CONFIG.getClient === 'function' ? window.KRABE_CONFIG.getClient() : null);
+      if (!client) {
+        setTimeout(loadCatalogFromDatabase, 150);
+        return;
+      }
+
+      try {
+        const { data: products, error } = await client
+          .from('product')
+          .select(`
+            id,
+            title,
+            category,
+            gender,
+            type,
+            description,
+            slug,
+            is_featured,
+            is_new_arrival,
+            product_variation (
+              id,
+              color,
+              color_code,
+              price,
+              main_image,
+              available
+            )
+          `);
+
+        if (error) throw error;
+
+        if (products && products.length > 0) {
+          grid.innerHTML = products.map(prod => {
+            const variations = prod.product_variation || [];
+            const defaultVar = variations[0] || {};
+            const sizesList = 'XS,S,M,L,XL,XXL,Custom';
+            const displayPrice = defaultVar.price ? Number(defaultVar.price) : 0;
+            const displayImage = defaultVar.main_image || 'assets/brand/krabe main logo.svg';
+            const priceNaira = '₦' + displayPrice.toLocaleString('en-NG');
+            const approxUSD = Math.round(displayPrice / 1300);
+            const variantId = defaultVar.id || '';
+            const badgeHTML = prod.is_new_arrival 
+              ? `<span class="product-badge badge-new">New Drop</span>` 
+              : (prod.is_featured ? `<span class="product-badge badge-bespoke">Ceremonial</span>` : '');
+
+            return `
+              <div class="product-card" data-gender="${prod.gender || 'unisex'}" data-category="${prod.category || 'native'}" data-sizes="${sizesList}">
+                <div class="product-media">
+                  ${badgeHTML}
+                  <a href="product.html?id=${prod.id}" style="display: block; width: 100%; height: 100%;">
+                    <img src="${displayImage}" alt="${prod.title}">
+                  </a>
+                  <div class="quick-add-overlay">
+                    <button type="button" class="btn-quick-add js-quick-add" 
+                            data-product-id="${prod.id}"
+                            data-variant-id="${variantId}"
+                            data-variation-id="${variantId}"
+                            data-title="${prod.title}" 
+                            data-price="${displayPrice}" 
+                            data-size="M"
+                            data-color="${defaultVar.color || 'Standard'}"
+                            data-image="${displayImage}">
+                      + Quick Add (M)
+                    </button>
+                  </div>
+                </div>
+                <div class="product-info">
+                  <span class="product-category-label">${prod.category ? prod.category.toUpperCase() : 'MADE TO ORDER'} &bull; ${(prod.gender || 'Unisex').toUpperCase()}</span>
+                  <h3 class="product-title"><a href="product.html?id=${prod.id}">${prod.title}</a></h3>
+                  <div class="product-price-row">
+                    <span class="product-price">${priceNaira}</span>
+                    <span class="product-price-alt">($${approxUSD} USD)</span>
+                  </div>
+                </div>
+              </div>
+            `;
+          }).join('');
+
+          const countEl = document.querySelector('.catalog-count');
+          if (countEl) countEl.textContent = `Showing all ${products.length} atelier creations`;
+
+          applyFilters();
+        } else {
+          grid.innerHTML = `
+            <div style="grid-column: 1 / -1; text-align: center; padding: 48px 16px; color: var(--color-text-muted);">
+              <p style="font-size: 15px; font-weight: 700; color: var(--color-obsidian); margin-bottom: 8px;">No garments currently listed in atelier.</p>
+              <p style="font-size: 13px;">Check back soon for our next seasonal collection drop.</p>
+            </div>
+          `;
+        }
+      } catch (err) {
+        console.warn('[Shop] Could not load products from database:', err);
+      }
+    }
 
     function setGenderFilter(btn, gender) {
       document.querySelectorAll('.gender-btn').forEach(b => b.classList.remove('active'));
@@ -400,6 +365,8 @@
 
     // Auto-filter based on URL Query Parameters (?search= or ?category=)
     window.addEventListener('DOMContentLoaded', () => {
+      loadCatalogFromDatabase();
+
       const urlParams = new URLSearchParams(window.location.search);
       const catParam = urlParams.get('category');
       const searchParam = urlParams.get('search') || urlParams.get('q');

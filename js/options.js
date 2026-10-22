@@ -70,7 +70,7 @@ const KRABE_OPTIONS = {
   ],
   product_type: [
     { value: 'bespoke', label: 'Bespoke' },
-    { value: 'ready to wear', label: 'Ready to Wear' }
+    { value: 'made to order', label: 'Made to Order' }
   ],
   return_status: [
     { value: 'requested', label: 'Requested' },
@@ -91,7 +91,32 @@ const KRABE_OPTIONS = {
     { value: 'XXXL', label: 'XXXL' },
     { value: 'custom', label: 'Custom (Bespoke)' }
   ],
-  variant_color: []
+  variant_color: [
+    { value: 'Midnight Blue', label: 'Midnight Blue', code: '#2F475A' },
+    { value: 'Navy Blue', label: 'Navy Blue', code: '#1B2A4A' },
+    { value: 'Royal Blue', label: 'Royal Blue', code: '#2454A6' },
+    { value: 'Sky Blue', label: 'Sky Blue', code: '#87CEEB' },
+    { value: 'Obsidian Black', label: 'Obsidian Black', code: '#121212' },
+    { value: 'Charcoal Grey', label: 'Charcoal Grey', code: '#36454F' },
+    { value: 'Slate Grey', label: 'Slate Grey', code: '#708090' },
+    { value: 'Pure White', label: 'Pure White', code: '#FFFFFF' },
+    { value: 'Bone Linen', label: 'Bone Linen', code: '#FAF8F5' },
+    { value: 'Ivory Cream', label: 'Ivory Cream', code: '#FDFBF7' },
+    { value: 'Benin Bronze', label: 'Benin Bronze', code: '#C58A55' },
+    { value: 'Caramel Tan', label: 'Caramel Tan', code: '#A76D38' },
+    { value: 'Chocolate Brown', label: 'Chocolate Brown', code: '#3E2723' },
+    { value: 'Champagne Gold', label: 'Champagne Gold', code: '#D4AF37' },
+    { value: 'Emerald Green', label: 'Emerald Green', code: '#0D5C3A' },
+    { value: 'Olive Green', label: 'Olive Green', code: '#556B2F' },
+    { value: 'Sage Green', label: 'Sage Green', code: '#9CAF88' },
+    { value: 'Burgundy Wine', label: 'Burgundy Wine', code: '#5A1827' },
+    { value: 'Crimson Red', label: 'Crimson Red', code: '#990000' },
+    { value: 'Terracotta Rust', label: 'Terracotta Rust', code: '#C85A32' },
+    { value: 'Mustard Yellow', label: 'Mustard Yellow', code: '#E1AD01' },
+    { value: 'Deep Plum', label: 'Deep Plum', code: '#4B244A' },
+    { value: 'Soft Lilac', label: 'Soft Lilac', code: '#C8A2C8' },
+    { value: 'Dusty Rose', label: 'Dusty Rose', code: '#DCAE96' }
+  ]
 };
 
 // Make accessible to both browser window and ES module imports

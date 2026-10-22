@@ -141,8 +141,14 @@ ul {
   height: 100%;
 }
 
-.nav-toggle {
+.nav-toggle,
+.nav-toggle-dots {
   display: none;
+  align-items: center;
+  justify-content: center;
+}
+
+.nav-toggle {
   flex-direction: column;
   gap: 5px;
   padding: 8px;
@@ -193,15 +199,16 @@ ul {
   background-color: var(--color-gold);
 }
 
-/* Brand Logo in Header */
+/* Brand Logo in Header (Left positioned) */
 .brand-logo-wrap {
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start;
+  flex-shrink: 0;
 }
 
 .brand-logo-img {
-  height: 48px;
+  height: 42px;
   width: auto;
   object-fit: contain;
   transition: transform var(--transition-fast);
@@ -1400,13 +1407,78 @@ ul {
   }
 }
 
-@media (max-width: 768px) {
+/* ==========================================================================
+   RESPONSIVE HEADER & NAVIGATION (<= 1200px, <= 900px, <= 768px, <= 600px, <= 420px)
+   ========================================================================== */
+@media (max-width: 1200px) {
+  /* 3-dot menu toggle appears starting from 1200px downwards */
+  .nav-toggle-dots {
+    display: inline-flex !important;
+  }
+
+  /* Only Made-to-Order, Bespoke, and Our Story are present; hide extra links */
+  .nav-link-extra {
+    display: none !important;
+  }
+
+  /* Ensure Made-to-Order, Bespoke, and Our Story stay present throughout */
   .nav-links {
-    display: none;
+    display: flex !important;
+    align-items: center;
+    gap: 16px;
   }
-  .nav-toggle {
-    display: flex;
+
+  .nav-link {
+    font-size: 12px;
+    letter-spacing: 1px;
+    padding: 4px 0;
+    white-space: nowrap;
   }
+
+  .header-inner {
+    gap: 14px;
+  }
+
+  .brand-logo-img {
+    height: 38px;
+  }
+
+  .header-actions {
+    gap: 10px;
+  }
+
+  .action-btn {
+    width: 38px;
+    height: 38px;
+  }
+}
+
+@media (max-width: 900px) {
+  .nav-links {
+    gap: 12px;
+  }
+
+  .nav-link {
+    font-size: 11px;
+    letter-spacing: 0.7px;
+  }
+
+  .brand-logo-img {
+    height: 34px;
+  }
+
+  .header-actions {
+    gap: 8px;
+  }
+
+  .action-btn {
+    width: 34px;
+    height: 34px;
+  }
+}
+
+@media (max-width: 768px) {
+  /* Keep Made-to-Order, Bespoke, and Our Story visible */
   .products-grid {
     grid-template-columns: 1fr;
   }
@@ -1419,6 +1491,59 @@ ul {
   .whatsapp-box {
     flex-direction: column;
     text-align: center;
+  }
+}
+
+@media (max-width: 600px) {
+  .nav-links {
+    gap: 8px;
+  }
+  .nav-link {
+    font-size: 10px;
+    letter-spacing: 0.4px;
+  }
+  .header-inner {
+    padding-left: 10px;
+    padding-right: 10px;
+    gap: 6px;
+  }
+  .brand-logo-img {
+    height: 30px;
+  }
+  .header-actions {
+    gap: 4px;
+  }
+  .action-btn {
+    width: 32px;
+    height: 32px;
+  }
+  .action-btn svg {
+    width: 18px;
+    height: 18px;
+  }
+}
+
+@media (max-width: 420px) {
+  .nav-links {
+    gap: 6px;
+  }
+  .nav-link {
+    font-size: 9px;
+    letter-spacing: 0.2px;
+  }
+  .brand-logo-img {
+    height: 25px;
+  }
+  .header-actions {
+    gap: 2px;
+  }
+  .action-btn {
+    width: 28px;
+    height: 28px;
+  }
+  .action-btn svg {
+    width: 16px;
+    height: 16px;
   }
 }
 /* ==========================================================================
@@ -1918,9 +2043,22 @@ ul {
   letter-spacing: 1.5px;
   text-transform: uppercase;
   border-radius: var(--radius-sm);
+  border: 1.5px solid var(--color-obsidian);
+  transition: all 0.25s ease;
+  cursor: pointer;
 }
 .btn-add-bag:hover {
   background: var(--color-primary);
+  border-color: var(--color-primary);
+}
+.btn-add-bag.is-in-cart {
+  background: transparent;
+  color: #B91C1C;
+  border: 1.5px solid #B91C1C;
+}
+.btn-add-bag.is-in-cart:hover {
+  background: #B91C1C;
+  color: #FFFFFF;
 }
 
 .btn-bespoke-opt {
