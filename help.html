@@ -1,0 +1,592 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Client Concierge &amp; Legal Hub — Krabe Kollection</title>
+  <meta name="description" content="Krabe Kollection Customer Care. Lagos studio address, operating hours, FAQs, shipping policy, complimentary alteration guidelines, and legal terms.">
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" href="assets/brand/kraberefined-logo-blue.png">
+
+  <!-- Google Web Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&family=Playfair+Display:ital,wght@0,600;0,700;1,400;1,600&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <!-- Core Stylesheet -->
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+  <!-- =========================================================================
+       REUSABLE SITE HEADER & NAVIGATION COMPONENT
+       ========================================================================= -->
+  <div id="krabeHeader"></div>
+
+  <!-- =========================================================================
+       3. CLIENT CARE HERO
+       ========================================================================= -->
+  <section class="help-hero">
+    <div class="container">
+      <span class="section-tag" style="color: var(--color-gold-light); margin-bottom: 8px;">CONCIERGE &bull; POLICIES &bull; SUPPORT</span>
+      <h1 class="help-hero-title">Client Care &amp; Information Hub</h1>
+      <p class="help-hero-desc">
+        Explore studio visiting hours, track shipments, review our complimentary alteration guarantee, or consult our brand policies.
+      </p>
+    </div>
+  </section>
+
+  <!-- =========================================================================
+       4. STICKY HELP NAVIGATION TABS
+       ========================================================================= -->
+  <nav class="help-nav-bar" aria-label="Help Hub Tabs">
+    <div class="container">
+      <div class="help-tabs-list" role="tablist">
+        <button type="button" class="help-tab-btn active" role="tab" aria-selected="true" data-tab="contact" onclick="switchHelpTab('contact', this)">
+          Contact &amp; Studio
+        </button>
+        <button type="button" class="help-tab-btn" role="tab" aria-selected="false" data-tab="faq" onclick="switchHelpTab('faq', this)">
+          Frequently Asked Questions
+        </button>
+        <button type="button" class="help-tab-btn" role="tab" aria-selected="false" data-tab="shipping" onclick="switchHelpTab('shipping', this)">
+          Delivery &amp; Pickup
+        </button>
+        <button type="button" class="help-tab-btn" role="tab" aria-selected="false" data-tab="returns" onclick="switchHelpTab('returns', this)">
+          Alterations &amp; Returns
+        </button>
+        <button type="button" class="help-tab-btn" role="tab" aria-selected="false" data-tab="terms" onclick="switchHelpTab('terms', this)">
+          Terms &amp; Conditions
+        </button>
+        <button type="button" class="help-tab-btn" role="tab" aria-selected="false" data-tab="privacy" onclick="switchHelpTab('privacy', this)">
+          Privacy Policy
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- =========================================================================
+       5. HELP CONTENT PANELS
+       ========================================================================= -->
+  <main class="container help-content-wrap">
+
+    <!-- ==========================================
+         PANEL 1: CONTACT US & STUDIO LOCATION
+         ========================================== -->
+    <div class="help-panel active" id="panel-contact" role="tabpanel">
+      <div class="contact-layout">
+
+        <!-- Studio Details Card -->
+        <div class="studio-card">
+          <span class="section-tag">Flagship Location</span>
+          <h2 style="font-family: var(--font-serif); font-size: 22px; font-weight: 700; color: var(--color-obsidian); margin-bottom: 12px;">
+            The Lagos Flagship Studio
+          </h2>
+          <p style="font-size: 13.5px; color: var(--color-text-muted); line-height: 1.6; margin-bottom: 24px;">
+            Plot 12, Adeola Odeku Street<br>
+            Victoria Island, Lagos State, Nigeria
+          </p>
+
+          <div style="display: flex; flex-direction: column; gap: 14px; margin-bottom: 28px; font-size: 13.5px;">
+            <div>
+              <strong style="display: block; color: var(--color-obsidian); margin-bottom: 2px;">Studio Visiting Hours</strong>
+              <span style="color: var(--color-text-muted);">Monday – Saturday: 10:00 AM – 7:00 PM (WAT)</span><br>
+              <span style="font-size: 12px; color: var(--color-gold);">Sundays reserved for private VIP appointments</span>
+            </div>
+            <div>
+              <strong style="display: block; color: var(--color-obsidian); margin-bottom: 2px;">Direct WhatsApp Stylist</strong>
+              <a href="https://wa.me/2348000000000" target="_blank" rel="noopener" style="color: #25D366; font-weight: 700;">+234 800 000 0000 (Tap to Chat)</a>
+            </div>
+            <div>
+              <strong style="display: block; color: var(--color-obsidian); margin-bottom: 2px;">Concierge Email</strong>
+              <a href="mailto:concierge@krabekollection.com" style="color: var(--color-primary); font-weight: 600;">concierge@krabekollection.com</a>
+            </div>
+          </div>
+
+          <a href="bespoke.html#appointment-section" class="btn btn-primary" style="width: 100%; text-align: center;">
+            Book Private Studio Fitting &rarr;
+          </a>
+        </div>
+
+        <!-- Direct Message Form -->
+        <div class="contact-form-card">
+          <h3 style="font-family: var(--font-serif); font-size: 20px; font-weight: 700; margin-bottom: 6px;">Send Us a Message</h3>
+          <p style="font-size: 13px; color: var(--color-text-muted); margin-bottom: 22px;">
+            Our client care concierge typically responds within 2 business hours.
+          </p>
+
+          <form onsubmit="event.preventDefault(); alert('Message sent successfully! Our client concierge will be in touch shortly.'); this.reset();">
+            <div class="form-group">
+              <label for="msgName">Your Name</label>
+              <input type="text" id="msgName" class="form-input" placeholder="e.g. David Adeleke" required>
+            </div>
+            <div class="form-group">
+              <label for="msgEmail">Email Address</label>
+              <input type="email" id="msgEmail" class="form-input" placeholder="david@example.com" required>
+            </div>
+            <div class="form-group">
+              <label for="msgSubject">Inquiry Topic</label>
+              <select id="msgSubject" class="form-input" style="padding: 12px 14px;">
+                <option>Bespoke Commission / Wedding Fitting</option>
+                <option>Made-to-Order Inquiry</option>
+                <option>Alteration &amp; Tailoring Adjustment</option>
+                <option>Press &amp; Collaborations</option>
+                <option>General Question</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="msgBody">Your Message</label>
+              <textarea id="msgBody" class="form-input" rows="4" placeholder="How may we assist your sartorial journey?" required></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary" style="width: 100%;">Transmit Message</button>
+          </form>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ==========================================
+         PANEL 2: FREQUENTLY ASKED QUESTIONS (FAQs)
+         ========================================== -->
+    <div class="help-panel" id="panel-faq" role="tabpanel">
+      <div style="margin-bottom: 28px;">
+        <h2 style="font-family: var(--font-serif); font-size: 24px; font-weight: 700; color: var(--color-obsidian);">Frequently Asked Questions</h2>
+        <p style="font-size: 13.5px; color: var(--color-text-muted);">Common queries regarding sizing, bespoke tailoring, and order fulfilment.</p>
+      </div>
+
+      <div class="pdp-accordions">
+
+        <!-- FAQ 1 -->
+        <div class="accordion-item active">
+          <div class="accordion-header" onclick="toggleFaq(this)">
+            <span>How do I determine my size for Made-to-Order?</span>
+            <span class="acc-arrow" style="font-size: 18px;">−</span>
+          </div>
+          <div class="accordion-body" style="display: block;">
+            All Krabe Made-to-Order garments are tailored from our fabric archive using calibrated Nigerian sizing standards (S through XXL). If you typically wear a UK/US 40 or 42 jacket, size <strong>L</strong> in our Senator kaftans will provide a crisp, tailored drape. You can view our detailed size specifications on any product page via the <strong>Interactive Size Guide</strong> modal, or request custom sleeve and hem adjustments upon checkout.
+          </div>
+        </div>
+
+        <!-- FAQ 2 -->
+        <div class="accordion-item">
+          <div class="accordion-header" onclick="toggleFaq(this)">
+            <span>How does the simplified Bespoke process work?</span>
+            <span class="acc-arrow" style="font-size: 18px;">+</span>
+          </div>
+          <div class="accordion-body">
+            We offer two effortless paths for bespoke tailoring:
+            <ol style="margin-top: 8px; margin-left: 20px; line-height: 1.7;">
+              <li><strong>Direct WhatsApp Consultation:</strong> Chat directly with our head stylist, share reference photos or measurements, and receive instant fabric recommendations and a quote.</li>
+              <li><strong>In-Person Studio Fitting:</strong> Book a private appointment at our Victoria Island flagship studio in Lagos, where our master tailors will take your exact physical measurements.</li>
+            </ol>
+          </div>
+        </div>
+
+        <!-- FAQ 3 -->
+        <div class="accordion-item">
+          <div class="accordion-header" onclick="toggleFaq(this)">
+            <span>What is the turnaround time for Bespoke tailoring?</span>
+            <span class="acc-arrow" style="font-size: 18px;">+</span>
+          </div>
+          <div class="accordion-body">
+            Standard bespoke turnaround is <strong>7 to 10 working days</strong> from the date of final measurement and fabric confirmation. For urgent wedding or ceremonial commissions, express 3-day turnaround is available upon inquiry.
+          </div>
+        </div>
+
+        <!-- FAQ 4 -->
+        <div class="accordion-item">
+          <div class="accordion-header" onclick="toggleFaq(this)">
+            <span>Are alterations really complimentary?</span>
+            <span class="acc-arrow" style="font-size: 18px;">+</span>
+          </div>
+          <div class="accordion-body">
+            Yes! For all clients within Lagos, we offer complimentary fit adjustments (such as trouser hemming, waist taking-in, or sleeve shortening) within 14 days of delivery. You can request this in your <a href="account.html" style="color: var(--color-primary); font-weight: 700;">Client Portal</a>.
+          </div>
+        </div>
+
+        <!-- FAQ 5 -->
+        <div class="accordion-item">
+          <div class="accordion-header" onclick="toggleFaq(this)">
+            <span>Can international diaspora clients place orders?</span>
+            <span class="acc-arrow" style="font-size: 18px;">+</span>
+          </div>
+          <div class="accordion-body">
+            Yes. We ship worldwide via DHL Express (typically 4–7 business days to the UK, US, Canada, and Europe). International cards (Mastercard, Visa, American Express, Apple Pay) are supported securely via our Paystack gateway.
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ==========================================
+         PANEL 3: DELIVERY & STUDIO PICKUP POLICY
+         ========================================== -->
+    <div class="help-panel" id="panel-shipping" role="tabpanel">
+      <div class="policy-box">
+        <h2 style="font-family: var(--font-serif); font-size: 24px; font-weight: 700; color: var(--color-obsidian); margin-bottom: 20px;">
+          Delivery &amp; Pickup Policy
+        </h2>
+
+        <div class="policy-section">
+          <h3 class="policy-heading">1. Free Nationwide Delivery Threshold</h3>
+          <p class="policy-text">
+            All orders exceeding <strong>₦150,000</strong> automatically qualify for 100% complimentary standard delivery to any state across Nigeria.
+          </p>
+        </div>
+
+        <div class="policy-section">
+          <h3 class="policy-heading">2. Shipping Options &amp; Delivery Timelines</h3>
+          <table class="size-table" style="margin-top: 10px;">
+            <thead>
+              <tr>
+                <th>Delivery Method</th>
+                <th>Estimated Transit Time</th>
+                <th>Cost</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Lagos Standard Delivery</strong></td>
+                <td>1–2 business days</td>
+                <td>₦3,500 (Free over ₦150k)</td>
+              </tr>
+              <tr>
+                <td><strong>Lagos Priority Same-Day Courier</strong></td>
+                <td>Same day (orders before 12 PM)</td>
+                <td>₦6,000 flat rate</td>
+              </tr>
+              <tr>
+                <td><strong>Nationwide Delivery (Abuja, PH, others)</strong></td>
+                <td>2–4 business days (via GIG/DHL)</td>
+                <td>₦4,500 (Free over ₦150k)</td>
+              </tr>
+              <tr>
+                <td><strong>Lagos Studio Pickup (Victoria Island)</strong></td>
+                <td>Ready within 24 hours</td>
+                <td><strong>FREE</strong></td>
+              </tr>
+              <tr>
+                <td><strong>International Express (UK, US, Diaspora)</strong></td>
+                <td>4–7 business days (via DHL Express)</td>
+                <td>Calculated at checkout</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="policy-section">
+          <h3 class="policy-heading">3. Studio Pickup Collection Guidelines</h3>
+          <p class="policy-text">
+            When selecting <strong>"In-Store Lagos Studio Pickup"</strong> at checkout, your garment will be steamed and packaged in our luxury garment bag within 24 hours. You will receive an SMS and WhatsApp notification once your order is ready for collection at our Victoria Island flagship studio.
+          </p>
+          <div class="policy-callout">
+            <strong>Bonus Fitting:</strong> When picking up in person, you are welcome to use our private fitting suites. If any minor alteration is required, our on-site tailors will adjust it on the spot.
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ==========================================
+         PANEL 4: RETURNS & ALTERATIONS POLICY
+         ========================================== -->
+    <div class="help-panel" id="panel-returns" role="tabpanel">
+      <div class="policy-box">
+        <h2 style="font-family: var(--font-serif); font-size: 24px; font-weight: 700; color: var(--color-obsidian); margin-bottom: 20px;">
+          Returns, Exchanges &amp; Alterations Policy
+        </h2>
+
+        <div class="policy-section">
+          <h3 class="policy-heading">1. Complimentary Alteration Guarantee (Lagos)</h3>
+          <p class="policy-text">
+            Because sovereign African tailoring demands a perfect posture, all Made-to-Order garments purchased on our website qualify for <strong>one round of complimentary fitting alterations</strong> (such as waist tapering, sleeve adjustments, or trouser hemming).
+          </p>
+          <p class="policy-text">
+            You may request an alteration within <strong>14 days of receipt</strong> directly through your <a href="account.html" style="color: var(--color-primary); font-weight: 700;">Client Portal</a> or by bringing the item to our Victoria Island studio.
+          </p>
+        </div>
+
+        <div class="policy-section">
+          <h3 class="policy-heading">2. Made-to-Order Exchanges &amp; Returns</h3>
+          <p class="policy-text">
+            If you wish to exchange a Made-to-Order item for a different size or style:
+          </p>
+          <ul style="margin-left: 20px; font-size: 13.5px; color: var(--color-text-muted); line-height: 1.8;">
+            <li>The item must be reported within <strong>7 days of delivery</strong>.</li>
+            <li>Garments must be unworn, unwashed, unaltered, and accompanied by all original brand tags and garment bags.</li>
+            <li>Store credit or exchanges are processed within 48 hours of inspection at our Lagos studio.</li>
+          </ul>
+        </div>
+
+        <div class="policy-section">
+          <h3 class="policy-heading">3. Bespoke &amp; Made-to-Measure Terms</h3>
+          <p class="policy-text">
+            Because bespoke garments are handcrafted exclusively to your individual anatomy, <strong>bespoke commissions cannot be canceled or refunded once textile cutting has commenced</strong>. 
+          </p>
+          <div class="policy-callout">
+            <strong>Fit Guarantee:</strong> We provide unlimited in-person fit adjustments at our Victoria Island studio until your bespoke ensemble fits to perfection.
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ==========================================
+         PANEL 5: TERMS & CONDITIONS
+         ========================================== -->
+    <div class="help-panel" id="panel-terms" role="tabpanel">
+      <div class="policy-box">
+        <h2 style="font-family: var(--font-serif); font-size: 24px; font-weight: 700; color: var(--color-obsidian); margin-bottom: 20px;">
+          Terms &amp; Conditions
+        </h2>
+        <p style="font-size: 13px; color: var(--color-text-muted); margin-bottom: 20px;">Last revised: October 2026 &bull; Krabe Kollection Ltd, Federal Republic of Nigeria.</p>
+
+        <div class="policy-section">
+          <h3 class="policy-heading">1. General Overview</h3>
+          <p class="policy-text">
+            By accessing krabekollection.com, booking an appointment, or commissioning a garment, you agree to be bound by these Terms of Service. Krabe Kollection operates as a registered fashion design and retail enterprise under the laws of the Federal Republic of Nigeria.
+          </p>
+        </div>
+
+        <div class="policy-section">
+          <h3 class="policy-heading">2. Pricing &amp; Currency</h3>
+          <p class="policy-text">
+            All prices displayed on the storefront are quoted in <strong>Nigerian Naira (NGN, ₦)</strong> and include applicable statutory VAT. We reserve the right to modify prices for upcoming releases without prior notification.
+          </p>
+        </div>
+
+        <div class="policy-section">
+          <h3 class="policy-heading">3. Intellectual Property</h3>
+          <p class="policy-text">
+            All garment designs, lookbook campaign imagery, embroidery patterns, and brand typography are the exclusive intellectual property of Krabe Kollection. Unauthorized commercial reproduction of our bespoke silhouettes is strictly prohibited.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==========================================
+         PANEL 6: PRIVACY POLICY
+         ========================================== -->
+    <div class="help-panel" id="panel-privacy" role="tabpanel">
+      <div class="policy-box">
+        <h2 style="font-family: var(--font-serif); font-size: 24px; font-weight: 700; color: var(--color-obsidian); margin-bottom: 20px;">
+          Privacy &amp; Data Protection Policy
+        </h2>
+        <p style="font-size: 13px; color: var(--color-text-muted); margin-bottom: 20px;">Compliant with the Nigeria Data Protection Act (NDPA / NDPR).</p>
+
+        <div class="policy-section">
+          <h3 class="policy-heading">1. Data We Collect</h3>
+          <p class="policy-text">
+            We collect personal identity data (Name, Email, WhatsApp number, Delivery Address) and private anatomical measurement data necessary to fulfill bespoke commissions and dispatch deliveries.
+          </p>
+        </div>
+
+        <div class="policy-section">
+          <h3 class="policy-heading">2. Measurement Vault Confidentiality</h3>
+          <p class="policy-text">
+            Your body measurements stored within your account portal are strictly confidential and encrypted. They are accessed exclusively by our master pattern-makers for cutting your garments and are never shared with external third parties.
+          </p>
+        </div>
+
+        <div class="policy-section">
+          <h3 class="policy-heading">3. Payment Security</h3>
+          <p class="policy-text">
+            Krabe Kollection does not store credit or debit card numbers on our servers. All financial transactions are tokenized and processed through <strong>Paystack Payments Limited</strong>, certified PCI-DSS Level 1 compliant.
+          </p>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- =========================================================================
+       6. GLOBAL SEARCH POPUP MODAL
+       ========================================================================= -->
+  <div class="search-modal-overlay" id="searchModalOverlay" aria-hidden="true">
+    <div class="search-modal" role="dialog" aria-modal="true" aria-labelledby="searchInputField">
+      <div class="search-modal-header">
+        <div class="search-input-wrap">
+          <svg class="search-icon-svg" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+          </svg>
+          <input type="text" id="searchInputField" class="search-modal-input" placeholder="Search Kaftans, Agbadas, Streetwear, Suits..." autocomplete="off">
+          <button type="button" class="search-clear-btn" id="searchClearBtn" aria-label="Clear search">✕</button>
+        </div>
+        <button type="button" class="search-close-btn" id="searchCloseBtn" aria-label="Close search">Close (Esc)</button>
+      </div>
+
+      <div class="search-modal-body">
+        <div class="search-suggestions-block">
+          <span class="search-section-label">Popular Searches</span>
+          <div class="search-tags">
+            <a href="shop.html?category=native" class="search-tag">Native Kaftans</a>
+            <a href="shop.html?category=native" class="search-tag">Ceremonial Agbada</a>
+            <a href="shop.html?category=streetwear" class="search-tag">Luxury Streetwear</a>
+            <a href="shop.html?category=formal" class="search-tag">Senator Suits</a>
+            <a href="shop.html?category=formal" class="search-tag">Artisan Linen Shirts</a>
+          </div>
+        </div>
+
+        <div class="search-preview-block">
+          <span class="search-section-label">Quick Suggestions</span>
+          <div class="search-results-list">
+            <a href="product.html" class="search-result-item">
+              <img src="Krabe Cloth Concepts_230226_205405_1.jpg" alt="Signature 3-Piece Agbada Set">
+              <div class="search-result-info">
+                <div class="search-result-title">Signature 3-Piece Agbada Set</div>
+                <div class="search-result-meta">Native Wear &bull; Ceremonial Luxe</div>
+                <div class="search-result-price">₦185,000</div>
+              </div>
+            </a>
+            <a href="shop.html?category=native" class="search-result-item">
+              <img src="assets/lookbook/lookbook_4_senator.jpg" alt="Krabe Structured Modern Kaftan">
+              <div class="search-result-info">
+                <div class="search-result-title">Krabe Structured Modern Kaftan</div>
+                <div class="search-result-meta">Native Wear &bull; Senator Cut</div>
+                <div class="search-result-price">₦120,000</div>
+              </div>
+            </a>
+            <a href="shop.html?category=streetwear" class="search-result-item">
+              <img src="assets/lookbook/lookbook_5_goldbrush.jpg" alt="Metallic Gold Brush Statement Tee">
+              <div class="search-result-info">
+                <div class="search-result-title">Metallic Gold Brush Statement Tee</div>
+                <div class="search-result-meta">Streetwear &bull; Unisex Limited Drop</div>
+                <div class="search-result-price">₦55,000</div>
+              </div>
+            </a>
+          </div>
+        </div>
+
+        <div class="search-modal-footer">
+          <button type="button" class="btn-search-submit" id="searchSubmitBtn">
+            Explore All Made-to-Order &rarr;
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- =========================================================================
+       7. SLIDE-OUT CART DRAWER
+       ========================================================================= -->
+  <div class="cart-drawer-overlay" id="cartOverlay" aria-hidden="true">
+    <div class="cart-drawer" id="cartDrawer" role="dialog" aria-modal="true" aria-labelledby="cartDrawerTitle">
+      <div class="cart-drawer-header">
+        <h3 class="cart-drawer-title" id="cartDrawerTitle">Shopping Bag</h3>
+        <button type="button" class="cart-close-btn" id="cartCloseBtn" aria-label="Close Shopping Bag">
+          <svg style="width: 22px; height: 22px;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+        </button>
+      </div>
+      <div class="cart-free-shipping">✓ Free Nationwide Delivery on orders over ₦150,000</div>
+      <div class="cart-drawer-body"></div>
+      <div class="cart-drawer-footer">
+        <div class="cart-subtotal-row">
+          <span class="cart-subtotal-label">Subtotal</span>
+          <span class="cart-subtotal-amount">₦185,000</span>
+        </div>
+        <a href="checkout.html" class="btn-checkout">Proceed to Checkout &rarr;</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- =========================================================================
+       9. GLOBAL FOOTER
+       ========================================================================= -->
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-top">
+        <div class="footer-brand">
+          <img src="assets/brand/kraberefinedimage2.png" alt="Krabe Kollection" style="height: 44px; margin-bottom: 14px;">
+          <p>Premium Nigerian unisex fashion house combining ancestral textile heritage with contemporary minimalist tailoring.</p>
+        </div>
+        <div>
+          <div class="footer-col-title">Shop Krabe</div>
+          <ul class="footer-nav-list">
+            <li><a href="shop.html">Made-to-Order Collections</a></li>
+            <li><a href="bespoke.html">Bespoke Orders</a></li>
+            <li><a href="lookbook.html">Campaign Lookbook</a></li>
+          </ul>
+        </div>
+        <div>
+          <div class="footer-col-title">Customer Care</div>
+          <ul class="footer-nav-list">
+            <li><a href="help.html#contact">Studio Address &amp; Map</a></li>
+            <li><a href="help.html#faq">Frequently Asked Questions</a></li>
+            <li><a href="help.html#shipping">Delivery &amp; Pickup Policy</a></li>
+            <li><a href="help.html#returns">Returns &amp; Alterations</a></li>
+          </ul>
+        </div>
+        <div>
+          <div class="footer-col-title">Private Releases</div>
+          <form class="newsletter-form" onsubmit="event.preventDefault(); alert('Subscribed to Krabe Kollection.');">
+            <input type="email" required placeholder="Enter your email" class="newsletter-input">
+            <button type="submit" class="newsletter-btn">Subscribe</button>
+          </form>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <div>&copy; 2026 Krabe Kollection. All rights reserved. Registered in Nigeria.</div>
+      </div>
+    </div>
+  </footer>
+
+  <script src="js/header.js"></script>
+  <script src="js/auth-modal.js"></script>
+  <script src="js/main.js"></script>
+  <script>
+    // Tab Switching
+    function switchHelpTab(tabKey, btn) {
+      document.querySelectorAll('.help-tab-btn').forEach(b => {
+        b.classList.remove('active');
+        b.setAttribute('aria-selected', 'false');
+      });
+      document.querySelectorAll('.help-panel').forEach(p => p.classList.remove('active'));
+
+      if (btn) {
+        btn.classList.add('active');
+        btn.setAttribute('aria-selected', 'true');
+      } else {
+        const matchingBtn = document.querySelector(`.help-tab-btn[data-tab="${tabKey}"]`);
+        if (matchingBtn) {
+          matchingBtn.classList.add('active');
+          matchingBtn.setAttribute('aria-selected', 'true');
+        }
+      }
+
+      const panel = document.getElementById('panel-' + tabKey);
+      if (panel) {
+        panel.classList.add('active');
+      }
+
+      // Update URL hash without jumping
+      history.replaceState(null, null, '#' + tabKey);
+    }
+
+    // FAQ Accordion Toggle
+    function toggleFaq(header) {
+      const item = header.parentElement;
+      const arrow = header.querySelector('.acc-arrow');
+      const body = item.querySelector('.accordion-body');
+      const isActive = item.classList.contains('active');
+
+      if (isActive) {
+        item.classList.remove('active');
+        body.style.display = 'none';
+        if (arrow) arrow.textContent = '+';
+      } else {
+        item.classList.add('active');
+        body.style.display = 'block';
+        if (arrow) arrow.textContent = '−';
+      }
+    }
+
+    // Auto-detect URL Hash on Page Load (e.g. help.html#faq or help.html#returns)
+    window.addEventListener('DOMContentLoaded', () => {
+      const hash = window.location.hash.replace('#', '');
+      if (hash && ['contact', 'faq', 'shipping', 'returns', 'terms', 'privacy'].includes(hash)) {
+        switchHelpTab(hash);
+      }
+    });
+  </script>
+</body>
+</html>

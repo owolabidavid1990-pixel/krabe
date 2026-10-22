@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Shop Collections — Krabe Kollection</title>
+  <meta name="description" content="Browse the Krabe Kollection catalog. Native wear, Kaftans, tailored suiting, and luxury streetwear. Mobile-first shopping experience.">
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" href="assets/brand/kraberefined-logo-blue.png">
+
+  <!-- Google Web Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;1,400&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <!-- Core Stylesheet -->
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+  <!-- =========================================================================
+       REUSABLE SITE HEADER & NAVIGATION COMPONENT
+       ========================================================================= -->
+  <div id="krabeHeader"></div>
+
+  <!-- =========================================================================
+       3. MOBILE-FIRST STREAMLINED FILTER BAR (ALWAYS VISIBLE EVERYWHERE)
+       Row 1: Gender | Row 2: Category | Row 3: Size & Sort
+       ========================================================================= -->
+  <div class="mobile-filter-container">
+    <div class="container" style="padding: 0;">
+      
+      <!-- Row 1: GENDER (Always visible, prominent tabs) -->
+      <div class="gender-filter-strip">
+        <button type="button" class="gender-btn active" onclick="setGenderFilter(this, 'all')">All</button>
+        <button type="button" class="gender-btn" onclick="setGenderFilter(this, 'men')">Men</button>
+        <button type="button" class="gender-btn" onclick="setGenderFilter(this, 'women')">Women</button>
+        <button type="button" class="gender-btn" onclick="setGenderFilter(this, 'unisex')">Unisex</button>
+      </div>
+
+      <!-- Row 2: CATEGORY (Always visible horizontal pills) -->
+      <div class="category-filter-strip">
+        <button type="button" class="category-pill active" onclick="setCategoryFilter(this, 'all')">All Categories</button>
+        <button type="button" class="category-pill" onclick="setCategoryFilter(this, 'native')">Native Wear</button>
+        <button type="button" class="category-pill" onclick="setCategoryFilter(this, 'formal')">English &amp; Suiting</button>
+        <button type="button" class="category-pill" onclick="setCategoryFilter(this, 'streetwear')">Streetwear Drops</button>
+      </div>
+
+      <!-- Row 3: SIZE & SORT (Quick thumb taps) -->
+      <div class="sub-filter-strip">
+        <div class="size-quick-chips">
+          <span class="filter-mini-label">Size:</span>
+          <button type="button" class="size-chip active" onclick="setSizeFilter(this, 'all')">All</button>
+          <button type="button" class="size-chip" onclick="setSizeFilter(this, 'S')">S</button>
+          <button type="button" class="size-chip" onclick="setSizeFilter(this, 'M')">M</button>
+          <button type="button" class="size-chip" onclick="setSizeFilter(this, 'L')">L</button>
+          <button type="button" class="size-chip" onclick="setSizeFilter(this, 'XL')">XL</button>
+          <button type="button" class="size-chip" onclick="setSizeFilter(this, 'XXL')">XXL</button>
+        </div>
+
+        <div>
+          <select class="sort-select-compact" aria-label="Sort products">
+            <option value="featured">Featured</option>
+            <option value="newest">Newest</option>
+            <option value="price-asc">Price: Low-High</option>
+            <option value="price-desc">Price: High-Low</option>
+          </select>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- =========================================================================
+       4. PRODUCT CATALOG GRID
+       ========================================================================= -->
+  <main class="container">
+    <div class="simplified-catalog-grid" id="catalogProductGrid">
+      
+      <!-- Product 1 -->
+      <div class="product-card" data-gender="unisex" data-category="streetwear" data-sizes="S,M,L,XL">
+        <div class="product-media">
+          <span class="product-badge badge-new">New Drop</span>
+          <img src="Krabe Cloth Concepts_230226_205405_1.jpg" alt="Krabe Signature Script Tee">
+          <div class="quick-add-overlay">
+            <button type="button" class="btn-quick-add js-quick-add" 
+                    data-title="Krabe Signature Script Tee" 
+                    data-price="45000" 
+                    data-image="Krabe Cloth Concepts_230226_205405_1.jpg">
+              + Quick Add
+            </button>
+          </div>
+        </div>
+        <div class="product-info">
+          <span class="product-category-label">Streetwear &bull; Unisex</span>
+          <h3 class="product-title"><a href="product.html">Krabe Signature Script Tee</a></h3>
+          <div class="product-price-row">
+            <span class="product-price">₦45,000</span>
+            <span class="product-price-alt">($35 USD)</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Product 2 -->
+      <div class="product-card" data-gender="men" data-category="formal" data-sizes="M,L,XL">
+        <div class="product-media">
+          <span class="product-badge badge-bespoke">Made to Order</span>
+          <img src="Krabe Cloth Concepts_230226_205405_2.jpg" alt="Artisan Serif Minimalist Shirt">
+          <div class="quick-add-overlay">
+            <button type="button" class="btn-quick-add js-quick-add" 
+                    data-title="Artisan Serif Minimalist Shirt" 
+                    data-price="78000" 
+                    data-image="Krabe Cloth Concepts_230226_205405_2.jpg">
+              + Quick Add
+            </button>
+          </div>
+        </div>
+        <div class="product-info">
+          <span class="product-category-label">English Wear &bull; Men</span>
+          <h3 class="product-title"><a href="product.html">Artisan Serif Minimalist Shirt</a></h3>
+          <div class="product-price-row">
+            <span class="product-price">₦78,000</span>
+            <span class="product-price-alt">($60 USD)</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Product 3 -->
+      <div class="product-card" data-gender="unisex" data-category="streetwear" data-sizes="S,M,L">
+        <div class="product-media">
+          <span class="product-badge badge-bespoke">Gold Edition</span>
+          <img src="Krabe Cloth Concepts_230226_205405_3.jpg" alt="Metallic Gold Brush Tee">
+          <div class="quick-add-overlay">
+            <button type="button" class="btn-quick-add js-quick-add" 
+                    data-title="Metallic Gold Brush Tee" 
+                    data-price="55000" 
+                    data-image="Krabe Cloth Concepts_230226_205405_3.jpg">
+              + Quick Add
+            </button>
+          </div>
+        </div>
+        <div class="product-info">
+          <span class="product-category-label">Streetwear &bull; Unisex</span>
+          <h3 class="product-title"><a href="product.html">Metallic Gold Brush Tee</a></h3>
+          <div class="product-price-row">
+            <span class="product-price">₦55,000</span>
+            <span class="product-price-alt">($42 USD)</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Product 4 -->
+      <div class="product-card" data-gender="men" data-category="native" data-sizes="M,L,XL,XXL">
+        <div class="product-media">
+          <span class="product-badge badge-new">Artisan Native</span>
+          <img src="Krabe Cloth Concepts_230226_205405_6.jpg" alt="Krabe Structured Modern Kaftan">
+          <div class="quick-add-overlay">
+            <button type="button" class="btn-quick-add js-quick-add" 
+                    data-title="Krabe Structured Modern Kaftan" 
+                    data-price="120000" 
+                    data-image="Krabe Cloth Concepts_230226_205405_6.jpg">
+              + Quick Add
+            </button>
+          </div>
+        </div>
+        <div class="product-info">
+          <span class="product-category-label">Native Wear &bull; Men</span>
+          <h3 class="product-title"><a href="product.html">Krabe Structured Modern Kaftan</a></h3>
+          <div class="product-price-row">
+            <span class="product-price">₦120,000</span>
+            <span class="product-price-alt">($92 USD)</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Product 5 (Agbada) -->
+      <div class="product-card" data-gender="men" data-category="native" data-sizes="L,XL,XXL">
+        <div class="product-media">
+          <span class="product-badge badge-bespoke">Ceremonial</span>
+          <img src="Krabe Cloth Concepts_230226_205405_1.jpg" alt="Signature 3-Piece Agbada Set">
+          <div class="quick-add-overlay">
+            <button type="button" class="btn-quick-add js-quick-add" 
+                    data-title="Signature 3-Piece Agbada Set" 
+                    data-price="195000" 
+                    data-image="Krabe Cloth Concepts_230226_205405_1.jpg">
+              + Quick Add
+            </button>
+          </div>
+        </div>
+        <div class="product-info">
+          <span class="product-category-label">Native Wear &bull; Men</span>
+          <h3 class="product-title"><a href="product.html">Signature 3-Piece Agbada Set</a></h3>
+          <div class="product-price-row">
+            <span class="product-price">₦195,000</span>
+            <span class="product-price-alt">($150 USD)</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Product 6 (Women's / Unisex Kaftan) -->
+      <div class="product-card" data-gender="women" data-category="native" data-sizes="S,M,L">
+        <div class="product-media">
+          <span class="product-badge badge-new">Ceremonial</span>
+          <img src="Krabe Cloth Concepts_230226_205405_6.jpg" alt="Elegance Silk Kaftan Dress">
+          <div class="quick-add-overlay">
+            <button type="button" class="btn-quick-add js-quick-add" 
+                    data-title="Elegance Silk Kaftan Dress" 
+                    data-price="135000" 
+                    data-image="Krabe Cloth Concepts_230226_205405_6.jpg">
+              + Quick Add
+            </button>
+          </div>
+        </div>
+        <div class="product-info">
+          <span class="product-category-label">Native Wear &bull; Women</span>
+          <h3 class="product-title"><a href="product.html">Elegance Silk Kaftan Dress</a></h3>
+          <div class="product-price-row">
+            <span class="product-price">₦135,000</span>
+            <span class="product-price-alt">($104 USD)</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- =========================================================================
+       5. GLOBAL FOOTER & SLIDE-OUT CART
+       ========================================================================= -->
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-top">
+        <div class="footer-brand">
+          <img src="assets/brand/kraberefinedimage2.png" alt="Krabe Kollection" style="height: 44px; margin-bottom: 14px;">
+          <p>Premium Nigerian unisex fashion house combining ancestral textile heritage with contemporary minimalist tailoring.</p>
+        </div>
+        <div>
+          <div class="footer-col-title">Shop Krabe</div>
+          <ul class="footer-nav-list">
+            <li><a href="shop.html">Made-to-Order Collections</a></li>
+            <li><a href="bespoke.html">Bespoke Orders</a></li>
+          </ul>
+        </div>
+        <div>
+          <div class="footer-col-title">Customer Care</div>
+          <ul class="footer-nav-list">
+            <li><a href="bespoke.html#appointment">Book Studio Appointment</a></li>
+            <li><a href="help.html#faq">FAQ &amp; Shipping Policy</a></li>
+          </ul>
+        </div>
+        <div>
+          <div class="footer-col-title">Private Releases</div>
+          <form class="newsletter-form" onsubmit="event.preventDefault(); alert('Subscribed to Krabe Kollection.');">
+            <input type="email" required placeholder="Enter your email" class="newsletter-input">
+            <button type="submit" class="newsletter-btn">Subscribe</button>
+          </form>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <div>&copy; 2026 Krabe Kollection. All rights reserved. Registered in Nigeria.</div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Search Popup Modal -->
+  <div class="search-modal-overlay" id="searchModalOverlay" aria-hidden="true">
+    <div class="search-modal" role="dialog" aria-modal="true" aria-labelledby="searchInputField">
+      <div class="search-modal-header">
+        <div class="search-input-wrap">
+          <svg class="search-icon-svg" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+          </svg>
+          <input type="text" id="searchInputField" class="search-modal-input" placeholder="Search Kaftans, Agbadas, Streetwear, Suits..." autocomplete="off">
+          <button type="button" class="search-clear-btn" id="searchClearBtn" aria-label="Clear search">✕</button>
+        </div>
+        <button type="button" class="search-close-btn" id="searchCloseBtn" aria-label="Close search">Close (Esc)</button>
+      </div>
+
+      <div class="search-modal-body">
+        <div class="search-suggestions-block">
+          <span class="search-section-label">Popular Searches</span>
+          <div class="search-tags">
+            <a href="shop.html?category=native" class="search-tag">Native Kaftans</a>
+            <a href="shop.html?category=native" class="search-tag">Ceremonial Agbada</a>
+            <a href="shop.html?category=streetwear" class="search-tag">Luxury Streetwear</a>
+            <a href="shop.html?category=formal" class="search-tag">Senator Suits</a>
+            <a href="shop.html?category=formal" class="search-tag">Artisan Linen Shirts</a>
+          </div>
+        </div>
+
+        <div class="search-preview-block">
+          <span class="search-section-label">Quick Suggestions</span>
+          <div class="search-results-list">
+            <a href="product.html" class="search-result-item">
+              <img src="Krabe Cloth Concepts_230226_205405_1.jpg" alt="Signature 3-Piece Agbada Set">
+              <div class="search-result-info">
+                <div class="search-result-title">Signature 3-Piece Agbada Set</div>
+                <div class="search-result-meta">Native Wear &bull; Ceremonial Luxe</div>
+                <div class="search-result-price">₦185,000</div>
+              </div>
+            </a>
+            <a href="shop.html?category=native" class="search-result-item">
+              <img src="Krabe Cloth Concepts_230226_205405_6.jpg" alt="Krabe Structured Modern Kaftan">
+              <div class="search-result-info">
+                <div class="search-result-title">Krabe Structured Modern Kaftan</div>
+                <div class="search-result-meta">Native Wear &bull; Senator Cut</div>
+                <div class="search-result-price">₦120,000</div>
+              </div>
+            </a>
+            <a href="shop.html?category=streetwear" class="search-result-item">
+              <img src="Krabe Cloth Concepts_230226_205405_3.jpg" alt="Metallic Gold Brush Statement Tee">
+              <div class="search-result-info">
+                <div class="search-result-title">Metallic Gold Brush Statement Tee</div>
+                <div class="search-result-meta">Streetwear &bull; Unisex Limited Drop</div>
+                <div class="search-result-price">₦55,000</div>
+              </div>
+            </a>
+          </div>
+        </div>
+
+        <div class="search-modal-footer">
+          <button type="button" class="btn-search-submit" id="searchSubmitBtn">
+            Explore All Made-to-Order &rarr;
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Slide-Out Cart Drawer -->
+  <div class="cart-drawer-overlay" id="cartOverlay" aria-hidden="true">
+    <div class="cart-drawer" id="cartDrawer" role="dialog" aria-modal="true" aria-labelledby="cartDrawerTitle">
+      <div class="cart-drawer-header">
+        <h3 class="cart-drawer-title" id="cartDrawerTitle">Shopping Bag</h3>
+        <button type="button" class="cart-close-btn" id="cartCloseBtn" aria-label="Close Shopping Bag">
+          <svg style="width: 22px; height: 22px;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+        </button>
+      </div>
+      <div class="cart-free-shipping">✓ Free Nationwide Delivery on orders over ₦150,000</div>
+      <div class="cart-drawer-body"></div>
+      <div class="cart-drawer-footer">
+        <div class="cart-subtotal-row">
+          <span class="cart-subtotal-label">Subtotal</span>
+          <span class="cart-subtotal-amount">₦185,000</span>
+        </div>
+        <a href="checkout.html" class="btn-checkout">Proceed to Checkout &rarr;</a>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/header.js"></script>
+  <script src="js/auth-modal.js"></script>
+  <script src="js/main.js"></script>
+  <script>
+    // Live Filter Logic (Gender, Category, Size)
+    let currentGender = 'all';
+    let currentCategory = 'all';
+    let currentSize = 'all';
+
+    function setGenderFilter(btn, gender) {
+      document.querySelectorAll('.gender-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      currentGender = gender;
+      applyFilters();
+    }
+
+    function setCategoryFilter(btn, cat) {
+      document.querySelectorAll('.category-pill').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      currentCategory = cat;
+      applyFilters();
+    }
+
+    function setSizeFilter(btn, size) {
+      document.querySelectorAll('.size-chip').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      currentSize = size;
+      applyFilters();
+    }
+
+    function applyFilters() {
+      const cards = document.querySelectorAll('#catalogProductGrid .product-card');
+      cards.forEach(card => {
+        const cGender = card.dataset.gender;
+        const cCat = card.dataset.category;
+        const cSizes = card.dataset.sizes ? card.dataset.sizes.split(',') : [];
+
+        const matchGender = (currentGender === 'all') || (cGender === currentGender) || (cGender === 'unisex');
+        const matchCategory = (currentCategory === 'all') || (cCat === currentCategory);
+        const matchSize = (currentSize === 'all') || (cSizes.includes(currentSize));
+
+        if (matchGender && matchCategory && matchSize) {
+          card.style.display = 'flex';
+        } else {
+          card.style.display = 'none';
+        }
+      });
+    }
+
+    // Auto-filter based on URL Query Parameters (?search= or ?category=)
+    window.addEventListener('DOMContentLoaded', () => {
+      const urlParams = new URLSearchParams(window.location.search);
+      const catParam = urlParams.get('category');
+      const searchParam = urlParams.get('search') || urlParams.get('q');
+
+      if (catParam) {
+        const catBtn = Array.from(document.querySelectorAll('.category-pill')).find(b => 
+          b.textContent.toLowerCase().includes(catParam.toLowerCase())
+        );
+        if (catBtn) {
+          setCategoryFilter(catBtn, catParam);
+        }
+      }
+
+      if (searchParam) {
+        const query = searchParam.toLowerCase().trim();
+        const cards = document.querySelectorAll('#catalogProductGrid .product-card');
+        let matchedCount = 0;
+
+        cards.forEach(card => {
+          const title = (card.querySelector('.product-title')?.textContent || '').toLowerCase();
+          const cat = (card.dataset.category || '').toLowerCase();
+          const matches = title.includes(query) || cat.includes(query);
+          card.style.display = matches ? 'flex' : 'none';
+          if (matches) matchedCount++;
+        });
+
+        // Show active search banner if filtered
+        const headerInfo = document.querySelector('.catalog-count');
+        if (headerInfo) {
+          headerInfo.innerHTML = `Showing results for: <strong>"${searchParam}"</strong> (${matchedCount} items) &bull; <a href="shop.html" style="color: var(--color-primary); text-decoration: underline;">Clear Search</a>`;
+        }
+      }
+    });
+  </script>
+</body>
+</html>

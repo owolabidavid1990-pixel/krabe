@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Signature 3-Piece Agbada Set — Krabe Kollection</title>
+  <meta name="description" content="Shop the Signature 3-Piece Agbada Set by Krabe Kollection. Ceremonial Nigerian craftsmanship, hand-embroidered, available in standard sizing or custom bespoke tailoring.">
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" href="assets/brand/kraberefined-logo-blue.png">
+
+  <!-- Google Web Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;1,400&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <!-- Core Stylesheet -->
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+  <!-- =========================================================================
+       REUSABLE SITE HEADER & NAVIGATION COMPONENT
+       ========================================================================= -->
+  <div id="krabeHeader"></div>
+
+  <!-- =========================================================================
+       3. BREADCRUMBS
+       ========================================================================= -->
+  <div style="background: var(--color-sand); padding: 12px 0; border-bottom: 1px solid var(--color-border); font-size: 11.5px; letter-spacing: 1px; text-transform: uppercase;">
+    <div class="container">
+      <a href="index.html" style="color: #64748B;">Home</a> &nbsp;/&nbsp; 
+      <a href="shop.html" style="color: #64748B;">Catalog</a> &nbsp;/&nbsp; 
+      <a href="shop.html?category=native" style="color: #64748B;">Native Wear</a> &nbsp;/&nbsp; 
+      <span style="color: var(--color-obsidian); font-weight: 700;">Signature 3-Piece Agbada Set</span>
+    </div>
+  </div>
+
+  <!-- =========================================================================
+       4. PRODUCT DETAILS SECTION
+       ========================================================================= -->
+  <main class="pdp-section">
+    <div class="container pdp-grid">
+      
+      <!-- Gallery Column -->
+      <div class="pdp-gallery-wrap">
+        <div class="pdp-main-image">
+          <img id="mainPdpImg" src="Krabe Cloth Concepts_230226_205405_1.jpg" alt="Signature 3-Piece Agbada Set">
+        </div>
+        <div class="pdp-thumbnails">
+          <button type="button" class="thumb-btn active" onclick="swapPdpImg(this, 'Krabe Cloth Concepts_230226_205405_1.jpg')">
+            <img src="Krabe Cloth Concepts_230226_205405_1.jpg" alt="Front view">
+          </button>
+          <button type="button" class="thumb-btn" onclick="swapPdpImg(this, 'Krabe Cloth Concepts_230226_205405_2.jpg')">
+            <img src="Krabe Cloth Concepts_230226_205405_2.jpg" alt="Back & fabric detail">
+          </button>
+          <button type="button" class="thumb-btn" onclick="swapPdpImg(this, 'Krabe Cloth Concepts_230226_205405_3.jpg')">
+            <img src="Krabe Cloth Concepts_230226_205405_3.jpg" alt="Embroidery detail">
+          </button>
+          <button type="button" class="thumb-btn" onclick="swapPdpImg(this, 'Krabe Cloth Concepts_230226_205405_6.jpg')">
+            <img src="Krabe Cloth Concepts_230226_205405_6.jpg" alt="Studio fitting view">
+          </button>
+        </div>
+      </div>
+
+      <!-- Information & Purchasing Column -->
+      <div class="pdp-info-wrap">
+        <span class="pdp-eyebrow">Native Wear &bull; Ceremonial Collection</span>
+        <h1 class="pdp-title">Signature 3-Piece Agbada Set</h1>
+        
+        <div class="pdp-price-row">
+          <span class="pdp-price-current">₦195,000</span>
+          <span class="pdp-price-usd">($150 USD approx.)</span>
+        </div>
+
+        <div class="pdp-stock-status">
+          In Stock &bull; Ready for Immediate Lagos Dispatch or Studio Pickup
+        </div>
+
+        <p class="pdp-description-text">
+          A definitive statement of modern Nigerian majesty. Includes the outer flowing Agbada robe, structured inner tunic, and matching tapered trousers. Cut with contemporary minimalism, eliminating excess bulk while preserving cultural grandeur. Hand-finished by our master artisans in Lagos.
+        </p>
+
+        <!-- Size Selector -->
+        <div class="picker-group">
+          <div class="picker-header">
+            <span class="picker-title">Select Size</span>
+            <span class="picker-sub-link" onclick="openSizeGuideModal()">Size Guide &amp; Measurements</span>
+          </div>
+          <div class="size-options-grid">
+            <button type="button" class="size-btn" onclick="selectSize(this)">S</button>
+            <button type="button" class="size-btn active" onclick="selectSize(this)">M</button>
+            <button type="button" class="size-btn" onclick="selectSize(this)">L</button>
+            <button type="button" class="size-btn" onclick="selectSize(this)">XL</button>
+            <button type="button" class="size-btn" onclick="selectSize(this)">XXL</button>
+          </div>
+        </div>
+
+        <!-- Color Swatches -->
+        <div class="picker-group">
+          <div class="picker-header">
+            <span class="picker-title">Colour: <span id="colorLabel" style="font-weight: 500; text-transform: none; color: #4A5568;">Midnight Blue</span></span>
+          </div>
+          <div class="color-swatches-grid">
+            <button type="button" class="swatch-circle-btn active" style="background-color: #2F475A;" title="Midnight Blue" onclick="selectColor(this, 'Midnight Blue')"></button>
+            <button type="button" class="swatch-circle-btn" style="background-color: #121212;" title="Obsidian Black" onclick="selectColor(this, 'Obsidian Black')"></button>
+            <button type="button" class="swatch-circle-btn" style="background-color: #C58A55;" title="Benin Bronze" onclick="selectColor(this, 'Benin Bronze')"></button>
+            <button type="button" class="swatch-circle-btn" style="background-color: #FAF8F5; border-color: #CBD5E1;" title="Bone Linen" onclick="selectColor(this, 'Bone Linen')"></button>
+          </div>
+        </div>
+
+        <!-- Add To Bag & Bespoke Options -->
+        <div class="pdp-actions-row">
+          <div class="qty-control">
+            <button type="button" class="cart-qty-btn" onclick="adjustPdpQty(-1)">−</button>
+            <span class="cart-qty-val" id="pdpQtyVal">1</span>
+            <button type="button" class="cart-qty-btn" onclick="adjustPdpQty(1)">+</button>
+          </div>
+
+          <button type="button" class="btn-add-bag js-quick-add" 
+                  data-title="Signature 3-Piece Agbada Set" 
+                  data-price="195000" 
+                  data-image="Krabe Cloth Concepts_230226_205405_1.jpg">
+            Add to Shopping Bag
+          </button>
+
+          <a href="bespoke.html" class="btn-bespoke-opt">
+            <svg style="width: 16px; height: 16px;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"/></svg>
+            Prefer Custom Measurements? Order in Bespoke &rarr;
+          </a>
+        </div>
+
+        <!-- Trust Badges -->
+        <div style="background: var(--color-sand); padding: 18px 20px; border-radius: var(--radius-sm); margin-bottom: 30px; font-size: 13px; color: #4A5568; display: flex; flex-direction: column; gap: 8px;">
+          <div>✓ <strong>Crafted On Demand:</strong> Hand-tailored from our limited fabric archive; ready for dispatch within 48 hours.</div>
+          <div>✓ <strong>Doorstep Delivery:</strong> 1-2 business days in Lagos; 3-5 business days across Nigeria.</div>
+          <div>✓ <strong>Studio Pickup:</strong> Try on &amp; collect at our Victoria Island Lagos atelier.</div>
+          <div>✓ <strong>Complimentary Alteration Guarantee:</strong> Free fitting adjustments within Lagos.</div>
+        </div>
+
+        <!-- Collapsible Accordions -->
+        <div class="pdp-accordions">
+          
+          <div class="accordion-item active">
+            <button type="button" class="accordion-header" onclick="toggleAccordion(this)">
+              Fabrication &amp; Craftsmanship <span>−</span>
+            </button>
+            <div class="accordion-body">
+              Crafted from premium 380gsm African cashmere-cotton blend. Unlined for breathable, non-restrictive comfort in tropical climates. Features precision hand-embroidery along the chest and neckline, utilizing reinforced bar-tack stitching.
+            </div>
+          </div>
+
+          <div class="accordion-item">
+            <button type="button" class="accordion-header" onclick="toggleAccordion(this)">
+              Sizing &amp; Fit Notes <span>+</span>
+            </button>
+            <div class="accordion-body">
+              Relaxed ceremonial cut. Model is 6 ft 1 in (185 cm) with a 40-inch chest, wearing size Large. If you prefer a closer, tailored European fit, we recommend sizing down or ordering via our Bespoke channel.
+            </div>
+          </div>
+
+          <div class="accordion-item">
+            <button type="button" class="accordion-header" onclick="toggleAccordion(this)">
+              Made-to-Order, Pickup &amp; Returns <span>+</span>
+            </button>
+            <div class="accordion-body">
+              Every garment is crafted on demand from our curated fabric vault upon receipt of your order. Please allow 48 hours for cutting, tailoring, and quality inspection, after which your order is immediately dispatched via courier (1-2 days Lagos, 3-5 days nationwide). Returns or size exchanges are accepted within 3 days of delivery provided garments remain unworn with original tags attached.
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+  </main>
+
+  <!-- =========================================================================
+       5. RELATED PRODUCTS ("You May Also Like")
+       ========================================================================= -->
+  <section class="section-py" style="background: var(--color-white); border-top: 1px solid var(--color-border);">
+    <div class="container">
+      <div class="section-header" style="margin-bottom: 36px; text-align: left;">
+        <span class="section-tag">Complete The Ensemble</span>
+        <h2 class="section-title">Complementary Pieces</h2>
+      </div>
+
+      <div class="products-grid">
+        <div class="product-card" data-category="native">
+          <div class="product-media">
+            <span class="product-badge badge-new">Artisan Native</span>
+            <img src="Krabe Cloth Concepts_230226_205405_6.jpg" alt="Krabe Structured Modern Kaftan">
+            <div class="quick-add-overlay">
+              <button type="button" class="btn-quick-add js-quick-add" data-title="Krabe Structured Modern Kaftan" data-price="120000" data-image="Krabe Cloth Concepts_230226_205405_6.jpg">
+                + Quick Add
+              </button>
+            </div>
+          </div>
+          <div class="product-info">
+            <span class="product-category-label">Native Wear</span>
+            <h3 class="product-title"><a href="product.html">Krabe Structured Modern Kaftan</a></h3>
+            <div class="product-price-row">
+              <span class="product-price">₦120,000</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="product-card" data-category="formal">
+          <div class="product-media">
+            <span class="product-badge badge-bespoke">Made to Order</span>
+            <img src="Krabe Cloth Concepts_230226_205405_2.jpg" alt="Artisan Serif Minimalist Shirt">
+            <div class="quick-add-overlay">
+              <button type="button" class="btn-quick-add js-quick-add" data-title="Artisan Serif Minimalist Shirt" data-price="78000" data-image="Krabe Cloth Concepts_230226_205405_2.jpg">
+                + Quick Add
+              </button>
+            </div>
+          </div>
+          <div class="product-info">
+            <span class="product-category-label">English Wear</span>
+            <h3 class="product-title"><a href="product.html">Artisan Serif Minimalist Shirt</a></h3>
+            <div class="product-price-row">
+              <span class="product-price">₦78,000</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="product-card" data-category="streetwear">
+          <div class="product-media">
+            <span class="product-badge badge-new">New Drop</span>
+            <img src="Krabe Cloth Concepts_230226_205405_1.jpg" alt="Krabe Signature Script Tee">
+            <div class="quick-add-overlay">
+              <button type="button" class="btn-quick-add js-quick-add" data-title="Krabe Signature Script Tee" data-price="45000" data-image="Krabe Cloth Concepts_230226_205405_1.jpg">
+                + Quick Add
+              </button>
+            </div>
+          </div>
+          <div class="product-info">
+            <span class="product-category-label">Streetwear</span>
+            <h3 class="product-title"><a href="product.html">Krabe Signature Script Tee</a></h3>
+            <div class="product-price-row">
+              <span class="product-price">₦45,000</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="product-card" data-category="streetwear">
+          <div class="product-media">
+            <span class="product-badge badge-bespoke">Gold Edition</span>
+            <img src="Krabe Cloth Concepts_230226_205405_3.jpg" alt="Metallic Gold Brush Tee">
+            <div class="quick-add-overlay">
+              <button type="button" class="btn-quick-add js-quick-add" data-title="Metallic Gold Brush Tee" data-price="55000" data-image="Krabe Cloth Concepts_230226_205405_3.jpg">
+                + Quick Add
+              </button>
+            </div>
+          </div>
+          <div class="product-info">
+            <span class="product-category-label">Streetwear</span>
+            <h3 class="product-title"><a href="product.html">Metallic Gold Brush Tee</a></h3>
+            <div class="product-price-row">
+              <span class="product-price">₦55,000</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- =========================================================================
+       6. SIZE GUIDE MODAL (Reusable Component)
+       ========================================================================= -->
+  <div class="modal-overlay" id="sizeGuideModal" aria-hidden="true">
+    <div class="modal-card">
+      <button type="button" class="modal-close" onclick="closeSizeGuideModal()" aria-label="Close Size Guide">
+        <svg style="width: 22px; height: 22px;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+      </button>
+
+      <h3 style="font-family: var(--font-serif); font-size: 24px; font-weight: 700; margin-bottom: 6px;">Size Guide &amp; Body Measurements</h3>
+      <p style="font-size: 13.5px; color: var(--color-text-muted); margin-bottom: 20px;">All measurements are in inches. If you fall between sizes or have broader shoulders, we recommend sizing up or ordering a custom Bespoke piece.</p>
+
+      <table class="size-table">
+        <thead>
+          <tr>
+            <th>Size Label</th>
+            <th>Chest (in)</th>
+            <th>Shoulder (in)</th>
+            <th>Sleeve (in)</th>
+            <th>Waist (in)</th>
+            <th>Trouser Length (in)</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Small (S)</strong></td>
+            <td>36 - 38</td>
+            <td>17.0</td>
+            <td>24.5</td>
+            <td>30 - 32</td>
+            <td>40.0</td>
+          </tr>
+          <tr>
+            <td><strong>Medium (M)</strong></td>
+            <td>39 - 41</td>
+            <td>18.0</td>
+            <td>25.0</td>
+            <td>33 - 34</td>
+            <td>41.5</td>
+          </tr>
+          <tr>
+            <td><strong>Large (L)</strong></td>
+            <td>42 - 44</td>
+            <td>19.0</td>
+            <td>25.5</td>
+            <td>35 - 37</td>
+            <td>42.5</td>
+          </tr>
+          <tr>
+            <td><strong>Extra Large (XL)</strong></td>
+            <td>45 - 47</td>
+            <td>20.0</td>
+            <td>26.0</td>
+            <td>38 - 40</td>
+            <td>43.5</td>
+          </tr>
+          <tr>
+            <td><strong>Double XL (XXL)</strong></td>
+            <td>48 - 50</td>
+            <td>21.0</td>
+            <td>26.5</td>
+            <td>41 - 44</td>
+            <td>44.0</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div style="background: var(--color-sand); padding: 16px; border-radius: var(--radius-sm); font-size: 12.5px; line-height: 1.5; color: #4A5568;">
+        <strong>How to Measure:</strong> Wrap a flexible measuring tape comfortably around the widest part of your chest, keeping tape level. For trouser length, measure from natural waistline to the top of your shoe.
+      </div>
+    </div>
+  </div>
+
+  <!-- =========================================================================
+       7. GLOBAL FOOTER & SLIDE-OUT CART
+       ========================================================================= -->
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-top">
+        <div class="footer-brand">
+          <img src="assets/brand/kraberefinedimage2.png" alt="Krabe Kollection" style="height: 44px; margin-bottom: 14px;">
+          <p>Premium Nigerian unisex fashion house combining ancestral textile heritage with contemporary minimalist tailoring and luxury streetwear.</p>
+        </div>
+        <div>
+          <div class="footer-col-title">Shop Krabe</div>
+          <ul class="footer-nav-list">
+            <li><a href="shop.html">Made-to-Order Collections</a></li>
+            <li><a href="shop.html?category=native">Native &amp; Agbada</a></li>
+            <li><a href="shop.html?category=formal">English &amp; Suiting</a></li>
+            <li><a href="bespoke.html">Bespoke Ordering</a></li>
+          </ul>
+        </div>
+        <div>
+          <div class="footer-col-title">Customer Care</div>
+          <ul class="footer-nav-list">
+            <li><a href="help.html#contact">Studio Address &amp; Map</a></li>
+            <li><a href="help.html#faq">Frequently Asked Questions</a></li>
+            <li><a href="help.html#shipping">Delivery &amp; Pickup</a></li>
+            <li><a href="help.html#returns">Returns &amp; Alterations</a></li>
+          </ul>
+        </div>
+        <div>
+          <div class="footer-col-title">Private Releases</div>
+          <form class="newsletter-form" onsubmit="event.preventDefault(); alert('Subscribed to Krabe Kollection.');">
+            <input type="email" required placeholder="Enter your email" class="newsletter-input">
+            <button type="submit" class="newsletter-btn">Subscribe</button>
+          </form>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <div>&copy; 2026 Krabe Kollection. All rights reserved. Registered in Nigeria.</div>
+        <div>Modern African Elegance &bull; Handcrafted in Lagos</div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Search Popup Modal -->
+  <div class="search-modal-overlay" id="searchModalOverlay" aria-hidden="true">
+    <div class="search-modal" role="dialog" aria-modal="true" aria-labelledby="searchInputField">
+      <div class="search-modal-header">
+        <div class="search-input-wrap">
+          <svg class="search-icon-svg" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+          </svg>
+          <input type="text" id="searchInputField" class="search-modal-input" placeholder="Search Kaftans, Agbadas, Streetwear, Suits..." autocomplete="off">
+          <button type="button" class="search-clear-btn" id="searchClearBtn" aria-label="Clear search">✕</button>
+        </div>
+        <button type="button" class="search-close-btn" id="searchCloseBtn" aria-label="Close search">Close (Esc)</button>
+      </div>
+
+      <div class="search-modal-body">
+        <div class="search-suggestions-block">
+          <span class="search-section-label">Popular Searches</span>
+          <div class="search-tags">
+            <a href="shop.html?category=native" class="search-tag">Native Kaftans</a>
+            <a href="shop.html?category=native" class="search-tag">Ceremonial Agbada</a>
+            <a href="shop.html?category=streetwear" class="search-tag">Luxury Streetwear</a>
+            <a href="shop.html?category=formal" class="search-tag">Senator Suits</a>
+            <a href="shop.html?category=formal" class="search-tag">Artisan Linen Shirts</a>
+          </div>
+        </div>
+
+        <div class="search-preview-block">
+          <span class="search-section-label">Quick Suggestions</span>
+          <div class="search-results-list">
+            <a href="product.html" class="search-result-item">
+              <img src="Krabe Cloth Concepts_230226_205405_1.jpg" alt="Signature 3-Piece Agbada Set">
+              <div class="search-result-info">
+                <div class="search-result-title">Signature 3-Piece Agbada Set</div>
+                <div class="search-result-meta">Native Wear &bull; Ceremonial Luxe</div>
+                <div class="search-result-price">₦185,000</div>
+              </div>
+            </a>
+            <a href="shop.html?category=native" class="search-result-item">
+              <img src="Krabe Cloth Concepts_230226_205405_6.jpg" alt="Krabe Structured Modern Kaftan">
+              <div class="search-result-info">
+                <div class="search-result-title">Krabe Structured Modern Kaftan</div>
+                <div class="search-result-meta">Native Wear &bull; Senator Cut</div>
+                <div class="search-result-price">₦120,000</div>
+              </div>
+            </a>
+            <a href="shop.html?category=streetwear" class="search-result-item">
+              <img src="Krabe Cloth Concepts_230226_205405_3.jpg" alt="Metallic Gold Brush Statement Tee">
+              <div class="search-result-info">
+                <div class="search-result-title">Metallic Gold Brush Statement Tee</div>
+                <div class="search-result-meta">Streetwear &bull; Unisex Limited Drop</div>
+                <div class="search-result-price">₦55,000</div>
+              </div>
+            </a>
+          </div>
+        </div>
+
+        <div class="search-modal-footer">
+          <button type="button" class="btn-search-submit" id="searchSubmitBtn">
+            Explore All Made-to-Order &rarr;
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Slide-Out Cart Drawer -->
+  <div class="cart-drawer-overlay" id="cartOverlay" aria-hidden="true">
+    <div class="cart-drawer" id="cartDrawer" role="dialog" aria-modal="true" aria-labelledby="cartDrawerTitle">
+      <div class="cart-drawer-header">
+        <h3 class="cart-drawer-title" id="cartDrawerTitle">Shopping Bag</h3>
+        <button type="button" class="cart-close-btn" id="cartCloseBtn" aria-label="Close Shopping Bag">
+          <svg style="width: 22px; height: 22px;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+        </button>
+      </div>
+      <div class="cart-free-shipping">✓ Free Nationwide Delivery on orders over ₦150,000</div>
+      <div class="cart-drawer-body"></div>
+      <div class="cart-drawer-footer">
+        <div class="cart-subtotal-row">
+          <span class="cart-subtotal-label">Subtotal</span>
+          <span class="cart-subtotal-amount">₦185,000</span>
+        </div>
+        <a href="checkout.html" class="btn-checkout">Proceed to Checkout &rarr;</a>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/header.js"></script>
+  <script src="js/auth-modal.js"></script>
+  <script src="js/main.js"></script>
+  <script>
+    // PDP Specific Interactions
+    function swapPdpImg(btn, imgSrc) {
+      document.querySelectorAll('.thumb-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      document.getElementById('mainPdpImg').src = imgSrc;
+    }
+
+    function selectSize(btn) {
+      document.querySelectorAll('.size-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+    }
+
+    function selectColor(btn, label) {
+      document.querySelectorAll('.swatch-circle-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      document.getElementById('colorLabel').textContent = label;
+    }
+
+    let pdpQty = 1;
+    function adjustPdpQty(diff) {
+      pdpQty = Math.max(1, pdpQty + diff);
+      document.getElementById('pdpQtyVal').textContent = pdpQty;
+    }
+
+    function toggleAccordion(btn) {
+      const item = btn.parentElement;
+      const isOpen = item.classList.contains('active');
+      item.classList.toggle('active', !isOpen);
+      btn.querySelector('span').textContent = isOpen ? '+' : '−';
+    }
+
+    function openSizeGuideModal() {
+      document.getElementById('sizeGuideModal').classList.add('active');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeSizeGuideModal() {
+      document.getElementById('sizeGuideModal').classList.remove('active');
+      document.body.style.overflow = '';
+    }
+  </script>
+</body>
+</html>

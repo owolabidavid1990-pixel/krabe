@@ -1,0 +1,90 @@
+{
+  "appointment_status": [
+    { "value": "requested", "label": "Requested" },
+    { "value": "confirmed", "label": "Confirmed" },
+    { "value": "inprogress", "label": "In Progress" },
+    { "value": "done", "label": "Done" }
+  ],
+  "clothing_category": [
+    { "value": "native", "label": "Native" },
+    { "value": "formal", "label": "Formal" },
+    { "value": "streetwear", "label": "Streetwear" }
+  ],
+  "delivery_option": [
+    { "value": "pickup", "label": "Pickup" },
+    { "value": "local delivery", "label": "Local Delivery" },
+    { "value": "international delivery", "label": "International Delivery" }
+  ],
+  "fabric": [
+    { "value": "cotton", "label": "Cotton" },
+    { "value": "linen", "label": "Linen" },
+    { "value": "denim", "label": "Denim" },
+    { "value": "wool", "label": "Wool" },
+    { "value": "cashmere", "label": "Cashmere" },
+    { "value": "silk", "label": "Silk" },
+    { "value": "polyester", "label": "Polyester" },
+    { "value": "nylon", "label": "Nylon" },
+    { "value": "leather", "label": "Leather" },
+    { "value": "suede", "label": "Suede" },
+    { "value": "velvet", "label": "Velvet" },
+    { "value": "satin", "label": "Satin" },
+    { "value": "knit", "label": "Knit" },
+    { "value": "fleece", "label": "Fleece" },
+    { "value": "other", "label": "Other" },
+    { "value": "ankara", "label": "Ankara" },
+    { "value": "lace", "label": "Lace" }
+  ],
+  "gender": [
+    { "value": "male", "label": "Male" },
+    { "value": "female", "label": "Female" },
+    { "value": "unisex", "label": "Unisex" }
+  ],
+  "measurement_type": [
+    { "value": "custom", "label": "Custom" },
+    { "value": "from chart", "label": "From Chart" }
+  ],
+  "order_status": [
+    { "value": "placed", "label": "Placed" },
+    { "value": "payment confirmed", "label": "Payment Confirmed" },
+    { "value": "order confirmed", "label": "Order Confirmed" },
+    { "value": "processing order", "label": "Processing Order" },
+    { "value": "order ready", "label": "Order Ready" },
+    { "value": "dispatched", "label": "Dispatched" },
+    { "value": "delivered", "label": "Delivered" },
+    { "value": "cancelled", "label": "Cancelled" }
+  ],
+  "payment_status": [
+    { "value": "success", "label": "Success" },
+    { "value": "failed", "label": "Failed" },
+    { "value": "abandoned", "label": "Abandoned" },
+    { "value": "ongoing", "label": "Ongoing" },
+    { "value": "pending", "label": "Pending" },
+    { "value": "processing", "label": "Processing" },
+    { "value": "queued", "label": "Queued" },
+    { "value": "reversed", "label": "Reversed" }
+  ],
+  "product_type": [
+    { "value": "bespoke", "label": "Bespoke" },
+    { "value": "ready to wear", "label": "Ready to Wear" }
+  ],
+  "return_status": [
+    { "value": "requested", "label": "Requested" },
+    { "value": "returned", "label": "Returned" }
+  ],
+  "role": [
+    { "value": "customer", "label": "Customer" },
+    { "value": "admin", "label": "Admin" },
+    { "value": "super admin", "label": "Super Admin" }
+  ],
+  "size": [
+    { "value": "XS", "label": "XS" },
+    { "value": "S", "label": "S" },
+    { "value": "M", "label": "M" },
+    { "value": "L", "label": "L" },
+    { "value": "XL", "label": "XL" },
+    { "value": "XXL", "label": "XXL" },
+    { "value": "XXXL", "label": "XXXL" },
+    { "value": "custom", "label": "Custom (Bespoke)" }
+  ],
+  "variant_color": []
+}

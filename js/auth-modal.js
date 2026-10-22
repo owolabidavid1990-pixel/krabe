@@ -1,0 +1,434 @@
+/**
+ * Krabe Kollection — Drop-in Client Auth Modal Component
+ * 
+ * Provides a self-contained, luxury modal for:
+ *  - Client Sign In
+ *  - Client Account Creation (Registration)
+ *  - Password Recovery (Forgot Password)
+ * 
+ * Can be dropped into any page by including this script:
+ *   <script src="js/auth-modal.js"></script>
+ * 
+ * Global API:
+ *   window.KrabeAuthModal.open('signin' | 'register' | 'forgot')
+ *   window.KrabeAuthModal.close()
+ *   window.KrabeAuthModal.showAlert(message, 'error' | 'success' | 'info')
+ *   window.KrabeAuthModal.clearAlert()
+ */
+
+(function () {
+  'use strict';
+
+  const MODAL_ID = 'krabeAuthModal';
+
+  // SVG Icons
+  const ICONS = {
+    eye: `<svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>`,
+    eyeSlash: `<svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l18 18"/></svg>`,
+    alertError: `<svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" style="flex-shrink:0;"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>`,
+    alertSuccess: `<svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" style="flex-shrink:0;"><circle cx="12" cy="12" r="10"/><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4"/></svg>`
+  };
+
+  function getModalHTML() {
+    return `
+      <div class="krabe-auth-overlay" id="${MODAL_ID}" aria-hidden="true" role="dialog" aria-modal="true">
+        <div class="krabe-auth-card">
+          <button type="button" class="krabe-auth-close" id="krabeAuthCloseBtn" aria-label="Close dialog">✕</button>
+          
+          <!-- Brand Header -->
+          <div class="krabe-auth-header">
+            <img src="assets/brand/kraberefinedimage1.png" alt="Krabe Logo" class="krabe-auth-logo">
+            <h2 class="krabe-auth-title" id="krabeAuthTitle">Client Access</h2>
+            <p class="krabe-auth-subtitle" id="krabeAuthSubtitle">Sign in to manage tailored measurements, active commissions, and order history.</p>
+          </div>
+
+          <!-- Alert / Status Notice Banner -->
+          <div class="krabe-auth-alert" id="krabeAuthAlert" role="alert">
+            <span class="krabe-auth-alert-icon"></span>
+            <span class="krabe-auth-alert-text"></span>
+          </div>
+
+          <!-- Segmented Tab Switcher (Sign In vs Register) -->
+          <div class="krabe-auth-tabs" id="krabeAuthTabs">
+            <button type="button" class="krabe-auth-tab-btn active" id="krabeTabSignIn" data-tab="signin">Sign In</button>
+            <button type="button" class="krabe-auth-tab-btn" id="krabeTabRegister" data-tab="register">Create Account</button>
+          </div>
+
+          <!-- VIEW 1: SIGN IN FORM -->
+          <form id="krabeSignInForm" class="krabe-auth-view active" autocomplete="on">
+            <div class="form-group">
+              <label class="form-label" for="krabeLoginEmail">Email Address <span class="req">*</span></label>
+              <input type="email" id="krabeLoginEmail" name="email" class="form-input" placeholder="e.g. client@example.com" required autocomplete="email">
+            </div>
+
+            <div class="form-group">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2px;">
+                <label class="form-label" for="krabeLoginPassword" style="margin-bottom: 0;">Password <span class="req">*</span></label>
+                <button type="button" id="krabeForgotLink" style="background: none; border: none; font-size: 11px; color: var(--color-primary); cursor: pointer; text-decoration: underline; padding: 0;">Forgot Password?</button>
+              </div>
+              <div class="krabe-input-wrap">
+                <input type="password" id="krabeLoginPassword" name="password" class="form-input" placeholder="••••••••••••" required autocomplete="current-password">
+                <button type="button" class="krabe-pwd-toggle" data-target="krabeLoginPassword" aria-label="Toggle password visibility">
+                  ${ICONS.eye}
+                </button>
+              </div>
+            </div>
+
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 18px; font-size: 12px; color: var(--color-text-muted);">
+              <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+                <input type="checkbox" id="krabeRememberMe" checked style="accent-color: var(--color-primary); cursor: pointer;">
+                <span>Remember this device</span>
+              </label>
+            </div>
+
+            <button type="submit" class="btn btn-primary krabe-auth-btn" id="krabeSignInSubmit">
+              <span class="spinner"></span>
+              <span class="btn-text">Sign In to Portal</span>
+            </button>
+          </form>
+
+          <!-- VIEW 2: CREATE ACCOUNT FORM -->
+          <form id="krabeRegisterForm" class="krabe-auth-view" autocomplete="on">
+            <div class="form-group">
+              <label class="form-label" for="krabeRegFullName">Full Name <span class="req">*</span></label>
+              <input type="text" id="krabeRegFullName" name="fullName" class="form-input" placeholder="e.g. Adebayo Adeleke" required autocomplete="name">
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="krabeRegEmail">Email Address <span class="req">*</span></label>
+              <input type="email" id="krabeRegEmail" name="email" class="form-input" placeholder="e.g. adebayo@example.com" required autocomplete="email">
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="krabeRegPhone">Phone / WhatsApp <span class="req">*</span></label>
+              <input type="tel" id="krabeRegPhone" name="phone" class="form-input" placeholder="+234 800 000 0000" required autocomplete="tel">
+              <span style="font-size: 11px; color: var(--color-text-muted); margin-top: 2px;">Used for fitting confirmations and dispatch tracking.</span>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="krabeRegPassword">Create Password <span class="req">*</span></label>
+              <div class="krabe-input-wrap">
+                <input type="password" id="krabeRegPassword" name="password" class="form-input" placeholder="At least 8 characters" required minlength="8" autocomplete="new-password">
+                <button type="button" class="krabe-pwd-toggle" data-target="krabeRegPassword" aria-label="Toggle password visibility">
+                  ${ICONS.eye}
+                </button>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="krabeRegConfirmPassword">Confirm Password <span class="req">*</span></label>
+              <div class="krabe-input-wrap">
+                <input type="password" id="krabeRegConfirmPassword" name="confirmPassword" class="form-input" placeholder="Re-enter password" required minlength="8" autocomplete="new-password">
+                <button type="button" class="krabe-pwd-toggle" data-target="krabeRegConfirmPassword" aria-label="Toggle password visibility">
+                  ${ICONS.eye}
+                </button>
+              </div>
+            </div>
+
+            <button type="submit" class="btn btn-primary krabe-auth-btn" id="krabeRegisterSubmit">
+              <span class="spinner"></span>
+              <span class="btn-text">Create Krabe Account</span>
+            </button>
+          </form>
+
+          <!-- VIEW 3: FORGOT PASSWORD FORM -->
+          <form id="krabeForgotForm" class="krabe-auth-view" autocomplete="on">
+            <p style="font-size: 13px; color: var(--color-text-muted); line-height: 1.5; margin-bottom: 20px;">
+              Enter your registered email address and we will send you a secure link to reset your account credentials.
+            </p>
+
+            <div class="form-group">
+              <label class="form-label" for="krabeForgotEmail">Email Address <span class="req">*</span></label>
+              <input type="email" id="krabeForgotEmail" name="email" class="form-input" placeholder="e.g. client@example.com" required autocomplete="email">
+            </div>
+
+            <button type="submit" class="btn btn-primary krabe-auth-btn" id="krabeForgotSubmit">
+              <span class="spinner"></span>
+              <span class="btn-text">Send Recovery Link</span>
+            </button>
+
+            <div style="text-align: center; margin-top: 16px;">
+              <button type="button" id="krabeBackToSignInBtn" style="background: none; border: none; font-size: 12px; font-weight: 600; color: var(--color-primary); cursor: pointer;">
+                &larr; Back to Sign In
+              </button>
+            </div>
+          </form>
+
+          <!-- Legal & Privacy Disclaimer Footer -->
+          <div class="krabe-auth-footer">
+            By proceeding, you agree to Krabe Kollection's 
+            <a href="help.html#terms">Terms of Service</a> &amp; 
+            <a href="help.html#privacy">Privacy Policy</a>.
+          </div>
+        </div>
+      </div>
+    `;
+  }
+
+  // Ensure modal DOM element is mounted into body
+  function ensureMounted() {
+    if (!document.getElementById(MODAL_ID)) {
+      const container = document.createElement('div');
+      container.innerHTML = getModalHTML().trim();
+      document.body.appendChild(container.firstElementChild);
+      bindEvents();
+    }
+  }
+
+  // State
+  let currentView = 'signin';
+
+  function switchView(view) {
+    ensureMounted();
+    currentView = view;
+    clearAlert();
+
+    const titleEl = document.getElementById('krabeAuthTitle');
+    const subtitleEl = document.getElementById('krabeAuthSubtitle');
+    const tabsContainer = document.getElementById('krabeAuthTabs');
+    const tabSignIn = document.getElementById('krabeTabSignIn');
+    const tabRegister = document.getElementById('krabeTabRegister');
+
+    const formSignIn = document.getElementById('krabeSignInForm');
+    const formRegister = document.getElementById('krabeRegisterForm');
+    const formForgot = document.getElementById('krabeForgotForm');
+
+    // Remove active from all forms
+    [formSignIn, formRegister, formForgot].forEach(f => f && f.classList.remove('active'));
+
+    if (view === 'signin') {
+      if (tabsContainer) tabsContainer.style.display = 'flex';
+      if (tabSignIn) tabSignIn.classList.add('active');
+      if (tabRegister) tabRegister.classList.remove('active');
+      if (formSignIn) formSignIn.classList.add('active');
+      if (titleEl) titleEl.textContent = 'Client Access';
+      if (subtitleEl) subtitleEl.textContent = 'Sign in to manage tailored measurements, active commissions, and order history.';
+    } else if (view === 'register') {
+      if (tabsContainer) tabsContainer.style.display = 'flex';
+      if (tabRegister) tabRegister.classList.add('active');
+      if (tabSignIn) tabSignIn.classList.remove('active');
+      if (formRegister) formRegister.classList.add('active');
+      if (titleEl) titleEl.textContent = 'Create Account';
+      if (subtitleEl) subtitleEl.textContent = 'Join Krabe Kollection for personalized tailoring profiles and bespoke tracking.';
+    } else if (view === 'forgot') {
+      if (tabsContainer) tabsContainer.style.display = 'none'; // Hide tabs on forgot view
+      if (formForgot) formForgot.classList.add('active');
+      if (titleEl) titleEl.textContent = 'Account Recovery';
+      if (subtitleEl) subtitleEl.textContent = 'Follow the steps below to restore access to your account.';
+    }
+  }
+
+  function open(view = 'signin') {
+    ensureMounted();
+    switchView(view);
+    const modal = document.getElementById(MODAL_ID);
+    if (modal) {
+      modal.classList.add('active');
+      modal.setAttribute('aria-hidden', 'false');
+      document.body.style.overflow = 'hidden';
+
+      // Autofocus first visible input
+      setTimeout(() => {
+        const activeForm = modal.querySelector('.krabe-auth-view.active');
+        if (activeForm) {
+          const firstInput = activeForm.querySelector('input:not([type=hidden])');
+          if (firstInput) firstInput.focus();
+        }
+      }, 150);
+    }
+  }
+
+  function close() {
+    const modal = document.getElementById(MODAL_ID);
+    if (modal) {
+      modal.classList.remove('active');
+      modal.setAttribute('aria-hidden', 'true');
+      document.body.style.overflow = '';
+      clearAlert();
+    }
+  }
+
+  function showAlert(message, type = 'error') {
+    ensureMounted();
+    const alertBox = document.getElementById('krabeAuthAlert');
+    if (!alertBox) return;
+
+    const iconSpan = alertBox.querySelector('.krabe-auth-alert-icon');
+    const textSpan = alertBox.querySelector('.krabe-auth-alert-text');
+
+    alertBox.className = `krabe-auth-alert ${type} show`;
+    if (iconSpan) {
+      iconSpan.innerHTML = type === 'success' ? ICONS.alertSuccess : ICONS.alertError;
+    }
+    if (textSpan) {
+      textSpan.textContent = message;
+    }
+  }
+
+  function clearAlert() {
+    const alertBox = document.getElementById('krabeAuthAlert');
+    if (alertBox) {
+      alertBox.className = 'krabe-auth-alert';
+      const textSpan = alertBox.querySelector('.krabe-auth-alert-text');
+      if (textSpan) textSpan.textContent = '';
+    }
+  }
+
+  function setLoading(formId, isLoading) {
+    const form = document.getElementById(formId);
+    if (!form) return;
+    const btn = form.querySelector('button[type="submit"]');
+    if (!btn) return;
+
+    if (isLoading) {
+      btn.classList.add('loading');
+      btn.disabled = true;
+    } else {
+      btn.classList.remove('loading');
+      btn.disabled = false;
+    }
+  }
+
+  function bindEvents() {
+    const modal = document.getElementById(MODAL_ID);
+    if (!modal) return;
+
+    // Close button
+    const closeBtn = document.getElementById('krabeAuthCloseBtn');
+    if (closeBtn) closeBtn.addEventListener('click', close);
+
+    // Backdrop click
+    modal.addEventListener('click', (e) => {
+      if (e.target === modal) close();
+    });
+
+    // Tab buttons
+    const tabSignIn = document.getElementById('krabeTabSignIn');
+    const tabRegister = document.getElementById('krabeTabRegister');
+    if (tabSignIn) tabSignIn.addEventListener('click', () => switchView('signin'));
+    if (tabRegister) tabRegister.addEventListener('click', () => switchView('register'));
+
+    // Forgot password link & Back button
+    const forgotLink = document.getElementById('krabeForgotLink');
+    if (forgotLink) forgotLink.addEventListener('click', (e) => {
+      e.preventDefault();
+      switchView('forgot');
+    });
+
+    const backBtn = document.getElementById('krabeBackToSignInBtn');
+    if (backBtn) backBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      switchView('signin');
+    });
+
+    // Password visibility toggle
+    modal.querySelectorAll('.krabe-pwd-toggle').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const targetId = btn.dataset.target;
+        const input = document.getElementById(targetId);
+        if (input) {
+          const isPassword = input.type === 'password';
+          input.type = isPassword ? 'text' : 'password';
+          btn.innerHTML = isPassword ? ICONS.eyeSlash : ICONS.eye;
+        }
+      });
+    });
+
+    // Form submission placeholders (ready for Supabase wiring after user review)
+    const formSignIn = document.getElementById('krabeSignInForm');
+    const formRegister = document.getElementById('krabeRegisterForm');
+    const formForgot = document.getElementById('krabeForgotForm');
+
+    if (formSignIn) {
+      formSignIn.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const event = new CustomEvent('krabe:auth:signin', {
+          detail: {
+            email: document.getElementById('krabeLoginEmail').value.trim(),
+            password: document.getElementById('krabeLoginPassword').value,
+            remember: document.getElementById('krabeRememberMe').checked
+          }
+        });
+        window.dispatchEvent(event);
+      });
+    }
+
+    if (formRegister) {
+      formRegister.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const pwd = document.getElementById('krabeRegPassword').value;
+        const confirmPwd = document.getElementById('krabeRegConfirmPassword').value;
+
+        if (pwd !== confirmPwd) {
+          showAlert('Passwords do not match. Please verify and try again.', 'error');
+          return;
+        }
+
+        const event = new CustomEvent('krabe:auth:register', {
+          detail: {
+            fullName: document.getElementById('krabeRegFullName').value.trim(),
+            email: document.getElementById('krabeRegEmail').value.trim(),
+            phone: document.getElementById('krabeRegPhone').value.trim(),
+            password: pwd
+          }
+        });
+        window.dispatchEvent(event);
+      });
+    }
+
+    if (formForgot) {
+      formForgot.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const event = new CustomEvent('krabe:auth:forgot', {
+          detail: {
+            email: document.getElementById('krabeForgotEmail').value.trim()
+          }
+        });
+        window.dispatchEvent(event);
+      });
+    }
+  }
+
+  // Keyboard Escape listener
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      const modal = document.getElementById(MODAL_ID);
+      if (modal && modal.classList.contains('active')) {
+        close();
+      }
+    }
+  });
+
+  // Global triggers: any button with [data-auth-trigger] or .js-open-auth
+  document.addEventListener('click', (e) => {
+    const trigger = e.target.closest('[data-auth-trigger], .js-open-auth');
+    if (trigger) {
+      e.preventDefault();
+      const view = trigger.dataset.authTrigger || 'signin';
+      open(view);
+    }
+  });
+
+  // Auto-mount on load
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', ensureMounted);
+  } else {
+    ensureMounted();
+  }
+
+  // Expose global API
+  window.KrabeAuthModal = {
+    open,
+    close,
+    switchView,
+    showAlert,
+    clearAlert,
+    setLoading
+  };
+
+  // Global helper shortcuts
+  window.openKrabeAuth = (view) => open(view);
+  window.closeKrabeAuth = () => close();
+
+})();
+

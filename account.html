@@ -1,0 +1,948 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Client Portal &amp; Orders — Krabe Kollection</title>
+  <meta name="description" content="Manage your Krabe Kollection orders, saved tailoring measurement profiles, studio appointments, and delivery addresses.">
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" href="assets/brand/kraberefined-logo-blue.png">
+
+  <!-- Google Web Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&family=Playfair+Display:ital,wght@0,600;0,700;1,400;1,600&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <!-- Core Stylesheet -->
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+  <!-- =========================================================================
+       1. DEMO AUTH STATE TOGGLE BANNER (For Bubble Prototyping Review)
+       ========================================================================= -->
+  <div class="auth-demo-banner">
+    <span>💡 <strong>Bubble Prototype Mode:</strong> Currently viewing <strong>Authenticated Client Portal</strong></span>
+    <div style="display: flex; gap: 8px; flex-wrap: wrap; justify-content: center;">
+      <button type="button" class="btn-auth-switch" onclick="openAuthModal()">Preview Sign In / Register &rarr;</button>
+      <a href="admin.html" class="btn-auth-switch" style="text-decoration: none; background: rgba(0,0,0,0.4);">Atelier Admin Portal &rarr;</a>
+    </div>
+  </div>
+
+  <!-- =========================================================================
+       REUSABLE SITE HEADER & NAVIGATION COMPONENT
+       ========================================================================= -->
+  <div id="krabeHeader"></div>
+
+  <!-- =========================================================================
+       4. CLIENT HERO PROFILE BANNER
+       ========================================================================= -->
+  <section class="account-hero">
+    <div class="container account-hero-inner">
+      <div class="account-user-badge">
+        <div class="account-avatar">DA</div>
+        <div>
+          <h1 class="account-greeting-name">David Adeleke</h1>
+          <div class="account-meta-line">
+            <span>david.adeleke@example.com</span>
+            <span>&bull;</span>
+            <span>+234 803 123 4567</span>
+            <span>&bull;</span>
+            <span class="account-tier-tag">Sovereign Tier &bull; VIP</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="account-hero-actions">
+        <button type="button" class="btn btn-outline-light" style="padding: 10px 18px; font-size: 12px;" onclick="openMeasurementModal()">
+          + Record Measurements
+        </button>
+        <a href="index.html" class="btn btn-outline-light" style="padding: 10px 18px; font-size: 12px; border-color: rgba(255,255,255,0.2); color: #94A3B8;">
+          Log Out
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- =========================================================================
+       5. STICKY TAB NAVIGATION (Mobile-friendly horizontal strip)
+       ========================================================================= -->
+  <nav class="account-nav-bar" aria-label="Account Tabs">
+    <div class="container">
+      <div class="account-tabs-list" role="tablist">
+        <button type="button" class="account-tab-btn active" role="tab" aria-selected="true" data-tab="orders" onclick="switchAccountTab('orders', this)">
+          Orders <span class="account-tab-badge">2</span>
+        </button>
+        <button type="button" class="account-tab-btn" role="tab" aria-selected="false" data-tab="fittings" onclick="switchAccountTab('fittings', this)">
+          Studio Fittings &amp; Bespoke <span class="account-tab-badge">1</span>
+        </button>
+        <button type="button" class="account-tab-btn" role="tab" aria-selected="false" data-tab="measurements" onclick="switchAccountTab('measurements', this)">
+          Tailoring Measurements <span class="account-tab-badge">2</span>
+        </button>
+        <button type="button" class="account-tab-btn" role="tab" aria-selected="false" data-tab="addresses" onclick="switchAccountTab('addresses', this)">
+          Saved Addresses <span class="account-tab-badge">2</span>
+        </button>
+        <button type="button" class="account-tab-btn" role="tab" aria-selected="false" data-tab="settings" onclick="switchAccountTab('settings', this)">
+          Account Settings
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- =========================================================================
+       6. ACCOUNT CONTENT PANELS
+       ========================================================================= -->
+  <main class="container account-main-content">
+
+    <!-- ==========================================
+         PANEL 1: MADE-TO-ORDER ORDER HISTORY
+         ========================================== -->
+    <div class="account-panel active" id="panel-orders" role="tabpanel">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+        <div>
+          <h2 style="font-family: var(--font-serif); font-size: 24px; font-weight: 700; color: var(--color-obsidian);">Your Order History</h2>
+          <p style="font-size: 13.5px; color: var(--color-text-muted);">Track current deliveries, view invoices, or request alterations.</p>
+        </div>
+        <a href="shop.html" class="btn btn-primary" style="padding: 10px 20px; font-size: 12px;">Shop New Releases &rarr;</a>
+      </div>
+
+      <!-- Order 1: In Transit -->
+      <article class="order-card">
+        <div class="order-card-header">
+          <div class="order-meta-group">
+            <div class="order-meta-item">
+              <span>Order Number</span>
+              <strong>#KB-2026-9411</strong>
+            </div>
+            <div class="order-meta-item">
+              <span>Date Placed</span>
+              <strong>04 Oct 2026</strong>
+            </div>
+            <div class="order-meta-item">
+              <span>Total Paid</span>
+              <strong style="color: var(--color-primary);">₦185,000</strong>
+            </div>
+            <div class="order-meta-item">
+              <span>Delivery Method</span>
+              <strong>Doorstep Delivery (Lagos)</strong>
+            </div>
+          </div>
+          <span class="order-status-badge in-transit">
+            <span style="width: 8px; height: 8px; border-radius: 50%; background: #3182CE; display: inline-block;"></span>
+            In Transit (GIG Logistics)
+          </span>
+        </div>
+
+        <!-- Tracking Timeline -->
+        <div class="order-tracking-strip">
+          <div class="tracking-step done">
+            <span class="tracking-dot">✓</span>
+            <span>Order Confirmed</span>
+          </div>
+          <div class="tracking-line done"></div>
+          <div class="tracking-step done">
+            <span class="tracking-dot">✓</span>
+            <span>Inspected at Lagos Studio</span>
+          </div>
+          <div class="tracking-line done"></div>
+          <div class="tracking-step done">
+            <span class="tracking-dot">🚚</span>
+            <span>With Courier</span>
+          </div>
+          <div class="tracking-line"></div>
+          <div class="tracking-step">
+            <span class="tracking-dot">4</span>
+            <span>Delivered</span>
+          </div>
+        </div>
+
+        <div class="order-card-body">
+          <div class="order-item-row">
+            <img src="Krabe Cloth Concepts_230226_205405_1.jpg" alt="Signature 3-Piece Agbada Set">
+            <div class="order-item-info">
+              <h3 class="order-item-title">Signature 3-Piece Agbada Set</h3>
+              <div class="order-item-meta">Color: Midnight Blue &bull; Size: XL &bull; Qty: 1</div>
+              <div class="order-item-price">₦185,000</div>
+            </div>
+            <a href="product.html" class="btn btn-outline" style="padding: 8px 14px; font-size: 11px;">View Item</a>
+          </div>
+        </div>
+
+        <div class="order-card-footer">
+          <span style="font-size: 12.5px; color: var(--color-text-muted);">Tracking ID: <strong>GIG-LOS-88294102</strong> &bull; Estimated Arrival: <strong>Tomorrow, by 4:00 PM</strong></span>
+          <div style="display: flex; gap: 10px;">
+            <button type="button" class="btn btn-outline" style="padding: 8px 14px; font-size: 11px;" onclick="alert('Digital PDF invoice downloaded for #KB-2026-9411.');">
+              Download Invoice
+            </button>
+            <a href="https://wa.me/2348000000000?text=Hello%20Krabe,%20tracking%20update%20for%20order%20KB-2026-9411" target="_blank" rel="noopener" class="btn-whatsapp" style="padding: 8px 14px; font-size: 11px;">
+              WhatsApp Dispatch Desk
+            </a>
+          </div>
+        </div>
+      </article>
+
+      <!-- Order 2: Delivered -->
+      <article class="order-card">
+        <div class="order-card-header">
+          <div class="order-meta-group">
+            <div class="order-meta-item">
+              <span>Order Number</span>
+              <strong>#KB-2026-8802</strong>
+            </div>
+            <div class="order-meta-item">
+              <span>Date Placed</span>
+              <strong>18 Sep 2026</strong>
+            </div>
+            <div class="order-meta-item">
+              <span>Total Paid</span>
+              <strong style="color: var(--color-primary);">₦120,000</strong>
+            </div>
+            <div class="order-meta-item">
+              <span>Destination</span>
+              <strong>Lekki Phase 1, Lagos</strong>
+            </div>
+          </div>
+          <span class="order-status-badge delivered">
+            <span style="width: 8px; height: 8px; border-radius: 50%; background: #38A169; display: inline-block;"></span>
+            Delivered
+          </span>
+        </div>
+
+        <div class="order-card-body">
+          <div class="order-item-row">
+            <img src="Krabe Cloth Concepts_230226_205405_6.jpg" alt="Krabe Structured Modern Kaftan">
+            <div class="order-item-info">
+              <h3 class="order-item-title">Krabe Structured Modern Kaftan</h3>
+              <div class="order-item-meta">Color: Emerald Slate &bull; Size: L &bull; Qty: 1</div>
+              <div class="order-item-price">₦120,000</div>
+            </div>
+            <button type="button" class="btn btn-outline js-quick-add" data-title="Krabe Structured Modern Kaftan" data-price="120000" data-image="Krabe Cloth Concepts_230226_205405_6.jpg" style="padding: 8px 14px; font-size: 11px;">
+              Reorder Look
+            </button>
+          </div>
+        </div>
+
+        <div class="order-card-footer">
+          <span style="font-size: 12.5px; color: #48BB78;">✓ Delivered on 21 Sep 2026 &bull; Signed by David Adeleke</span>
+          <div style="display: flex; gap: 10px;">
+            <button type="button" class="btn btn-outline" style="padding: 8px 14px; font-size: 11px;" onclick="openAlterationModal('#KB-2026-8802', 'Krabe Structured Modern Kaftan')">
+              Request Alteration
+            </button>
+            <button type="button" class="btn btn-outline" style="padding: 8px 14px; font-size: 11px;" onclick="alert('Digital receipt sent to your email.');">
+              Receipt
+            </button>
+          </div>
+        </div>
+      </article>
+    </div>
+
+    <!-- ==========================================
+         PANEL 2: STUDIO FITTINGS & BESPOKE
+         ========================================== -->
+    <div class="account-panel" id="panel-fittings" role="tabpanel">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; flex-wrap: wrap; gap: 14px;">
+        <div>
+          <h2 style="font-family: var(--font-serif); font-size: 24px; font-weight: 700; color: var(--color-obsidian);">Studio Appointments &amp; Bespoke</h2>
+          <p style="font-size: 13.5px; color: var(--color-text-muted);">Manage in-person studio fittings and active bespoke tailoring orders.</p>
+        </div>
+        <a href="bespoke.html#appointment-section" class="btn btn-primary" style="padding: 10px 20px; font-size: 12px;">+ Book New Studio Fitting</a>
+      </div>
+
+      <!-- Active Fitting Card -->
+      <article class="order-card">
+        <div class="order-card-header">
+          <div class="order-meta-group">
+            <div class="order-meta-item">
+              <span>Appointment Type</span>
+              <strong style="color: var(--color-gold);">In-Person Fitting &amp; Consultation</strong>
+            </div>
+            <div class="order-meta-item">
+              <span>Confirmed Date &amp; Time</span>
+              <strong>Saturday, 17 Oct 2026 &bull; 2:00 PM (Lagos Time)</strong>
+            </div>
+            <div class="order-meta-item">
+              <span>Location</span>
+              <strong>Krabe Studio, Victoria Island Flagship, Lagos</strong>
+            </div>
+          </div>
+          <span class="order-status-badge" style="background: rgba(197, 138, 85, 0.15); color: var(--color-gold); border: 1px solid var(--color-gold);">
+            Fitting Confirmed
+          </span>
+        </div>
+
+        <div class="order-card-body" style="background: var(--color-white);">
+          <div style="display: flex; gap: 20px; align-items: center; flex-wrap: wrap;">
+            <div style="width: 50px; height: 50px; border-radius: 50%; background: var(--color-primary-light); color: var(--color-primary); display: flex; align-items: center; justify-content: center; font-weight: 700;">
+              📍
+            </div>
+            <div style="flex: 1;">
+              <h4 style="font-size: 15px; font-weight: 700; color: var(--color-obsidian); margin-bottom: 4px;">Private Fitting Suite 01 &bull; Master Tailor Adeyemi</h4>
+              <p style="font-size: 13px; color: var(--color-text-muted); line-height: 1.5;">
+                Please arrive 10 minutes prior to your allocated slot. Refreshments and garment samples will be prepared in your private consultation lounge.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div class="order-card-footer">
+          <span style="font-size: 12.5px; color: var(--color-text-muted);">Appointment Reference: <strong>#APP-LAG-2026-081</strong></span>
+          <div style="display: flex; gap: 10px;">
+            <a href="https://wa.me/2348000000000?text=Hello%20Krabe,%20I'd%20like%20to%20reschedule%20or%20confirm%20my%20appointment%20APP-LAG-2026-081" target="_blank" rel="noopener" class="btn-whatsapp" style="padding: 8px 14px; font-size: 11px;">
+              WhatsApp Studio Concierge
+            </a>
+            <button type="button" class="btn btn-outline" style="padding: 8px 14px; font-size: 11px;" onclick="alert('Calendar invite (.ics) downloaded.');">
+              Add to Calendar
+            </button>
+          </div>
+        </div>
+      </article>
+
+      <!-- Active Bespoke Pipeline -->
+      <div style="margin-top: 36px;">
+        <h3 style="font-family: var(--font-serif); font-size: 18px; font-weight: 700; margin-bottom: 16px;">Active Bespoke Commissions</h3>
+        <div class="order-card">
+          <div class="order-card-header">
+            <div class="order-meta-group">
+              <div class="order-meta-item">
+                <span>Commission Title</span>
+                <strong>Royal Sovereign 3-Piece Agbada in Ivory Damask</strong>
+              </div>
+              <div class="order-meta-item">
+                <span>Agreed Price</span>
+                <strong style="color: var(--color-primary);">₦210,000</strong>
+              </div>
+              <div class="order-meta-item">
+                <span>Stage</span>
+                <strong style="color: var(--color-gold);">Hand Embroidery &amp; Finishing</strong>
+              </div>
+            </div>
+            <span class="order-status-badge processing">In Tailoring Pipeline</span>
+          </div>
+          <div class="order-card-body">
+            <p style="font-size: 13px; color: var(--color-text-muted); line-height: 1.6;">
+              Fabric cut from hand-loomed Nigerian damask. Outer embroidery verified against your saved <strong>"Agbada Ceremonial Cut"</strong> measurement profile. Estimated ready date: <strong>24 Oct 2026</strong>.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==========================================
+         PANEL 3: MEASUREMENT PROFILES (Tailoring DNA)
+         ========================================== -->
+    <div class="account-panel" id="panel-measurements" role="tabpanel">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; flex-wrap: wrap; gap: 14px;">
+        <div>
+          <h2 style="font-family: var(--font-serif); font-size: 24px; font-weight: 700; color: var(--color-obsidian);">Saved Measurement Profiles</h2>
+          <p style="font-size: 13.5px; color: var(--color-text-muted);">Your personalized tailoring blueprint. Reused seamlessly for all bespoke commissions.</p>
+        </div>
+        <button type="button" class="btn btn-primary" style="padding: 10px 20px; font-size: 12px;" onclick="openMeasurementModal()">
+          + Add New Profile
+        </button>
+      </div>
+
+      <div class="measurement-grid">
+
+        <!-- Profile 1: Senator Cut -->
+        <div class="measurement-card">
+          <div class="measurement-card-header">
+            <div>
+              <h3 class="measurement-title">My Senator Fit (Crisp Native)</h3>
+              <span class="measurement-date">Last updated: 14 Sep 2026 &bull; Verified in Studio</span>
+            </div>
+            <span class="account-tier-tag" style="background: var(--color-primary-light); color: var(--color-primary); border-color: var(--color-primary);">Primary</span>
+          </div>
+
+          <div class="measurement-metrics-grid">
+            <div class="measurement-metric">
+              <span>Neck</span>
+              <strong>16.5 inches</strong>
+            </div>
+            <div class="measurement-metric">
+              <span>Chest</span>
+              <strong>42.0 inches</strong>
+            </div>
+            <div class="measurement-metric">
+              <span>Shoulder</span>
+              <strong>19.0 inches</strong>
+            </div>
+            <div class="measurement-metric">
+              <span>Sleeve Length</span>
+              <strong>25.5 inches</strong>
+            </div>
+            <div class="measurement-metric">
+              <span>Tunic Length</span>
+              <strong>38.0 inches</strong>
+            </div>
+            <div class="measurement-metric">
+              <span>Waist</span>
+              <strong>34.0 inches</strong>
+            </div>
+            <div class="measurement-metric">
+              <span>Trouser Length</span>
+              <strong>41.0 inches</strong>
+            </div>
+            <div class="measurement-metric">
+              <span>Thigh / Lap</span>
+              <strong>25.0 inches</strong>
+            </div>
+          </div>
+
+          <div style="margin-top: auto; display: flex; gap: 10px;">
+            <a href="https://wa.me/2348000000000?text=Hello%20Krabe,%20here%20is%20my%20Senator%20measurement%20profile:%20Neck%2016.5,%20Chest%2042,%20Shoulder%2019,%20Sleeve%2025.5,%20Tunic%2038,%20Waist%2034,%20Trouser%2041." target="_blank" rel="noopener" class="btn-whatsapp" style="flex: 1; padding: 10px; font-size: 11px; justify-content: center;">
+              Share to WhatsApp
+            </a>
+            <button type="button" class="btn btn-outline" style="padding: 10px 14px; font-size: 11px;" onclick="openMeasurementModal('Senator')">
+              Edit
+            </button>
+          </div>
+        </div>
+
+        <!-- Profile 2: Agbada Drape -->
+        <div class="measurement-card">
+          <div class="measurement-card-header">
+            <div>
+              <h3 class="measurement-title">Ceremonial Agbada (Royal Drape)</h3>
+              <span class="measurement-date">Last updated: 02 Aug 2026</span>
+            </div>
+          </div>
+
+          <div class="measurement-metrics-grid">
+            <div class="measurement-metric">
+              <span>Chest (Loose)</span>
+              <strong>44.0 inches</strong>
+            </div>
+            <div class="measurement-metric">
+              <span>Agbada Wing Span</span>
+              <strong>64.0 inches</strong>
+            </div>
+            <div class="measurement-metric">
+              <span>Agbada Length</span>
+              <strong>55.0 inches</strong>
+            </div>
+            <div class="measurement-metric">
+              <span>Inner Tunic Chest</span>
+              <strong>43.0 inches</strong>
+            </div>
+            <div class="measurement-metric">
+              <span>Fila / Cap Size</span>
+              <strong>23.0 inches</strong>
+            </div>
+            <div class="measurement-metric">
+              <span>Trouser Length</span>
+              <strong>41.5 inches</strong>
+            </div>
+          </div>
+
+          <div style="margin-top: auto; display: flex; gap: 10px;">
+            <a href="https://wa.me/2348000000000?text=Hello%20Krabe,%20here%20is%20my%20Agbada%20measurement%20profile:%20Chest%2044,%20Wing%2064,%20Length%2055,%20Cap%2023." target="_blank" rel="noopener" class="btn-whatsapp" style="flex: 1; padding: 10px; font-size: 11px; justify-content: center;">
+              Share to WhatsApp
+            </a>
+            <button type="button" class="btn btn-outline" style="padding: 10px 14px; font-size: 11px;" onclick="openMeasurementModal('Agbada')">
+              Edit
+            </button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ==========================================
+         PANEL 4: SAVED ADDRESSES
+         ========================================== -->
+    <div class="account-panel" id="panel-addresses" role="tabpanel">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; flex-wrap: wrap; gap: 14px;">
+        <div>
+          <h2 style="font-family: var(--font-serif); font-size: 24px; font-weight: 700; color: var(--color-obsidian);">Saved Delivery Addresses</h2>
+          <p style="font-size: 13.5px; color: var(--color-text-muted);">Manage where your tailored garments and made-to-order collections are dispatched.</p>
+        </div>
+        <button type="button" class="btn btn-primary" style="padding: 10px 20px; font-size: 12px;" onclick="alert('Add Address form modal opened.');">
+          + Add New Address
+        </button>
+      </div>
+
+      <div class="address-grid">
+        <!-- Address 1 (Default) -->
+        <div class="address-card default">
+          <span class="address-badge-default">Default Shipping</span>
+          <h3 style="font-size: 15px; font-weight: 700; color: var(--color-obsidian); margin-bottom: 6px;">David Adeleke (Home)</h3>
+          <p style="font-size: 13.5px; color: var(--color-text-muted); line-height: 1.6; margin-bottom: 16px;">
+            Plot 14, Block 2, Admiralty Way<br>
+            Lekki Phase 1, Eti-Osa LGA<br>
+            Lagos State, Nigeria<br>
+            Phone: +234 803 123 4567
+          </p>
+          <div style="display: flex; gap: 12px; font-size: 12px; font-weight: 600;">
+            <a href="javascript:void(0)" onclick="alert('Editing address...');" style="color: var(--color-primary);">Edit Address</a>
+          </div>
+        </div>
+
+        <!-- Address 2 -->
+        <div class="address-card">
+          <h3 style="font-size: 15px; font-weight: 700; color: var(--color-obsidian); margin-bottom: 6px;">David Adeleke (Office)</h3>
+          <p style="font-size: 13.5px; color: var(--color-text-muted); line-height: 1.6; margin-bottom: 16px;">
+            Tower 3, Ozumba Mbadiwe Avenue<br>
+            Victoria Island<br>
+            Lagos State, Nigeria<br>
+            Phone: +234 803 123 4567
+          </p>
+          <div style="display: flex; gap: 12px; font-size: 12px; font-weight: 600;">
+            <a href="javascript:void(0)" onclick="alert('Set as default shipping address.');" style="color: var(--color-primary);">Make Default</a>
+            <span style="color: var(--color-border);">&bull;</span>
+            <a href="javascript:void(0)" onclick="alert('Editing address...');" style="color: var(--color-text-muted);">Edit</a>
+            <span style="color: var(--color-border);">&bull;</span>
+            <a href="javascript:void(0)" onclick="confirm('Delete address?');" style="color: #E53E3E;">Delete</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==========================================
+         PANEL 5: ACCOUNT SETTINGS & SECURITY
+         ========================================== -->
+    <div class="account-panel" id="panel-settings" role="tabpanel">
+      <div style="margin-bottom: 24px;">
+        <h2 style="font-family: var(--font-serif); font-size: 24px; font-weight: 700; color: var(--color-obsidian);">Account Profile &amp; Security</h2>
+        <p style="font-size: 13.5px; color: var(--color-text-muted);">Update personal contact details and security credentials.</p>
+      </div>
+
+      <div class="settings-box">
+        <form onsubmit="event.preventDefault(); alert('Account profile details updated successfully.');">
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+            <div class="form-group">
+              <label for="accFirstName">First Name</label>
+              <input type="text" id="accFirstName" class="form-input" value="David" required>
+            </div>
+            <div class="form-group">
+              <label for="accLastName">Last Name</label>
+              <input type="text" id="accLastName" class="form-input" value="Adeleke" required>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="accEmail">Email Address</label>
+            <input type="email" id="accEmail" class="form-input" value="david.adeleke@example.com" required>
+          </div>
+
+          <div class="form-group">
+            <label for="accPhone">Phone / WhatsApp Number</label>
+            <input type="tel" id="accPhone" class="form-input" value="+234 803 123 4567" required>
+            <small style="font-size: 11.5px; color: var(--color-text-muted); display: block; margin-top: 4px;">
+              Used for courier updates and bespoke tailoring consultations.
+            </small>
+          </div>
+
+          <hr style="border: none; border-top: 1px solid var(--color-border); margin: 28px 0;">
+
+          <h3 style="font-family: var(--font-serif); font-size: 18px; font-weight: 700; margin-bottom: 16px;">Security &amp; Password</h3>
+          <div class="form-group">
+            <label for="accCurrPass">Current Password</label>
+            <input type="password" id="accCurrPass" class="form-input" placeholder="••••••••••••">
+          </div>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+            <div class="form-group">
+              <label for="accNewPass">New Password</label>
+              <input type="password" id="accNewPass" class="form-input" placeholder="Minimum 8 characters">
+            </div>
+            <div class="form-group">
+              <label for="accConfirmPass">Confirm New Password</label>
+              <input type="password" id="accConfirmPass" class="form-input" placeholder="Confirm new password">
+            </div>
+          </div>
+
+          <button type="submit" class="btn btn-primary" style="margin-top: 10px;">Save Changes</button>
+        </form>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- =========================================================================
+       7. INTERACTIVE POPUP MODALS
+       ========================================================================= -->
+
+  <!-- Modal A: Add / Edit Measurement Profile -->
+  <div class="modal-overlay" id="measurementModal" aria-hidden="true" onclick="closeModalOnBackdrop(event, 'measurementModal')">
+    <div class="modal-card" style="max-width: 600px;">
+      <button type="button" class="modal-close" onclick="closeModal('measurementModal')" aria-label="Close">✕</button>
+      <h3 style="font-family: var(--font-serif); font-size: 22px; font-weight: 700; margin-bottom: 6px;">New Tailoring Measurement Profile</h3>
+      <p style="font-size: 13px; color: var(--color-text-muted); margin-bottom: 20px;">
+        Enter measurements in inches. These details will be stored in your private vault for instant bespoke ordering.
+      </p>
+
+      <form onsubmit="event.preventDefault(); alert('Measurement profile saved!'); closeModal('measurementModal');">
+        <div class="form-group">
+          <label for="measProfileName">Profile Name</label>
+          <input type="text" id="measProfileName" class="form-input" placeholder="e.g. Wedding Senator Fit, Casual Kaftan" required>
+        </div>
+
+        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px;">
+          <div class="form-group">
+            <label for="mNeck">Neck (in)</label>
+            <input type="number" step="0.5" id="mNeck" class="form-input" placeholder="16.5" required>
+          </div>
+          <div class="form-group">
+            <label for="mChest">Chest (in)</label>
+            <input type="number" step="0.5" id="mChest" class="form-input" placeholder="42.0" required>
+          </div>
+          <div class="form-group">
+            <label for="mShoulder">Shoulder (in)</label>
+            <input type="number" step="0.5" id="mShoulder" class="form-input" placeholder="19.0" required>
+          </div>
+          <div class="form-group">
+            <label for="mSleeve">Sleeve (in)</label>
+            <input type="number" step="0.5" id="mSleeve" class="form-input" placeholder="25.5" required>
+          </div>
+          <div class="form-group">
+            <label for="mWaist">Waist (in)</label>
+            <input type="number" step="0.5" id="mWaist" class="form-input" placeholder="34.0" required>
+          </div>
+          <div class="form-group">
+            <label for="mTrouser">Trouser L (in)</label>
+            <input type="number" step="0.5" id="mTrouser" class="form-input" placeholder="41.0" required>
+          </div>
+        </div>
+
+        <div style="display: flex; gap: 12px; margin-top: 14px;">
+          <button type="submit" class="btn btn-primary" style="flex: 1;">Save Profile</button>
+          <button type="button" class="btn btn-outline" onclick="closeModal('measurementModal')">Cancel</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal B: Request Alteration -->
+  <div class="modal-overlay" id="alterationModal" aria-hidden="true" onclick="closeModalOnBackdrop(event, 'alterationModal')">
+    <div class="modal-card" style="max-width: 540px;">
+      <button type="button" class="modal-close" onclick="closeModal('alterationModal')" aria-label="Close">✕</button>
+      <span class="section-tag">Complimentary Care &bull; Lagos Studio</span>
+      <h3 style="font-family: var(--font-serif); font-size: 22px; font-weight: 700; margin-bottom: 6px;">Request Fitting Alteration</h3>
+      <p style="font-size: 13px; color: var(--color-text-muted); margin-bottom: 20px;" id="alterationOrderDesc">
+        Requesting adjustments for order items.
+      </p>
+
+      <form onsubmit="event.preventDefault(); alert('Alteration request submitted! A Krabe tailor will contact you within 4 hours.'); closeModal('alterationModal');">
+        <div class="form-group">
+          <label for="altType">Type of Adjustment</label>
+          <select id="altType" class="form-input" style="padding: 12px 14px;">
+            <option>Trouser Hemming / Shortening</option>
+            <option>Chest / Torso Tapering</option>
+            <option>Sleeve Length Adjustment</option>
+            <option>Shoulder / Armhole Fit Adjustment</option>
+            <option>Other Custom Fitting Request</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="altNotes">Describe Specific Fit Notes</label>
+          <textarea id="altNotes" class="form-input" rows="3" placeholder="e.g. Please take in 1 inch from the waist and shorten trouser length by 1.5 inches." required></textarea>
+        </div>
+
+        <div class="form-group">
+          <label>Preferred Alteration Method</label>
+          <div style="display: flex; gap: 12px; font-size: 13px;">
+            <label style="display: flex; align-items: center; gap: 6px; text-transform: none; font-weight: 500;">
+              <input type="radio" name="altMethod" checked> Lagos Doorstep Pickup (Free)
+            </label>
+            <label style="display: flex; align-items: center; gap: 6px; text-transform: none; font-weight: 500;">
+              <input type="radio" name="altMethod"> In-Store Studio Dropoff
+            </label>
+          </div>
+        </div>
+
+        <div style="display: flex; gap: 12px; margin-top: 20px;">
+          <button type="submit" class="btn btn-primary" style="flex: 1;">Submit Alteration Request</button>
+          <button type="button" class="btn btn-outline" onclick="closeModal('alterationModal')">Cancel</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal C: Sign In / Register Demo View -->
+  <div class="modal-overlay" id="authModal" aria-hidden="true" onclick="closeModalOnBackdrop(event, 'authModal')">
+    <div class="modal-card" style="max-width: 480px; padding: 40px 32px;">
+      <button type="button" class="modal-close" onclick="closeModal('authModal')" aria-label="Close">✕</button>
+      
+      <div style="text-align: center; margin-bottom: 24px;">
+        <img src="assets/brand/kraberefinedimage1.png" alt="Krabe Logo" style="height: 38px; margin-bottom: 12px;">
+        <h3 style="font-family: var(--font-serif); font-size: 24px; font-weight: 700; color: var(--color-obsidian);">Client Access</h3>
+        <p style="font-size: 13px; color: var(--color-text-muted);">Sign in to access saved tailoring measurements and active orders.</p>
+      </div>
+
+      <!-- Auth Tabs: Sign In vs Register -->
+      <div style="display: flex; border-bottom: 1px solid var(--color-border); margin-bottom: 24px;">
+        <button type="button" id="authTabSignIn" class="pill-btn active" style="flex: 1; border-radius: 0; border: none; border-bottom: 2px solid var(--color-primary); background: transparent; color: var(--color-primary); font-weight: 700;" onclick="toggleAuthTab('signin')">Sign In</button>
+        <button type="button" id="authTabRegister" class="pill-btn" style="flex: 1; border-radius: 0; border: none; border-bottom: 2px solid transparent; background: transparent; color: var(--color-text-muted);" onclick="toggleAuthTab('register')">Create Account</button>
+      </div>
+
+      <!-- Sign In Form -->
+      <form id="signInForm" onsubmit="event.preventDefault(); alert('Signed in!'); closeModal('authModal');">
+        <div class="form-group">
+          <label for="loginEmail">Email Address</label>
+          <input type="email" id="loginEmail" class="form-input" value="david.adeleke@example.com" required>
+        </div>
+        <div class="form-group">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+            <label for="loginPass" style="margin-bottom: 0;">Password</label>
+            <a href="javascript:void(0)" onclick="alert('Password reset link sent to your email.');" style="font-size: 11px; color: var(--color-primary);">Forgot Password?</a>
+          </div>
+          <input type="password" id="loginPass" class="form-input" value="••••••••••••" required>
+        </div>
+        <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 8px;">Sign In to Portal</button>
+      </form>
+
+      <!-- Register Form -->
+      <form id="registerForm" style="display: none;" onsubmit="event.preventDefault(); alert('Account created! Welcome to Krabe Kollection.'); closeModal('authModal');">
+        <div class="form-group">
+          <label for="regName">Full Name</label>
+          <input type="text" id="regName" class="form-input" placeholder="e.g. David Adeleke" required>
+        </div>
+        <div class="form-group">
+          <label for="regEmail">Email Address</label>
+          <input type="email" id="regEmail" class="form-input" placeholder="david@example.com" required>
+        </div>
+        <div class="form-group">
+          <label for="regPhone">Phone / WhatsApp</label>
+          <input type="tel" id="regPhone" class="form-input" placeholder="+234 800 000 0000" required>
+        </div>
+        <div class="form-group">
+          <label for="regPass">Create Password</label>
+          <input type="password" id="regPass" class="form-input" placeholder="At least 8 characters" required>
+        </div>
+        <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 8px;">Create Krabe Account</button>
+      </form>
+
+      <div style="text-align: center; margin-top: 20px; font-size: 12px; color: var(--color-text-muted);">
+        By signing in, you agree to our <a href="help.html#terms" style="color: var(--color-primary); text-decoration: underline;">Terms of Service</a> &amp; <a href="help.html#privacy" style="color: var(--color-primary); text-decoration: underline;">Privacy Policy</a>.
+      </div>
+    </div>
+  </div>
+
+  <!-- =========================================================================
+       8. GLOBAL SEARCH POPUP MODAL
+       ========================================================================= -->
+  <div class="search-modal-overlay" id="searchModalOverlay" aria-hidden="true">
+    <div class="search-modal" role="dialog" aria-modal="true" aria-labelledby="searchInputField">
+      <div class="search-modal-header">
+        <div class="search-input-wrap">
+          <svg class="search-icon-svg" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+          </svg>
+          <input type="text" id="searchInputField" class="search-modal-input" placeholder="Search Kaftans, Agbadas, Streetwear, Suits..." autocomplete="off">
+          <button type="button" class="search-clear-btn" id="searchClearBtn" aria-label="Clear search">✕</button>
+        </div>
+        <button type="button" class="search-close-btn" id="searchCloseBtn" aria-label="Close search">Close (Esc)</button>
+      </div>
+
+      <div class="search-modal-body">
+        <div class="search-suggestions-block">
+          <span class="search-section-label">Popular Searches</span>
+          <div class="search-tags">
+            <a href="shop.html?category=native" class="search-tag">Native Kaftans</a>
+            <a href="shop.html?category=native" class="search-tag">Ceremonial Agbada</a>
+            <a href="shop.html?category=streetwear" class="search-tag">Luxury Streetwear</a>
+            <a href="shop.html?category=formal" class="search-tag">Senator Suits</a>
+            <a href="shop.html?category=formal" class="search-tag">Artisan Linen Shirts</a>
+          </div>
+        </div>
+
+        <div class="search-preview-block">
+          <span class="search-section-label">Quick Suggestions</span>
+          <div class="search-results-list">
+            <a href="product.html" class="search-result-item">
+              <img src="Krabe Cloth Concepts_230226_205405_1.jpg" alt="Signature 3-Piece Agbada Set">
+              <div class="search-result-info">
+                <div class="search-result-title">Signature 3-Piece Agbada Set</div>
+                <div class="search-result-meta">Native Wear &bull; Ceremonial Luxe</div>
+                <div class="search-result-price">₦185,000</div>
+              </div>
+            </a>
+            <a href="shop.html?category=native" class="search-result-item">
+              <img src="assets/lookbook/lookbook_4_senator.jpg" alt="Krabe Structured Modern Kaftan">
+              <div class="search-result-info">
+                <div class="search-result-title">Krabe Structured Modern Kaftan</div>
+                <div class="search-result-meta">Native Wear &bull; Senator Cut</div>
+                <div class="search-result-price">₦120,000</div>
+              </div>
+            </a>
+            <a href="shop.html?category=streetwear" class="search-result-item">
+              <img src="assets/lookbook/lookbook_5_goldbrush.jpg" alt="Metallic Gold Brush Statement Tee">
+              <div class="search-result-info">
+                <div class="search-result-title">Metallic Gold Brush Statement Tee</div>
+                <div class="search-result-meta">Streetwear &bull; Unisex Limited Drop</div>
+                <div class="search-result-price">₦55,000</div>
+              </div>
+            </a>
+          </div>
+        </div>
+
+        <div class="search-modal-footer">
+          <button type="button" class="btn-search-submit" id="searchSubmitBtn">
+            Explore All Made-to-Order &rarr;
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- =========================================================================
+       9. SLIDE-OUT CART DRAWER
+       ========================================================================= -->
+  <div class="cart-drawer-overlay" id="cartOverlay" aria-hidden="true">
+    <div class="cart-drawer" id="cartDrawer" role="dialog" aria-modal="true" aria-labelledby="cartDrawerTitle">
+      <div class="cart-drawer-header">
+        <h3 class="cart-drawer-title" id="cartDrawerTitle">Shopping Bag</h3>
+        <button type="button" class="cart-close-btn" id="cartCloseBtn" aria-label="Close Shopping Bag">
+          <svg style="width: 22px; height: 22px;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+        </button>
+      </div>
+      <div class="cart-free-shipping">✓ Free Nationwide Delivery on orders over ₦150,000</div>
+      <div class="cart-drawer-body"></div>
+      <div class="cart-drawer-footer">
+        <div class="cart-subtotal-row">
+          <span class="cart-subtotal-label">Subtotal</span>
+          <span class="cart-subtotal-amount">₦185,000</span>
+        </div>
+        <a href="checkout.html" class="btn-checkout">Proceed to Checkout &rarr;</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- =========================================================================
+       11. GLOBAL FOOTER
+       ========================================================================= -->
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-top">
+        <div class="footer-brand">
+          <img src="assets/brand/kraberefinedimage2.png" alt="Krabe Kollection" style="height: 44px; margin-bottom: 14px;">
+          <p>Premium Nigerian unisex fashion house combining ancestral textile heritage with contemporary minimalist tailoring.</p>
+        </div>
+        <div>
+          <div class="footer-col-title">Shop Krabe</div>
+          <ul class="footer-nav-list">
+            <li><a href="shop.html">Made-to-Order Collections</a></li>
+            <li><a href="bespoke.html">Bespoke Orders</a></li>
+            <li><a href="lookbook.html">Campaign Lookbook</a></li>
+          </ul>
+        </div>
+        <div>
+          <div class="footer-col-title">Customer Care</div>
+          <ul class="footer-nav-list">
+            <li><a href="bespoke.html#appointment-section">Book Studio Appointment</a></li>
+            <li><a href="help.html#faq">FAQ &amp; Shipping Policy</a></li>
+            <li><a href="account.html">Track Order</a></li>
+          </ul>
+        </div>
+        <div>
+          <div class="footer-col-title">Private Releases</div>
+          <form class="newsletter-form" onsubmit="event.preventDefault(); alert('Subscribed to Krabe Kollection.');">
+            <input type="email" required placeholder="Enter your email" class="newsletter-input">
+            <button type="submit" class="newsletter-btn">Subscribe</button>
+          </form>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <div>&copy; 2026 Krabe Kollection. All rights reserved. Registered in Nigeria.</div>
+      </div>
+    </div>
+  </footer>
+
+  <script src="js/header.js"></script>
+  <script src="js/auth-modal.js"></script>
+  <script src="js/main.js"></script>
+  <script>
+    // Tab Switching Logic
+    function switchAccountTab(tabKey, btn) {
+      document.querySelectorAll('.account-tab-btn').forEach(b => {
+        b.classList.remove('active');
+        b.setAttribute('aria-selected', 'false');
+      });
+      document.querySelectorAll('.account-panel').forEach(p => p.classList.remove('active'));
+
+      btn.classList.add('active');
+      btn.setAttribute('aria-selected', 'true');
+
+      const targetPanel = document.getElementById('panel-' + tabKey);
+      if (targetPanel) {
+        targetPanel.classList.add('active');
+      }
+    }
+
+    // Modal Utilities
+    function openMeasurementModal(profileName) {
+      if (profileName) {
+        document.getElementById('measProfileName').value = profileName + ' Cut (Updated)';
+      }
+      const m = document.getElementById('measurementModal');
+      m.classList.add('active');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function openAlterationModal(orderId, itemTitle) {
+      document.getElementById('alterationOrderDesc').textContent = `Requesting alteration for ${itemTitle} on Order ${orderId}.`;
+      const m = document.getElementById('alterationModal');
+      m.classList.add('active');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function openAuthModal() {
+      const m = document.getElementById('authModal');
+      m.classList.add('active');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeModal(modalId) {
+      const m = document.getElementById(modalId);
+      if (m) {
+        m.classList.remove('active');
+        document.body.style.overflow = '';
+      }
+    }
+
+    function closeModalOnBackdrop(e, modalId) {
+      if (e.target.id === modalId) {
+        closeModal(modalId);
+      }
+    }
+
+    function toggleAuthTab(type) {
+      const btnIn = document.getElementById('authTabSignIn');
+      const btnReg = document.getElementById('authTabRegister');
+      const formIn = document.getElementById('signInForm');
+      const formReg = document.getElementById('registerForm');
+
+      if (type === 'signin') {
+        btnIn.classList.add('active');
+        btnIn.style.borderBottomColor = 'var(--color-primary)';
+        btnIn.style.color = 'var(--color-primary)';
+        btnReg.classList.remove('active');
+        btnReg.style.borderBottomColor = 'transparent';
+        btnReg.style.color = 'var(--color-text-muted)';
+        formIn.style.display = 'block';
+        formReg.style.display = 'none';
+      } else {
+        btnReg.classList.add('active');
+        btnReg.style.borderBottomColor = 'var(--color-primary)';
+        btnReg.style.color = 'var(--color-primary)';
+        btnIn.classList.remove('active');
+        btnIn.style.borderBottomColor = 'transparent';
+        btnIn.style.color = 'var(--color-text-muted)';
+        formReg.style.display = 'block';
+        formIn.style.display = 'none';
+      }
+    }
+
+    // Keyboard Esc Modal close
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        closeModal('measurementModal');
+        closeModal('alterationModal');
+        closeModal('authModal');
+      }
+    });
+  </script>
+</body>
+</html>

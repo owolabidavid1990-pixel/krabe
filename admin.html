@@ -1,0 +1,1702 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Atelier Backoffice &amp; Admin — Krabe Kollection</title>
+  <meta name="description" content="Krabe Kollection Atelier &amp; Operations Management Portal. Manage Made-to-Order fulfillments, log WhatsApp bespoke commissions, and supervise staff accounts.">
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" href="assets/brand/kraberefined-logo-blue.png">
+
+  <!-- Google Web Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&family=Playfair+Display:ital,wght@0,600;0,700;1,400;1,600&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <!-- Core Stylesheet -->
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body class="admin-body">
+
+  <!-- =========================================================================
+       1. TOP BACKOFFICE NAVIGATION BAR
+       ========================================================================= -->
+  <header class="admin-navbar">
+    <div class="admin-nav-left">
+      <a href="admin.html" class="admin-brand">
+        <img src="assets/brand/kraberefinedimage1.png" alt="Krabe Kollection">
+        <span class="admin-brand-tag">Atelier Operations</span>
+      </a>
+      <a href="index.html" class="store-link-btn" title="Open Customer Storefront in new tab" target="_blank">
+        <span>&larr; View Live Store</span>
+      </a>
+    </div>
+
+    <div class="admin-nav-right">
+      <!-- Role Switcher (For Prototype Evaluation) -->
+      <div class="role-switcher-pill">
+        <span class="role-switcher-label">Active Role:</span>
+        <select class="role-select" id="roleSelector" onchange="toggleAdminRole(this.value)" aria-label="Change simulated admin role">
+          <option value="super_admin" selected>Super Admin (David)</option>
+          <option value="staff">Staff / Master Tailor</option>
+        </select>
+      </div>
+
+      <!-- User Profile -->
+      <div class="admin-user-profile">
+        <div class="admin-avatar" id="userAvatar">DA</div>
+        <div style="display: flex; flex-direction: column;">
+          <span style="font-size: 13px; font-weight: 700; color: #FFFFFF;" id="userName">David (Owner)</span>
+          <span style="font-size: 11px; color: var(--color-gold);" id="userRoleBadge">Super Admin</span>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- =========================================================================
+       2. ADMIN SHELL: SIDEBAR + MAIN CONTENT WORKSPACE
+       ========================================================================= -->
+  <div class="admin-shell">
+
+    <!-- SIDEBAR NAVIGATION -->
+    <aside class="admin-sidebar" aria-label="Admin Navigation">
+      <div class="admin-sidebar-section">
+        <div class="admin-sidebar-title">Operations</div>
+        <button type="button" class="admin-nav-item active" data-tab="dashboard" onclick="switchAdminTab('dashboard', this)">
+          <div class="admin-nav-item-content">
+            <span class="admin-nav-icon">📊</span>
+            <span>Dashboard</span>
+          </div>
+        </button>
+        <button type="button" class="admin-nav-item" data-tab="rtw" onclick="switchAdminTab('rtw', this)">
+          <div class="admin-nav-item-content">
+            <span class="admin-nav-icon">🛍️</span>
+            <span>Made-to-Order Orders</span>
+          </div>
+          <span class="admin-nav-pill" id="rtwNavCount">18</span>
+        </button>
+        <button type="button" class="admin-nav-item" data-tab="bespoke" onclick="switchAdminTab('bespoke', this)">
+          <div class="admin-nav-item-content">
+            <span class="admin-nav-icon">🪡</span>
+            <span>Bespoke (WhatsApp)</span>
+          </div>
+          <span class="admin-nav-pill gold" id="bespokeNavCount">12</span>
+        </button>
+        <button type="button" class="admin-nav-item" data-tab="fittings" onclick="switchAdminTab('fittings', this)">
+          <div class="admin-nav-item-content">
+            <span class="admin-nav-icon">📅</span>
+            <span>Studio Fittings</span>
+          </div>
+          <span class="admin-nav-pill">4</span>
+        </button>
+      </div>
+
+      <div class="admin-sidebar-section">
+        <div class="admin-sidebar-title">Client Knowledge</div>
+        <button type="button" class="admin-nav-item" data-tab="vault" onclick="switchAdminTab('vault', this)">
+          <div class="admin-nav-item-content">
+            <span class="admin-nav-icon">📐</span>
+            <span>Measurement Vault</span>
+          </div>
+          <span class="admin-nav-pill">142</span>
+        </button>
+      </div>
+
+      <div class="admin-sidebar-section" style="margin-top: auto;">
+        <div class="admin-sidebar-title">Administration</div>
+        <button type="button" class="admin-nav-item" data-tab="users" onclick="switchAdminTab('users', this)" id="navItemUsers">
+          <div class="admin-nav-item-content">
+            <span class="admin-nav-icon">👥</span>
+            <span>User Management</span>
+          </div>
+          <span class="admin-nav-pill super">Super</span>
+        </button>
+      </div>
+    </aside>
+
+    <!-- MAIN ADMIN CONTENT -->
+    <main class="admin-main">
+
+      <!-- =====================================================================
+           VIEW 1: DASHBOARD OVERVIEW
+           ===================================================================== -->
+      <section class="admin-tab-view" id="view-dashboard">
+        <div class="admin-page-header">
+          <div>
+            <h1 class="admin-header-title">Atelier &amp; Commercial Overview</h1>
+            <p class="admin-header-sub">Live pulse of Made-to-Order sales, WhatsApp bespoke commissions, and studio fittings.</p>
+          </div>
+          <div class="admin-header-actions">
+            <button type="button" class="btn btn-primary" onclick="openBespokeModal()" style="padding: 10px 18px; font-size: 13px;">
+              + Create Bespoke Order (WhatsApp)
+            </button>
+            <button type="button" class="btn btn-outline super-admin-action" onclick="openCreateUserModal()" style="padding: 10px 18px; font-size: 13px;">
+              + Create User by Email
+            </button>
+          </div>
+        </div>
+
+        <!-- 4 Key Metric Cards -->
+        <div class="admin-stats-grid">
+          <div class="admin-stat-card">
+            <div class="admin-stat-header">
+              <span class="admin-stat-label">Monthly Gross Revenue</span>
+              <span class="admin-stat-icon">💰</span>
+            </div>
+            <div class="admin-stat-value">₦14,850,000</div>
+            <div class="admin-stat-trend">▲ 18.4% vs last month (Lagos &amp; Diaspora)</div>
+          </div>
+
+          <div class="admin-stat-card gold">
+            <div class="admin-stat-header">
+              <span class="admin-stat-label">Active Made-to-Order</span>
+              <span class="admin-stat-icon">📦</span>
+            </div>
+            <div class="admin-stat-value" id="kpiRtwCount">18 Orders</div>
+            <div class="admin-stat-trend">Crafted on demand from fabric vault</div>
+          </div>
+
+          <div class="admin-stat-card indigo">
+            <div class="admin-stat-header">
+              <span class="admin-stat-label">Bespoke Commissions</span>
+              <span class="admin-stat-icon">🪡</span>
+            </div>
+            <div class="admin-stat-value" id="kpiBespokeCount">12 Jobs</div>
+            <div class="admin-stat-trend">All agreed &amp; logged via WhatsApp</div>
+          </div>
+
+          <div class="admin-stat-card green">
+            <div class="admin-stat-header">
+              <span class="admin-stat-label">Today's Studio Fittings</span>
+              <span class="admin-stat-icon">👔</span>
+            </div>
+            <div class="admin-stat-value">4 Clients</div>
+            <div class="admin-stat-trend neutral">Victoria Island Flagship Studio</div>
+          </div>
+        </div>
+
+        <!-- Priority Workshop Urgency Cards -->
+        <div class="admin-card">
+          <div class="admin-card-header">
+            <h2 class="admin-card-title">⚠️ Priority Fulfillment &amp; Fitting Alerts</h2>
+            <span style="font-size: 12px; color: var(--color-text-muted);">Real-time Atelier Tasks</span>
+          </div>
+          <div class="admin-table-wrap">
+            <table class="admin-table">
+              <thead>
+                <tr>
+                  <th>Job / Order</th>
+                  <th>Client</th>
+                  <th>Type</th>
+                  <th>Target Milestone / Deadline</th>
+                  <th>Assigned Tailor</th>
+                  <th>Quick Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>#BESPOKE-2026-088</strong></td>
+                  <td>Chief Femi Coker</td>
+                  <td><span class="admin-nav-pill gold">Bespoke Agbada</span></td>
+                  <td><strong style="color: #C05621;">Fitting in 3 Days (Oct 9)</strong></td>
+                  <td>Master Tailor Ibrahim</td>
+                  <td>
+                    <button type="button" class="btn btn-outline" style="padding: 5px 10px; font-size: 11px;" onclick="switchAdminTab('bespoke')">View Commission &rarr;</button>
+                  </td>
+                </tr>
+                <tr>
+                  <td><strong>#KB-2026-9415</strong></td>
+                  <td>Dr. Tunde Alabi</td>
+                  <td><span class="admin-nav-pill">Made-to-Order Kaftan</span></td>
+                  <td><strong style="color: #744210;">Needs Quality Inspection</strong></td>
+                  <td>Atelier Packing Team</td>
+                  <td>
+                    <button type="button" class="btn btn-outline" style="padding: 5px 10px; font-size: 11px;" onclick="switchAdminTab('rtw')">Update Status &rarr;</button>
+                  </td>
+                </tr>
+                <tr>
+                  <td><strong>#APPT-104</strong></td>
+                  <td>Senator Bola Davies</td>
+                  <td><span class="admin-nav-pill">Studio Fitting</span></td>
+                  <td><strong>Today at 2:30 PM (VI Studio)</strong></td>
+                  <td>Master Tailor Ibrahim</td>
+                  <td>
+                    <a href="https://wa.me/2348000000000" target="_blank" class="btn btn-outline" style="padding: 5px 10px; font-size: 11px; color: var(--color-whatsapp);">Send WhatsApp Reminder</a>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- =====================================================================
+           VIEW 2: MADE-TO-ORDER (ON-DEMAND) ORDERS — MANUAL STATUS MANAGEMENT
+           ===================================================================== -->
+      <section class="admin-tab-view" id="view-rtw" style="display: none;">
+        <div class="admin-page-header">
+          <div>
+            <h1 class="admin-header-title">Made-to-Order (On-Demand) Orders</h1>
+            <p class="admin-header-sub">
+              <strong>Crafted on Demand:</strong> Each piece is tailored upon order from archive fabrics. Atelier staff manually updates milestones from fabric cutting to inspection and dispatch.
+            </p>
+          </div>
+          <div class="admin-header-actions">
+            <button type="button" class="btn btn-outline" onclick="exportOrdersCsv()" style="padding: 9px 16px; font-size: 12.5px;">Export CSV</button>
+          </div>
+        </div>
+
+        <div class="admin-card">
+          <div class="admin-card-header">
+            <div class="admin-card-title">
+              <span>All Web Store Purchases</span>
+              <span class="admin-nav-pill" id="rtwTableCount">4 Displayed</span>
+            </div>
+            <div class="admin-table-controls">
+              <input type="text" class="admin-search-input" id="rtwSearchInput" placeholder="Search by Order #, Client, Phone..." onkeyup="filterRtwTable()">
+              <select class="admin-filter-select" id="rtwStatusFilter" onchange="filterRtwTable()">
+                <option value="all">All Statuses</option>
+                <option value="paid">Paid &amp; Processing</option>
+                <option value="inspected">Quality Inspected &amp; Steamed</option>
+                <option value="transit">In Transit (With Courier)</option>
+                <option value="delivered">Delivered &amp; Completed</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="admin-table-wrap">
+            <table class="admin-table" id="rtwOrdersTable">
+              <thead>
+                <tr>
+                  <th>Order # / Date</th>
+                  <th>Client &amp; Contact</th>
+                  <th>Garment Items</th>
+                  <th>Total &amp; Payment</th>
+                  <th>Fulfillment Type</th>
+                  <th>Manual Status Selector</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                <!-- RTW Order 1 -->
+                <tr data-order="KB-2026-9411" data-status="transit">
+                  <td>
+                    <strong>#KB-2026-9411</strong>
+                    <div style="font-size: 11px; color: var(--color-text-muted);">04 Oct 2026 &bull; 14:22</div>
+                  </td>
+                  <td>
+                    <strong>Olumide Bakare</strong>
+                    <div style="font-size: 12px; color: var(--color-text-muted);">+234 803 123 4567</div>
+                    <div style="font-size: 11px; color: var(--color-text-muted);">Lekki Phase 1, Lagos</div>
+                  </td>
+                  <td>
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                      <img src="assets/lookbook/lookbook-agbada-editorial.jpg" alt="" style="width: 38px; height: 48px; object-fit: cover; border-radius: 2px;">
+                      <div>
+                        <div style="font-size: 12.5px; font-weight: 600;">Monarch Navy Agbada Set</div>
+                        <div style="font-size: 11px; color: var(--color-text-muted);">Size: XL &bull; Qty: 1</div>
+                      </div>
+                    </div>
+                  </td>
+                  <td>
+                    <strong style="color: var(--color-obsidian);">₦185,000</strong>
+                    <div style="font-size: 11px; color: #2B6CB0; font-weight: 600;">Paystack (Card)</div>
+                  </td>
+                  <td>
+                    <span style="font-size: 12px; font-weight: 500;">Doorstep Delivery</span>
+                    <div style="font-size: 11px; color: var(--color-text-muted);">GIG Logistics (#GIG-8821)</div>
+                  </td>
+                  <td>
+                    <select class="admin-status-select status-transit" onchange="handleRtwStatusChange(this, 'KB-2026-9411')" aria-label="Order status selector">
+                      <option value="paid">Paid &amp; Processing</option>
+                      <option value="inspected">Inspected &amp; Steamed</option>
+                      <option value="transit" selected>In Transit (Courier)</option>
+                      <option value="delivered">Delivered &amp; Completed</option>
+                      <option value="cancelled">Cancelled &amp; Refunded</option>
+                    </select>
+                  </td>
+                  <td>
+                    <div style="display: flex; gap: 6px;">
+                      <a href="https://wa.me/2348031234567" target="_blank" class="btn btn-outline" style="padding: 4px 8px; font-size: 11px; color: var(--color-whatsapp);" title="Chat on WhatsApp">💬</a>
+                      <button type="button" class="btn btn-outline" style="padding: 4px 8px; font-size: 11px;" onclick="showToast('Packing slip generated for #KB-2026-9411')">📄</button>
+                    </div>
+                  </td>
+                </tr>
+
+                <!-- RTW Order 2 -->
+                <tr data-order="KB-2026-9415" data-status="paid">
+                  <td>
+                    <strong>#KB-2026-9415</strong>
+                    <div style="font-size: 11px; color: var(--color-text-muted);">05 Oct 2026 &bull; 09:14</div>
+                  </td>
+                  <td>
+                    <strong>Dr. Tunde Alabi</strong>
+                    <div style="font-size: 12px; color: var(--color-text-muted);">+234 812 998 1234</div>
+                    <div style="font-size: 11px; color: var(--color-text-muted);">Maitama, Abuja</div>
+                  </td>
+                  <td>
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                      <img src="assets/lookbook/lookbook-native-editorial.jpg" alt="" style="width: 38px; height: 48px; object-fit: cover; border-radius: 2px;">
+                      <div>
+                        <div style="font-size: 12.5px; font-weight: 600;">Regal Emerald 2-Piece Senator</div>
+                        <div style="font-size: 11px; color: var(--color-text-muted);">Size: L &bull; Qty: 1</div>
+                      </div>
+                    </div>
+                  </td>
+                  <td>
+                    <strong style="color: var(--color-obsidian);">₦240,000</strong>
+                    <div style="font-size: 11px; color: #2B6CB0; font-weight: 600;">Paystack (Bank Transfer)</div>
+                  </td>
+                  <td>
+                    <span style="font-size: 12px; font-weight: 500;">Doorstep (Abuja Express)</span>
+                    <div style="font-size: 11px; color: var(--color-text-muted);">DHL Express Nigeria</div>
+                  </td>
+                  <td>
+                    <select class="admin-status-select status-paid" onchange="handleRtwStatusChange(this, 'KB-2026-9415')" aria-label="Order status selector">
+                      <option value="paid" selected>Paid &amp; Processing</option>
+                      <option value="inspected">Inspected &amp; Steamed</option>
+                      <option value="transit">In Transit (Courier)</option>
+                      <option value="delivered">Delivered &amp; Completed</option>
+                      <option value="cancelled">Cancelled &amp; Refunded</option>
+                    </select>
+                  </td>
+                  <td>
+                    <div style="display: flex; gap: 6px;">
+                      <a href="https://wa.me/2348129981234" target="_blank" class="btn btn-outline" style="padding: 4px 8px; font-size: 11px; color: var(--color-whatsapp);" title="Chat on WhatsApp">💬</a>
+                      <button type="button" class="btn btn-outline" style="padding: 4px 8px; font-size: 11px;" onclick="showToast('Packing slip generated for #KB-2026-9415')">📄</button>
+                    </div>
+                  </td>
+                </tr>
+
+                <!-- RTW Order 3 -->
+                <tr data-order="KB-2026-9408" data-status="inspected">
+                  <td>
+                    <strong>#KB-2026-9408</strong>
+                    <div style="font-size: 11px; color: var(--color-text-muted);">03 Oct 2026 &bull; 18:40</div>
+                  </td>
+                  <td>
+                    <strong>Chioma Okonjo</strong>
+                    <div style="font-size: 12px; color: var(--color-text-muted);">+234 701 555 7890</div>
+                    <div style="font-size: 11px; color: var(--color-text-muted);">Victoria Island, Lagos</div>
+                  </td>
+                  <td>
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                      <img src="assets/lookbook/lookbook-streetwear-editorial.jpg" alt="" style="width: 38px; height: 48px; object-fit: cover; border-radius: 2px;">
+                      <div>
+                        <div style="font-size: 12.5px; font-weight: 600;">Eko Slate Boxy Oversized Tee</div>
+                        <div style="font-size: 11px; color: var(--color-text-muted);">Size: M &bull; Qty: 2</div>
+                      </div>
+                    </div>
+                  </td>
+                  <td>
+                    <strong style="color: var(--color-obsidian);">₦110,000</strong>
+                    <div style="font-size: 11px; color: #2B6CB0; font-weight: 600;">Paystack (Card)</div>
+                  </td>
+                  <td>
+                    <span style="font-size: 12px; font-weight: 600; color: var(--color-gold);">Studio Pickup (VI)</span>
+                    <div style="font-size: 11px; color: var(--color-text-muted);">Awaiting Client Collection</div>
+                  </td>
+                  <td>
+                    <select class="admin-status-select status-inspected" onchange="handleRtwStatusChange(this, 'KB-2026-9408')" aria-label="Order status selector">
+                      <option value="paid">Paid &amp; Processing</option>
+                      <option value="inspected" selected>Inspected &amp; Steamed</option>
+                      <option value="transit">In Transit (Courier)</option>
+                      <option value="delivered">Delivered &amp; Completed</option>
+                      <option value="cancelled">Cancelled &amp; Refunded</option>
+                    </select>
+                  </td>
+                  <td>
+                    <div style="display: flex; gap: 6px;">
+                      <a href="https://wa.me/2347015557890" target="_blank" class="btn btn-outline" style="padding: 4px 8px; font-size: 11px; color: var(--color-whatsapp);" title="Chat on WhatsApp">💬</a>
+                      <button type="button" class="btn btn-outline" style="padding: 4px 8px; font-size: 11px;" onclick="showToast('Packing slip generated for #KB-2026-9408')">📄</button>
+                    </div>
+                  </td>
+                </tr>
+
+                <!-- RTW Order 4 -->
+                <tr data-order="KB-2026-9399" data-status="delivered">
+                  <td>
+                    <strong>#KB-2026-9399</strong>
+                    <div style="font-size: 11px; color: var(--color-text-muted);">01 Oct 2026 &bull; 11:05</div>
+                  </td>
+                  <td>
+                    <strong>Babatunde Adeleke</strong>
+                    <div style="font-size: 12px; color: var(--color-text-muted);">+234 802 443 9988</div>
+                    <div style="font-size: 11px; color: var(--color-text-muted);">Ikoyi, Lagos</div>
+                  </td>
+                  <td>
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                      <img src="assets/lookbook/lookbook-agbada-editorial.jpg" alt="" style="width: 38px; height: 48px; object-fit: cover; border-radius: 2px;">
+                      <div>
+                        <div style="font-size: 12.5px; font-weight: 600;">Monarch Navy Agbada Set</div>
+                        <div style="font-size: 11px; color: var(--color-text-muted);">Size: XXL &bull; Qty: 1</div>
+                      </div>
+                    </div>
+                  </td>
+                  <td>
+                    <strong style="color: var(--color-obsidian);">₦185,000</strong>
+                    <div style="font-size: 11px; color: #2B6CB0; font-weight: 600;">Bank Transfer Verified</div>
+                  </td>
+                  <td>
+                    <span style="font-size: 12px; font-weight: 500;">Doorstep Delivery</span>
+                    <div style="font-size: 11px; color: #38A169;">Delivered on 03 Oct</div>
+                  </td>
+                  <td>
+                    <select class="admin-status-select status-delivered" onchange="handleRtwStatusChange(this, 'KB-2026-9399')" aria-label="Order status selector">
+                      <option value="paid">Paid &amp; Processing</option>
+                      <option value="inspected">Inspected &amp; Steamed</option>
+                      <option value="transit">In Transit (Courier)</option>
+                      <option value="delivered" selected>Delivered &amp; Completed</option>
+                      <option value="cancelled">Cancelled &amp; Refunded</option>
+                    </select>
+                  </td>
+                  <td>
+                    <div style="display: flex; gap: 6px;">
+                      <a href="https://wa.me/2348024439988" target="_blank" class="btn btn-outline" style="padding: 4px 8px; font-size: 11px; color: var(--color-whatsapp);" title="Chat on WhatsApp">💬</a>
+                      <button type="button" class="btn btn-outline" style="padding: 4px 8px; font-size: 11px;" onclick="showToast('Packing slip generated for #KB-2026-9399')">📄</button>
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- =====================================================================
+           VIEW 3: BESPOKE COMMISSIONS (WHATSAPP DEALS) — MIGRATED PROCESS
+           ===================================================================== -->
+      <section class="admin-tab-view" id="view-bespoke" style="display: none;">
+        <div class="admin-page-header">
+          <div>
+            <h1 class="admin-header-title">Bespoke Commissions (WhatsApp Deals)</h1>
+            <p class="admin-header-sub">
+              <strong>Atelier Workflow:</strong> All custom orders are initiated via WhatsApp or in-studio consultations. Once specifications and price are agreed, atelier staff logs the commission here and advances the manual milestones.
+            </p>
+          </div>
+          <div class="admin-header-actions">
+            <button type="button" class="btn btn-primary" onclick="openBespokeModal()" style="padding: 10px 20px; font-size: 13px;">
+              + Create Bespoke Order (From WhatsApp)
+            </button>
+          </div>
+        </div>
+
+        <div class="admin-card">
+          <div class="admin-card-header">
+            <div class="admin-card-title">
+              <span>Active Atelier Commissions</span>
+              <span class="admin-nav-pill gold" id="bespokeTableCount">4 In Workshop</span>
+            </div>
+            <div class="admin-table-controls">
+              <input type="text" class="admin-search-input" id="bespokeSearchInput" placeholder="Search client, commission #, fabric..." onkeyup="filterBespokeTable()">
+              <select class="admin-filter-select" id="bespokeMilestoneFilter" onchange="filterBespokeTable()">
+                <option value="all">All Milestones</option>
+                <option value="sourced">Fabric Sourced</option>
+                <option value="drafting">Pattern Drafting</option>
+                <option value="embroidery">Hand Embroidery</option>
+                <option value="fitting">Studio Fitting</option>
+                <option value="completed">Completed &amp; Dispatched</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="admin-table-wrap">
+            <table class="admin-table" id="bespokeOrdersTable">
+              <thead>
+                <tr>
+                  <th>Commission # &amp; Date</th>
+                  <th>Client &amp; WhatsApp</th>
+                  <th>Garment &amp; Fabric Specs</th>
+                  <th>Agreed Price &amp; Deposit</th>
+                  <th>Assigned Tailor &amp; Due Date</th>
+                  <th>Manual Production Milestone</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="bespokeTableBody">
+                <!-- Bespoke Commission 1 -->
+                <tr data-commission="BESPOKE-2026-088" data-milestone="embroidery">
+                  <td>
+                    <strong>#BESPOKE-2026-088</strong>
+                    <div style="font-size: 11px; color: var(--color-text-muted);">Logged: 28 Sep 2026</div>
+                  </td>
+                  <td>
+                    <strong>Chief Femi Coker</strong>
+                    <div style="font-size: 12px; color: var(--color-text-muted);">+234 803 999 1122</div>
+                    <div style="font-size: 11px; color: var(--color-whatsapp); font-weight: 600;">✓ WhatsApp Deal</div>
+                  </td>
+                  <td>
+                    <div style="font-weight: 600; font-size: 13px;">Royal 3-Piece Silk Agbada</div>
+                    <div style="font-size: 11px; color: var(--color-text-muted);">Super 150s Navy Wool &bull; Gold Zari Thread</div>
+                    <button type="button" class="btn btn-outline" style="padding: 2px 6px; font-size: 10px; margin-top: 4px;" onclick="viewMeasurementCard('Chief Femi Coker', '44', '20', '26', '36', '33')">View Measurements</button>
+                  </td>
+                  <td>
+                    <strong style="color: var(--color-obsidian);">₦450,000</strong>
+                    <div style="font-size: 11px; color: #2B6CB0;">₦300,000 Deposit Paid</div>
+                    <div style="font-size: 11px; color: #C05621; font-weight: 600;">₦150,000 Balance on Fitting</div>
+                  </td>
+                  <td>
+                    <strong>Master Ibrahim</strong>
+                    <div style="font-size: 11px; color: #C05621; font-weight: 600;">Due: 09 Oct 2026</div>
+                  </td>
+                  <td>
+                    <select class="admin-status-select status-embroidery" onchange="handleBespokeStatusChange(this, 'BESPOKE-2026-088')" aria-label="Bespoke milestone selector">
+                      <option value="sourced">1. Fabric Sourced &amp; Inspected</option>
+                      <option value="drafting">2. Pattern Drafting &amp; Cutting</option>
+                      <option value="embroidery" selected>3. Hand Embroidery &amp; Assembly</option>
+                      <option value="fitting">4. Studio Fitting &amp; Steaming</option>
+                      <option value="completed">5. Completed &amp; Dispatched</option>
+                    </select>
+                  </td>
+                  <td>
+                    <div style="display: flex; gap: 6px;">
+                      <a href="https://wa.me/2348039991122" target="_blank" class="btn btn-outline" style="padding: 4px 8px; font-size: 11px; color: var(--color-whatsapp);" title="Open WhatsApp Chat">💬</a>
+                      <button type="button" class="btn btn-outline" style="padding: 4px 8px; font-size: 11px;" onclick="printWorkshopCard('BESPOKE-2026-088')">🖨️</button>
+                    </div>
+                  </td>
+                </tr>
+
+                <!-- Bespoke Commission 2 -->
+                <tr data-commission="BESPOKE-2026-089" data-milestone="drafting">
+                  <td>
+                    <strong>#BESPOKE-2026-089</strong>
+                    <div style="font-size: 11px; color: var(--color-text-muted);">Logged: 02 Oct 2026</div>
+                  </td>
+                  <td>
+                    <strong>Tariq Bello</strong>
+                    <div style="font-size: 12px; color: var(--color-text-muted);">+234 818 776 3456</div>
+                    <div style="font-size: 11px; color: var(--color-whatsapp); font-weight: 600;">✓ WhatsApp Deal</div>
+                  </td>
+                  <td>
+                    <div style="font-weight: 600; font-size: 13px;">Midnight 2-Piece Senator</div>
+                    <div style="font-size: 11px; color: var(--color-text-muted);">Italian Cashmere Blend &bull; Minimalist Mandarin Collar</div>
+                    <button type="button" class="btn btn-outline" style="padding: 2px 6px; font-size: 10px; margin-top: 4px;" onclick="viewMeasurementCard('Tariq Bello', '41', '19', '25', '33', '32')">View Measurements</button>
+                  </td>
+                  <td>
+                    <strong style="color: var(--color-obsidian);">₦280,000</strong>
+                    <div style="font-size: 11px; color: #38A169; font-weight: 600;">100% Fully Paid Upfront</div>
+                  </td>
+                  <td>
+                    <strong>Amaka (Patternmaker)</strong>
+                    <div style="font-size: 11px; color: var(--color-text-muted);">Due: 14 Oct 2026</div>
+                  </td>
+                  <td>
+                    <select class="admin-status-select status-drafting" onchange="handleBespokeStatusChange(this, 'BESPOKE-2026-089')" aria-label="Bespoke milestone selector">
+                      <option value="sourced">1. Fabric Sourced &amp; Inspected</option>
+                      <option value="drafting" selected>2. Pattern Drafting &amp; Cutting</option>
+                      <option value="embroidery">3. Hand Embroidery &amp; Assembly</option>
+                      <option value="fitting">4. Studio Fitting &amp; Steaming</option>
+                      <option value="completed">5. Completed &amp; Dispatched</option>
+                    </select>
+                  </td>
+                  <td>
+                    <div style="display: flex; gap: 6px;">
+                      <a href="https://wa.me/2348187763456" target="_blank" class="btn btn-outline" style="padding: 4px 8px; font-size: 11px; color: var(--color-whatsapp);" title="Open WhatsApp Chat">💬</a>
+                      <button type="button" class="btn btn-outline" style="padding: 4px 8px; font-size: 11px;" onclick="printWorkshopCard('BESPOKE-2026-089')">🖨️</button>
+                    </div>
+                  </td>
+                </tr>
+
+                <!-- Bespoke Commission 3 -->
+                <tr data-commission="BESPOKE-2026-090" data-milestone="fitting">
+                  <td>
+                    <strong>#BESPOKE-2026-090</strong>
+                    <div style="font-size: 11px; color: var(--color-text-muted);">Logged: 24 Sep 2026</div>
+                  </td>
+                  <td>
+                    <strong>Senator Bola Davies</strong>
+                    <div style="font-size: 12px; color: var(--color-text-muted);">+234 802 888 4433</div>
+                    <div style="font-size: 11px; color: var(--color-whatsapp); font-weight: 600;">✓ WhatsApp Deal</div>
+                  </td>
+                  <td>
+                    <div style="font-weight: 600; font-size: 13px;">Ivory Silk Brocade Kaftan Set</div>
+                    <div style="font-size: 11px; color: var(--color-text-muted);">Imported Lyon Silk Brocade &bull; Hand-stitched Cuffs</div>
+                    <button type="button" class="btn btn-outline" style="padding: 2px 6px; font-size: 10px; margin-top: 4px;" onclick="viewMeasurementCard('Senator Bola Davies', '45', '20.5', '26.5', '38', '33.5')">View Measurements</button>
+                  </td>
+                  <td>
+                    <strong style="color: var(--color-obsidian);">₦350,000</strong>
+                    <div style="font-size: 11px; color: #2B6CB0;">₦200,000 Deposit Paid</div>
+                    <div style="font-size: 11px; color: #C05621; font-weight: 600;">₦150,000 Balance on Fitting</div>
+                  </td>
+                  <td>
+                    <strong>Master Ibrahim</strong>
+                    <div style="font-size: 11px; color: #2B6CB0; font-weight: 600;">Fitting Scheduled Today</div>
+                  </td>
+                  <td>
+                    <select class="admin-status-select status-fitting" onchange="handleBespokeStatusChange(this, 'BESPOKE-2026-090')" aria-label="Bespoke milestone selector">
+                      <option value="sourced">1. Fabric Sourced &amp; Inspected</option>
+                      <option value="drafting">2. Pattern Drafting &amp; Cutting</option>
+                      <option value="embroidery">3. Hand Embroidery &amp; Assembly</option>
+                      <option value="fitting" selected>4. Studio Fitting &amp; Steaming</option>
+                      <option value="completed">5. Completed &amp; Dispatched</option>
+                    </select>
+                  </td>
+                  <td>
+                    <div style="display: flex; gap: 6px;">
+                      <a href="https://wa.me/2348028884433" target="_blank" class="btn btn-outline" style="padding: 4px 8px; font-size: 11px; color: var(--color-whatsapp);" title="Open WhatsApp Chat">💬</a>
+                      <button type="button" class="btn btn-outline" style="padding: 4px 8px; font-size: 11px;" onclick="printWorkshopCard('BESPOKE-2026-090')">🖨️</button>
+                    </div>
+                  </td>
+                </tr>
+
+                <!-- Bespoke Commission 4 -->
+                <tr data-commission="BESPOKE-2026-085" data-milestone="completed">
+                  <td>
+                    <strong>#BESPOKE-2026-085</strong>
+                    <div style="font-size: 11px; color: var(--color-text-muted);">Logged: 15 Sep 2026</div>
+                  </td>
+                  <td>
+                    <strong>Dr. Nnamdi Eze</strong>
+                    <div style="font-size: 12px; color: var(--color-text-muted);">+234 803 777 5544</div>
+                    <div style="font-size: 11px; color: var(--color-whatsapp); font-weight: 600;">✓ WhatsApp Deal</div>
+                  </td>
+                  <td>
+                    <div style="font-weight: 600; font-size: 13px;">Velvet Lapel Bespoke Tuxedo</div>
+                    <div style="font-size: 11px; color: var(--color-text-muted);">Scabal Super 160s &bull; Silk Satin Facing</div>
+                    <button type="button" class="btn btn-outline" style="padding: 2px 6px; font-size: 10px; margin-top: 4px;" onclick="viewMeasurementCard('Dr. Nnamdi Eze', '43', '19.5', '25.5', '35', '32.5')">View Measurements</button>
+                  </td>
+                  <td>
+                    <strong style="color: var(--color-obsidian);">₦520,000</strong>
+                    <div style="font-size: 11px; color: #38A169; font-weight: 600;">₦520,000 Settled in Full</div>
+                  </td>
+                  <td>
+                    <strong>Master Ibrahim</strong>
+                    <div style="font-size: 11px; color: #38A169;">Dispatched &amp; Received</div>
+                  </td>
+                  <td>
+                    <select class="admin-status-select status-completed" onchange="handleBespokeStatusChange(this, 'BESPOKE-2026-085')" aria-label="Bespoke milestone selector">
+                      <option value="sourced">1. Fabric Sourced &amp; Inspected</option>
+                      <option value="drafting">2. Pattern Drafting &amp; Cutting</option>
+                      <option value="embroidery">3. Hand Embroidery &amp; Assembly</option>
+                      <option value="fitting">4. Studio Fitting &amp; Steaming</option>
+                      <option value="completed" selected>5. Completed &amp; Dispatched</option>
+                    </select>
+                  </td>
+                  <td>
+                    <div style="display: flex; gap: 6px;">
+                      <a href="https://wa.me/2348037775544" target="_blank" class="btn btn-outline" style="padding: 4px 8px; font-size: 11px; color: var(--color-whatsapp);" title="Open WhatsApp Chat">💬</a>
+                      <button type="button" class="btn btn-outline" style="padding: 4px 8px; font-size: 11px;" onclick="printWorkshopCard('BESPOKE-2026-085')">🖨️</button>
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- =====================================================================
+           VIEW 4: STUDIO FITTINGS & APPOINTMENTS
+           ===================================================================== -->
+      <section class="admin-tab-view" id="view-fittings" style="display: none;">
+        <div class="admin-page-header">
+          <div>
+            <h1 class="admin-header-title">Lagos Studio Fittings Schedule</h1>
+            <p class="admin-header-sub">Victoria Island Atelier Consultation &amp; Fitting Calendar (14A Akin Adesola St).</p>
+          </div>
+        </div>
+
+        <div class="admin-card">
+          <div class="admin-card-header">
+            <h2 class="admin-card-title">Booked Fittings &amp; Consultations</h2>
+            <span class="admin-nav-pill">4 Scheduled Today</span>
+          </div>
+          <div class="admin-table-wrap">
+            <table class="admin-table">
+              <thead>
+                <tr>
+                  <th>Time Slot</th>
+                  <th>Client Name</th>
+                  <th>Phone / Contact</th>
+                  <th>Consultation Stage</th>
+                  <th>Assigned Tailor</th>
+                  <th>Appointment Status</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>Today &bull; 11:30 AM</strong></td>
+                  <td>Alhaji Kashim Shehu</td>
+                  <td>+234 809 111 2233</td>
+                  <td>Initial Measurement &amp; Fabric Selection</td>
+                  <td>Master Tailor Ibrahim</td>
+                  <td>
+                    <select class="admin-status-select status-completed" onchange="showToast('Status updated to Completed')">
+                      <option value="completed" selected>Completed</option>
+                      <option value="confirmed">Confirmed</option>
+                      <option value="rescheduled">Rescheduled</option>
+                    </select>
+                  </td>
+                  <td><a href="https://wa.me/2348091112233" class="btn btn-outline" style="padding: 4px 8px; font-size: 11px; color: var(--color-whatsapp);">WhatsApp</a></td>
+                </tr>
+                <tr>
+                  <td><strong>Today &bull; 02:30 PM</strong></td>
+                  <td>Senator Bola Davies</td>
+                  <td>+234 802 888 4433</td>
+                  <td>Second Fitting (Ivory Brocade Kaftan)</td>
+                  <td>Master Tailor Ibrahim</td>
+                  <td>
+                    <select class="admin-status-select status-transit" onchange="showToast('Status updated')">
+                      <option value="in_studio" selected>Client Arrived / Fitting</option>
+                      <option value="confirmed">Confirmed</option>
+                      <option value="completed">Completed</option>
+                    </select>
+                  </td>
+                  <td><a href="https://wa.me/2348028884433" class="btn btn-outline" style="padding: 4px 8px; font-size: 11px; color: var(--color-whatsapp);">WhatsApp</a></td>
+                </tr>
+                <tr>
+                  <td><strong>Today &bull; 04:00 PM</strong></td>
+                  <td>Engr. Seyi Makinde Jr.</td>
+                  <td>+234 805 777 9900</td>
+                  <td>Bespoke Tuxedo Final Baste Fitting</td>
+                  <td>Amaka (Patternmaker)</td>
+                  <td>
+                    <select class="admin-status-select status-inspected" onchange="showToast('Status updated')">
+                      <option value="confirmed" selected>Confirmed (On Way)</option>
+                      <option value="completed">Completed</option>
+                      <option value="rescheduled">Rescheduled</option>
+                    </select>
+                  </td>
+                  <td><a href="https://wa.me/2348057779900" class="btn btn-outline" style="padding: 4px 8px; font-size: 11px; color: var(--color-whatsapp);">WhatsApp</a></td>
+                </tr>
+                <tr>
+                  <td><strong>Tomorrow &bull; 10:00 AM</strong></td>
+                  <td>Barrister Folake Sanusi</td>
+                  <td>+234 803 222 6677</td>
+                  <td>Bridal Entourage Native Consultation</td>
+                  <td>Master Tailor Ibrahim</td>
+                  <td>
+                    <select class="admin-status-select status-inspected" onchange="showToast('Status updated')">
+                      <option value="confirmed" selected>Confirmed</option>
+                      <option value="rescheduled">Rescheduled</option>
+                    </select>
+                  </td>
+                  <td><a href="https://wa.me/2348032226677" class="btn btn-outline" style="padding: 4px 8px; font-size: 11px; color: var(--color-whatsapp);">WhatsApp</a></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- =====================================================================
+           VIEW 5: CLIENT TAILORING MEASUREMENT VAULT
+           ===================================================================== -->
+      <section class="admin-tab-view" id="view-vault" style="display: none;">
+        <div class="admin-page-header">
+          <div>
+            <h1 class="admin-header-title">Tailoring Measurement Vault</h1>
+            <p class="admin-header-sub">Searchable repository of recorded client anatomy dimensions in inches.</p>
+          </div>
+          <div class="admin-header-actions">
+            <button type="button" class="btn btn-primary" onclick="showToast('New client profile creator opened')" style="padding: 10px 18px; font-size: 13px;">
+              + New Client Profile
+            </button>
+          </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 20px;">
+          <!-- Card 1 -->
+          <div class="admin-card" style="margin-bottom: 0;">
+            <div class="admin-card-header">
+              <div>
+                <strong style="font-size: 15px; color: var(--color-obsidian);">Chief Femi Coker</strong>
+                <div style="font-size: 12px; color: var(--color-text-muted);">Profile #KB-M-041 &bull; VIP Patron</div>
+              </div>
+              <span class="admin-nav-pill gold">Agbada &amp; Native</span>
+            </div>
+            <div style="padding: 20px;">
+              <div class="measurements-mini-grid">
+                <div class="measure-mini-item"><span>CHEST</span><input type="text" value="44&quot;" readonly></div>
+                <div class="measure-mini-item"><span>SHOULDER</span><input type="text" value="20&quot;" readonly></div>
+                <div class="measure-mini-item"><span>SLEEVE</span><input type="text" value="26&quot;" readonly></div>
+                <div class="measure-mini-item"><span>WAIST</span><input type="text" value="36&quot;" readonly></div>
+                <div class="measure-mini-item"><span>HIPS</span><input type="text" value="42&quot;" readonly></div>
+                <div class="measure-mini-item"><span>INSEAM</span><input type="text" value="33&quot;" readonly></div>
+                <div class="measure-mini-item"><span>OUTSEAM</span><input type="text" value="42.5&quot;" readonly></div>
+                <div class="measure-mini-item"><span>NECK</span><input type="text" value="17.5&quot;" readonly></div>
+              </div>
+              <div style="margin-top: 14px; font-size: 12px; color: var(--color-text-muted); background: #FAF8F5; padding: 10px; border-radius: 4px;">
+                <strong>Master Notes:</strong> Prefers loose armhole drape on Agbada. Always add 1.5&quot; hem allowance.
+              </div>
+            </div>
+          </div>
+
+          <!-- Card 2 -->
+          <div class="admin-card" style="margin-bottom: 0;">
+            <div class="admin-card-header">
+              <div>
+                <strong style="font-size: 15px; color: var(--color-obsidian);">Senator Bola Davies</strong>
+                <div style="font-size: 12px; color: var(--color-text-muted);">Profile #KB-M-019 &bull; Lagos Atelier</div>
+              </div>
+              <span class="admin-nav-pill gold">Bespoke Kaftan</span>
+            </div>
+            <div style="padding: 20px;">
+              <div class="measurements-mini-grid">
+                <div class="measure-mini-item"><span>CHEST</span><input type="text" value="45&quot;" readonly></div>
+                <div class="measure-mini-item"><span>SHOULDER</span><input type="text" value="20.5&quot;" readonly></div>
+                <div class="measure-mini-item"><span>SLEEVE</span><input type="text" value="26.5&quot;" readonly></div>
+                <div class="measure-mini-item"><span>WAIST</span><input type="text" value="38&quot;" readonly></div>
+                <div class="measure-mini-item"><span>HIPS</span><input type="text" value="44&quot;" readonly></div>
+                <div class="measure-mini-item"><span>INSEAM</span><input type="text" value="33.5&quot;" readonly></div>
+                <div class="measure-mini-item"><span>OUTSEAM</span><input type="text" value="43&quot;" readonly></div>
+                <div class="measure-mini-item"><span>NECK</span><input type="text" value="18&quot;" readonly></div>
+              </div>
+              <div style="margin-top: 14px; font-size: 12px; color: var(--color-text-muted); background: #FAF8F5; padding: 10px; border-radius: 4px;">
+                <strong>Master Notes:</strong> Mandarin collar with hidden zip closure. Tapered ankle 14.5&quot;.
+              </div>
+            </div>
+          </div>
+
+          <!-- Card 3 -->
+          <div class="admin-card" style="margin-bottom: 0;">
+            <div class="admin-card-header">
+              <div>
+                <strong style="font-size: 15px; color: var(--color-obsidian);">Tariq Bello</strong>
+                <div style="font-size: 12px; color: var(--color-text-muted);">Profile #KB-M-072 &bull; Abuja Patron</div>
+              </div>
+              <span class="admin-nav-pill">Senator Fit</span>
+            </div>
+            <div style="padding: 20px;">
+              <div class="measurements-mini-grid">
+                <div class="measure-mini-item"><span>CHEST</span><input type="text" value="41&quot;" readonly></div>
+                <div class="measure-mini-item"><span>SHOULDER</span><input type="text" value="19&quot;" readonly></div>
+                <div class="measure-mini-item"><span>SLEEVE</span><input type="text" value="25&quot;" readonly></div>
+                <div class="measure-mini-item"><span>WAIST</span><input type="text" value="33&quot;" readonly></div>
+                <div class="measure-mini-item"><span>HIPS</span><input type="text" value="39&quot;" readonly></div>
+                <div class="measure-mini-item"><span>INSEAM</span><input type="text" value="32&quot;" readonly></div>
+                <div class="measure-mini-item"><span>OUTSEAM</span><input type="text" value="41&quot;" readonly></div>
+                <div class="measure-mini-item"><span>NECK</span><input type="text" value="16.5&quot;" readonly></div>
+              </div>
+              <div style="margin-top: 14px; font-size: 12px; color: var(--color-text-muted); background: #FAF8F5; padding: 10px; border-radius: 4px;">
+                <strong>Master Notes:</strong> Slim athletic cut. Requires french seams throughout.
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- =====================================================================
+           VIEW 6: SUPER ADMIN USER & STAFF MANAGEMENT (EXCLUSIVE TAB)
+           ===================================================================== -->
+      <section class="admin-tab-view" id="view-users" style="display: none;">
+        <!-- Super Admin Content (Rendered when in Super Admin role) -->
+        <div id="superAdminAuthorized">
+          <div class="admin-page-header">
+            <div>
+              <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 4px;">
+                <span class="admin-nav-pill super" style="font-size: 11px;">Restricted Super Admin Area</span>
+                <span style="font-size: 12px; color: var(--color-gold); font-weight: 700;">&bull; Bubble.io Auth Architecture</span>
+              </div>
+              <h1 class="admin-header-title">User &amp; Atelier Staff Management</h1>
+              <p class="admin-header-sub">
+                Create back-office staff accounts by email. In Bubble.io, creating an account sends the standard <strong>"Password Reset / Set Password"</strong> onboarding email so the invitee chooses their password securely.
+              </p>
+            </div>
+            <div class="admin-header-actions">
+              <button type="button" class="btn btn-primary" onclick="openCreateUserModal()" style="padding: 10px 20px; font-size: 13px;">
+                + Create User by Email
+              </button>
+            </div>
+          </div>
+
+          <!-- Bubble.io Workflow Architecture Callout -->
+          <div class="policy-callout" style="background: #EBF8FF; border-left-color: #3182CE; margin-bottom: 24px;">
+            <div style="display: flex; gap: 12px; align-items: flex-start;">
+              <span style="font-size: 20px;">⚡</span>
+              <div>
+                <strong style="color: #2B6CB0; font-size: 13.5px;">Bubble.io Invitation Workflow Implemented:</strong>
+                <p style="font-size: 12.5px; color: #2C5282; margin-top: 4px; line-height: 1.5;">
+                  When you enter a staff email, Bubble executes <code>Create an account for someone else</code>, writes their role (Super Admin, Store Manager, or Staff / Tailor) to the database, and immediately fires <code>Send password reset email</code>. The staff member clicks the secure link in their inbox to set their password.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div class="admin-card">
+            <div class="admin-card-header">
+              <div class="admin-card-title">
+                <span>Active Back-Office Team Members</span>
+                <span class="admin-nav-pill super" id="userCountBadge">4 Team Members</span>
+              </div>
+              <div class="admin-table-controls">
+                <input type="text" class="admin-search-input" id="userSearchInput" placeholder="Filter team by name, email..." onkeyup="filterUsersTable()">
+              </div>
+            </div>
+
+            <div class="admin-table-wrap">
+              <table class="admin-table" id="usersTable">
+                <thead>
+                  <tr>
+                    <th>User &amp; Email</th>
+                    <th>Role Permission</th>
+                    <th>Status</th>
+                    <th>Date Added</th>
+                    <th>Last Active</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="usersTableBody">
+                  <!-- User 1: Super Admin -->
+                  <tr>
+                    <td>
+                      <div style="display: flex; align-items: center; gap: 10px;">
+                        <div class="admin-avatar" style="background: var(--color-gold);">DA</div>
+                        <div>
+                          <strong>David (Atelier Owner)</strong>
+                          <div style="font-size: 12px; color: var(--color-text-muted);">david@krabekollection.com</div>
+                        </div>
+                      </div>
+                    </td>
+                    <td>
+                      <span class="admin-nav-pill super" style="font-weight: 700;">Super Admin</span>
+                    </td>
+                    <td>
+                      <span style="display: inline-flex; align-items: center; gap: 6px; font-size: 12px; color: #22543D; font-weight: 600;">
+                        <span style="width: 8px; height: 8px; border-radius: 50%; background: #38A169;"></span> Active Now
+                      </span>
+                    </td>
+                    <td>01 Oct 2026</td>
+                    <td>Just now</td>
+                    <td>
+                      <span style="font-size: 11px; color: var(--color-text-muted);">Root Account</span>
+                    </td>
+                  </tr>
+
+                  <!-- User 2: Master Tailor -->
+                  <tr>
+                    <td>
+                      <div style="display: flex; align-items: center; gap: 10px;">
+                        <div class="admin-avatar" style="background: #44637B; color: #FFFFFF;">IA</div>
+                        <div>
+                          <strong>Ibrahim Al-Hassan</strong>
+                          <div style="font-size: 12px; color: var(--color-text-muted);">ibrahim@krabekollection.com</div>
+                        </div>
+                      </div>
+                    </td>
+                    <td>
+                      <span class="admin-nav-pill gold">Staff / Master Tailor</span>
+                    </td>
+                    <td>
+                      <span style="display: inline-flex; align-items: center; gap: 6px; font-size: 12px; color: #22543D; font-weight: 600;">
+                        <span style="width: 8px; height: 8px; border-radius: 50%; background: #38A169;"></span> Active
+                      </span>
+                    </td>
+                    <td>02 Oct 2026</td>
+                    <td>2 hours ago</td>
+                    <td>
+                      <button type="button" class="btn btn-outline" style="padding: 4px 8px; font-size: 11px;" onclick="resendPasswordEmail('ibrahim@krabekollection.com')">Resend Reset Email</button>
+                    </td>
+                  </tr>
+
+                  <!-- User 3: Patternmaker -->
+                  <tr>
+                    <td>
+                      <div style="display: flex; align-items: center; gap: 10px;">
+                        <div class="admin-avatar" style="background: #44637B; color: #FFFFFF;">AN</div>
+                        <div>
+                          <strong>Amaka Nnamdi</strong>
+                          <div style="font-size: 12px; color: var(--color-text-muted);">amaka@krabekollection.com</div>
+                        </div>
+                      </div>
+                    </td>
+                    <td>
+                      <span class="admin-nav-pill">Staff / Patternmaker</span>
+                    </td>
+                    <td>
+                      <span style="display: inline-flex; align-items: center; gap: 6px; font-size: 12px; color: #22543D; font-weight: 600;">
+                        <span style="width: 8px; height: 8px; border-radius: 50%; background: #38A169;"></span> Active
+                      </span>
+                    </td>
+                    <td>03 Oct 2026</td>
+                    <td>Yesterday</td>
+                    <td>
+                      <button type="button" class="btn btn-outline" style="padding: 4px 8px; font-size: 11px;" onclick="resendPasswordEmail('amaka@krabekollection.com')">Resend Reset Email</button>
+                    </td>
+                  </tr>
+
+                  <!-- User 4: Store Manager (Invitation Pending) -->
+                  <tr>
+                    <td>
+                      <div style="display: flex; align-items: center; gap: 10px;">
+                        <div class="admin-avatar" style="background: #E2E8F0; color: #4A5568;">KB</div>
+                        <div>
+                          <strong>Kemi Balogun</strong>
+                          <div style="font-size: 12px; color: var(--color-text-muted);">kemi.operations@krabekollection.com</div>
+                        </div>
+                      </div>
+                    </td>
+                    <td>
+                      <span class="admin-nav-pill">Store Manager</span>
+                    </td>
+                    <td>
+                      <span style="display: inline-flex; align-items: center; gap: 6px; font-size: 12px; color: #975A16; font-weight: 600;">
+                        <span style="width: 8px; height: 8px; border-radius: 50%; background: #ECC94B;"></span> Invite Sent (Pending Set Password)
+                      </span>
+                    </td>
+                    <td>05 Oct 2026</td>
+                    <td>Awaiting First Login</td>
+                    <td>
+                      <button type="button" class="btn btn-outline" style="padding: 4px 8px; font-size: 11px;" onclick="resendPasswordEmail('kemi.operations@krabekollection.com')">Resend Invite Email</button>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- Restricted Lock Screen (Displayed when in Staff role) -->
+        <div id="superAdminRestricted" style="display: none;">
+          <div class="admin-restricted-box">
+            <span class="admin-restricted-icon">🔒</span>
+            <h2 style="font-family: var(--font-serif); font-size: 22px; color: var(--color-obsidian); margin-bottom: 8px;">Restricted Access: Super Admin Only</h2>
+            <p style="font-size: 14px; color: var(--color-text-muted); line-height: 1.6; margin-bottom: 24px;">
+              You are currently viewing the backoffice in <strong>Staff / Master Tailor</strong> mode. User account provisioning and role permission management are restricted strictly to Super Admin (David).
+            </p>
+            <button type="button" class="btn btn-primary" onclick="toggleAdminRole('super_admin')" style="padding: 10px 22px; font-size: 13px;">
+              Switch Back to Super Admin Role &rarr;
+            </button>
+          </div>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <!-- =========================================================================
+       3. MODAL 1: CREATE BESPOKE ORDER (FROM WHATSAPP DEALS)
+       ========================================================================= -->
+  <div class="admin-modal-overlay" id="bespokeModal" role="dialog" aria-modal="true" aria-labelledby="bespokeModalTitle">
+    <div class="admin-modal-card large">
+      <div class="admin-modal-header">
+        <h3 class="admin-modal-title" id="bespokeModalTitle">Log Bespoke Commission (From WhatsApp / Studio)</h3>
+        <button type="button" class="admin-modal-close" onclick="closeBespokeModal()" aria-label="Close dialog">&times;</button>
+      </div>
+      <form id="bespokeOrderForm" onsubmit="handleCreateBespoke(event)">
+        <div class="admin-modal-body">
+          <p style="font-size: 13px; color: var(--color-text-muted); margin-bottom: 20px;">
+            Enter the details agreed upon with the client via WhatsApp chat or private fitting consultation.
+          </p>
+
+          <!-- Client Details -->
+          <div style="font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--color-primary); margin-bottom: 12px;">
+            1. Client Information
+          </div>
+          <div class="form-row-2">
+            <div class="form-group-admin">
+              <label class="form-label-admin" for="bClientName">Client Full Name *</label>
+              <input type="text" id="bClientName" class="form-input-admin" placeholder="e.g. Chief Adeleke Johnson" required>
+            </div>
+            <div class="form-group-admin">
+              <label class="form-label-admin" for="bClientPhone">WhatsApp Number *</label>
+              <input type="tel" id="bClientPhone" class="form-input-admin" placeholder="+234 803 000 0000" required>
+            </div>
+          </div>
+          <div class="form-row-2">
+            <div class="form-group-admin">
+              <label class="form-label-admin" for="bClientEmail">Email Address (Optional)</label>
+              <input type="email" id="bClientEmail" class="form-input-admin" placeholder="client@example.com">
+            </div>
+            <div class="form-group-admin">
+              <label class="form-label-admin" for="bDeliveryCity">Delivery / Fitting City</label>
+              <input type="text" id="bDeliveryCity" class="form-input-admin" placeholder="e.g. Victoria Island, Lagos" value="Lagos">
+            </div>
+          </div>
+
+          <!-- Garment & Fabric Specs -->
+          <div style="font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--color-primary); margin: 16px 0 12px;">
+            2. Garment &amp; Fabric Specifications
+          </div>
+          <div class="form-row-2">
+            <div class="form-group-admin">
+              <label class="form-label-admin" for="bGarmentCategory">Garment Category *</label>
+              <select id="bGarmentCategory" class="form-select-admin" required>
+                <option value="3-Piece Royal Agbada">3-Piece Royal Agbada</option>
+                <option value="2-Piece Bespoke Senator">2-Piece Bespoke Senator</option>
+                <option value="Luxury Silk Kaftan">Luxury Silk Kaftan</option>
+                <option value="Black Tie Velvet Tuxedo">Black Tie Velvet Tuxedo</option>
+                <option value="Two-Tone Modern Native Set">Two-Tone Modern Native Set</option>
+              </select>
+            </div>
+            <div class="form-group-admin">
+              <label class="form-label-admin" for="bAssignedTailor">Assign Master Tailor *</label>
+              <select id="bAssignedTailor" class="form-select-admin" required>
+                <option value="Master Ibrahim">Master Tailor Ibrahim (Head Atelier)</option>
+                <option value="Amaka (Patternmaker)">Amaka Nnamdi (Precision Patternmaker)</option>
+                <option value="David (Creative Director)">David (Creative Direction)</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-group-admin">
+            <label class="form-label-admin" for="bFabricSpecs">Fabric &amp; Embroidery Details *</label>
+            <input type="text" id="bFabricSpecs" class="form-input-admin" placeholder="e.g. Super 150s Midnight Navy Cashmere Wool, Bronze Zari Threadwork on Chest" required>
+          </div>
+
+          <!-- Commercials & Pricing -->
+          <div style="font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--color-primary); margin: 16px 0 12px;">
+            3. Agreed Pricing &amp; Target Delivery
+          </div>
+          <div class="form-row-3">
+            <div class="form-group-admin">
+              <label class="form-label-admin" for="bTotalPrice">Agreed Total (₦) *</label>
+              <input type="number" id="bTotalPrice" class="form-input-admin" placeholder="380000" required oninput="calcBespokeBalance()">
+            </div>
+            <div class="form-group-admin">
+              <label class="form-label-admin" for="bDepositPaid">Deposit Received (₦) *</label>
+              <input type="number" id="bDepositPaid" class="form-input-admin" placeholder="250000" required oninput="calcBespokeBalance()">
+            </div>
+            <div class="form-group-admin">
+              <label class="form-label-admin" for="bTargetDate">Target Fitting Date *</label>
+              <input type="date" id="bTargetDate" class="form-input-admin" required>
+            </div>
+          </div>
+          <div style="font-size: 12.5px; background: #FAF8F5; padding: 10px 14px; border-radius: 4px; margin-bottom: 18px; border: 1px solid var(--color-border);" id="bBalanceDisplay">
+            <strong>Balance Due on Fitting:</strong> <span style="color: #C05621; font-weight: 700;">₦130,000</span>
+          </div>
+
+          <!-- Measurements Mini Form -->
+          <div style="font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--color-primary); margin: 16px 0 12px;">
+            4. Client Measurements (Inches)
+          </div>
+          <div class="measurements-mini-grid">
+            <div class="measure-mini-item"><span>CHEST</span><input type="text" id="mChest" value="42" required></div>
+            <div class="measure-mini-item"><span>SHOULDER</span><input type="text" id="mShoulder" value="19.5" required></div>
+            <div class="measure-mini-item"><span>SLEEVE</span><input type="text" id="mSleeve" value="25.5" required></div>
+            <div class="measure-mini-item"><span>WAIST</span><input type="text" id="mWaist" value="34" required></div>
+            <div class="measure-mini-item"><span>HIPS</span><input type="text" id="mHips" value="40" required></div>
+            <div class="measure-mini-item"><span>INSEAM</span><input type="text" id="mInseam" value="32.5" required></div>
+            <div class="measure-mini-item"><span>TROUSER LENGTH</span><input type="text" id="mLength" value="41.5" required></div>
+            <div class="measure-mini-item"><span>NECK</span><input type="text" id="mNeck" value="17" required></div>
+          </div>
+
+          <!-- Workshop Notes -->
+          <div class="form-group-admin" style="margin-top: 18px;">
+            <label class="form-label-admin" for="bNotes">Tailoring Notes &amp; Special Client Instructions</label>
+            <textarea id="bNotes" class="form-textarea-admin" rows="2" placeholder="e.g. Wedding celebration in Abuja on the 24th. Needs loose drape across chest with double-lined hem."></textarea>
+          </div>
+        </div>
+
+        <div class="admin-modal-footer">
+          <button type="button" class="btn btn-outline" onclick="closeBespokeModal()">Cancel</button>
+          <button type="submit" class="btn btn-primary">Create Commission &amp; Log to Workshop</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- =========================================================================
+       4. MODAL 2: CREATE USER BY EMAIL (SUPER ADMIN EXCLUSIVE)
+       ========================================================================= -->
+  <div class="admin-modal-overlay" id="createUserModal" role="dialog" aria-modal="true" aria-labelledby="createUserModalTitle">
+    <div class="admin-modal-card">
+      <div class="admin-modal-header">
+        <h3 class="admin-modal-title" id="createUserModalTitle">Create User / Staff by Email</h3>
+        <button type="button" class="admin-modal-close" onclick="closeCreateUserModal()" aria-label="Close dialog">&times;</button>
+      </div>
+      <form id="createUserForm" onsubmit="handleCreateUser(event)">
+        <div class="admin-modal-body">
+          <div class="policy-callout" style="background: #EBF8FF; border-left-color: #3182CE; margin-top: 0; margin-bottom: 18px;">
+            <strong style="color: #2B6CB0; font-size: 13px;">Bubble.io Reset Email Flow:</strong>
+            <p style="font-size: 12px; color: #2C5282; margin-top: 2px;">
+              You do not set the password for this user. An official password set invitation email will be dispatched automatically upon creation.
+            </p>
+          </div>
+
+          <div class="form-group-admin">
+            <label class="form-label-admin" for="newStaffEmail">Staff Email Address *</label>
+            <input type="email" id="newStaffEmail" class="form-input-admin" placeholder="colleague@krabekollection.com" required>
+          </div>
+
+          <div class="form-group-admin">
+            <label class="form-label-admin" for="newStaffName">Full Name *</label>
+            <input type="text" id="newStaffName" class="form-input-admin" placeholder="e.g. Segun Adeyemi" required>
+          </div>
+
+          <div class="form-group-admin">
+            <label class="form-label-admin" for="newStaffRole">Backoffice Access Role *</label>
+            <select id="newStaffRole" class="form-select-admin" required>
+              <option value="Staff / Master Tailor">Staff / Master Tailor (Can update garment milestones)</option>
+              <option value="Staff / Patternmaker">Staff / Patternmaker (Atelier cutting &amp; sizing)</option>
+              <option value="Store Manager">Store Manager (Manage Made-to-Order, Bespoke, and Fittings)</option>
+              <option value="Super Admin">Super Admin (Full administrative and user access)</option>
+            </select>
+          </div>
+
+          <div style="background: var(--color-bone); border: 1px solid var(--color-border); border-radius: var(--radius-sm); padding: 12px 14px; margin-top: 14px;">
+            <label style="display: flex; align-items: flex-start; gap: 10px; font-size: 12.5px; cursor: pointer;">
+              <input type="checkbox" id="sendInviteEmailCheck" checked style="margin-top: 3px;" required>
+              <span>
+                <strong>Automatically send Password Reset / Onboarding Email</strong><br>
+                <span style="color: var(--color-text-muted); font-size: 11.5px;">Triggers Bubble workflow action: <em>Send password reset email (User = Result of Step 1)</em></span>
+              </span>
+            </label>
+          </div>
+        </div>
+
+        <div class="admin-modal-footer">
+          <button type="button" class="btn btn-outline" onclick="closeCreateUserModal()">Cancel</button>
+          <button type="submit" class="btn btn-primary">Create User &amp; Send Invitation</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- =========================================================================
+       5. MODAL 3: VIEW MEASUREMENT CARD (INSPECTION)
+       ========================================================================= -->
+  <div class="admin-modal-overlay" id="measureModal" role="dialog" aria-modal="true" aria-labelledby="measureModalTitle">
+    <div class="admin-modal-card">
+      <div class="admin-modal-header">
+        <h3 class="admin-modal-title" id="measureModalTitle">Client Tailoring Card</h3>
+        <button type="button" class="admin-modal-close" onclick="closeMeasureModal()" aria-label="Close dialog">&times;</button>
+      </div>
+      <div class="admin-modal-body">
+        <h4 id="measureClientName" style="font-size: 16px; margin-bottom: 14px; color: var(--color-obsidian);">Chief Femi Coker</h4>
+        <div class="measurements-mini-grid" id="measureGridDisplay">
+          <!-- Populated by JS -->
+        </div>
+      </div>
+      <div class="admin-modal-footer">
+        <button type="button" class="btn btn-primary" onclick="closeMeasureModal()">Done</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- =========================================================================
+       6. FLOATING TOAST NOTIFICATION STACK
+       ========================================================================= -->
+  <div class="admin-toast-container" id="toastContainer" aria-live="polite"></div>
+
+  <!-- =========================================================================
+       7. INTERACTIVE JAVASCRIPT CONTROLLER
+       ========================================================================= -->
+  <script>
+    // Current Active Role State
+    let currentRole = 'super_admin';
+
+    // Switch Role between Super Admin and Staff Tailor
+    function toggleAdminRole(role) {
+      currentRole = role;
+      const selector = document.getElementById('roleSelector');
+      if (selector) selector.value = role;
+
+      const userRoleBadge = document.getElementById('userRoleBadge');
+      const userName = document.getElementById('userName');
+      const userAvatar = document.getElementById('userAvatar');
+      const superAdminAuthorized = document.getElementById('superAdminAuthorized');
+      const superAdminRestricted = document.getElementById('superAdminRestricted');
+      const superAdminActionButtons = document.querySelectorAll('.super-admin-action');
+
+      if (role === 'super_admin') {
+        if (userName) userName.innerText = 'David (Owner)';
+        if (userRoleBadge) userRoleBadge.innerText = 'Super Admin';
+        if (userAvatar) userAvatar.innerText = 'DA';
+        if (superAdminAuthorized) superAdminAuthorized.style.display = 'block';
+        if (superAdminRestricted) superAdminRestricted.style.display = 'none';
+        superAdminActionButtons.forEach(btn => btn.style.display = 'inline-flex');
+        showToast('Switched to Super Admin role (Full system control)');
+      } else {
+        if (userName) userName.innerText = 'Ibrahim Al-Hassan';
+        if (userRoleBadge) userRoleBadge.innerText = 'Staff / Master Tailor';
+        if (userAvatar) userAvatar.innerText = 'IA';
+        if (superAdminAuthorized) superAdminAuthorized.style.display = 'none';
+        if (superAdminRestricted) superAdminRestricted.style.display = 'block';
+        superAdminActionButtons.forEach(btn => btn.style.display = 'none');
+        showToast('Switched to Staff / Master Tailor role');
+      }
+    }
+
+    // Switch Admin Tabs
+    function switchAdminTab(tabId, el) {
+      document.querySelectorAll('.admin-nav-item').forEach(item => {
+        item.classList.remove('active');
+        if (item.getAttribute('data-tab') === tabId) {
+          item.classList.add('active');
+        }
+      });
+
+      document.querySelectorAll('.admin-tab-view').forEach(view => {
+        view.style.display = 'none';
+      });
+
+      const targetView = document.getElementById('view-' + tabId);
+      if (targetView) {
+        targetView.style.display = 'block';
+      }
+
+      // Check permissions if switching to users tab
+      if (tabId === 'users') {
+        const superAdminAuthorized = document.getElementById('superAdminAuthorized');
+        const superAdminRestricted = document.getElementById('superAdminRestricted');
+        if (currentRole === 'super_admin') {
+          if (superAdminAuthorized) superAdminAuthorized.style.display = 'block';
+          if (superAdminRestricted) superAdminRestricted.style.display = 'none';
+        } else {
+          if (superAdminAuthorized) superAdminAuthorized.style.display = 'none';
+          if (superAdminRestricted) superAdminRestricted.style.display = 'block';
+        }
+      }
+    }
+
+    // Manual Status Changer for Made-to-Order Orders
+    function handleRtwStatusChange(selectEl, orderId) {
+      const newStatus = selectEl.value;
+      const statusClassMap = {
+        'paid': 'status-paid',
+        'inspected': 'status-inspected',
+        'transit': 'status-transit',
+        'delivered': 'status-delivered',
+        'cancelled': 'status-cancelled'
+      };
+
+      // Reset styling classes
+      selectEl.className = 'admin-status-select ' + (statusClassMap[newStatus] || 'status-paid');
+
+      // Update row data attribute
+      const row = selectEl.closest('tr');
+      if (row) row.setAttribute('data-status', newStatus);
+
+      const statusLabels = {
+        'paid': 'Paid & Processing',
+        'inspected': 'Quality Inspected & Steamed',
+        'transit': 'In Transit (Courier Dispatched)',
+        'delivered': 'Delivered & Completed',
+        'cancelled': 'Cancelled & Refunded'
+      };
+
+      showToast(`Order #${orderId} manually updated to: "${statusLabels[newStatus]}"`);
+    }
+
+    // Manual Production Milestone Changer for Bespoke Orders
+    function handleBespokeStatusChange(selectEl, commissionId) {
+      const newMilestone = selectEl.value;
+      const milestoneClassMap = {
+        'sourced': 'status-sourced',
+        'drafting': 'status-drafting',
+        'embroidery': 'status-embroidery',
+        'fitting': 'status-fitting',
+        'completed': 'status-completed'
+      };
+
+      selectEl.className = 'admin-status-select ' + (milestoneClassMap[newMilestone] || 'status-sourced');
+
+      const row = selectEl.closest('tr');
+      if (row) row.setAttribute('data-milestone', newMilestone);
+
+      const milestoneLabels = {
+        'sourced': 'Fabric Sourced & Inspected',
+        'drafting': 'Pattern Drafting & Cutting',
+        'embroidery': 'Hand Embroidery & Assembly',
+        'fitting': 'Studio Fitting & Steaming',
+        'completed': 'Completed & Dispatched'
+      };
+
+      showToast(`Commission #${commissionId} advanced to: "${milestoneLabels[newMilestone]}"`);
+    }
+
+    // Toast Notification System
+    function showToast(message) {
+      const container = document.getElementById('toastContainer');
+      if (!container) return;
+
+      const toast = document.createElement('div');
+      toast.className = 'admin-toast';
+      toast.innerHTML = `
+        <span style="font-size: 16px;">✨</span>
+        <span>${message}</span>
+      `;
+
+      container.appendChild(toast);
+
+      setTimeout(() => {
+        toast.style.opacity = '0';
+        toast.style.transform = 'translateX(50px)';
+        toast.style.transition = 'all 0.3s ease';
+        setTimeout(() => toast.remove(), 300);
+      }, 4000);
+    }
+
+    // Bespoke Modal Management
+    function openBespokeModal() {
+      const modal = document.getElementById('bespokeModal');
+      if (modal) {
+        modal.classList.add('open');
+        calcBespokeBalance();
+      }
+    }
+
+    function closeBespokeModal() {
+      const modal = document.getElementById('bespokeModal');
+      if (modal) modal.classList.remove('open');
+    }
+
+    function calcBespokeBalance() {
+      const total = parseFloat(document.getElementById('bTotalPrice').value) || 0;
+      const deposit = parseFloat(document.getElementById('bDepositPaid').value) || 0;
+      const balance = Math.max(0, total - deposit);
+      const display = document.getElementById('bBalanceDisplay');
+      if (display) {
+        display.innerHTML = `<strong>Balance Due on Fitting:</strong> <span style="color: #C05621; font-weight: 700;">₦${balance.toLocaleString()}</span>`;
+      }
+    }
+
+    // Handle Bespoke Order Form Submission
+    let bespokeCount = 12;
+    function handleCreateBespoke(e) {
+      e.preventDefault();
+      const clientName = document.getElementById('bClientName').value.trim();
+      const clientPhone = document.getElementById('bClientPhone').value.trim();
+      const category = document.getElementById('bGarmentCategory').value;
+      const tailor = document.getElementById('bAssignedTailor').value;
+      const fabric = document.getElementById('bFabricSpecs').value.trim();
+      const total = parseFloat(document.getElementById('bTotalPrice').value) || 0;
+      const deposit = parseFloat(document.getElementById('bDepositPaid').value) || 0;
+      const targetDate = document.getElementById('bTargetDate').value;
+      const balance = Math.max(0, total - deposit);
+
+      bespokeCount++;
+      const commissionId = 'BESPOKE-2026-0' + (80 + bespokeCount);
+
+      // Create new table row at top
+      const tableBody = document.getElementById('bespokeTableBody');
+      if (tableBody) {
+        const newRow = document.createElement('tr');
+        newRow.setAttribute('data-commission', commissionId);
+        newRow.setAttribute('data-milestone', 'sourced');
+        newRow.innerHTML = `
+          <td>
+            <strong>#${commissionId}</strong>
+            <div style="font-size: 11px; color: var(--color-text-muted);">Logged: Today &bull; WhatsApp</div>
+          </td>
+          <td>
+            <strong>${clientName}</strong>
+            <div style="font-size: 12px; color: var(--color-text-muted);">${clientPhone}</div>
+            <div style="font-size: 11px; color: var(--color-whatsapp); font-weight: 600;">✓ WhatsApp Deal</div>
+          </td>
+          <td>
+            <div style="font-weight: 600; font-size: 13px;">${category}</div>
+            <div style="font-size: 11px; color: var(--color-text-muted);">${fabric}</div>
+            <button type="button" class="btn btn-outline" style="padding: 2px 6px; font-size: 10px; margin-top: 4px;" onclick="viewMeasurementCard('${clientName}', '42', '19.5', '25.5', '34', '32.5')">View Measurements</button>
+          </td>
+          <td>
+            <strong style="color: var(--color-obsidian);">₦${total.toLocaleString()}</strong>
+            <div style="font-size: 11px; color: #2B6CB0;">₦${deposit.toLocaleString()} Deposit Paid</div>
+            <div style="font-size: 11px; color: #C05621; font-weight: 600;">₦${balance.toLocaleString()} Balance Due</div>
+          </td>
+          <td>
+            <strong>${tailor}</strong>
+            <div style="font-size: 11px; color: var(--color-text-muted);">Due: ${targetDate || 'TBD'}</div>
+          </td>
+          <td>
+            <select class="admin-status-select status-sourced" onchange="handleBespokeStatusChange(this, '${commissionId}')">
+              <option value="sourced" selected>1. Fabric Sourced &amp; Inspected</option>
+              <option value="drafting">2. Pattern Drafting &amp; Cutting</option>
+              <option value="embroidery">3. Hand Embroidery &amp; Assembly</option>
+              <option value="fitting">4. Studio Fitting &amp; Steaming</option>
+              <option value="completed">5. Completed &amp; Dispatched</option>
+            </select>
+          </td>
+          <td>
+            <div style="display: flex; gap: 6px;">
+              <a href="https://wa.me/${clientPhone.replace(/[^0-9]/g, '')}" target="_blank" class="btn btn-outline" style="padding: 4px 8px; font-size: 11px; color: var(--color-whatsapp);" title="Open WhatsApp Chat">💬</a>
+              <button type="button" class="btn btn-outline" style="padding: 4px 8px; font-size: 11px;" onclick="printWorkshopCard('${commissionId}')">🖨️</button>
+            </div>
+          </td>
+        `;
+        tableBody.insertBefore(newRow, tableBody.firstChild);
+      }
+
+      // Update counts
+      const bespokeNav = document.getElementById('bespokeNavCount');
+      const bespokeKpi = document.getElementById('kpiBespokeCount');
+      if (bespokeNav) bespokeNav.innerText = bespokeCount;
+      if (bespokeKpi) bespokeKpi.innerText = bespokeCount + ' Jobs';
+
+      closeBespokeModal();
+      document.getElementById('bespokeOrderForm').reset();
+      showToast(`WhatsApp Bespoke Commission #${commissionId} successfully logged!`);
+      switchAdminTab('bespoke');
+    }
+
+    // Create User Modal Management (Super Admin Exclusive)
+    function openCreateUserModal() {
+      if (currentRole !== 'super_admin') {
+        showToast('⚠️ Only Super Admin can invite team members.');
+        return;
+      }
+      const modal = document.getElementById('createUserModal');
+      if (modal) modal.classList.add('open');
+    }
+
+    function closeCreateUserModal() {
+      const modal = document.getElementById('createUserModal');
+      if (modal) modal.classList.remove('open');
+    }
+
+    let userCount = 4;
+    function handleCreateUser(e) {
+      e.preventDefault();
+      const email = document.getElementById('newStaffEmail').value.trim();
+      const name = document.getElementById('newStaffName').value.trim();
+      const role = document.getElementById('newStaffRole').value;
+
+      userCount++;
+      const initials = name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase() || 'ST';
+
+      const roleBadgeClass = role === 'Super Admin' ? 'super' : (role.includes('Tailor') ? 'gold' : '');
+
+      const tableBody = document.getElementById('usersTableBody');
+      if (tableBody) {
+        const newRow = document.createElement('tr');
+        newRow.innerHTML = `
+          <td>
+            <div style="display: flex; align-items: center; gap: 10px;">
+              <div class="admin-avatar" style="background: #44637B; color: #FFFFFF;">${initials}</div>
+              <div>
+                <strong>${name}</strong>
+                <div style="font-size: 12px; color: var(--color-text-muted);">${email}</div>
+              </div>
+            </div>
+          </td>
+          <td>
+            <span class="admin-nav-pill ${roleBadgeClass}">${role}</span>
+          </td>
+          <td>
+            <span style="display: inline-flex; align-items: center; gap: 6px; font-size: 12px; color: #975A16; font-weight: 600;">
+              <span style="width: 8px; height: 8px; border-radius: 50%; background: #ECC94B;"></span> Invite Sent (Pending Set Password)
+            </span>
+          </td>
+          <td>Today</td>
+          <td>Awaiting First Login</td>
+          <td>
+            <button type="button" class="btn btn-outline" style="padding: 4px 8px; font-size: 11px;" onclick="resendPasswordEmail('${email}')">Resend Invite Email</button>
+          </td>
+        `;
+        tableBody.appendChild(newRow);
+      }
+
+      const countBadge = document.getElementById('userCountBadge');
+      if (countBadge) countBadge.innerText = userCount + ' Team Members';
+
+      closeCreateUserModal();
+      document.getElementById('createUserForm').reset();
+      showToast(`User created! Password reset invitation dispatched to ${email}`);
+      switchAdminTab('users');
+    }
+
+    function resendPasswordEmail(email) {
+      showToast(`Password reset link re-sent to: ${email}`);
+    }
+
+    // Measurement Card Quick View Modal
+    function viewMeasurementCard(name, chest, shoulder, sleeve, waist, inseam) {
+      const modal = document.getElementById('measureModal');
+      const title = document.getElementById('measureClientName');
+      const grid = document.getElementById('measureGridDisplay');
+      if (title) title.innerText = name + ' (Tailoring Profile)';
+      if (grid) {
+        grid.innerHTML = `
+          <div class="measure-mini-item"><span>CHEST</span><input type="text" value="${chest}&quot;" readonly></div>
+          <div class="measure-mini-item"><span>SHOULDER</span><input type="text" value="${shoulder}&quot;" readonly></div>
+          <div class="measure-mini-item"><span>SLEEVE</span><input type="text" value="${sleeve}&quot;" readonly></div>
+          <div class="measure-mini-item"><span>WAIST</span><input type="text" value="${waist}&quot;" readonly></div>
+          <div class="measure-mini-item"><span>INSEAM</span><input type="text" value="${inseam}&quot;" readonly></div>
+          <div class="measure-mini-item"><span>NECK</span><input type="text" value="17&quot;" readonly></div>
+          <div class="measure-mini-item"><span>HIPS</span><input type="text" value="41&quot;" readonly></div>
+          <div class="measure-mini-item"><span>OUTSEAM</span><input type="text" value="42&quot;" readonly></div>
+        `;
+      }
+      if (modal) modal.classList.add('open');
+    }
+
+    function closeMeasureModal() {
+      const modal = document.getElementById('measureModal');
+      if (modal) modal.classList.remove('open');
+    }
+
+    function printWorkshopCard(id) {
+      showToast(`Printing workshop spec sheet for commission #${id}...`);
+    }
+
+    function exportOrdersCsv() {
+      showToast('Exporting Made-to-Order report as CSV...');
+    }
+
+    // Filter RTW Orders Table
+    function filterRtwTable() {
+      const query = (document.getElementById('rtwSearchInput').value || '').toLowerCase();
+      const status = document.getElementById('rtwStatusFilter').value;
+      const rows = document.querySelectorAll('#rtwOrdersTable tbody tr');
+
+      rows.forEach(row => {
+        const text = row.innerText.toLowerCase();
+        const rowStatus = row.getAttribute('data-status');
+        const matchesQuery = !query || text.includes(query);
+        const matchesStatus = status === 'all' || rowStatus === status;
+
+        if (matchesQuery && matchesStatus) {
+          row.style.display = '';
+        } else {
+          row.style.display = 'none';
+        }
+      });
+    }
+
+    // Filter Bespoke Table
+    function filterBespokeTable() {
+      const query = (document.getElementById('bespokeSearchInput').value || '').toLowerCase();
+      const milestone = document.getElementById('bespokeMilestoneFilter').value;
+      const rows = document.querySelectorAll('#bespokeOrdersTable tbody tr');
+
+      rows.forEach(row => {
+        const text = row.innerText.toLowerCase();
+        const rowMilestone = row.getAttribute('data-milestone');
+        const matchesQuery = !query || text.includes(query);
+        const matchesMilestone = milestone === 'all' || rowMilestone === milestone;
+
+        if (matchesQuery && matchesMilestone) {
+          row.style.display = '';
+        } else {
+          row.style.display = 'none';
+        }
+      });
+    }
+
+    // Filter Users Table
+    function filterUsersTable() {
+      const query = (document.getElementById('userSearchInput').value || '').toLowerCase();
+      const rows = document.querySelectorAll('#usersTable tbody tr');
+
+      rows.forEach(row => {
+        const text = row.innerText.toLowerCase();
+        if (!query || text.includes(query)) {
+          row.style.display = '';
+        } else {
+          row.style.display = 'none';
+        }
+      });
+    }
+
+    // Close Modals on Overlay Click or Escape Key
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        closeBespokeModal();
+        closeCreateUserModal();
+        closeMeasureModal();
+      }
+    });
+
+    document.querySelectorAll('.admin-modal-overlay').forEach(overlay => {
+      overlay.addEventListener('click', (e) => {
+        if (e.target === overlay) {
+          overlay.classList.remove('open');
+        }
+      });
+    });
+  </script>
+
+</body>
+</html>
