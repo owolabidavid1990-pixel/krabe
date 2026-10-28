@@ -76,7 +76,7 @@
             <div class="form-group">
               <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2px;">
                 <label class="form-label" for="krabeLoginPassword" style="margin-bottom: 0;">Password <span class="req">*</span></label>
-                <button type="button" id="krabeForgotLink" style="background: none; border: none; font-size: 11px; color: var(--color-primary); cursor: pointer; text-decoration: underline; padding: 0;">Forgot Password?</button>
+                <button type="button" id="krabeForgotLink" class="body-12" style="background: none; border: none; color: var(--color-primary); cursor: pointer; text-decoration: underline; padding: 0;">Forgot Password?</button>
               </div>
               <div class="krabe-input-wrap">
                 <input type="password" id="krabeLoginPassword" name="password" class="form-input" placeholder="••••••••••••" required autocomplete="current-password">
@@ -86,7 +86,7 @@
               </div>
             </div>
 
-            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 18px; font-size: 12px; color: var(--color-text-muted);">
+            <div class="body-12" style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 18px; color: var(--color-text-muted);">
               <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
                 <input type="checkbox" id="krabeRememberMe" checked style="accent-color: var(--color-primary); cursor: pointer;">
                 <span>Remember this device</span>
@@ -113,7 +113,7 @@
             </div>
 
             <!-- Pending OTP Resume Banner -->
-            <div id="krabePendingResumeNotice" style="display: none; background: rgba(212, 175, 55, 0.12); border: 1px solid var(--color-gold-light); padding: 10px 14px; border-radius: 6px; margin-bottom: 16px; font-size: 12px; line-height: 1.4; color: var(--color-obsidian);">
+            <div id="krabePendingResumeNotice" class="body-12" style="display: none; background: rgba(212, 175, 55, 0.12); border: 1px solid var(--color-gold-light); padding: 10px 14px; border-radius: 6px; margin-bottom: 16px; line-height: 1.4; color: var(--color-obsidian);">
               <span>Code pending for <strong id="krabePendingResumeEmail"></strong>.</span>
               <button type="button" id="krabeResumeOtpBtn" style="background: none; border: none; color: var(--color-primary); font-weight: 700; cursor: pointer; text-decoration: underline; margin-left: 6px;">
                 Enter code &rarr;
@@ -133,7 +133,7 @@
             <div class="form-group">
               <label class="form-label" for="krabeRegPhone">Phone / WhatsApp <span class="req">*</span></label>
               <input type="tel" id="krabeRegPhone" name="phone" class="form-input" placeholder="+234 800 000 0000" required autocomplete="tel">
-              <span style="font-size: 11px; color: var(--color-text-muted); margin-top: 2px;">Used for fitting confirmations and dispatch tracking.</span>
+              <span class="body-12" style="color: var(--color-text-muted); margin-top: 2px;">Used for fitting confirmations and dispatch tracking.</span>
             </div>
 
             <div class="form-group">
@@ -164,7 +164,7 @@
 
           <!-- VIEW 3: FORGOT PASSWORD FORM -->
           <form id="krabeForgotForm" class="krabe-auth-view" autocomplete="on">
-            <p style="font-size: 13px; color: var(--color-text-muted); line-height: 1.5; margin-bottom: 20px;">
+            <p class="body-14" style="color: var(--color-text-muted); line-height: 1.5; margin-bottom: 20px;">
               Enter your registered email address and we will send you a secure link to reset your account credentials.
             </p>
 
@@ -179,7 +179,7 @@
             </button>
 
             <div style="text-align: center; margin-top: 16px;">
-              <button type="button" id="krabeBackToSignInBtn" style="background: none; border: none; font-size: 12px; font-weight: 600; color: var(--color-primary); cursor: pointer;">
+              <button type="button" id="krabeBackToSignInBtn" class="body-12" style="background: none; border: none; font-weight: 600; color: var(--color-primary); cursor: pointer;">
                 &larr; Back to Sign In
               </button>
             </div>
@@ -188,10 +188,10 @@
           <!-- VIEW 4: EMAIL OTP CONFIRMATION VIEW -->
           <form id="krabeOtpForm" class="krabe-auth-view" autocomplete="off">
             <div style="text-align: center; margin-bottom: 20px;">
-              <p style="font-size: 14px; color: var(--color-obsidian); font-weight: 700; margin-bottom: 6px; letter-spacing: 0.5px;">
+              <p class="body-14" style="color: var(--color-obsidian); font-weight: 700; margin-bottom: 6px; letter-spacing: 0.5px;">
                 6-Digit Code
               </p>
-              <p style="font-size: 12.5px; color: var(--color-text-muted); line-height: 1.5;">
+              <p class="body-12" style="color: var(--color-text-muted); line-height: 1.5;">
                 Sent to <strong id="krabeOtpEmailDisplay" style="color: var(--color-obsidian);">your email</strong>.
               </p>
             </div>
@@ -208,7 +208,7 @@
               <span class="btn-text">Confirm Code &rarr;</span>
             </button>
 
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 18px; font-size: 12px;">
+            <div class="body-12" style="display: flex; justify-content: space-between; align-items: center; margin-top: 18px;">
               <button type="button" id="krabeBackToRegBtn" style="background: none; border: none; color: var(--color-text-muted); cursor: pointer; padding: 0;">
                 &larr; Edit details
               </button>

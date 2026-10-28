@@ -34,34 +34,29 @@
       
       <!-- Row 1: GENDER (Always visible, prominent tabs) -->
       <div class="gender-filter-strip">
-        <button type="button" class="gender-btn active" onclick="setGenderFilter(this, 'all')">All</button>
-        <button type="button" class="gender-btn" onclick="setGenderFilter(this, 'men')">Men</button>
-        <button type="button" class="gender-btn" onclick="setGenderFilter(this, 'women')">Women</button>
-        <button type="button" class="gender-btn" onclick="setGenderFilter(this, 'unisex')">Unisex</button>
+        <button type="button" class="gender-btn body-12 active" onclick="setGenderFilter(this, 'all')">All</button>
+        <button type="button" class="gender-btn body-12" onclick="setGenderFilter(this, 'men')">Men</button>
+        <button type="button" class="gender-btn body-12" onclick="setGenderFilter(this, 'women')">Women</button>
+        <button type="button" class="gender-btn body-12" onclick="setGenderFilter(this, 'unisex')">Unisex</button>
       </div>
 
       <!-- Row 2: CATEGORY (Always visible horizontal pills) -->
       <div class="category-filter-strip">
-        <button type="button" class="category-pill active" data-category="all" onclick="setCategoryFilter(this, 'all')">All Categories</button>
-        <button type="button" class="category-pill" data-category="native" onclick="setCategoryFilter(this, 'native')">Native Wear</button>
-        <button type="button" class="category-pill" data-category="formal" onclick="setCategoryFilter(this, 'formal')">English &amp; Suiting</button>
-        <button type="button" class="category-pill" data-category="streetwear" onclick="setCategoryFilter(this, 'streetwear')">Streetwear Drops</button>
+        <button type="button" class="category-pill body-12 active" data-category="all" onclick="setCategoryFilter(this, 'all')">All Categories</button>
+        <button type="button" class="category-pill body-12" data-category="native" onclick="setCategoryFilter(this, 'native')">Native Wear</button>
+        <button type="button" class="category-pill body-12" data-category="formal" onclick="setCategoryFilter(this, 'formal')">English &amp; Suiting</button>
+        <button type="button" class="category-pill body-12" data-category="streetwear" onclick="setCategoryFilter(this, 'streetwear')">Streetwear Drops</button>
       </div>
 
-      <!-- Row 3: SIZE & SORT (Quick thumb taps) -->
+      <!-- Row 3: STATUS & SORT -->
       <div class="sub-filter-strip">
-        <div class="size-quick-chips">
-          <span class="filter-mini-label">Size:</span>
-          <button type="button" class="size-chip active" onclick="setSizeFilter(this, 'all')">All</button>
-          <button type="button" class="size-chip" onclick="setSizeFilter(this, 'S')">S</button>
-          <button type="button" class="size-chip" onclick="setSizeFilter(this, 'M')">M</button>
-          <button type="button" class="size-chip" onclick="setSizeFilter(this, 'L')">L</button>
-          <button type="button" class="size-chip" onclick="setSizeFilter(this, 'XL')">XL</button>
-          <button type="button" class="size-chip" onclick="setSizeFilter(this, 'XXL')">XXL</button>
+        <div class="catalog-count body-12" style="color: var(--color-text-muted); font-weight: 600;">
+          Showing 0 results
         </div>
 
-        <div>
-          <select class="sort-select-compact" aria-label="Sort products">
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <span class="filter-mini-label body-12" style="margin-right: 0; color: var(--color-text-muted);">Sort:</span>
+          <select class="sort-select-compact body-12" aria-label="Sort products">
             <option value="featured">Featured</option>
             <option value="newest">Newest</option>
             <option value="price-asc">Price: Low-High</option>
@@ -79,11 +74,8 @@
   <main class="container">
     <div class="simplified-catalog-grid" id="catalogProductGrid">
       <div style="grid-column: 1 / -1; text-align: center; padding: 48px 16px; color: var(--color-text-muted);">
-        <p style="font-size: 14px;">Loading collection from atelier...</p>
+        <p class="body-14" style="color: var(--color-text-muted);">Loading collection from atelier...</p>
       </div>
-    </div>
-  </main>
-
     </div>
   </main>
 
@@ -95,7 +87,9 @@
       <div class="footer-top">
         <div class="footer-brand">
           <img src="assets/brand/krabe main logo.svg" alt="Krabe Kollection" style="height: 44px; margin-bottom: 14px;">
-          <p>Premium Nigerian unisex fashion house combining ancestral textile heritage with contemporary minimalist tailoring.</p>
+          <p class="body-14" style="color: var(--color-text-muted);">
+            Premium Nigerian unisex fashion house combining ancestral textile heritage with contemporary minimalist tailoring.
+          </p>
           <div class="footer-social-links" style="margin-top: 18px;">
             <a href="https://instagram.com" target="_blank" rel="noopener" class="social-circle" aria-label="Instagram">
               <svg style="width: 18px; height: 18px;" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
@@ -106,29 +100,29 @@
           </div>
         </div>
         <div>
-          <div class="footer-col-title">Shop Krabe</div>
-          <ul class="footer-nav-list">
+          <div class="footer-col-title body-12" style="font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; color: var(--color-text-main);">Shop Krabe</div>
+          <ul class="footer-nav-list body-14">
             <li><a href="shop.html">Made-to-Order Collections</a></li>
             <li><a href="bespoke.html">Bespoke Orders</a></li>
           </ul>
         </div>
         <div>
-          <div class="footer-col-title">Customer Care</div>
-          <ul class="footer-nav-list">
+          <div class="footer-col-title body-12" style="font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; color: var(--color-text-main);">Customer Care</div>
+          <ul class="footer-nav-list body-14">
             <li><a href="bespoke.html#appointment">Book Studio Appointment</a></li>
             <li><a href="help.html#faq">FAQ &amp; Shipping Policy</a></li>
           </ul>
         </div>
         <div>
-          <div class="footer-col-title">Private Releases</div>
+          <div class="footer-col-title body-12" style="font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; color: var(--color-text-main);">Private Releases</div>
           <form class="newsletter-form" data-newsletter-form novalidate>
-            <input type="email" required placeholder="Enter your email address" class="newsletter-input" autocomplete="email">
-            <button type="submit" class="newsletter-btn">Subscribe</button>
-            <div class="newsletter-feedback" style="display: none;" role="status"></div>
+            <input type="email" required placeholder="Enter your email address" class="newsletter-input body-14" autocomplete="email">
+            <button type="submit" class="newsletter-btn body-12">Subscribe</button>
+            <div class="newsletter-feedback body-12" style="display: none;" role="status"></div>
           </form>
         </div>
       </div>
-      <div class="footer-bottom">
+      <div class="footer-bottom body-12" style="color: var(--color-text-muted);">
         <div>&copy; 2026 Krabe Kollection. All rights reserved. Registered in Nigeria.</div>
       </div>
     </div>
@@ -142,56 +136,56 @@
           <svg class="search-icon-svg" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
           </svg>
-          <input type="text" id="searchInputField" class="search-modal-input" placeholder="Search Kaftans, Agbadas, Streetwear, Suits..." autocomplete="off">
+          <input type="text" id="searchInputField" class="search-modal-input body-16" placeholder="Search Kaftans, Agbadas, Streetwear, Suits..." autocomplete="off">
           <button type="button" class="search-clear-btn" id="searchClearBtn" aria-label="Clear search">✕</button>
         </div>
-        <button type="button" class="search-close-btn" id="searchCloseBtn" aria-label="Close search">Close (Esc)</button>
+        <button type="button" class="search-close-btn body-12" id="searchCloseBtn" aria-label="Close search">Close (Esc)</button>
       </div>
 
       <div class="search-modal-body">
         <div class="search-suggestions-block">
-          <span class="search-section-label">Popular Searches</span>
+          <span class="search-section-label body-12" style="font-weight: 700; color: var(--color-text-muted); text-transform: uppercase; letter-spacing: 1px;">Popular Searches</span>
           <div class="search-tags">
-            <a href="shop.html?category=native" class="search-tag">Native Kaftans</a>
-            <a href="shop.html?category=native" class="search-tag">Ceremonial Agbada</a>
-            <a href="shop.html?category=streetwear" class="search-tag">Luxury Streetwear</a>
-            <a href="shop.html?category=formal" class="search-tag">Senator Suits</a>
-            <a href="shop.html?category=formal" class="search-tag">Artisan Linen Shirts</a>
+            <a href="shop.html?category=native" class="search-tag body-12">Native Kaftans</a>
+            <a href="shop.html?category=native" class="search-tag body-12">Ceremonial Agbada</a>
+            <a href="shop.html?category=streetwear" class="search-tag body-12">Luxury Streetwear</a>
+            <a href="shop.html?category=formal" class="search-tag body-12">Senator Suits</a>
+            <a href="shop.html?category=formal" class="search-tag body-12">Artisan Linen Shirts</a>
           </div>
         </div>
 
         <div class="search-preview-block">
-          <span class="search-section-label">Quick Suggestions</span>
+          <span class="search-section-label body-12" style="font-weight: 700; color: var(--color-text-muted); text-transform: uppercase; letter-spacing: 1px;">Quick Suggestions</span>
           <div class="search-results-list">
             <a href="product.html" class="search-result-item">
               <img src="Krabe Cloth Concepts_230226_205405_1.jpg" alt="Signature 3-Piece Agbada Set">
               <div class="search-result-info">
-                <div class="search-result-title">Signature 3-Piece Agbada Set</div>
-                <div class="search-result-meta">Native Wear &bull; Ceremonial Luxe</div>
-                <div class="search-result-price">₦185,000</div>
+                <div class="search-result-title body-14" style="font-weight: 700; color: var(--color-obsidian);">Signature 3-Piece Agbada Set</div>
+                <div class="search-result-meta body-12" style="color: var(--color-text-muted);">Native Wear &bull; Ceremonial Luxe</div>
+                <div class="search-result-price body-14" style="font-weight: 700; color: var(--color-primary);">₦185,000</div>
               </div>
             </a>
             <a href="shop.html?category=native" class="search-result-item">
               <img src="Krabe Cloth Concepts_230226_205405_6.jpg" alt="Krabe Structured Modern Kaftan">
               <div class="search-result-info">
-                <div class="search-result-title">Krabe Structured Modern Kaftan</div>
-                <div class="search-result-meta">Native Wear &bull; Senator Cut</div>
-                <div class="search-result-price">₦120,000</div>
+                <div class="search-result-title body-14" style="font-weight: 700; color: var(--color-obsidian);">Krabe Structured Modern Kaftan</div>
+                <div class="search-result-meta body-12" style="color: var(--color-text-muted);">Native Wear &bull; Senator Cut</div>
+                <div class="search-result-price body-14" style="font-weight: 700; color: var(--color-primary);">₦120,000</div>
               </div>
             </a>
             <a href="shop.html?category=streetwear" class="search-result-item">
               <img src="Krabe Cloth Concepts_230226_205405_3.jpg" alt="Metallic Gold Brush Statement Tee">
               <div class="search-result-info">
-                <div class="search-result-title">Metallic Gold Brush Statement Tee</div>
-                <div class="search-result-meta">Streetwear &bull; Unisex Limited Drop</div>
-                <div class="search-result-price">₦55,000</div>
+                <div class="search-result-title body-14" style="font-weight: 700; color: var(--color-obsidian);">Metallic Gold Brush Statement Tee</div>
+                <div class="search-result-meta body-12" style="color: var(--color-text-muted);">Streetwear &bull; Unisex Limited Drop</div>
+                <div class="search-result-price body-14" style="font-weight: 700; color: var(--color-primary);">₦55,000</div>
               </div>
             </a>
           </div>
         </div>
 
         <div class="search-modal-footer">
-          <button type="button" class="btn-search-submit" id="searchSubmitBtn">
+          <button type="button" class="btn-search-submit body-14" id="searchSubmitBtn">
             Explore All Made-to-Order &rarr;
           </button>
         </div>
@@ -203,19 +197,19 @@
   <div class="cart-drawer-overlay" id="cartOverlay" aria-hidden="true">
     <div class="cart-drawer" id="cartDrawer" role="dialog" aria-modal="true" aria-labelledby="cartDrawerTitle">
       <div class="cart-drawer-header">
-        <h3 class="cart-drawer-title" id="cartDrawerTitle">Shopping Bag</h3>
+        <h3 class="cart-drawer-title h5" id="cartDrawerTitle">Shopping Bag</h3>
         <button type="button" class="cart-close-btn" id="cartCloseBtn" aria-label="Close Shopping Bag">
           <svg style="width: 22px; height: 22px;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
         </button>
       </div>
-      <div class="cart-free-shipping">✓ Free Lagos Delivery on orders over ₦200,000</div>
+      <div class="cart-free-shipping body-12">✓ Free Lagos Delivery on orders over ₦200,000</div>
       <div class="cart-drawer-body"></div>
       <div class="cart-drawer-footer">
         <div class="cart-subtotal-row">
-          <span class="cart-subtotal-label">Subtotal</span>
-          <span class="cart-subtotal-amount">₦0</span>
+          <span class="cart-subtotal-label body-14">Subtotal</span>
+          <span class="cart-subtotal-amount body-18">₦0</span>
         </div>
-        <a href="checkout.html" class="btn-checkout">Proceed to Checkout &rarr;</a>
+        <a href="checkout.html" class="btn-checkout body-14">Proceed to Checkout &rarr;</a>
       </div>
     </div>
   </div>
@@ -228,10 +222,45 @@
   <script src="js/auth.js"></script>
   <script src="js/main.js"></script>
   <script>
-    // Live Filter Logic (Gender, Category, Size)
+    // Live Filter & Catalog State (Gender, Category, Search, Sort)
     let currentGender = 'all';
     let currentCategory = 'all';
-    let currentSize = 'all';
+    let currentSearch = '';
+
+    function escapeHtml(str) {
+      if (!str) return '';
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+    }
+
+    function formatCategory(cat) {
+      if (cat === 'native') return 'NATIVE WEAR';
+      if (cat === 'formal') return 'ENGLISH & SUITING';
+      if (cat === 'streetwear') return 'STREETWEAR';
+      return (cat || 'MADE TO ORDER').toUpperCase();
+    }
+
+    function formatGender(gender) {
+      if (gender === 'male' || gender === 'men') return 'MEN';
+      if (gender === 'female' || gender === 'women') return 'WOMEN';
+      return 'UNISEX';
+    }
+
+    function formatResultsCount(visible, total, search = '') {
+      const resultWord = visible === 1 ? 'result' : 'results';
+      if (search) {
+        return `Showing ${visible} ${resultWord} for: <strong>"${escapeHtml(search)}"</strong> &bull; <a href="javascript:void(0)" onclick="clearSearchFilter()" style="color: var(--color-primary); text-decoration: underline; font-weight: 600;">Clear Search</a>`;
+      }
+      if (total !== undefined && total > 0 && total !== visible) {
+        const totalWord = total === 1 ? 'result' : 'results';
+        return `Showing ${visible} of ${total} ${totalWord}`;
+      }
+      return `Showing ${visible} ${resultWord}`;
+    }
 
     async function loadCatalogFromDatabase() {
       const grid = document.getElementById('catalogProductGrid');
@@ -252,19 +281,17 @@
             category,
             gender,
             type,
-            description,
-            slug,
             is_featured,
             is_new_arrival,
+            created_at,
             product_variation (
               id,
               color,
-              color_code,
               price,
-              main_image,
-              available
+              main_image
             )
-          `);
+          `)
+          .order('created_at', { ascending: false });
 
         if (error) throw error;
 
@@ -272,25 +299,36 @@
           grid.innerHTML = products.map(prod => {
             const variations = prod.product_variation || [];
             const defaultVar = variations[0] || {};
-            const sizesList = 'XS,S,M,L,XL,XXL,Custom';
             const displayPrice = defaultVar.price ? Number(defaultVar.price) : 0;
             const displayImage = defaultVar.main_image || 'assets/brand/krabe main logo.svg';
             const priceNaira = '₦' + displayPrice.toLocaleString('en-NG');
-            const approxUSD = Math.round(displayPrice / 1300);
             const variantId = defaultVar.id || '';
+            const catClean = (prod.category || 'native').toString().toLowerCase().trim();
+            const genderClean = (prod.gender || 'unisex').toString().toLowerCase().trim();
+
+            const variantCount = variations.length;
+            const variantBadgeHTML = variantCount > 1 
+              ? `<div class="product-variants-note body-12" style="color: var(--color-text-muted); font-weight: 600; margin-top: 6px;">${variantCount} variants available</div>` 
+              : '';
+
             const badgeHTML = prod.is_new_arrival 
-              ? `<span class="product-badge badge-new">New Drop</span>` 
-              : (prod.is_featured ? `<span class="product-badge badge-bespoke">Ceremonial</span>` : '');
+              ? `<span class="product-badge badge-new body-10">New Drop</span>` 
+              : (prod.is_featured ? `<span class="product-badge badge-bespoke body-10">Ceremonial</span>` : '');
 
             return `
-              <div class="product-card" data-gender="${prod.gender || 'unisex'}" data-category="${prod.category || 'native'}" data-sizes="${sizesList}">
+              <div class="product-card" 
+                   data-gender="${genderClean}" 
+                   data-category="${catClean}" 
+                   data-price="${displayPrice}"
+                   data-featured="${prod.is_featured ? '1' : '0'}"
+                   data-created="${prod.created_at || ''}">
                 <div class="product-media">
                   ${badgeHTML}
-                  <a href="product.html?id=${prod.id}" style="display: block; width: 100%; height: 100%;">
+                  <a href="product.html?id=${prod.id}${variantId ? '&variant=' + variantId : ''}" style="display: block; width: 100%; height: 100%;">
                     <img src="${displayImage}" alt="${prod.title}">
                   </a>
                   <div class="quick-add-overlay">
-                    <button type="button" class="btn-quick-add js-quick-add" 
+                    <button type="button" class="btn-quick-add js-quick-add body-12" 
                             data-product-id="${prod.id}"
                             data-variant-id="${variantId}"
                             data-variation-id="${variantId}"
@@ -304,28 +342,28 @@
                   </div>
                 </div>
                 <div class="product-info">
-                  <span class="product-category-label">${prod.category ? prod.category.toUpperCase() : 'MADE TO ORDER'} &bull; ${(prod.gender || 'Unisex').toUpperCase()}</span>
-                  <h3 class="product-title"><a href="product.html?id=${prod.id}">${prod.title}</a></h3>
+                  <span class="product-category-label body-10">${formatCategory(catClean)} &bull; ${formatGender(genderClean)}</span>
+                  <h3 class="product-title body-14"><a href="product.html?id=${prod.id}${variantId ? '&variant=' + variantId : ''}">${prod.title}</a></h3>
                   <div class="product-price-row">
-                    <span class="product-price">${priceNaira}</span>
-                    <span class="product-price-alt">($${approxUSD} USD)</span>
+                    <span class="product-price body-18">${priceNaira}</span>
                   </div>
+                  ${variantBadgeHTML}
                 </div>
               </div>
             `;
           }).join('');
 
-          const countEl = document.querySelector('.catalog-count');
-          if (countEl) countEl.textContent = `Showing all ${products.length} atelier creations`;
-
+          applySort();
           applyFilters();
         } else {
           grid.innerHTML = `
             <div style="grid-column: 1 / -1; text-align: center; padding: 48px 16px; color: var(--color-text-muted);">
-              <p style="font-size: 15px; font-weight: 700; color: var(--color-obsidian); margin-bottom: 8px;">No garments currently listed in atelier.</p>
-              <p style="font-size: 13px;">Check back soon for our next seasonal collection drop.</p>
+              <p class="body-16" style="font-weight: 700; color: var(--color-obsidian); margin-bottom: 8px;">No garments currently listed in atelier.</p>
+              <p class="body-14" style="color: var(--color-text-muted);">Check back soon for our next seasonal collection drop.</p>
             </div>
           `;
+          const countEl = document.querySelector('.catalog-count');
+          if (countEl) countEl.textContent = formatResultsCount(0, 0);
         }
       } catch (err) {
         console.warn('[Shop] Could not load products from database:', err);
@@ -334,38 +372,93 @@
 
     function setGenderFilter(btn, gender) {
       document.querySelectorAll('.gender-btn').forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
-      currentGender = gender;
+      if (btn) btn.classList.add('active');
+      currentGender = (gender || 'all').toLowerCase();
       applyFilters();
     }
 
     function setCategoryFilter(btn, cat) {
-      document.querySelectorAll('.category-pill').forEach(b => b.classList.remove('active'));
-      if (btn) btn.classList.add('active');
+      const pills = document.querySelectorAll('.category-pill');
+      pills.forEach(b => b.classList.remove('active'));
+
+      if (btn) {
+        btn.classList.add('active');
+      } else {
+        const matchingPill = Array.from(pills).find(p => (p.dataset.category || '').toLowerCase() === (cat || '').toLowerCase());
+        if (matchingPill) matchingPill.classList.add('active');
+      }
+
       currentCategory = (cat || 'all').toLowerCase();
+
+      // Sync URL parameter without reload
+      try {
+        const url = new URL(window.location);
+        if (currentCategory === 'all') {
+          url.searchParams.delete('category');
+        } else {
+          url.searchParams.set('category', currentCategory);
+        }
+        window.history.replaceState({}, '', url);
+      } catch (e) {}
+
       applyFilters();
     }
 
-    function setSizeFilter(btn, size) {
-      document.querySelectorAll('.size-chip').forEach(b => b.classList.remove('active'));
-      if (btn) btn.classList.add('active');
-      currentSize = size;
-      applyFilters();
+    function applySort() {
+      const sortSelect = document.querySelector('.sort-select-compact');
+      if (!sortSelect) return;
+      const val = sortSelect.value;
+      const grid = document.getElementById('catalogProductGrid');
+      if (!grid) return;
+
+      const cards = Array.from(grid.querySelectorAll('.product-card'));
+      if (cards.length === 0) return;
+
+      cards.sort((a, b) => {
+        const priceA = Number(a.dataset.price) || 0;
+        const priceB = Number(b.dataset.price) || 0;
+        const featA = Number(a.dataset.featured) || 0;
+        const featB = Number(b.dataset.featured) || 0;
+        const dateA = new Date(a.dataset.created || 0).getTime();
+        const dateB = new Date(b.dataset.created || 0).getTime();
+
+        if (val === 'price-asc') return priceA - priceB;
+        if (val === 'price-desc') return priceB - priceA;
+        if (val === 'newest') return dateB - dateA;
+        // Default: featured first, then newest
+        if (featB !== featA) return featB - featA;
+        return dateB - dateA;
+      });
+
+      cards.forEach(c => grid.appendChild(c));
     }
 
     function applyFilters() {
       const cards = document.querySelectorAll('#catalogProductGrid .product-card');
       let visibleCount = 0;
+
       cards.forEach(card => {
         const cGender = (card.dataset.gender || 'unisex').toLowerCase();
         const cCat = (card.dataset.category || '').toLowerCase();
-        const cSizes = card.dataset.sizes ? card.dataset.sizes.split(',').map(s => s.trim().toLowerCase()) : [];
+        const title = (card.querySelector('.product-title')?.textContent || '').toLowerCase();
 
-        const matchGender = (currentGender === 'all') || (cGender === currentGender) || (cGender === 'unisex');
+        // 1. Gender Match ('men'/'male', 'women'/'female', 'unisex')
+        let matchGender = (currentGender === 'all') || (cGender === 'unisex');
+        if (currentGender === 'men' || currentGender === 'male') {
+          matchGender = matchGender || (cGender === 'male' || cGender === 'men');
+        } else if (currentGender === 'women' || currentGender === 'female') {
+          matchGender = matchGender || (cGender === 'female' || cGender === 'women');
+        } else if (currentGender === 'unisex') {
+          matchGender = (cGender === 'unisex');
+        }
+
+        // 2. Category Match
         const matchCategory = (currentCategory === 'all') || (cCat === currentCategory);
-        const matchSize = (currentSize === 'all') || (cSizes.includes(currentSize.toLowerCase()));
 
-        if (matchGender && matchCategory && matchSize) {
+        // 3. Search Query Match
+        const matchSearch = !currentSearch || title.includes(currentSearch) || cCat.includes(currentSearch);
+
+        if (matchGender && matchCategory && matchSearch) {
           card.style.display = 'flex';
           visibleCount++;
         } else {
@@ -373,15 +466,13 @@
         }
       });
 
+      // Update Catalog Count Banner (Validated for 1 result, 0 results, and >1 results)
       const countEl = document.querySelector('.catalog-count');
       if (countEl) {
-        if (currentCategory !== 'all' || currentGender !== 'all' || currentSize !== 'all') {
-          countEl.textContent = `Showing ${visibleCount} of ${cards.length} atelier creations`;
-        } else {
-          countEl.textContent = `Showing all ${cards.length} atelier creations`;
-        }
+        countEl.innerHTML = formatResultsCount(visibleCount, cards.length, currentSearch);
       }
 
+      // Handle Empty State
       const grid = document.getElementById('catalogProductGrid');
       let emptyMsg = grid ? grid.querySelector('.filter-empty-state') : null;
       if (visibleCount === 0 && cards.length > 0) {
@@ -389,7 +480,11 @@
           emptyMsg = document.createElement('div');
           emptyMsg.className = 'filter-empty-state';
           emptyMsg.style.cssText = 'grid-column: 1 / -1; text-align: center; padding: 48px 16px; color: var(--color-text-muted);';
-          emptyMsg.innerHTML = '<p style="font-size: 15px; font-weight: 700; color: var(--color-obsidian); margin-bottom: 8px;">No garments found matching the selected filters.</p><p style="font-size: 13px;">Try selecting another category or clearing active filters.</p>';
+          emptyMsg.innerHTML = `
+            <p class="body-16" style="font-weight: 700; color: var(--color-obsidian); margin-bottom: 8px;">No garments found matching the selected filters.</p>
+            <p class="body-14" style="color: var(--color-text-muted); margin-bottom: 16px;">Try selecting another category or resetting your active filters.</p>
+            <button type="button" class="btn btn-outline-dark body-12" onclick="resetAllFilters()" style="padding: 6px 16px; font-weight: 700;">Reset Filters</button>
+          `;
           grid.appendChild(emptyMsg);
         }
       } else if (emptyMsg) {
@@ -397,11 +492,45 @@
       }
     }
 
+    function clearSearchFilter() {
+      currentSearch = '';
+      try {
+        const url = new URL(window.location);
+        url.searchParams.delete('search');
+        url.searchParams.delete('q');
+        window.history.replaceState({}, '', url);
+      } catch (e) {}
+      applyFilters();
+    }
+
+    function resetAllFilters() {
+      currentCategory = 'all';
+      currentGender = 'all';
+      currentSearch = '';
+
+      document.querySelectorAll('.category-pill').forEach(b => b.classList.toggle('active', b.dataset.category === 'all'));
+      document.querySelectorAll('.gender-btn').forEach(b => b.classList.toggle('active', b.textContent.trim().toLowerCase() === 'all'));
+
+      try {
+        const url = new URL(window.location);
+        url.searchParams.delete('category');
+        url.searchParams.delete('search');
+        url.searchParams.delete('q');
+        window.history.replaceState({}, '', url);
+      } catch (e) {}
+
+      applyFilters();
+    }
+
     // Auto-filter based on URL Query Parameters (?search= or ?category=)
     window.addEventListener('DOMContentLoaded', () => {
       const urlParams = new URLSearchParams(window.location.search);
       const catParam = urlParams.get('category');
       const searchParam = urlParams.get('search') || urlParams.get('q');
+
+      if (searchParam) {
+        currentSearch = searchParam.toLowerCase().trim();
+      }
 
       if (catParam) {
         const targetCat = catParam.toLowerCase().trim();
@@ -414,31 +543,22 @@
         pills.forEach(b => b.classList.remove('active'));
         if (catBtn) {
           catBtn.classList.add('active');
+          currentCategory = (catBtn.dataset.category || targetCat).toLowerCase();
+        } else {
+          currentCategory = targetCat;
         }
-        currentCategory = targetCat;
+      }
+
+      // Hook up sort dropdown
+      const sortSelect = document.querySelector('.sort-select-compact');
+      if (sortSelect) {
+        sortSelect.addEventListener('change', () => {
+          applySort();
+          applyFilters();
+        });
       }
 
       loadCatalogFromDatabase();
-
-      if (searchParam) {
-        const query = searchParam.toLowerCase().trim();
-        const cards = document.querySelectorAll('#catalogProductGrid .product-card');
-        let matchedCount = 0;
-
-        cards.forEach(card => {
-          const title = (card.querySelector('.product-title')?.textContent || '').toLowerCase();
-          const cat = (card.dataset.category || '').toLowerCase();
-          const matches = title.includes(query) || cat.includes(query);
-          card.style.display = matches ? 'flex' : 'none';
-          if (matches) matchedCount++;
-        });
-
-        // Show active search banner if filtered
-        const headerInfo = document.querySelector('.catalog-count');
-        if (headerInfo) {
-          headerInfo.innerHTML = `Showing results for: <strong>"${searchParam}"</strong> (${matchedCount} items) &bull; <a href="shop.html" style="color: var(--color-primary); text-decoration: underline;">Clear Search</a>`;
-        }
-      }
     });
   </script>
 </body>

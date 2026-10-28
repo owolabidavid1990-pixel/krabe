@@ -17,7 +17,7 @@
   function getHeaderHTML() {
     return `
       <!-- TOP ANNOUNCEMENT BAR -->
-      <div class="announcement-bar" id="krabeAnnouncementBar">
+      <div class="announcement-bar body-12" id="krabeAnnouncementBar">
         <span>Free Lagos Delivery on orders over ₦200,000 | Nationwide Shipping &amp; In-Store Lagos Fittings</span>
         <a href="bespoke.html">Book Studio Fitting &rarr;</a>
       </div>
@@ -35,11 +35,11 @@
 
           <!-- Primary Navigation Links -->
           <nav class="nav-links" id="krabeDesktopNav" aria-label="Main Navigation">
-            <a href="shop.html" class="nav-link nav-link-always" data-link="shop">Made-to-Order</a>
-            <a href="bespoke.html" class="nav-link nav-link-always" data-link="bespoke">Bespoke</a>
-            <a href="shop.html?category=native" class="nav-link nav-link-extra" data-link="native">Native Wear</a>
-            <a href="shop.html?category=streetwear" class="nav-link nav-link-extra" data-link="streetwear">Streetwear</a>
-            <a href="about.html" class="nav-link nav-link-always" data-link="about">Our Story</a>
+            <a href="shop.html" class="nav-link nav-link-always body-14" data-link="shop">Made-to-Order</a>
+            <a href="bespoke.html" class="nav-link nav-link-always body-14" data-link="bespoke">Bespoke</a>
+            <a href="shop.html?category=native" class="nav-link nav-link-extra body-14" data-link="native">Native Wear</a>
+            <a href="shop.html?category=streetwear" class="nav-link nav-link-extra body-14" data-link="streetwear">Streetwear</a>
+            <a href="about.html" class="nav-link nav-link-always body-14" data-link="about">Our Story</a>
           </nav>
 
           <!-- Header Utilities (Search, Account, WhatsApp, Cart, 3-Dot Menu) -->
@@ -71,7 +71,7 @@
               <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width: 20px; height: 20px;">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/>
               </svg>
-              <span class="cart-badge" style="display: none;">0</span>
+              <span class="cart-badge body-10" style="display: none;">0</span>
             </button>
 
             <!-- 3-Dot Navigation Menu Toggle (Appears on <= 1200px screens) -->
@@ -102,18 +102,18 @@
         </div>
 
         <nav class="mobile-links" id="krabeMobileNav">
-          <a href="shop.html" data-link="shop">Shop Made-to-Order</a>
-          <a href="bespoke.html" data-link="bespoke">Bespoke</a>
-          <a href="shop.html?category=native" data-link="native">Native &amp; Agbada</a>
-          <a href="shop.html?category=formal" data-link="formal">English &amp; Suiting</a>
-          <a href="shop.html?category=streetwear" data-link="streetwear">Luxury Streetwear</a>
-          <a href="about.html" data-link="about">About Us</a>
-          <a href="account.html" data-link="account">My Account &amp; Tracking</a>
-          <a href="help.html" data-link="help">Support &amp; Studio Address</a>
+          <a href="shop.html" class="body-16" data-link="shop">Shop Made-to-Order</a>
+          <a href="bespoke.html" class="body-16" data-link="bespoke">Bespoke</a>
+          <a href="shop.html?category=native" class="body-16" data-link="native">Native &amp; Agbada</a>
+          <a href="shop.html?category=formal" class="body-16" data-link="formal">English &amp; Suiting</a>
+          <a href="shop.html?category=streetwear" class="body-16" data-link="streetwear">Luxury Streetwear</a>
+          <a href="about.html" class="body-16" data-link="about">About Us</a>
+          <a href="account.html" class="body-16" data-link="account">My Account &amp; Tracking</a>
+          <a href="help.html" class="body-16" data-link="help">Support &amp; Studio Address</a>
         </nav>
 
         <div style="margin-top: auto; padding-top: 24px; border-top: 1px solid var(--color-border);">
-          <a href="https://wa.me/2348000000000" target="_blank" rel="noopener" class="btn-whatsapp" style="width: 100%; justify-content: center;">
+          <a href="https://wa.me/2348000000000" target="_blank" rel="noopener" class="btn-whatsapp body-14" style="width: 100%; justify-content: center;">
             Chat on WhatsApp
           </a>
         </div>

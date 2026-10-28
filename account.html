@@ -23,11 +23,11 @@
   <!-- =========================================================================
        1. DEMO AUTH STATE TOGGLE BANNER (For Bubble Prototyping Review)
        ========================================================================= -->
-  <div class="auth-demo-banner">
+  <div class="auth-demo-banner body-12">
     <span>💡 <strong>Bubble Prototype Mode:</strong> Currently viewing <strong>Authenticated Client Portal</strong></span>
     <div style="display: flex; gap: 8px; flex-wrap: wrap; justify-content: center;">
-      <button type="button" class="btn-auth-switch" onclick="openAuthModal()">Preview Sign In / Register &rarr;</button>
-      <a href="admin.html" class="btn-auth-switch" style="text-decoration: none; background: rgba(0,0,0,0.4);">Atelier Admin Portal &rarr;</a>
+      <button type="button" class="btn-auth-switch body-12" onclick="openAuthModal()">Preview Sign In / Register &rarr;</button>
+      <a href="admin.html" class="btn-auth-switch body-12" style="text-decoration: none; background: rgba(0,0,0,0.4);">Atelier Admin Portal &rarr;</a>
     </div>
   </div>
 
@@ -42,24 +42,24 @@
   <section class="account-hero">
     <div class="container account-hero-inner">
       <div class="account-user-badge">
-        <div class="account-avatar">DA</div>
+        <div class="account-avatar body-20">DA</div>
         <div>
-          <h1 class="account-greeting-name">David Adeleke</h1>
-          <div class="account-meta-line">
+          <h1 class="account-greeting-name h1">David Adeleke</h1>
+          <div class="account-meta-line body-14">
             <span>david.adeleke@example.com</span>
             <span>&bull;</span>
             <span>+234 803 123 4567</span>
             <span>&bull;</span>
-            <span class="account-tier-tag">Sovereign Tier &bull; VIP</span>
+            <span class="account-tier-tag body-10">Sovereign Tier &bull; VIP</span>
           </div>
         </div>
       </div>
 
       <div class="account-hero-actions">
-        <button type="button" class="btn btn-outline-light" style="padding: 10px 18px; font-size: 12px;" onclick="openMeasurementModal()">
+        <button type="button" class="btn btn-outline-light body-12" style="padding: 10px 18px;" onclick="openMeasurementModal()">
           + Record Measurements
         </button>
-        <button type="button" class="btn btn-outline-light" style="padding: 10px 18px; font-size: 12px; border-color: rgba(255,255,255,0.2); color: #94A3B8;" onclick="window.krabeSignOut()">
+        <button type="button" class="btn btn-outline-light body-12" style="padding: 10px 18px; border-color: rgba(255,255,255,0.2); color: #94A3B8;" onclick="window.krabeSignOut()">
           Log Out
         </button>
       </div>
@@ -72,19 +72,19 @@
   <nav class="account-nav-bar" aria-label="Account Tabs">
     <div class="container">
       <div class="account-tabs-list" role="tablist">
-        <button type="button" class="account-tab-btn active" role="tab" aria-selected="true" data-tab="orders" onclick="switchAccountTab('orders', this)">
-          Orders <span class="account-tab-badge">2</span>
+        <button type="button" class="account-tab-btn body-14 active" role="tab" aria-selected="true" data-tab="orders" onclick="switchAccountTab('orders', this)">
+          Orders <span class="account-tab-badge body-10">2</span>
         </button>
-        <button type="button" class="account-tab-btn" role="tab" aria-selected="false" data-tab="fittings" onclick="switchAccountTab('fittings', this)">
-          Studio Fittings &amp; Bespoke <span class="account-tab-badge">1</span>
+        <button type="button" class="account-tab-btn body-14" role="tab" aria-selected="false" data-tab="fittings" onclick="switchAccountTab('fittings', this)">
+          Studio Fittings &amp; Bespoke <span class="account-tab-badge body-10">1</span>
         </button>
-        <button type="button" class="account-tab-btn" role="tab" aria-selected="false" data-tab="measurements" onclick="switchAccountTab('measurements', this)">
-          Tailoring Measurements <span class="account-tab-badge">2</span>
+        <button type="button" class="account-tab-btn body-14" role="tab" aria-selected="false" data-tab="measurements" onclick="switchAccountTab('measurements', this)">
+          Tailoring Measurements <span class="account-tab-badge body-10">2</span>
         </button>
-        <button type="button" class="account-tab-btn" role="tab" aria-selected="false" data-tab="addresses" onclick="switchAccountTab('addresses', this)">
-          Saved Addresses <span class="account-tab-badge">2</span>
+        <button type="button" class="account-tab-btn body-14" role="tab" aria-selected="false" data-tab="addresses" onclick="switchAccountTab('addresses', this)">
+          Saved Addresses <span class="account-tab-badge body-10">2</span>
         </button>
-        <button type="button" class="account-tab-btn" role="tab" aria-selected="false" data-tab="settings" onclick="switchAccountTab('settings', this)">
+        <button type="button" class="account-tab-btn body-14" role="tab" aria-selected="false" data-tab="settings" onclick="switchAccountTab('settings', this)">
           Account Settings
         </button>
       </div>
@@ -100,36 +100,36 @@
          PANEL 1: MADE-TO-ORDER ORDER HISTORY
          ========================================== -->
     <div class="account-panel active" id="panel-orders" role="tabpanel">
-      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; flex-wrap: wrap; gap: 14px;">
         <div>
-          <h2 style="font-family: var(--font-serif); font-size: 24px; font-weight: 700; color: var(--color-obsidian);">Your Order History</h2>
-          <p style="font-size: 13.5px; color: var(--color-text-muted);">Track current deliveries, view invoices, or request alterations.</p>
+          <h2 class="h2" style="color: var(--color-obsidian);">Your Order History</h2>
+          <p class="body-14" style="color: var(--color-text-muted);">Track current deliveries, view invoices, or request alterations.</p>
         </div>
-        <a href="shop.html" class="btn btn-primary" style="padding: 10px 20px; font-size: 12px;">Shop New Releases &rarr;</a>
+        <a href="shop.html" class="btn btn-primary body-12" style="padding: 10px 20px;">Shop New Releases &rarr;</a>
       </div>
 
       <!-- Order 1: In Transit -->
       <article class="order-card">
         <div class="order-card-header">
           <div class="order-meta-group">
-            <div class="order-meta-item">
-              <span>Order Number</span>
-              <strong>#KB-2026-9411</strong>
+            <div class="order-meta-item body-12">
+              <span style="color: var(--color-text-muted);">Order Number</span>
+              <strong class="body-14" style="color: var(--color-obsidian);">#KB-2026-9411</strong>
             </div>
-            <div class="order-meta-item">
-              <span>Date Placed</span>
-              <strong>04 Oct 2026</strong>
+            <div class="order-meta-item body-12">
+              <span style="color: var(--color-text-muted);">Date Placed</span>
+              <strong class="body-14" style="color: var(--color-obsidian);">04 Oct 2026</strong>
             </div>
-            <div class="order-meta-item">
-              <span>Total Paid</span>
-              <strong style="color: var(--color-primary);">₦185,000</strong>
+            <div class="order-meta-item body-12">
+              <span style="color: var(--color-text-muted);">Total Paid</span>
+              <strong class="body-14" style="color: var(--color-primary);">₦185,000</strong>
             </div>
-            <div class="order-meta-item">
-              <span>Delivery Method</span>
-              <strong>Doorstep Delivery (Lagos)</strong>
+            <div class="order-meta-item body-12">
+              <span style="color: var(--color-text-muted);">Delivery Method</span>
+              <strong class="body-14" style="color: var(--color-obsidian);">Doorstep Delivery (Lagos)</strong>
             </div>
           </div>
-          <span class="order-status-badge in-transit">
+          <span class="order-status-badge in-transit body-12">
             <span style="width: 8px; height: 8px; border-radius: 50%; background: #3182CE; display: inline-block;"></span>
             In Transit (GIG Logistics)
           </span>
@@ -137,22 +137,22 @@
 
         <!-- Tracking Timeline -->
         <div class="order-tracking-strip">
-          <div class="tracking-step done">
+          <div class="tracking-step done body-12">
             <span class="tracking-dot">✓</span>
             <span>Order Confirmed</span>
           </div>
           <div class="tracking-line done"></div>
-          <div class="tracking-step done">
+          <div class="tracking-step done body-12">
             <span class="tracking-dot">✓</span>
             <span>Inspected at Lagos Studio</span>
           </div>
           <div class="tracking-line done"></div>
-          <div class="tracking-step done">
+          <div class="tracking-step done body-12">
             <span class="tracking-dot">🚚</span>
             <span>With Courier</span>
           </div>
           <div class="tracking-line"></div>
-          <div class="tracking-step">
+          <div class="tracking-step body-12">
             <span class="tracking-dot">4</span>
             <span>Delivered</span>
           </div>
@@ -162,21 +162,21 @@
           <div class="order-item-row">
             <img src="Krabe Cloth Concepts_230226_205405_1.jpg" alt="Signature 3-Piece Agbada Set">
             <div class="order-item-info">
-              <h3 class="order-item-title">Signature 3-Piece Agbada Set</h3>
-              <div class="order-item-meta">Color: Midnight Blue &bull; Size: XL &bull; Qty: 1</div>
-              <div class="order-item-price">₦185,000</div>
+              <h3 class="order-item-title body-14" style="font-weight: 700; color: var(--color-obsidian);">Signature 3-Piece Agbada Set</h3>
+              <div class="order-item-meta body-12" style="color: var(--color-text-muted);">Color: Midnight Blue &bull; Size: XL &bull; Qty: 1</div>
+              <div class="order-item-price body-18" style="font-weight: 700; color: var(--color-primary);">₦185,000</div>
             </div>
-            <a href="product.html" class="btn btn-outline" style="padding: 8px 14px; font-size: 11px;">View Item</a>
+            <a href="product.html" class="btn btn-outline body-12" style="padding: 8px 14px;">View Item</a>
           </div>
         </div>
 
         <div class="order-card-footer">
-          <span style="font-size: 12.5px; color: var(--color-text-muted);">Tracking ID: <strong>GIG-LOS-88294102</strong> &bull; Estimated Arrival: <strong>Tomorrow, by 4:00 PM</strong></span>
+          <span class="body-12" style="color: var(--color-text-muted);">Tracking ID: <strong>GIG-LOS-88294102</strong> &bull; Estimated Arrival: <strong>Tomorrow, by 4:00 PM</strong></span>
           <div style="display: flex; gap: 10px;">
-            <button type="button" class="btn btn-outline" style="padding: 8px 14px; font-size: 11px;" onclick="alert('Digital PDF invoice downloaded for #KB-2026-9411.');">
+            <button type="button" class="btn btn-outline body-12" style="padding: 8px 14px;" onclick="alert('Digital PDF invoice downloaded for #KB-2026-9411.');">
               Download Invoice
             </button>
-            <a href="https://wa.me/2348000000000?text=Hello%20Krabe,%20tracking%20update%20for%20order%20KB-2026-9411" target="_blank" rel="noopener" class="btn-whatsapp" style="padding: 8px 14px; font-size: 11px;">
+            <a href="https://wa.me/2348000000000?text=Hello%20Krabe,%20tracking%20update%20for%20order%20KB-2026-9411" target="_blank" rel="noopener" class="btn-whatsapp body-12" style="padding: 8px 14px;">
               WhatsApp Dispatch Desk
             </a>
           </div>
@@ -187,24 +187,24 @@
       <article class="order-card">
         <div class="order-card-header">
           <div class="order-meta-group">
-            <div class="order-meta-item">
-              <span>Order Number</span>
-              <strong>#KB-2026-8802</strong>
+            <div class="order-meta-item body-12">
+              <span style="color: var(--color-text-muted);">Order Number</span>
+              <strong class="body-14" style="color: var(--color-obsidian);">#KB-2026-8802</strong>
             </div>
-            <div class="order-meta-item">
-              <span>Date Placed</span>
-              <strong>18 Sep 2026</strong>
+            <div class="order-meta-item body-12">
+              <span style="color: var(--color-text-muted);">Date Placed</span>
+              <strong class="body-14" style="color: var(--color-obsidian);">18 Sep 2026</strong>
             </div>
-            <div class="order-meta-item">
-              <span>Total Paid</span>
-              <strong style="color: var(--color-primary);">₦120,000</strong>
+            <div class="order-meta-item body-12">
+              <span style="color: var(--color-text-muted);">Total Paid</span>
+              <strong class="body-14" style="color: var(--color-primary);">₦120,000</strong>
             </div>
-            <div class="order-meta-item">
-              <span>Destination</span>
-              <strong>Lekki Phase 1, Lagos</strong>
+            <div class="order-meta-item body-12">
+              <span style="color: var(--color-text-muted);">Destination</span>
+              <strong class="body-14" style="color: var(--color-obsidian);">Lekki Phase 1, Lagos</strong>
             </div>
           </div>
-          <span class="order-status-badge delivered">
+          <span class="order-status-badge delivered body-12">
             <span style="width: 8px; height: 8px; border-radius: 50%; background: #38A169; display: inline-block;"></span>
             Delivered
           </span>
@@ -214,23 +214,23 @@
           <div class="order-item-row">
             <img src="Krabe Cloth Concepts_230226_205405_6.jpg" alt="Krabe Structured Modern Kaftan">
             <div class="order-item-info">
-              <h3 class="order-item-title">Krabe Structured Modern Kaftan</h3>
-              <div class="order-item-meta">Color: Emerald Slate &bull; Size: L &bull; Qty: 1</div>
-              <div class="order-item-price">₦120,000</div>
+              <h3 class="order-item-title body-14" style="font-weight: 700; color: var(--color-obsidian);">Krabe Structured Modern Kaftan</h3>
+              <div class="order-item-meta body-12" style="color: var(--color-text-muted);">Color: Emerald Slate &bull; Size: L &bull; Qty: 1</div>
+              <div class="order-item-price body-18" style="font-weight: 700; color: var(--color-primary);">₦120,000</div>
             </div>
-            <button type="button" class="btn btn-outline js-quick-add" data-title="Krabe Structured Modern Kaftan" data-price="120000" data-image="Krabe Cloth Concepts_230226_205405_6.jpg" style="padding: 8px 14px; font-size: 11px;">
+            <button type="button" class="btn btn-outline js-quick-add body-12" data-title="Krabe Structured Modern Kaftan" data-price="120000" data-image="Krabe Cloth Concepts_230226_205405_6.jpg" style="padding: 8px 14px;">
               Reorder Look
             </button>
           </div>
         </div>
 
         <div class="order-card-footer">
-          <span style="font-size: 12.5px; color: #48BB78;">✓ Delivered on 21 Sep 2026 &bull; Signed by David Adeleke</span>
+          <span class="body-12" style="color: #48BB78;">✓ Delivered on 21 Sep 2026 &bull; Signed by David Adeleke</span>
           <div style="display: flex; gap: 10px;">
-            <button type="button" class="btn btn-outline" style="padding: 8px 14px; font-size: 11px;" onclick="openAlterationModal('#KB-2026-8802', 'Krabe Structured Modern Kaftan')">
+            <button type="button" class="btn btn-outline body-12" style="padding: 8px 14px;" onclick="openAlterationModal('#KB-2026-8802', 'Krabe Structured Modern Kaftan')">
               Request Alteration
             </button>
-            <button type="button" class="btn btn-outline" style="padding: 8px 14px; font-size: 11px;" onclick="alert('Digital receipt sent to your email.');">
+            <button type="button" class="btn btn-outline body-12" style="padding: 8px 14px;" onclick="alert('Digital receipt sent to your email.');">
               Receipt
             </button>
           </div>
@@ -244,30 +244,30 @@
     <div class="account-panel" id="panel-fittings" role="tabpanel">
       <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; flex-wrap: wrap; gap: 14px;">
         <div>
-          <h2 style="font-family: var(--font-serif); font-size: 24px; font-weight: 700; color: var(--color-obsidian);">Studio Appointments &amp; Bespoke</h2>
-          <p style="font-size: 13.5px; color: var(--color-text-muted);">Manage in-person studio fittings and active bespoke tailoring orders.</p>
+          <h2 class="h2" style="color: var(--color-obsidian);">Studio Appointments &amp; Bespoke</h2>
+          <p class="body-14" style="color: var(--color-text-muted);">Manage in-person studio fittings and active bespoke tailoring orders.</p>
         </div>
-        <a href="bespoke.html#appointment-section" class="btn btn-primary" style="padding: 10px 20px; font-size: 12px;">+ Book New Studio Fitting</a>
+        <a href="bespoke.html#appointment-section" class="btn btn-primary body-12" style="padding: 10px 20px;">+ Book New Studio Fitting</a>
       </div>
 
       <!-- Active Fitting Card -->
       <article class="order-card">
         <div class="order-card-header">
           <div class="order-meta-group">
-            <div class="order-meta-item">
-              <span>Appointment Type</span>
-              <strong style="color: var(--color-gold);">In-Person Fitting &amp; Consultation</strong>
+            <div class="order-meta-item body-12">
+              <span style="color: var(--color-text-muted);">Appointment Type</span>
+              <strong class="body-14" style="color: var(--color-gold);">In-Person Fitting &amp; Consultation</strong>
             </div>
-            <div class="order-meta-item">
-              <span>Confirmed Date &amp; Time</span>
-              <strong>Saturday, 17 Oct 2026 &bull; 2:00 PM (Lagos Time)</strong>
+            <div class="order-meta-item body-12">
+              <span style="color: var(--color-text-muted);">Confirmed Date &amp; Time</span>
+              <strong class="body-14" style="color: var(--color-obsidian);">Saturday, 17 Oct 2026 &bull; 2:00 PM (Lagos Time)</strong>
             </div>
-            <div class="order-meta-item">
-              <span>Location</span>
-              <strong>Krabe Studio, Victoria Island Flagship, Lagos</strong>
+            <div class="order-meta-item body-12">
+              <span style="color: var(--color-text-muted);">Location</span>
+              <strong class="body-14" style="color: var(--color-obsidian);">Krabe Studio, Victoria Island Flagship, Lagos</strong>
             </div>
           </div>
-          <span class="order-status-badge" style="background: rgba(197, 138, 85, 0.15); color: var(--color-gold); border: 1px solid var(--color-gold);">
+          <span class="order-status-badge body-12" style="background: rgba(197, 138, 85, 0.15); color: var(--color-gold); border: 1px solid var(--color-gold);">
             Fitting Confirmed
           </span>
         </div>
@@ -278,8 +278,8 @@
               📍
             </div>
             <div style="flex: 1;">
-              <h4 style="font-size: 15px; font-weight: 700; color: var(--color-obsidian); margin-bottom: 4px;">Private Fitting Suite 01 &bull; Master Tailor Adeyemi</h4>
-              <p style="font-size: 13px; color: var(--color-text-muted); line-height: 1.5;">
+              <h3 class="h4" style="color: var(--color-obsidian); margin-bottom: 4px;">Private Fitting Suite 01 &bull; Master Tailor Adeyemi</h3>
+              <p class="body-14" style="color: var(--color-text-muted); line-height: 1.5;">
                 Please arrive 10 minutes prior to your allocated slot. Refreshments and garment samples will be prepared in your private consultation lounge.
               </p>
             </div>
@@ -287,12 +287,12 @@
         </div>
 
         <div class="order-card-footer">
-          <span style="font-size: 12.5px; color: var(--color-text-muted);">Appointment Reference: <strong>#APP-LAG-2026-081</strong></span>
+          <span class="body-12" style="color: var(--color-text-muted);">Appointment Reference: <strong>#APP-LAG-2026-081</strong></span>
           <div style="display: flex; gap: 10px;">
-            <a href="https://wa.me/2348000000000?text=Hello%20Krabe,%20I'd%20like%20to%20reschedule%20or%20confirm%20my%20appointment%20APP-LAG-2026-081" target="_blank" rel="noopener" class="btn-whatsapp" style="padding: 8px 14px; font-size: 11px;">
+            <a href="https://wa.me/2348000000000?text=Hello%20Krabe,%20I'd%20like%20to%20reschedule%20or%20confirm%20my%20appointment%20APP-LAG-2026-081" target="_blank" rel="noopener" class="btn-whatsapp body-12" style="padding: 8px 14px;">
               WhatsApp Studio Concierge
             </a>
-            <button type="button" class="btn btn-outline" style="padding: 8px 14px; font-size: 11px;" onclick="alert('Calendar invite (.ics) downloaded.');">
+            <button type="button" class="btn btn-outline body-12" style="padding: 8px 14px;" onclick="alert('Calendar invite (.ics) downloaded.');">
               Add to Calendar
             </button>
           </div>
@@ -301,27 +301,27 @@
 
       <!-- Active Bespoke Pipeline -->
       <div style="margin-top: 36px;">
-        <h3 style="font-family: var(--font-serif); font-size: 18px; font-weight: 700; margin-bottom: 16px;">Active Bespoke Commissions</h3>
+        <h3 class="h3" style="color: var(--color-obsidian); margin-bottom: 16px;">Active Bespoke Commissions</h3>
         <div class="order-card">
           <div class="order-card-header">
             <div class="order-meta-group">
-              <div class="order-meta-item">
-                <span>Commission Title</span>
-                <strong>Royal Sovereign 3-Piece Agbada in Ivory Damask</strong>
+              <div class="order-meta-item body-12">
+                <span style="color: var(--color-text-muted);">Commission Title</span>
+                <strong class="body-14" style="color: var(--color-obsidian);">Royal Sovereign 3-Piece Agbada in Ivory Damask</strong>
               </div>
-              <div class="order-meta-item">
-                <span>Agreed Price</span>
-                <strong style="color: var(--color-primary);">₦210,000</strong>
+              <div class="order-meta-item body-12">
+                <span style="color: var(--color-text-muted);">Agreed Price</span>
+                <strong class="body-18" style="color: var(--color-primary);">₦210,000</strong>
               </div>
-              <div class="order-meta-item">
-                <span>Stage</span>
-                <strong style="color: var(--color-gold);">Hand Embroidery &amp; Finishing</strong>
+              <div class="order-meta-item body-12">
+                <span style="color: var(--color-text-muted);">Stage</span>
+                <strong class="body-14" style="color: var(--color-gold);">Hand Embroidery &amp; Finishing</strong>
               </div>
             </div>
-            <span class="order-status-badge processing">In Tailoring Pipeline</span>
+            <span class="order-status-badge processing body-12">In Tailoring Pipeline</span>
           </div>
           <div class="order-card-body">
-            <p style="font-size: 13px; color: var(--color-text-muted); line-height: 1.6;">
+            <p class="body-14" style="color: var(--color-text-muted); line-height: 1.6;">
               Fabric cut from hand-loomed Nigerian damask. Outer embroidery verified against your saved <strong>"Agbada Ceremonial Cut"</strong> measurement profile. Estimated ready date: <strong>24 Oct 2026</strong>.
             </p>
           </div>
@@ -335,10 +335,10 @@
     <div class="account-panel" id="panel-measurements" role="tabpanel">
       <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; flex-wrap: wrap; gap: 14px;">
         <div>
-          <h2 style="font-family: var(--font-serif); font-size: 24px; font-weight: 700; color: var(--color-obsidian);">Saved Measurement Profiles</h2>
-          <p style="font-size: 13.5px; color: var(--color-text-muted);">Your personalized tailoring blueprint. Reused seamlessly for all bespoke commissions.</p>
+          <h2 class="h2" style="color: var(--color-obsidian);">Saved Measurement Profiles</h2>
+          <p class="body-14" style="color: var(--color-text-muted);">Your personalized tailoring blueprint. Reused seamlessly for all bespoke commissions.</p>
         </div>
-        <button type="button" class="btn btn-primary" style="padding: 10px 20px; font-size: 12px;" onclick="openMeasurementModal()">
+        <button type="button" class="btn btn-primary body-12" style="padding: 10px 20px;" onclick="openMeasurementModal()">
           + Add New Profile
         </button>
       </div>
@@ -349,52 +349,52 @@
         <div class="measurement-card">
           <div class="measurement-card-header">
             <div>
-              <h3 class="measurement-title">My Senator Fit (Crisp Native)</h3>
-              <span class="measurement-date">Last updated: 14 Sep 2026 &bull; Verified in Studio</span>
+              <h3 class="measurement-title h4" style="color: var(--color-obsidian);">My Senator Fit (Crisp Native)</h3>
+              <span class="measurement-date body-12" style="color: var(--color-text-muted);">Last updated: 14 Sep 2026 &bull; Verified in Studio</span>
             </div>
-            <span class="account-tier-tag" style="background: var(--color-primary-light); color: var(--color-primary); border-color: var(--color-primary);">Primary</span>
+            <span class="account-tier-tag body-10" style="background: var(--color-primary-light); color: var(--color-primary); border-color: var(--color-primary);">Primary</span>
           </div>
 
           <div class="measurement-metrics-grid">
-            <div class="measurement-metric">
-              <span>Neck</span>
-              <strong>16.5 inches</strong>
+            <div class="measurement-metric body-12">
+              <span style="color: var(--color-text-muted);">Neck</span>
+              <strong class="body-14" style="color: var(--color-obsidian);">16.5 inches</strong>
             </div>
-            <div class="measurement-metric">
-              <span>Chest</span>
-              <strong>42.0 inches</strong>
+            <div class="measurement-metric body-12">
+              <span style="color: var(--color-text-muted);">Chest</span>
+              <strong class="body-14" style="color: var(--color-obsidian);">42.0 inches</strong>
             </div>
-            <div class="measurement-metric">
-              <span>Shoulder</span>
-              <strong>19.0 inches</strong>
+            <div class="measurement-metric body-12">
+              <span style="color: var(--color-text-muted);">Shoulder</span>
+              <strong class="body-14" style="color: var(--color-obsidian);">19.0 inches</strong>
             </div>
-            <div class="measurement-metric">
-              <span>Sleeve Length</span>
-              <strong>25.5 inches</strong>
+            <div class="measurement-metric body-12">
+              <span style="color: var(--color-text-muted);">Sleeve Length</span>
+              <strong class="body-14" style="color: var(--color-obsidian);">25.5 inches</strong>
             </div>
-            <div class="measurement-metric">
-              <span>Tunic Length</span>
-              <strong>38.0 inches</strong>
+            <div class="measurement-metric body-12">
+              <span style="color: var(--color-text-muted);">Tunic Length</span>
+              <strong class="body-14" style="color: var(--color-obsidian);">38.0 inches</strong>
             </div>
-            <div class="measurement-metric">
-              <span>Waist</span>
-              <strong>34.0 inches</strong>
+            <div class="measurement-metric body-12">
+              <span style="color: var(--color-text-muted);">Waist</span>
+              <strong class="body-14" style="color: var(--color-obsidian);">34.0 inches</strong>
             </div>
-            <div class="measurement-metric">
-              <span>Trouser Length</span>
-              <strong>41.0 inches</strong>
+            <div class="measurement-metric body-12">
+              <span style="color: var(--color-text-muted);">Trouser Length</span>
+              <strong class="body-14" style="color: var(--color-obsidian);">41.0 inches</strong>
             </div>
-            <div class="measurement-metric">
-              <span>Thigh / Lap</span>
-              <strong>25.0 inches</strong>
+            <div class="measurement-metric body-12">
+              <span style="color: var(--color-text-muted);">Thigh / Lap</span>
+              <strong class="body-14" style="color: var(--color-obsidian);">25.0 inches</strong>
             </div>
           </div>
 
           <div style="margin-top: auto; display: flex; gap: 10px;">
-            <a href="https://wa.me/2348000000000?text=Hello%20Krabe,%20here%20is%20my%20Senator%20measurement%20profile:%20Neck%2016.5,%20Chest%2042,%20Shoulder%2019,%20Sleeve%2025.5,%20Tunic%2038,%20Waist%2034,%20Trouser%2041." target="_blank" rel="noopener" class="btn-whatsapp" style="flex: 1; padding: 10px; font-size: 11px; justify-content: center;">
+            <a href="https://wa.me/2348000000000?text=Hello%20Krabe,%20here%20is%20my%20Senator%20measurement%20profile:%20Neck%2016.5,%20Chest%2042,%20Shoulder%2019,%20Sleeve%2025.5,%20Tunic%2038,%20Waist%2034,%20Trouser%2041." target="_blank" rel="noopener" class="btn-whatsapp body-12" style="flex: 1; padding: 10px; justify-content: center;">
               Share to WhatsApp
             </a>
-            <button type="button" class="btn btn-outline" style="padding: 10px 14px; font-size: 11px;" onclick="openMeasurementModal('Senator')">
+            <button type="button" class="btn btn-outline body-12" style="padding: 10px 14px;" onclick="openMeasurementModal('Senator')">
               Edit
             </button>
           </div>
@@ -404,43 +404,43 @@
         <div class="measurement-card">
           <div class="measurement-card-header">
             <div>
-              <h3 class="measurement-title">Ceremonial Agbada (Royal Drape)</h3>
-              <span class="measurement-date">Last updated: 02 Aug 2026</span>
+              <h3 class="measurement-title h4" style="color: var(--color-obsidian);">Ceremonial Agbada (Royal Drape)</h3>
+              <span class="measurement-date body-12" style="color: var(--color-text-muted);">Last updated: 02 Aug 2026</span>
             </div>
           </div>
 
           <div class="measurement-metrics-grid">
-            <div class="measurement-metric">
-              <span>Chest (Loose)</span>
-              <strong>44.0 inches</strong>
+            <div class="measurement-metric body-12">
+              <span style="color: var(--color-text-muted);">Chest (Loose)</span>
+              <strong class="body-14" style="color: var(--color-obsidian);">44.0 inches</strong>
             </div>
-            <div class="measurement-metric">
-              <span>Agbada Wing Span</span>
-              <strong>64.0 inches</strong>
+            <div class="measurement-metric body-12">
+              <span style="color: var(--color-text-muted);">Agbada Wing Span</span>
+              <strong class="body-14" style="color: var(--color-obsidian);">64.0 inches</strong>
             </div>
-            <div class="measurement-metric">
-              <span>Agbada Length</span>
-              <strong>55.0 inches</strong>
+            <div class="measurement-metric body-12">
+              <span style="color: var(--color-text-muted);">Agbada Length</span>
+              <strong class="body-14" style="color: var(--color-obsidian);">55.0 inches</strong>
             </div>
-            <div class="measurement-metric">
-              <span>Inner Tunic Chest</span>
-              <strong>43.0 inches</strong>
+            <div class="measurement-metric body-12">
+              <span style="color: var(--color-text-muted);">Inner Tunic Chest</span>
+              <strong class="body-14" style="color: var(--color-obsidian);">43.0 inches</strong>
             </div>
-            <div class="measurement-metric">
-              <span>Fila / Cap Size</span>
-              <strong>23.0 inches</strong>
+            <div class="measurement-metric body-12">
+              <span style="color: var(--color-text-muted);">Fila / Cap Size</span>
+              <strong class="body-14" style="color: var(--color-obsidian);">23.0 inches</strong>
             </div>
-            <div class="measurement-metric">
-              <span>Trouser Length</span>
-              <strong>41.5 inches</strong>
+            <div class="measurement-metric body-12">
+              <span style="color: var(--color-text-muted);">Trouser Length</span>
+              <strong class="body-14" style="color: var(--color-obsidian);">41.5 inches</strong>
             </div>
           </div>
 
           <div style="margin-top: auto; display: flex; gap: 10px;">
-            <a href="https://wa.me/2348000000000?text=Hello%20Krabe,%20here%20is%20my%20Agbada%20measurement%20profile:%20Chest%2044,%20Wing%2064,%20Length%2055,%20Cap%2023." target="_blank" rel="noopener" class="btn-whatsapp" style="flex: 1; padding: 10px; font-size: 11px; justify-content: center;">
+            <a href="https://wa.me/2348000000000?text=Hello%20Krabe,%20here%20is%20my%20Agbada%20measurement%20profile:%20Chest%2044,%20Wing%2064,%20Length%2055,%20Cap%2023." target="_blank" rel="noopener" class="btn-whatsapp body-12" style="flex: 1; padding: 10px; justify-content: center;">
               Share to WhatsApp
             </a>
-            <button type="button" class="btn btn-outline" style="padding: 10px 14px; font-size: 11px;" onclick="openMeasurementModal('Agbada')">
+            <button type="button" class="btn btn-outline body-12" style="padding: 10px 14px;" onclick="openMeasurementModal('Agbada')">
               Edit
             </button>
           </div>
@@ -455,10 +455,10 @@
     <div class="account-panel" id="panel-addresses" role="tabpanel">
       <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; flex-wrap: wrap; gap: 14px;">
         <div>
-          <h2 style="font-family: var(--font-serif); font-size: 24px; font-weight: 700; color: var(--color-obsidian);">Saved Delivery Addresses</h2>
-          <p style="font-size: 13.5px; color: var(--color-text-muted);">Manage where your tailored garments and made-to-order collections are dispatched.</p>
+          <h2 class="h2" style="color: var(--color-obsidian);">Saved Delivery Addresses</h2>
+          <p class="body-14" style="color: var(--color-text-muted);">Manage where your tailored garments and made-to-order collections are dispatched.</p>
         </div>
-        <button type="button" class="btn btn-primary" style="padding: 10px 20px; font-size: 12px;" onclick="alert('Add Address form modal opened.');">
+        <button type="button" class="btn btn-primary body-12" style="padding: 10px 20px;" onclick="alert('Add Address form modal opened.');">
           + Add New Address
         </button>
       </div>
@@ -466,29 +466,29 @@
       <div class="address-grid">
         <!-- Address 1 (Default) -->
         <div class="address-card default">
-          <span class="address-badge-default">Default Shipping</span>
-          <h3 style="font-size: 15px; font-weight: 700; color: var(--color-obsidian); margin-bottom: 6px;">David Adeleke (Home)</h3>
-          <p style="font-size: 13.5px; color: var(--color-text-muted); line-height: 1.6; margin-bottom: 16px;">
+          <span class="address-badge-default body-10">Default Shipping</span>
+          <h3 class="h4" style="color: var(--color-obsidian); margin-bottom: 6px;">David Adeleke (Home)</h3>
+          <p class="body-14" style="color: var(--color-text-muted); line-height: 1.6; margin-bottom: 16px;">
             Plot 14, Block 2, Admiralty Way<br>
             Lekki Phase 1, Eti-Osa LGA<br>
             Lagos State, Nigeria<br>
             Phone: +234 803 123 4567
           </p>
-          <div style="display: flex; gap: 12px; font-size: 12px; font-weight: 600;">
+          <div class="body-12" style="display: flex; gap: 12px; font-weight: 600;">
             <a href="javascript:void(0)" onclick="alert('Editing address...');" style="color: var(--color-primary);">Edit Address</a>
           </div>
         </div>
 
         <!-- Address 2 -->
         <div class="address-card">
-          <h3 style="font-size: 15px; font-weight: 700; color: var(--color-obsidian); margin-bottom: 6px;">David Adeleke (Office)</h3>
-          <p style="font-size: 13.5px; color: var(--color-text-muted); line-height: 1.6; margin-bottom: 16px;">
+          <h3 class="h4" style="color: var(--color-obsidian); margin-bottom: 6px;">David Adeleke (Office)</h3>
+          <p class="body-14" style="color: var(--color-text-muted); line-height: 1.6; margin-bottom: 16px;">
             Tower 3, Ozumba Mbadiwe Avenue<br>
             Victoria Island<br>
             Lagos State, Nigeria<br>
             Phone: +234 803 123 4567
           </p>
-          <div style="display: flex; gap: 12px; font-size: 12px; font-weight: 600;">
+          <div class="body-12" style="display: flex; gap: 12px; font-weight: 600;">
             <a href="javascript:void(0)" onclick="alert('Set as default shipping address.');" style="color: var(--color-primary);">Make Default</a>
             <span style="color: var(--color-border);">&bull;</span>
             <a href="javascript:void(0)" onclick="alert('Editing address...');" style="color: var(--color-text-muted);">Edit</a>
@@ -504,56 +504,56 @@
          ========================================== -->
     <div class="account-panel" id="panel-settings" role="tabpanel">
       <div style="margin-bottom: 24px;">
-        <h2 style="font-family: var(--font-serif); font-size: 24px; font-weight: 700; color: var(--color-obsidian);">Account Profile &amp; Security</h2>
-        <p style="font-size: 13.5px; color: var(--color-text-muted);">Update personal contact details and security credentials.</p>
+        <h2 class="h2" style="color: var(--color-obsidian);">Account Profile &amp; Security</h2>
+        <p class="body-14" style="color: var(--color-text-muted);">Update personal contact details and security credentials.</p>
       </div>
 
       <div class="settings-box">
         <form onsubmit="event.preventDefault(); alert('Account profile details updated successfully.');">
           <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
             <div class="form-group">
-              <label for="accFirstName">First Name</label>
-              <input type="text" id="accFirstName" class="form-input" value="David" required>
+              <label for="accFirstName" class="body-12">First Name</label>
+              <input type="text" id="accFirstName" class="form-input body-14" value="David" required>
             </div>
             <div class="form-group">
-              <label for="accLastName">Last Name</label>
-              <input type="text" id="accLastName" class="form-input" value="Adeleke" required>
+              <label for="accLastName" class="body-12">Last Name</label>
+              <input type="text" id="accLastName" class="form-input body-14" value="Adeleke" required>
             </div>
           </div>
 
           <div class="form-group">
-            <label for="accEmail">Email Address</label>
-            <input type="email" id="accEmail" class="form-input" value="david.adeleke@example.com" required>
+            <label for="accEmail" class="body-12">Email Address</label>
+            <input type="email" id="accEmail" class="form-input body-14" value="david.adeleke@example.com" required>
           </div>
 
           <div class="form-group">
-            <label for="accPhone">Phone / WhatsApp Number</label>
-            <input type="tel" id="accPhone" class="form-input" value="+234 803 123 4567" required>
-            <small style="font-size: 11.5px; color: var(--color-text-muted); display: block; margin-top: 4px;">
+            <label for="accPhone" class="body-12">Phone / WhatsApp Number</label>
+            <input type="tel" id="accPhone" class="form-input body-14" value="+234 803 123 4567" required>
+            <small class="body-12" style="color: var(--color-text-muted); display: block; margin-top: 4px;">
               Used for courier updates and bespoke tailoring consultations.
             </small>
           </div>
 
           <hr style="border: none; border-top: 1px solid var(--color-border); margin: 28px 0;">
 
-          <h3 style="font-family: var(--font-serif); font-size: 18px; font-weight: 700; margin-bottom: 16px;">Security &amp; Password</h3>
+          <h3 class="h3" style="color: var(--color-obsidian); margin-bottom: 16px;">Security &amp; Password</h3>
           <div class="form-group">
-            <label for="accCurrPass">Current Password</label>
-            <input type="password" id="accCurrPass" class="form-input" placeholder="••••••••••••">
+            <label for="accCurrPass" class="body-12">Current Password</label>
+            <input type="password" id="accCurrPass" class="form-input body-14" placeholder="••••••••••••">
           </div>
 
           <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
             <div class="form-group">
-              <label for="accNewPass">New Password</label>
-              <input type="password" id="accNewPass" class="form-input" placeholder="Minimum 8 characters">
+              <label for="accNewPass" class="body-12">New Password</label>
+              <input type="password" id="accNewPass" class="form-input body-14" placeholder="Minimum 8 characters">
             </div>
             <div class="form-group">
-              <label for="accConfirmPass">Confirm New Password</label>
-              <input type="password" id="accConfirmPass" class="form-input" placeholder="Confirm new password">
+              <label for="accConfirmPass" class="body-12">Confirm New Password</label>
+              <input type="password" id="accConfirmPass" class="form-input body-14" placeholder="Confirm new password">
             </div>
           </div>
 
-          <button type="submit" class="btn btn-primary" style="margin-top: 10px;">Save Changes</button>
+          <button type="submit" class="btn btn-primary body-14" style="margin-top: 10px;">Save Changes</button>
         </form>
       </div>
     </div>
@@ -567,48 +567,48 @@
   <!-- Modal A: Add / Edit Measurement Profile -->
   <div class="modal-overlay" id="measurementModal" aria-hidden="true" onclick="closeModalOnBackdrop(event, 'measurementModal')">
     <div class="modal-card" style="max-width: 600px;">
-      <button type="button" class="modal-close" onclick="closeModal('measurementModal')" aria-label="Close">✕</button>
-      <h3 style="font-family: var(--font-serif); font-size: 22px; font-weight: 700; margin-bottom: 6px;">New Tailoring Measurement Profile</h3>
-      <p style="font-size: 13px; color: var(--color-text-muted); margin-bottom: 20px;">
+      <button type="button" class="modal-close body-18" onclick="closeModal('measurementModal')" aria-label="Close">✕</button>
+      <h3 class="h3" style="color: var(--color-obsidian); margin-bottom: 6px;">New Tailoring Measurement Profile</h3>
+      <p class="body-14" style="color: var(--color-text-muted); margin-bottom: 20px;">
         Enter measurements in inches. These details will be stored in your private vault for instant bespoke ordering.
       </p>
 
       <form onsubmit="event.preventDefault(); alert('Measurement profile saved!'); closeModal('measurementModal');">
         <div class="form-group">
-          <label for="measProfileName">Profile Name</label>
-          <input type="text" id="measProfileName" class="form-input" placeholder="e.g. Wedding Senator Fit, Casual Kaftan" required>
+          <label for="measProfileName" class="body-12">Profile Name</label>
+          <input type="text" id="measProfileName" class="form-input body-14" placeholder="e.g. Wedding Senator Fit, Casual Kaftan" required>
         </div>
 
         <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px;">
           <div class="form-group">
-            <label for="mNeck">Neck (in)</label>
-            <input type="number" step="0.5" id="mNeck" class="form-input" placeholder="16.5" required>
+            <label for="mNeck" class="body-12">Neck (in)</label>
+            <input type="number" step="0.5" id="mNeck" class="form-input body-14" placeholder="16.5" required>
           </div>
           <div class="form-group">
-            <label for="mChest">Chest (in)</label>
-            <input type="number" step="0.5" id="mChest" class="form-input" placeholder="42.0" required>
+            <label for="mChest" class="body-12">Chest (in)</label>
+            <input type="number" step="0.5" id="mChest" class="form-input body-14" placeholder="42.0" required>
           </div>
           <div class="form-group">
-            <label for="mShoulder">Shoulder (in)</label>
-            <input type="number" step="0.5" id="mShoulder" class="form-input" placeholder="19.0" required>
+            <label for="mShoulder" class="body-12">Shoulder (in)</label>
+            <input type="number" step="0.5" id="mShoulder" class="form-input body-14" placeholder="19.0" required>
           </div>
           <div class="form-group">
-            <label for="mSleeve">Sleeve (in)</label>
-            <input type="number" step="0.5" id="mSleeve" class="form-input" placeholder="25.5" required>
+            <label for="mSleeve" class="body-12">Sleeve (in)</label>
+            <input type="number" step="0.5" id="mSleeve" class="form-input body-14" placeholder="25.5" required>
           </div>
           <div class="form-group">
-            <label for="mWaist">Waist (in)</label>
-            <input type="number" step="0.5" id="mWaist" class="form-input" placeholder="34.0" required>
+            <label for="mWaist" class="body-12">Waist (in)</label>
+            <input type="number" step="0.5" id="mWaist" class="form-input body-14" placeholder="34.0" required>
           </div>
           <div class="form-group">
-            <label for="mTrouser">Trouser L (in)</label>
-            <input type="number" step="0.5" id="mTrouser" class="form-input" placeholder="41.0" required>
+            <label for="mTrouser" class="body-12">Trouser L (in)</label>
+            <input type="number" step="0.5" id="mTrouser" class="form-input body-14" placeholder="41.0" required>
           </div>
         </div>
 
         <div style="display: flex; gap: 12px; margin-top: 14px;">
-          <button type="submit" class="btn btn-primary" style="flex: 1;">Save Profile</button>
-          <button type="button" class="btn btn-outline" onclick="closeModal('measurementModal')">Cancel</button>
+          <button type="submit" class="btn btn-primary body-14" style="flex: 1;">Save Profile</button>
+          <button type="button" class="btn btn-outline body-14" onclick="closeModal('measurementModal')">Cancel</button>
         </div>
       </form>
     </div>
@@ -617,17 +617,17 @@
   <!-- Modal B: Request Alteration -->
   <div class="modal-overlay" id="alterationModal" aria-hidden="true" onclick="closeModalOnBackdrop(event, 'alterationModal')">
     <div class="modal-card" style="max-width: 540px;">
-      <button type="button" class="modal-close" onclick="closeModal('alterationModal')" aria-label="Close">✕</button>
-      <span class="section-tag">Complimentary Care &bull; Lagos Studio</span>
-      <h3 style="font-family: var(--font-serif); font-size: 22px; font-weight: 700; margin-bottom: 6px;">Request Fitting Alteration</h3>
-      <p style="font-size: 13px; color: var(--color-text-muted); margin-bottom: 20px;" id="alterationOrderDesc">
+      <button type="button" class="modal-close body-18" onclick="closeModal('alterationModal')" aria-label="Close">✕</button>
+      <span class="section-tag body-12">Complimentary Care &bull; Lagos Studio</span>
+      <h3 class="h3" style="color: var(--color-obsidian); margin-bottom: 6px;">Request Fitting Alteration</h3>
+      <p class="body-14" style="color: var(--color-text-muted); margin-bottom: 20px;" id="alterationOrderDesc">
         Requesting adjustments for order items.
       </p>
 
       <form onsubmit="event.preventDefault(); alert('Alteration request submitted! A Krabe tailor will contact you within 4 hours.'); closeModal('alterationModal');">
         <div class="form-group">
-          <label for="altType">Type of Adjustment</label>
-          <select id="altType" class="form-input" style="padding: 12px 14px;">
+          <label for="altType" class="body-12">Type of Adjustment</label>
+          <select id="altType" class="form-input body-14" style="padding: 12px 14px;">
             <option>Trouser Hemming / Shortening</option>
             <option>Chest / Torso Tapering</option>
             <option>Sleeve Length Adjustment</option>
@@ -637,13 +637,13 @@
         </div>
 
         <div class="form-group">
-          <label for="altNotes">Describe Specific Fit Notes</label>
-          <textarea id="altNotes" class="form-input" rows="3" placeholder="e.g. Please take in 1 inch from the waist and shorten trouser length by 1.5 inches." required></textarea>
+          <label for="altNotes" class="body-12">Describe Specific Fit Notes</label>
+          <textarea id="altNotes" class="form-input body-14" rows="3" placeholder="e.g. Please take in 1 inch from the waist and shorten trouser length by 1.5 inches." required></textarea>
         </div>
 
         <div class="form-group">
-          <label>Preferred Alteration Method</label>
-          <div style="display: flex; gap: 12px; font-size: 13px;">
+          <label class="body-12">Preferred Alteration Method</label>
+          <div class="body-12" style="display: flex; gap: 12px;">
             <label style="display: flex; align-items: center; gap: 6px; text-transform: none; font-weight: 500;">
               <input type="radio" name="altMethod" checked> Lagos Doorstep Pickup (Free)
             </label>
@@ -654,8 +654,8 @@
         </div>
 
         <div style="display: flex; gap: 12px; margin-top: 20px;">
-          <button type="submit" class="btn btn-primary" style="flex: 1;">Submit Alteration Request</button>
-          <button type="button" class="btn btn-outline" onclick="closeModal('alterationModal')">Cancel</button>
+          <button type="submit" class="btn btn-primary body-14" style="flex: 1;">Submit Alteration Request</button>
+          <button type="button" class="btn btn-outline body-14" onclick="closeModal('alterationModal')">Cancel</button>
         </div>
       </form>
     </div>
@@ -671,56 +671,56 @@
           <svg class="search-icon-svg" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
           </svg>
-          <input type="text" id="searchInputField" class="search-modal-input" placeholder="Search Kaftans, Agbadas, Streetwear, Suits..." autocomplete="off">
-          <button type="button" class="search-clear-btn" id="searchClearBtn" aria-label="Clear search">✕</button>
+          <input type="text" id="searchInputField" class="search-modal-input body-16" placeholder="Search Kaftans, Agbadas, Streetwear, Suits..." autocomplete="off">
+          <button type="button" class="search-clear-btn body-14" id="searchClearBtn" aria-label="Clear search">✕</button>
         </div>
-        <button type="button" class="search-close-btn" id="searchCloseBtn" aria-label="Close search">Close (Esc)</button>
+        <button type="button" class="search-close-btn body-12" id="searchCloseBtn" aria-label="Close search">Close (Esc)</button>
       </div>
 
       <div class="search-modal-body">
         <div class="search-suggestions-block">
-          <span class="search-section-label">Popular Searches</span>
+          <span class="search-section-label body-12" style="font-weight: 700; color: var(--color-text-muted); text-transform: uppercase; letter-spacing: 1px;">Popular Searches</span>
           <div class="search-tags">
-            <a href="shop.html?category=native" class="search-tag">Native Kaftans</a>
-            <a href="shop.html?category=native" class="search-tag">Ceremonial Agbada</a>
-            <a href="shop.html?category=streetwear" class="search-tag">Luxury Streetwear</a>
-            <a href="shop.html?category=formal" class="search-tag">Senator Suits</a>
-            <a href="shop.html?category=formal" class="search-tag">Artisan Linen Shirts</a>
+            <a href="shop.html?category=native" class="search-tag body-12">Native Kaftans</a>
+            <a href="shop.html?category=native" class="search-tag body-12">Ceremonial Agbada</a>
+            <a href="shop.html?category=streetwear" class="search-tag body-12">Luxury Streetwear</a>
+            <a href="shop.html?category=formal" class="search-tag body-12">Senator Suits</a>
+            <a href="shop.html?category=formal" class="search-tag body-12">Artisan Linen Shirts</a>
           </div>
         </div>
 
         <div class="search-preview-block">
-          <span class="search-section-label">Quick Suggestions</span>
+          <span class="search-section-label body-12" style="font-weight: 700; color: var(--color-text-muted); text-transform: uppercase; letter-spacing: 1px;">Quick Suggestions</span>
           <div class="search-results-list">
             <a href="product.html" class="search-result-item">
               <img src="Krabe Cloth Concepts_230226_205405_1.jpg" alt="Signature 3-Piece Agbada Set">
               <div class="search-result-info">
-                <div class="search-result-title">Signature 3-Piece Agbada Set</div>
-                <div class="search-result-meta">Native Wear &bull; Ceremonial Luxe</div>
-                <div class="search-result-price">₦185,000</div>
+                <div class="search-result-title body-14" style="font-weight: 700; color: var(--color-obsidian);">Signature 3-Piece Agbada Set</div>
+                <div class="search-result-meta body-12" style="color: var(--color-text-muted);">Native Wear &bull; Ceremonial Luxe</div>
+                <div class="search-result-price body-14" style="font-weight: 700; color: var(--color-primary);">₦185,000</div>
               </div>
             </a>
             <a href="shop.html?category=native" class="search-result-item">
               <img src="assets/lookbook/lookbook_4_senator.jpg" alt="Krabe Structured Modern Kaftan">
               <div class="search-result-info">
-                <div class="search-result-title">Krabe Structured Modern Kaftan</div>
-                <div class="search-result-meta">Native Wear &bull; Senator Cut</div>
-                <div class="search-result-price">₦120,000</div>
+                <div class="search-result-title body-14" style="font-weight: 700; color: var(--color-obsidian);">Krabe Structured Modern Kaftan</div>
+                <div class="search-result-meta body-12" style="color: var(--color-text-muted);">Native Wear &bull; Senator Cut</div>
+                <div class="search-result-price body-14" style="font-weight: 700; color: var(--color-primary);">₦120,000</div>
               </div>
             </a>
             <a href="shop.html?category=streetwear" class="search-result-item">
               <img src="assets/lookbook/lookbook_5_goldbrush.jpg" alt="Metallic Gold Brush Statement Tee">
               <div class="search-result-info">
-                <div class="search-result-title">Metallic Gold Brush Statement Tee</div>
-                <div class="search-result-meta">Streetwear &bull; Unisex Limited Drop</div>
-                <div class="search-result-price">₦55,000</div>
+                <div class="search-result-title body-14" style="font-weight: 700; color: var(--color-obsidian);">Metallic Gold Brush Statement Tee</div>
+                <div class="search-result-meta body-12" style="color: var(--color-text-muted);">Streetwear &bull; Unisex Limited Drop</div>
+                <div class="search-result-price body-14" style="font-weight: 700; color: var(--color-primary);">₦55,000</div>
               </div>
             </a>
           </div>
         </div>
 
         <div class="search-modal-footer">
-          <button type="button" class="btn-search-submit" id="searchSubmitBtn">
+          <button type="button" class="btn-search-submit body-14" id="searchSubmitBtn">
             Explore All Made-to-Order &rarr;
           </button>
         </div>
@@ -734,19 +734,19 @@
   <div class="cart-drawer-overlay" id="cartOverlay" aria-hidden="true">
     <div class="cart-drawer" id="cartDrawer" role="dialog" aria-modal="true" aria-labelledby="cartDrawerTitle">
       <div class="cart-drawer-header">
-        <h3 class="cart-drawer-title" id="cartDrawerTitle">Shopping Bag</h3>
+        <h3 class="cart-drawer-title h5" id="cartDrawerTitle">Shopping Bag</h3>
         <button type="button" class="cart-close-btn" id="cartCloseBtn" aria-label="Close Shopping Bag">
           <svg style="width: 22px; height: 22px;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
         </button>
       </div>
-      <div class="cart-free-shipping">✓ Free Lagos Delivery on orders over ₦200,000</div>
+      <div class="cart-free-shipping body-12">✓ Free Lagos Delivery on orders over ₦200,000</div>
       <div class="cart-drawer-body"></div>
       <div class="cart-drawer-footer">
         <div class="cart-subtotal-row">
-          <span class="cart-subtotal-label">Subtotal</span>
-          <span class="cart-subtotal-amount">₦0</span>
+          <span class="cart-subtotal-label body-14">Subtotal</span>
+          <span class="cart-subtotal-amount body-18">₦0</span>
         </div>
-        <a href="checkout.html" class="btn-checkout">Proceed to Checkout &rarr;</a>
+        <a href="checkout.html" class="btn-checkout body-14">Proceed to Checkout &rarr;</a>
       </div>
     </div>
   </div>
@@ -759,7 +759,7 @@
       <div class="footer-top">
         <div class="footer-brand">
           <img src="assets/brand/krabe main logo.svg" alt="Krabe Kollection" style="height: 44px; margin-bottom: 14px;">
-          <p>Premium Nigerian unisex fashion house combining ancestral textile heritage with contemporary minimalist tailoring.</p>
+          <p class="body-14" style="color: var(--color-text-muted);">Premium Nigerian unisex fashion house combining ancestral textile heritage with contemporary minimalist tailoring.</p>
           <div class="footer-social-links" style="margin-top: 18px;">
             <a href="https://instagram.com" target="_blank" rel="noopener" class="social-circle" aria-label="Instagram">
               <svg style="width: 18px; height: 18px;" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
@@ -770,30 +770,30 @@
           </div>
         </div>
         <div>
-          <div class="footer-col-title">Shop Krabe</div>
-          <ul class="footer-nav-list">
+          <div class="footer-col-title body-12" style="font-weight: 700; color: var(--color-obsidian); text-transform: uppercase; letter-spacing: 1.5px;">Shop Krabe</div>
+          <ul class="footer-nav-list body-14">
             <li><a href="shop.html">Made-to-Order Collections</a></li>
             <li><a href="bespoke.html">Bespoke Orders</a></li>
           </ul>
         </div>
         <div>
-          <div class="footer-col-title">Customer Care</div>
-          <ul class="footer-nav-list">
+          <div class="footer-col-title body-12" style="font-weight: 700; color: var(--color-obsidian); text-transform: uppercase; letter-spacing: 1.5px;">Customer Care</div>
+          <ul class="footer-nav-list body-14">
             <li><a href="bespoke.html#appointment-section">Book Studio Appointment</a></li>
             <li><a href="help.html#faq">FAQ &amp; Shipping Policy</a></li>
             <li><a href="account.html">Track Order</a></li>
           </ul>
         </div>
         <div>
-          <div class="footer-col-title">Private Releases</div>
+          <div class="footer-col-title body-12" style="font-weight: 700; color: var(--color-obsidian); text-transform: uppercase; letter-spacing: 1.5px;">Private Releases</div>
           <form class="newsletter-form" data-newsletter-form novalidate>
-            <input type="email" required placeholder="Enter your email address" class="newsletter-input" autocomplete="email">
-            <button type="submit" class="newsletter-btn">Subscribe</button>
-            <div class="newsletter-feedback" style="display: none;" role="status"></div>
+            <input type="email" required placeholder="Enter your email address" class="newsletter-input body-14" autocomplete="email">
+            <button type="submit" class="newsletter-btn body-12">Subscribe</button>
+            <div class="newsletter-feedback body-12" style="display: none;" role="status"></div>
           </form>
         </div>
       </div>
-      <div class="footer-bottom">
+      <div class="footer-bottom body-12" style="color: var(--color-text-muted);">
         <div>&copy; 2026 Krabe Kollection. All rights reserved. Registered in Nigeria.</div>
       </div>
     </div>

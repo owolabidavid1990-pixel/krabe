@@ -106,9 +106,9 @@ document.addEventListener('DOMContentLoaded', () => {
             <svg style="width: 48px; height: 48px; margin: 0 auto 14px; opacity: 0.35; display: block;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.4" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/>
             </svg>
-            <p style="font-size: 15px; font-weight: 700; margin-bottom: 6px; color: var(--color-obsidian, #161616); letter-spacing: 0.5px;">Your shopping bag is empty</p>
-            <p style="font-size: 12.5px; line-height: 1.5; max-width: 260px; margin: 0 auto 18px;">Explore our tailored native wear, bespoke suits, or luxury streetwear.</p>
-            <a href="shop.html" onclick="document.getElementById('cartCloseBtn') && document.getElementById('cartCloseBtn').click();" style="display: inline-block; padding: 10px 22px; background: var(--color-primary, #44637B); color: #ffffff; font-size: 11.5px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.2px; border-radius: 4px; text-decoration: none;">
+            <p class="body-16" style="font-weight: 700; margin-bottom: 6px; color: var(--color-obsidian); letter-spacing: 0.5px;">Your shopping bag is empty</p>
+            <p class="body-12" style="line-height: 1.5; max-width: 260px; margin: 0 auto 18px;">Explore our tailored native wear, bespoke suits, or luxury streetwear.</p>
+            <a href="shop.html" onclick="document.getElementById('cartCloseBtn') && document.getElementById('cartCloseBtn').click();" class="body-12" style="display: inline-block; padding: 10px 22px; background: var(--color-primary); color: #ffffff; font-weight: 700; text-transform: uppercase; letter-spacing: 1.2px; border-radius: 4px; text-decoration: none;">
               Explore Collections &rarr;
             </a>
           </div>
@@ -130,20 +130,20 @@ document.addEventListener('DOMContentLoaded', () => {
           <div class="cart-item" data-id="${item.id}">
             <img src="${item.image || 'assets/brand/krabe main logo.svg'}" alt="${item.title}" class="cart-item-img">
             <div class="cart-item-details">
-              <h4>${item.title}</h4>
-              <div class="cart-item-meta" style="display: flex; align-items: center; flex-wrap: wrap; gap: 6px;">
+              <h4 class="h4">${item.title}</h4>
+              <div class="cart-item-meta body-12" style="display: flex; align-items: center; flex-wrap: wrap; gap: 6px;">
                 <span>${item.color || 'Standard'} &bull; Size: <strong>${item.size || 'M'}</strong></span>
                 ${item.product_id ? `
-                  <a href="product.html?id=${item.product_id}&size=${encodeURIComponent(item.size || 'M')}&color=${encodeURIComponent(item.color || '')}" class="js-cart-edit-link" style="color: var(--color-primary, #44637B); font-size: 11px; font-weight: 600; text-decoration: underline;">
+                  <a href="product.html?id=${item.product_id}&size=${encodeURIComponent(item.size || 'M')}&color=${encodeURIComponent(item.color || '')}" class="js-cart-edit-link body-10" style="color: var(--color-primary); font-weight: 600; text-decoration: underline;">
                     Edit
                   </a>
                 ` : ''}
               </div>
-              <div class="cart-item-price">${formatNaira(item.price)}</div>
+              <div class="cart-item-price body-14">${formatNaira(item.price)}</div>
               <div class="cart-qty-ctrl">
-                <button type="button" class="cart-qty-btn js-qty-minus" data-id="${item.id}" aria-label="Decrease quantity">−</button>
-                <span class="cart-qty-val">${item.qty}</span>
-                <button type="button" class="cart-qty-btn js-qty-plus" data-id="${item.id}" aria-label="Increase quantity">+</button>
+                <button type="button" class="cart-qty-btn body-14 js-qty-minus" data-id="${item.id}" aria-label="Decrease quantity">−</button>
+                <span class="cart-qty-val body-12">${item.qty}</span>
+                <button type="button" class="cart-qty-btn body-14 js-qty-plus" data-id="${item.id}" aria-label="Increase quantity">+</button>
               </div>
             </div>
             <button type="button" class="cart-item-del js-del-item" data-id="${item.id}" aria-label="Remove item">
@@ -677,7 +677,7 @@ document.addEventListener('DOMContentLoaded', () => {
           emptyMsg = document.createElement('div');
           emptyMsg.className = 'filter-empty-state';
           emptyMsg.style.cssText = 'grid-column: 1 / -1; text-align: center; padding: 48px 16px; color: var(--color-text-muted);';
-          emptyMsg.innerHTML = '<p style="font-size: 15px; font-weight: 700; color: var(--color-obsidian); margin-bottom: 8px;">No garments currently listed in this category.</p><p style="font-size: 13px;">Check back soon for upcoming archive releases.</p>';
+          emptyMsg.innerHTML = '<p class="body-16" style="font-weight: 700; color: var(--color-obsidian); margin-bottom: 8px;">No garments currently listed in this category.</p><p class="body-14">Check back soon for upcoming archive releases.</p>';
           grid.appendChild(emptyMsg);
         }
       } else if (emptyMsg) {
