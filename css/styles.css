@@ -119,19 +119,37 @@ ul {
 }
 
 /* ==========================================================================
-   STICKY HEADER & NAVIGATION
+   STICKY & SMART REVEAL HEADER
    ========================================================================== */
 .site-header {
-  position: sticky;
-  top: 0;
+  position: relative;
   width: 100%;
   height: var(--header-height);
   background-color: rgba(250, 248, 245, 0.94);
   backdrop-filter: blur(14px);
   -webkit-backdrop-filter: blur(14px);
   border-bottom: 1px solid var(--color-border);
-  z-index: 100;
-  transition: var(--transition-fast);
+  z-index: 200;
+  transition: transform 0.32s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.3s ease;
+  will-change: transform;
+}
+
+/* Floating state when user scrolls */
+.site-header.header-sticky {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  width: 100%;
+  z-index: 400;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+  transform: translateY(0);
+}
+
+/* Hidden state: slides up smoothly when scrolling down */
+.site-header.header-sticky.header-hidden {
+  transform: translateY(-100%);
+  box-shadow: none;
 }
 
 .header-inner {
@@ -174,6 +192,12 @@ ul {
   color: var(--color-text-main);
   position: relative;
   padding: 6px 0;
+  transition: color var(--transition-fast);
+}
+
+.nav-link:hover,
+.nav-link.active {
+  color: var(--color-primary);
 }
 
 .nav-link::after {
@@ -190,13 +214,6 @@ ul {
 .nav-link:hover::after,
 .nav-link.active::after {
   width: 100%;
-}
-
-.nav-link.bespoke-highlight {
-  color: var(--color-gold);
-}
-.nav-link.bespoke-highlight::after {
-  background-color: var(--color-gold);
 }
 
 /* Brand Logo in Header (Left positioned) */
@@ -936,7 +953,7 @@ ul {
   color: var(--color-white);
   padding: 16px 32px;
   border-radius: var(--radius-full);
-  font-size: 13px;
+  font-size: 13.5px;
   font-weight: 700;
   letter-spacing: 1px;
   text-transform: uppercase;
@@ -944,17 +961,35 @@ ul {
   align-items: center;
   gap: 12px;
   box-shadow: 0 4px 18px rgba(37, 211, 102, 0.35);
+  transition: all 0.25s ease;
 }
 
 .btn-whatsapp:hover {
   background-color: #20BA5A;
   transform: translateY(-2px);
+  box-shadow: 0 6px 24px rgba(37, 211, 102, 0.5);
 }
 
 .btn-whatsapp svg {
-  width: 22px;
-  height: 22px;
+  width: 24px;
+  height: 24px;
   fill: currentColor;
+  flex-shrink: 0;
+}
+
+/* Specific prominence for concierge styling banner on index */
+.whatsapp-box .btn-whatsapp {
+  padding: 18px 38px;
+  font-size: 14px;
+  letter-spacing: 1.2px;
+  gap: 14px;
+  box-shadow: 0 6px 26px rgba(37, 211, 102, 0.45);
+}
+
+.whatsapp-box .btn-whatsapp svg {
+  width: 30px;
+  height: 30px;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
 }
 
 /* ==========================================================================
@@ -1085,6 +1120,7 @@ ul {
   display: flex;
   flex-direction: column;
   gap: 10px;
+  position: relative;
 }
 
 .newsletter-input {
@@ -1095,6 +1131,7 @@ ul {
   color: var(--color-white);
   font-size: 13px;
   font-family: inherit;
+  transition: all 0.2s ease;
 }
 
 .newsletter-input:focus {
@@ -1112,10 +1149,97 @@ ul {
   letter-spacing: 1.5px;
   text-transform: uppercase;
   border-radius: var(--radius-sm);
+  cursor: pointer;
+  border: 1px solid transparent;
+  transition: all 0.25s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
 }
 
 .newsletter-btn:hover {
   background-color: #557A96;
+}
+
+.newsletter-btn:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+
+.newsletter-btn--unsubscribe {
+  background-color: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  color: #CBD5E1;
+}
+
+.newsletter-btn--unsubscribe:hover {
+  background-color: rgba(239, 68, 68, 0.12);
+  border-color: rgba(239, 68, 68, 0.45);
+  color: #FCA5A5;
+}
+
+.newsletter-user-badge {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12.5px;
+  color: #94A3B8;
+  line-height: 1.45;
+  padding: 3px 0;
+}
+
+.newsletter-user-badge strong {
+  color: #F8FAFC;
+  font-weight: 600;
+  word-break: break-all;
+}
+
+.newsletter-status-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #10B981;
+  box-shadow: 0 0 8px rgba(16, 185, 129, 0.6);
+  display: inline-block;
+  flex-shrink: 0;
+}
+
+.newsletter-status-dot.inactive {
+  background: #64748B;
+  box-shadow: none;
+}
+
+.newsletter-feedback {
+  font-size: 12px;
+  line-height: 1.45;
+  padding: 8px 12px;
+  border-radius: var(--radius-sm);
+  margin-top: 2px;
+  animation: fadeInNewsletter 0.25s ease forwards;
+}
+
+@keyframes fadeInNewsletter {
+  from { opacity: 0; transform: translateY(-3px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.newsletter-feedback.success {
+  background: rgba(16, 185, 129, 0.12);
+  border: 1px solid rgba(16, 185, 129, 0.35);
+  color: #6EE7B7;
+}
+
+.newsletter-feedback.info {
+  background: rgba(59, 130, 246, 0.12);
+  border: 1px solid rgba(59, 130, 246, 0.35);
+  color: #93C5FD;
+}
+
+.newsletter-feedback.error {
+  background: rgba(239, 68, 68, 0.12);
+  border: 1px solid rgba(239, 68, 68, 0.35);
+  color: #FCA5A5;
 }
 
 .footer-bottom {
@@ -1360,6 +1484,12 @@ ul {
   letter-spacing: 1.5px;
   text-transform: uppercase;
   color: var(--color-text-main);
+  transition: color var(--transition-fast);
+}
+
+.mobile-links a:hover,
+.mobile-links a.active {
+  color: var(--color-primary);
 }
 
 /* ==========================================================================
@@ -5288,6 +5418,81 @@ ul {
 @keyframes krabeFadeIn {
   from { opacity: 0; transform: translateY(4px); }
   to { opacity: 1; transform: translateY(0); }
+}
+
+/* Google OAuth & Social Auth Styling */
+.krabe-google-btn {
+  width: 100%;
+  padding: 12px 16px;
+  background-color: #ffffff;
+  color: var(--color-obsidian, #121212);
+  border: 1px solid var(--color-border, #D1D5DB);
+  border-radius: 4px;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  cursor: pointer;
+  transition: all var(--transition-fast, 0.15s ease);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  margin-bottom: 4px;
+}
+
+.krabe-google-btn:hover {
+  background-color: #F8FAFC;
+  border-color: #94A3B8;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+}
+
+.krabe-google-btn .google-icon {
+  flex-shrink: 0;
+}
+
+.krabe-google-btn .spinner {
+  display: none;
+  width: 15px;
+  height: 15px;
+  border: 2px solid rgba(0, 0, 0, 0.2);
+  border-top-color: var(--color-primary, #44637B);
+  border-radius: 50%;
+  animation: krabeSpin 0.75s linear infinite;
+}
+
+.krabe-google-btn.loading .spinner {
+  display: inline-block;
+}
+
+.krabe-google-btn.loading .google-icon {
+  display: none;
+}
+
+.krabe-google-btn.loading .btn-text {
+  opacity: 0.7;
+}
+
+.krabe-auth-divider {
+  display: flex;
+  align-items: center;
+  text-align: center;
+  margin: 18px 0;
+  color: var(--color-text-muted, #6E7175);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.krabe-auth-divider::before,
+.krabe-auth-divider::after {
+  content: '';
+  flex: 1;
+  border-bottom: 1px solid var(--color-border, #E2E8F0);
+}
+
+.krabe-auth-divider span {
+  padding: 0 12px;
 }
 
 @media (max-width: 520px) {

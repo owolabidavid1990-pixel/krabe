@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Krabe Kollection — Premium Nigerian Unisex Fashion & Bespoke Tailoring</title>
-  <meta name="description" content="Discover modernised African fashion, crafted-on-demand luxury collections, and custom-made bespoke tailoring by Krabe Kollection. Handcrafted in Lagos, delivered worldwide.">
+  <meta name="description" content="Discover modernised African fashion, crafted-on-demand luxury collections, and custom-made bespoke tailoring by Krabe Kollection. Handcrafted in Lagos, delivered nationwide.">
 
   <!-- Favicon / Web Icon -->
   <link rel="icon" type="image/svg+xml" href="assets/brand/krabe main logo.svg">
@@ -130,103 +130,9 @@
 
       <!-- Products Grid (Dynamically Populated from Supabase) -->
       <div class="products-grid" id="homeFeaturedGrid">
-        
-        <!-- Product 1 -->
-        <div class="product-card" data-category="streetwear">
-          <div class="product-media">
-            <span class="product-badge badge-new">New Drop</span>
-            <img src="Krabe Cloth Concepts_230226_205405_1.jpg" alt="Krabe Script Heavyweight Tee">
-            <div class="quick-add-overlay">
-              <button type="button" class="btn-quick-add js-quick-add" 
-                      data-title="Krabe Signature Script Tee" 
-                      data-price="45000" 
-                      data-image="Krabe Cloth Concepts_230226_205405_1.jpg">
-                + Quick Add (M)
-              </button>
-            </div>
-          </div>
-          <div class="product-info">
-            <span class="product-category-label">Streetwear &bull; Unisex</span>
-            <h3 class="product-title"><a href="product.html">Krabe Signature Script Tee</a></h3>
-            <div class="product-price-row">
-              <span class="product-price">₦45,000</span>
-              <span class="product-price-alt">($35 USD)</span>
-            </div>
-          </div>
+        <div style="grid-column: 1 / -1; text-align: center; padding: 48px 16px; color: var(--color-text-muted);">
+          <p style="font-size: 14px;">Loading crafted releases from atelier...</p>
         </div>
-
-        <!-- Product 2 -->
-        <div class="product-card" data-category="formal">
-          <div class="product-media">
-            <span class="product-badge badge-bespoke">Made to Order</span>
-            <img src="Krabe Cloth Concepts_230226_205405_2.jpg" alt="Tailored Serif Linen Shirt">
-            <div class="quick-add-overlay">
-              <button type="button" class="btn-quick-add js-quick-add" 
-                      data-title="Artisan Serif Minimalist Shirt" 
-                      data-price="78000" 
-                      data-image="Krabe Cloth Concepts_230226_205405_2.jpg">
-                + Quick Add (L)
-              </button>
-            </div>
-          </div>
-          <div class="product-info">
-            <span class="product-category-label">English Wear &bull; Tailored</span>
-            <h3 class="product-title"><a href="product.html">Artisan Serif Minimalist Shirt</a></h3>
-            <div class="product-price-row">
-              <span class="product-price">₦78,000</span>
-              <span class="product-price-alt">($60 USD)</span>
-            </div>
-          </div>
-        </div>
-
-        <!-- Product 3 -->
-        <div class="product-card" data-category="streetwear">
-          <div class="product-media">
-            <span class="product-badge badge-bespoke">Limited Edition</span>
-            <img src="Krabe Cloth Concepts_230226_205405_3.jpg" alt="Metallic Gold Brush Statement Tee">
-            <div class="quick-add-overlay">
-              <button type="button" class="btn-quick-add js-quick-add" 
-                      data-title="Metallic Gold Brush Tee" 
-                      data-price="55000" 
-                      data-image="Krabe Cloth Concepts_230226_205405_3.jpg">
-                + Quick Add (L)
-              </button>
-            </div>
-          </div>
-          <div class="product-info">
-            <span class="product-category-label">Streetwear &bull; Gold Edition</span>
-            <h3 class="product-title"><a href="product.html">Metallic Gold Brush Tee</a></h3>
-            <div class="product-price-row">
-              <span class="product-price">₦55,000</span>
-              <span class="product-price-alt">($42 USD)</span>
-            </div>
-          </div>
-        </div>
-
-        <!-- Product 4 -->
-        <div class="product-card" data-category="native">
-          <div class="product-media">
-            <span class="product-badge badge-new">Artisan Native</span>
-            <img src="Krabe Cloth Concepts_230226_205405_6.jpg" alt="Krabe Structured Modern Kaftan">
-            <div class="quick-add-overlay">
-              <button type="button" class="btn-quick-add js-quick-add" 
-                      data-title="Krabe Structured Modern Kaftan" 
-                      data-price="120000" 
-                      data-image="Krabe Cloth Concepts_230226_205405_6.jpg">
-                + Quick Add (XL)
-              </button>
-            </div>
-          </div>
-          <div class="product-info">
-            <span class="product-category-label">Native Wear &bull; Bespoke Ready</span>
-            <h3 class="product-title"><a href="product.html">Krabe Structured Modern Kaftan</a></h3>
-            <div class="product-price-row">
-              <span class="product-price">₦120,000</span>
-              <span class="product-price-alt">($92 USD)</span>
-            </div>
-          </div>
-        </div>
-
       </div>
 
       <div style="text-align: center; margin-top: 50px;">
@@ -324,9 +230,9 @@
   </section>
 
   <!-- =========================================================================
-       7. CAMPAIGN LOOKBOOK PREVIEW
+       7. CAMPAIGN LOOKBOOK PREVIEW (Hidden for v1 - retained for v2)
        ========================================================================= -->
-  <section class="section-py" style="background-color: var(--color-white);">
+  <section class="section-py" id="campaignLookbookSection" style="background-color: var(--color-white); display: none;">
     <div class="container">
       <div class="section-header">
         <span class="section-tag">Visual Editorial</span>
@@ -361,8 +267,8 @@
       </div>
 
       <div style="text-align: center; margin-top: 40px;">
-        <a href="lookbook.html" class="nav-link" style="font-size: 13px; color: var(--color-primary); font-weight: 700;">
-          View Complete Lookbook Gallery &rarr;
+        <a href="shop.html" class="nav-link" style="font-size: 13px; color: var(--color-primary); font-weight: 700;">
+          Explore Made-to-Order Collections &rarr;
         </a>
       </div>
     </div>
@@ -378,8 +284,8 @@
         <p>Unsure about which Kaftan cut suits your event, or want to send your measurements directly? Speak with our styling consultant.</p>
       </div>
       <a href="https://wa.me/2348000000000?text=Hello%20Krabe%20Kollection,%20I'd%20like%20to%20consult%20on%20sizing%20and%20styles." target="_blank" rel="noopener" class="btn-whatsapp">
-        <svg viewBox="0 0 24 24"><path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.582 2.128 2.182-.573c.978.58 1.911.928 3.145.929 3.178 0 5.767-2.587 5.768-5.766.001-3.187-2.575-5.771-5.764-5.771zm3.392 8.244c-.144.405-.837.774-1.17.824-.312.045-.694.078-1.921-.432-.988-.41-1.637-1.397-1.688-1.464-.049-.067-.406-.541-.406-1.034 0-.493.255-.733.348-.834.093-.1.203-.125.27-.125.068 0 .135.001.194.004.062.003.146-.023.228.174.084.202.29.708.315.76.026.052.043.112.008.178-.035.067-.053.109-.106.171-.053.063-.111.14-.159.188-.052.052-.107.108-.046.213.061.104.272.449.584.726.402.358.741.469.845.521.105.052.167.045.228-.025.062-.07.269-.313.342-.42.072-.107.144-.089.243-.053.099.035.626.295.733.349.108.053.18.08.207.125.027.045.027.261-.117.666z"/></svg>
-        Chat on WhatsApp
+        <svg viewBox="0 0 24 24" width="28" height="28" fill="currentColor" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/></svg>
+        <span>Chat on WhatsApp</span>
       </a>
     </div>
   </section>
@@ -395,8 +301,8 @@
           <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"/></svg>
         </div>
         <div class="pillar-text">
-          <h5>Nationwide &amp; Global Shipping</h5>
-          <p>Express courier logistics across Nigeria and international delivery.</p>
+          <h5>Nationwide Delivery</h5>
+          <p>Express courier logistics across all 36 Nigerian states.</p>
         </div>
       </div>
 
@@ -483,9 +389,10 @@
           <p style="font-size: 13.5px; color: #94A3B8; margin-bottom: 14px;">
             Join our private newsletter for early access to limited textile drops and private studio invitations.
           </p>
-          <form class="newsletter-form" onsubmit="event.preventDefault(); alert('Thank you for joining Krabe Kollection.');">
-            <input type="email" required placeholder="Enter your email address" class="newsletter-input">
+          <form class="newsletter-form" data-newsletter-form novalidate>
+            <input type="email" required placeholder="Enter your email address" class="newsletter-input" autocomplete="email">
             <button type="submit" class="newsletter-btn">Subscribe</button>
+            <div class="newsletter-feedback" style="display: none;" role="status"></div>
           </form>
         </div>
 
@@ -585,7 +492,7 @@
       </div>
 
       <div class="cart-free-shipping">
-        ✓ Free Nationwide Delivery on orders over ₦150,000
+        ✓ Free Lagos Delivery on orders over ₦200,000
       </div>
 
       <!-- Dynamic Line Items Container -->
@@ -638,6 +545,7 @@
             gender,
             is_featured,
             is_new_arrival,
+            created_at,
             product_variation (
               id,
               price,
@@ -646,7 +554,8 @@
               main_image
             )
           `)
-          .limit(6);
+          .order('created_at', { ascending: false })
+          .limit(24);
 
         if (!error && products && products.length > 0) {
           grid.innerHTML = products.map(prod => {
@@ -655,12 +564,13 @@
             const displayPrice = Number(defaultVar.price) || 0;
             const displayImage = defaultVar.main_image || 'assets/brand/krabe main logo.svg';
             const variantId = defaultVar.id || '';
+            const categoryClean = (prod.category || 'native').toLowerCase();
             const badgeHTML = prod.is_new_arrival 
               ? `<span class="product-badge badge-new">New Drop</span>` 
               : (prod.is_featured ? `<span class="product-badge badge-bespoke">Ceremonial</span>` : '');
 
             return `
-              <div class="product-card" data-category="${prod.category || 'native'}">
+              <div class="product-card" data-category="${categoryClean}">
                 <div class="product-media">
                   ${badgeHTML}
                   <a href="product.html?id=${prod.id}" style="display: block; width: 100%; height: 100%;">
@@ -681,7 +591,7 @@
                   </div>
                 </div>
                 <div class="product-info">
-                  <span class="product-category-label">${(prod.category || 'MADE TO ORDER').toUpperCase()} &bull; ${(prod.gender || 'Unisex').toUpperCase()}</span>
+                  <span class="product-category-label">${categoryClean.toUpperCase()} &bull; ${(prod.gender || 'Unisex').toUpperCase()}</span>
                   <h3 class="product-title"><a href="product.html?id=${prod.id}">${prod.title}</a></h3>
                   <div class="product-price-row">
                     <span class="product-price">₦${displayPrice.toLocaleString('en-NG')}</span>
@@ -690,13 +600,108 @@
               </div>
             `;
           }).join('');
+
+          // Re-apply currently active category filter to newly rendered cards
+          const activeChip = document.querySelector('.filter-chip.active');
+          if (typeof window.filterHomeCategoryCards === 'function' && activeChip) {
+            window.filterHomeCategoryCards(activeChip.dataset.filter);
+          }
+        } else {
+          grid.innerHTML = `
+            <div style="grid-column: 1 / -1; text-align: center; padding: 48px 16px; color: var(--color-text-muted);">
+              <p style="font-size: 15px; font-weight: 700; color: var(--color-obsidian); margin-bottom: 8px;">No garments currently listed in atelier.</p>
+              <p style="font-size: 13px;">Check back soon for our next seasonal collection drop.</p>
+            </div>
+          `;
         }
       } catch (e) {
         console.warn('[Home] Could not load featured products from DB:', e);
       }
     }
 
-    document.addEventListener('DOMContentLoaded', loadHomeFeaturedFromDatabase);
+    async function loadHeroProductFromDatabase() {
+      const heroCard = document.getElementById('hero-pic');
+      const heroBadge = document.getElementById('hero-badge');
+      if (!heroCard || !heroBadge) return;
+
+      const client = window.krabeClient || (window.KRABE_CONFIG && typeof window.KRABE_CONFIG.getClient === 'function' ? window.KRABE_CONFIG.getClient() : null);
+      if (!client) {
+        setTimeout(loadHeroProductFromDatabase, 150);
+        return;
+      }
+
+      try {
+        // Query product sorted by most sales, then latest created_at
+        const { data: prod, error } = await client
+          .from('product')
+          .select(`
+            id,
+            title,
+            category,
+            sales_count,
+            created_at,
+            product_variation (
+              id,
+              color,
+              price,
+              main_image,
+              sales_count,
+              created_at
+            )
+          `)
+          .order('sales_count', { ascending: false })
+          .order('created_at', { ascending: false })
+          .limit(1)
+          .maybeSingle();
+
+        if (error) throw error;
+        if (!prod) return;
+
+        const variations = prod.product_variation || [];
+        if (variations.length === 0) return;
+
+        // Pick top variant for this product by sales_count, then created_at
+        const sortedVars = [...variations].sort((a, b) => {
+          const sDiff = (b.sales_count || 0) - (a.sales_count || 0);
+          if (sDiff !== 0) return sDiff;
+          return new Date(b.created_at || 0) - new Date(a.created_at || 0);
+        });
+        const topVariant = sortedVars[0];
+
+        // 1. Update Hero Image
+        const heroImg = heroCard.querySelector('img');
+        if (heroImg && topVariant.main_image) {
+          heroImg.src = topVariant.main_image;
+          heroImg.alt = `${prod.title} - ${topVariant.color || ''}`;
+        }
+
+        // 2. Update Badge Text
+        const titleP = heroBadge.querySelector('p');
+        if (titleP && prod.title) {
+          titleP.textContent = prod.title;
+        }
+
+        const subSpan = heroBadge.querySelector('span');
+        if (subSpan) {
+          const categoryName = (prod.category || 'Collection').replace(/_/g, ' ');
+          const formattedCategory = categoryName.charAt(0).toUpperCase() + categoryName.slice(1);
+          subSpan.innerHTML = `${formattedCategory} &bull; Crafted On Demand`;
+        }
+
+        // 3. Update "View Drop" button link with product id and selected variant id
+        const viewDropLink = heroBadge.querySelector('a');
+        if (viewDropLink) {
+          viewDropLink.href = `product.html?id=${prod.id}&variant=${topVariant.id}`;
+        }
+      } catch (e) {
+        console.warn('[Home] Could not load hero drop product:', e);
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      loadHeroProductFromDatabase();
+      loadHomeFeaturedFromDatabase();
+    });
   </script>
 </body>
 </html>

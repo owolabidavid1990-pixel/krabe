@@ -138,9 +138,9 @@
                   <label style="display: flex; justify-content: space-between; align-items: center; padding: 12px 16px; border: 1px solid var(--color-border); border-radius: var(--radius-sm); background: var(--color-bone); font-size: 13px; cursor: pointer;">
                     <span style="display: flex; align-items: center; gap: 8px;">
                       <input type="radio" name="shippingSpeed" value="0" checked onchange="updateShipping(0)">
-                      <span>Standard Nationwide Delivery (2–4 Business Days)</span>
+                      <span>Standard Delivery</span>
                     </span>
-                    <strong style="color: #15803D;">FREE (Over ₦150k)</strong>
+                    <strong style="color: #15803D;">FREE in Lagos (Over ₦200k)</strong>
                   </label>
                   <label style="display: flex; justify-content: space-between; align-items: center; padding: 12px 16px; border: 1px solid var(--color-border); border-radius: var(--radius-sm); background: var(--color-bone); font-size: 13px; cursor: pointer;">
                     <span style="display: flex; align-items: center; gap: 8px;">
@@ -407,19 +407,27 @@
         }
       }
 
-      // Dynamic Free Shipping evaluation (₦150k threshold)
+      // Dynamic Free Shipping evaluation (₦200k threshold for Lagos delivery)
+      const stateSelect = document.getElementById('cState');
+      const isLagos = !stateSelect || stateSelect.value === 'Lagos';
+
       if (currentFulfillment === 'delivery') {
-        if (subtotal >= 150000 || subtotal === 0) {
+        if (isLagos && (subtotal >= 200000 || subtotal === 0)) {
           shipping = 0;
           document.getElementById('summaryShipping').textContent = 'FREE';
         } else {
-          // If subtotal under 150k, default Lagos courier fee is ₦3,500
-          shipping = 3500;
+          // If subtotal under 200k in Lagos: ₦3,500; Outside Lagos: ₦4,500
+          shipping = isLagos ? 3500 : 4500;
           document.getElementById('summaryShipping').textContent = formatNaira(shipping);
         }
       } else {
         shipping = 0;
         document.getElementById('summaryShipping').textContent = 'FREE';
+      }
+
+      if (stateSelect && !stateSelect.dataset.hasListener) {
+        stateSelect.dataset.hasListener = 'true';
+        stateSelect.addEventListener('change', () => updateCartSummary());
       }
 
       document.getElementById('summarySubtotal').textContent = formatNaira(subtotal);
@@ -448,11 +456,13 @@
         delFields.style.display = 'block';
         pickInfo.style.display = 'none';
         document.getElementById('confirmFulfillmentMethod').textContent = 'Doorstep Delivery (Lekki Phase 1, Lagos)';
-        if (subtotal >= 150000 || subtotal === 0) {
+        const stateSelect = document.getElementById('cState');
+        const isLagos = !stateSelect || stateSelect.value === 'Lagos';
+        if (isLagos && (subtotal >= 200000 || subtotal === 0)) {
           shipping = 0;
           document.getElementById('summaryShipping').textContent = 'FREE';
         } else {
-          shipping = 3500;
+          shipping = isLagos ? 3500 : 4500;
           document.getElementById('summaryShipping').textContent = formatNaira(shipping);
         }
       } else {

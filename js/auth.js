@@ -37,27 +37,43 @@
         .join('')
         .toUpperCase();
 
+      const avatarUrl = meta.avatar_url || meta.picture || null;
+
       accountBtns.forEach(btn => {
         btn.setAttribute('title', `Logged in as ${fullName} — Go to Account Portal`);
         btn.setAttribute('aria-label', `Logged in as ${fullName}`);
         
-        // Render luxury initials badge in header
-        btn.innerHTML = `
-          <span style="
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            width: 28px;
-            height: 28px;
-            border-radius: 50%;
-            background: var(--color-primary, #44637B);
-            color: #ffffff;
-            font-size: 11px;
-            font-weight: 700;
-            letter-spacing: 0.5px;
-            border: 1px solid var(--color-gold-light, #D4AF37);
-          ">${initials}</span>
-        `;
+        if (avatarUrl) {
+          // Render user avatar photo in circular badge
+          btn.innerHTML = `
+            <img src="${avatarUrl}" alt="${fullName}" referrerpolicy="no-referrer" style="
+              width: 28px;
+              height: 28px;
+              border-radius: 50%;
+              object-fit: cover;
+              display: block;
+              border: 1px solid var(--color-gold-light, #D4AF37);
+            " onerror="this.onerror=null; this.parentElement.innerHTML='<span style=\\'display: inline-flex; align-items: center; justify-content: center; width: 28px; height: 28px; border-radius: 50%; background: var(--color-primary, #44637B); color: #ffffff; font-size: 11px; font-weight: 700; letter-spacing: 0.5px; border: 1px solid var(--color-gold-light, #D4AF37);\\'>${initials}</span>';">
+          `;
+        } else {
+          // Fallback: Render luxury initials badge in header
+          btn.innerHTML = `
+            <span style="
+              display: inline-flex;
+              align-items: center;
+              justify-content: center;
+              width: 28px;
+              height: 28px;
+              border-radius: 50%;
+              background: var(--color-primary, #44637B);
+              color: #ffffff;
+              font-size: 11px;
+              font-weight: 700;
+              letter-spacing: 0.5px;
+              border: 1px solid var(--color-gold-light, #D4AF37);
+            ">${initials}</span>
+          `;
+        }
       });
 
       mobileAccountLinks.forEach(link => {
@@ -137,7 +153,15 @@
       .join('')
       .toUpperCase();
 
-    if (avatarEl) avatarEl.textContent = initials || 'K';
+    const avatarUrl = meta.avatar_url || meta.picture || null;
+
+    if (avatarEl) {
+      if (avatarUrl) {
+        avatarEl.innerHTML = `<img src="${avatarUrl}" alt="${fullName}" referrerpolicy="no-referrer" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover; display: block;">`;
+      } else {
+        avatarEl.textContent = initials || 'K';
+      }
+    }
     if (nameEl) nameEl.textContent = fullName;
     if (metaLine) {
       metaLine.innerHTML = `
@@ -158,6 +182,11 @@
           .single();
 
         if (profile) {
+          if (profile.avatar_url) {
+            if (avatarEl) {
+              avatarEl.innerHTML = `<img src="${profile.avatar_url}" alt="${fullName}" referrerpolicy="no-referrer" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover; display: block;">`;
+            }
+          }
           if (profile.full_name && nameEl) nameEl.textContent = profile.full_name;
           if (profile.phone && metaLine) {
             metaLine.innerHTML = `
@@ -630,6 +659,154 @@
   }
 
   // =========================================================================
+  // GOOGLE OAUTH POPUP SIGN IN
+  // =========================================================================
+  async function signInWithGoogle() {
+    const client = getClient();
+    if (!client) {
+      if (window.KrabeAuthModal) window.KrabeAuthModal.showAlert('Database connection initializing, please try again.', 'error');
+      return { error: new Error('Client not initialized') };
+    }
+
+    const googleBtns = document.querySelectorAll('.js-krabe-google-btn');
+    googleBtns.forEach(b => {
+      b.classList.add('loading');
+      b.disabled = true;
+    });
+
+    const resetButtons = () => {
+      googleBtns.forEach(b => {
+        b.classList.remove('loading');
+        b.disabled = false;
+      });
+    };
+
+    // Pre-open centered popup synchronously during click event to satisfy browser popup blockers
+    const width = 500;
+    const height = 650;
+    const left = window.screenX + Math.max(0, (window.outerWidth - width) / 2);
+    const top = window.screenY + Math.max(0, (window.outerHeight - height) / 2);
+    let popup = null;
+    try {
+      popup = window.open(
+        'about:blank',
+        'KrabeGoogleAuth',
+        `width=${width},height=${height},left=${left},top=${top},status=no,resizable=yes,scrollbars=yes`
+      );
+    } catch (openErr) {
+      console.warn('[Krabe Auth] Popup window blocked or not supported:', openErr);
+    }
+
+    try {
+      const callbackUrl = `${window.location.origin}/auth-callback.html`;
+
+      const { data, error } = await client.auth.signInWithOAuth({
+        provider: 'google',
+        options: {
+          skipBrowserRedirect: true,
+          redirectTo: callbackUrl
+        }
+      });
+
+      if (error || !data || !data.url) {
+        if (popup && !popup.closed) popup.close();
+        resetButtons();
+        const msg = error ? error.message : 'Could not initialize Google authentication.';
+        if (window.KrabeAuthModal) window.KrabeAuthModal.showAlert(msg, 'error');
+        return { error };
+      }
+
+      // Navigate popup to Google OAuth URL
+      if (popup && !popup.closed) {
+        popup.location.href = data.url;
+      } else {
+        // Fallback if popup was blocked: redirect current tab directly
+        window.location.href = data.url;
+        return;
+      }
+
+      let authCompleted = false;
+
+      const finishSuccess = async (session) => {
+        if (authCompleted) return;
+        authCompleted = true;
+        if (popup && !popup.closed) {
+          try { popup.close(); } catch (_) {}
+        }
+        cleanup();
+
+        const user = session ? session.user : (await client.auth.getUser()).data.user;
+        if (user) {
+          currentUser = user;
+          currentSession = session || (await client.auth.getSession()).data.session;
+          window.krabeUser = currentUser;
+          window.krabeSession = currentSession;
+          window.krabeIsLoggedIn = true;
+          updateAuthUI(currentUser);
+          await syncGuestCartToDatabase(currentUser);
+
+          if (window.KrabeAuthModal) {
+            const firstName = (user.user_metadata?.full_name || user.email || 'Client').split(' ')[0];
+            window.KrabeAuthModal.showAlert(`Welcome, ${firstName}!`, 'success');
+            setTimeout(() => {
+              window.KrabeAuthModal.close();
+              const currentPath = window.location.pathname.split('/').pop() || 'index.html';
+              if (currentPath === 'account.html') {
+                window.location.reload();
+              }
+            }, 600);
+          }
+        }
+      };
+
+      const cleanup = () => {
+        resetButtons();
+        window.removeEventListener('message', onMessage);
+        clearInterval(pollTimer);
+      };
+
+      // 1. PostMessage listener from child popup
+      const onMessage = (event) => {
+        if (event.origin !== window.location.origin) return;
+        if (event.data && event.data.type === 'KRABE_AUTH_SUCCESS') {
+          finishSuccess(event.data.session);
+        }
+      };
+      window.addEventListener('message', onMessage);
+
+      // 2. Polling for popup closure or session establishment via shared localStorage
+      const pollTimer = setInterval(async () => {
+        if (authCompleted) {
+          clearInterval(pollTimer);
+          return;
+        }
+
+        const { data: sData } = await client.auth.getSession();
+        if (sData && sData.session) {
+          finishSuccess(sData.session);
+          return;
+        }
+
+        if (popup && popup.closed) {
+          cleanup();
+          setTimeout(async () => {
+            const { data: finalSession } = await client.auth.getSession();
+            if (finalSession && finalSession.session) {
+              finishSuccess(finalSession.session);
+            }
+          }, 350);
+        }
+      }, 600);
+
+    } catch (err) {
+      if (popup && !popup.closed) popup.close();
+      resetButtons();
+      if (window.KrabeAuthModal) window.KrabeAuthModal.showAlert(err.message || 'Google sign-in failed.', 'error');
+      return { error: err };
+    }
+  }
+
+  // =========================================================================
   // 3. LISTEN TO MODAL CUSTOM EVENTS
   // =========================================================================
   window.addEventListener('krabe:auth:signin', (e) => {
@@ -667,6 +844,10 @@
     }
   });
 
+  window.addEventListener('krabe:auth:google', () => {
+    signInWithGoogle();
+  });
+
   // =========================================================================
   // 4. INITIALIZE AUTH & SUBSCRIBE TO SESSION CHANGES
   // =========================================================================
@@ -682,6 +863,15 @@
       const { data } = await client.auth.getSession();
       currentSession = data ? data.session : null;
       currentUser = currentSession ? currentSession.user : null;
+
+      // Check if this page was loaded inside a Google OAuth popup window
+      if (window.opener && window.opener !== window && (window.location.hash.includes('access_token') || window.location.search.includes('code='))) {
+        try {
+          window.opener.postMessage({ type: 'KRABE_AUTH_SUCCESS', session: currentSession }, window.location.origin);
+        } catch (_) {}
+        setTimeout(() => window.close(), 150);
+        return;
+      }
 
       window.krabeSession = currentSession;
       window.krabeUser = currentUser;
@@ -733,6 +923,7 @@
     getSession: () => currentSession,
     isLoggedIn: () => Boolean(currentUser),
     signIn,
+    signInWithGoogle,
     signUp,
     verifyOtp,
     resendOtp,
@@ -744,6 +935,7 @@
 
   // Convenient shortcuts
   window.krabeSignIn = signIn;
+  window.krabeSignInWithGoogle = signInWithGoogle;
   window.krabeSignUp = signUp;
   window.krabeVerifyOtp = verifyOtp;
   window.krabeSignOut = signOut;

@@ -14,6 +14,7 @@ function getSupabaseClient() {
 
 function getSupabaseUser() {
   if (window.krabeUser) return window.krabeUser;
+  if (window.krabeSession && window.krabeSession.user) return window.krabeSession.user;
   if (window.KrabeAuth && typeof window.KrabeAuth.getUser === 'function') {
     return window.KrabeAuth.getUser();
   }
@@ -81,18 +82,18 @@ document.addEventListener('DOMContentLoaded', () => {
       el.textContent = formatNaira(subtotal);
     });
 
-    // Free delivery indicator (threshold: ₦150,000)
+    // Free delivery indicator (threshold: ₦200,000 for Lagos delivery)
     const freeShippingEl = document.querySelector('.cart-free-shipping');
     if (freeShippingEl) {
-      if (subtotal >= 150000) {
-        freeShippingEl.innerHTML = '✓ You qualify for <strong>Free Nationwide Delivery</strong>';
+      if (subtotal >= 200000) {
+        freeShippingEl.innerHTML = '✓ You qualify for <strong>Free Lagos Delivery</strong>';
         freeShippingEl.style.color = '#15803D';
       } else if (subtotal > 0) {
-        const remaining = 150000 - subtotal;
-        freeShippingEl.innerHTML = `Add <strong>${formatNaira(remaining)}</strong> more for Free Delivery`;
+        const remaining = 200000 - subtotal;
+        freeShippingEl.innerHTML = `Add <strong>${formatNaira(remaining)}</strong> more for Free Lagos Delivery`;
         freeShippingEl.style.color = 'var(--color-primary, #44637B)';
       } else {
-        freeShippingEl.innerHTML = '✓ Free Nationwide Delivery on orders over ₦150,000';
+        freeShippingEl.innerHTML = '✓ Free Lagos Delivery on orders over ₦200,000';
         freeShippingEl.style.color = '';
       }
     }
@@ -653,25 +654,48 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
-  // Category Filter Chips
-  const filterChips = document.querySelectorAll('.filter-chip');
-  const productCards = document.querySelectorAll('.product-card');
+  // Category Filter Chips (Dynamic live cards filtering)
+  function filterHomeCategoryCards(filterValue) {
+    const filter = (filterValue || 'all').toLowerCase();
+    const liveCards = document.querySelectorAll('#homeFeaturedGrid .product-card, .products-section .product-card');
+    let visible = 0;
+    liveCards.forEach(card => {
+      const cat = (card.dataset.category || '').toLowerCase();
+      if (filter === 'all' || cat === filter) {
+        card.style.display = 'flex';
+        visible++;
+      } else {
+        card.style.display = 'none';
+      }
+    });
 
+    const grid = document.getElementById('homeFeaturedGrid');
+    if (grid) {
+      let emptyMsg = grid.querySelector('.filter-empty-state');
+      if (visible === 0 && liveCards.length > 0) {
+        if (!emptyMsg) {
+          emptyMsg = document.createElement('div');
+          emptyMsg.className = 'filter-empty-state';
+          emptyMsg.style.cssText = 'grid-column: 1 / -1; text-align: center; padding: 48px 16px; color: var(--color-text-muted);';
+          emptyMsg.innerHTML = '<p style="font-size: 15px; font-weight: 700; color: var(--color-obsidian); margin-bottom: 8px;">No garments currently listed in this category.</p><p style="font-size: 13px;">Check back soon for upcoming archive releases.</p>';
+          grid.appendChild(emptyMsg);
+        }
+      } else if (emptyMsg) {
+        emptyMsg.remove();
+      }
+    }
+  }
+
+  const filterChips = document.querySelectorAll('.filter-chip');
   filterChips.forEach(chip => {
     chip.addEventListener('click', () => {
       filterChips.forEach(c => c.classList.remove('active'));
       chip.classList.add('active');
-
-      const filter = chip.dataset.filter;
-      productCards.forEach(card => {
-        if (filter === 'all' || card.dataset.category === filter) {
-          card.style.display = 'flex';
-        } else {
-          card.style.display = 'none';
-        }
-      });
+      filterHomeCategoryCards(chip.dataset.filter);
     });
   });
+
+  window.filterHomeCategoryCards = filterHomeCategoryCards;
 
   // Cross-Window / Tab Storage Sync
   window.addEventListener('storage', (e) => {
@@ -688,8 +712,260 @@ document.addEventListener('DOMContentLoaded', () => {
 
   window.addEventListener('krabe:session:changed', () => {
     loadActiveCart();
+    syncNewsletterForms();
   });
 
   // Initial active cart load on page mount
   loadActiveCart();
+
+  // Sync WhatsApp / Contact links
+  if (window.KrabeContact && typeof window.KrabeContact.applyToDOM === 'function') {
+    window.KrabeContact.applyToDOM();
+  }
+
+  /* =============================================================================
+     NEWSLETTER SUBSCRIPTION MANAGER (GUEST INPUT + LOGGED-IN 1-CLICK TOGGLE)
+     ============================================================================= */
+  let currentNewsletterSubscriber = null;
+  let isNewsletterChecking = false;
+
+  function escapeHtml(str) {
+    if (!str) return '';
+    return String(str)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#039;');
+  }
+
+  async function fetchUserNewsletterSubscription(user) {
+    const client = getSupabaseClient();
+    if (!client || !user || !user.email) {
+      currentNewsletterSubscriber = null;
+      return null;
+    }
+
+    try {
+      const cleanEmail = user.email.toLowerCase().trim();
+      const { data, error } = await client
+        .from('newsletter_subscriber')
+        .select('id, email, is_active, user_id')
+        .eq('email', cleanEmail)
+        .maybeSingle();
+
+      if (!error) {
+        currentNewsletterSubscriber = data;
+        return data;
+      }
+    } catch (err) {
+      console.warn('[Krabe Newsletter] Fetch error:', err);
+    }
+    return null;
+  }
+
+  function showNewsletterFeedback(form, message, type = 'success', autoHideMs = 6000) {
+    if (!form) return;
+    const feedbackEl = form.querySelector('.newsletter-feedback');
+    if (!feedbackEl) return;
+
+    feedbackEl.className = `newsletter-feedback ${type}`;
+    feedbackEl.textContent = message;
+    feedbackEl.style.display = 'block';
+
+    if (form._feedbackTimer) clearTimeout(form._feedbackTimer);
+    if (autoHideMs > 0) {
+      form._feedbackTimer = setTimeout(() => {
+        feedbackEl.style.display = 'none';
+      }, autoHideMs);
+    }
+  }
+
+  function renderNewsletterForm(form, user, subscriberRecord) {
+    if (!form) return;
+
+    if (user && user.email) {
+      const isSubscribed = Boolean(subscriberRecord && subscriberRecord.is_active);
+      const userEmail = escapeHtml(user.email);
+
+      form.innerHTML = `
+        <div class="newsletter-user-badge">
+          <span class="newsletter-status-dot ${isSubscribed ? '' : 'inactive'}"></span>
+          <span class="newsletter-user-text">
+            ${isSubscribed 
+              ? `Subscribed as <strong>${userEmail}</strong>` 
+              : `Subscribe using <strong>${userEmail}</strong>`}
+          </span>
+        </div>
+        <button type="button" class="newsletter-btn ${isSubscribed ? 'newsletter-btn--unsubscribe' : ''}" data-newsletter-action="${isSubscribed ? 'unsubscribe' : 'subscribe'}">
+          ${isSubscribed ? 'Unsubscribe' : 'Subscribe'}
+        </button>
+        <div class="newsletter-feedback" style="display: none;" role="status"></div>
+      `;
+
+      const actionBtn = form.querySelector('[data-newsletter-action]');
+      if (actionBtn) {
+        actionBtn.addEventListener('click', async (e) => {
+          e.preventDefault();
+          const client = getSupabaseClient();
+          if (!client) {
+            showNewsletterFeedback(form, 'Service temporarily unavailable.', 'error');
+            return;
+          }
+
+          const action = actionBtn.getAttribute('data-newsletter-action');
+          actionBtn.disabled = true;
+
+          if (action === 'unsubscribe') {
+            actionBtn.textContent = 'Unsubscribing...';
+            try {
+              if (subscriberRecord && subscriberRecord.id) {
+                const { error } = await client
+                  .from('newsletter_subscriber')
+                  .update({ 
+                    is_active: false,
+                    user_id: user.id 
+                  })
+                  .eq('id', subscriberRecord.id);
+
+                if (error) throw error;
+                subscriberRecord.is_active = false;
+              }
+              renderAllNewsletterForms(user, subscriberRecord);
+              showNewsletterFeedback(form, 'You have unsubscribed from private releases.', 'info');
+            } catch (err) {
+              console.error('[Krabe Newsletter] Unsubscribe error:', err);
+              actionBtn.disabled = false;
+              actionBtn.textContent = 'Unsubscribe';
+              showNewsletterFeedback(form, 'Failed to unsubscribe. Please try again.', 'error');
+            }
+          } else {
+            actionBtn.textContent = 'Subscribing...';
+            try {
+              const cleanEmail = user.email.toLowerCase().trim();
+              if (subscriberRecord && subscriberRecord.id) {
+                const { error } = await client
+                  .from('newsletter_subscriber')
+                  .update({ is_active: true, user_id: user.id })
+                  .eq('id', subscriberRecord.id);
+
+                if (error) throw error;
+                subscriberRecord.is_active = true;
+              } else {
+                const { data, error } = await client
+                  .from('newsletter_subscriber')
+                  .insert({
+                    email: cleanEmail,
+                    user_id: user.id,
+                    is_active: true
+                  })
+                  .select('id, email, is_active, user_id')
+                  .single();
+
+                if (error) throw error;
+                subscriberRecord = data;
+                currentNewsletterSubscriber = data;
+              }
+
+              renderAllNewsletterForms(user, subscriberRecord);
+              showNewsletterFeedback(form, 'You are now subscribed to Krabe private releases.', 'success');
+            } catch (err) {
+              console.error('[Krabe Newsletter] Subscribe error:', err);
+              actionBtn.disabled = false;
+              actionBtn.textContent = 'Subscribe';
+              showNewsletterFeedback(form, 'Failed to subscribe. Please try again.', 'error');
+            }
+          }
+        });
+      }
+    } else {
+      // Guest visitor: render email input + Subscribe button
+      form.innerHTML = `
+        <input type="email" required placeholder="Enter your email address" class="newsletter-input" autocomplete="email">
+        <button type="submit" class="newsletter-btn">Subscribe</button>
+        <div class="newsletter-feedback" style="display: none;" role="status"></div>
+      `;
+
+      form.onsubmit = async (e) => {
+        e.preventDefault();
+        const input = form.querySelector('.newsletter-input');
+        const submitBtn = form.querySelector('.newsletter-btn');
+        const email = input ? input.value.trim().toLowerCase() : '';
+
+        const emailRegex = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/;
+        if (!email || !emailRegex.test(email)) {
+          showNewsletterFeedback(form, 'Please enter a valid email address.', 'error');
+          if (input) input.focus();
+          return;
+        }
+
+        const client = getSupabaseClient();
+        if (!client) {
+          showNewsletterFeedback(form, 'Service temporarily unavailable.', 'error');
+          return;
+        }
+
+        if (submitBtn) {
+          submitBtn.disabled = true;
+          submitBtn.textContent = 'Subscribing...';
+        }
+
+        try {
+          const { error } = await client
+            .from('newsletter_subscriber')
+            .insert({ email, is_active: true });
+
+          if (error) {
+            if (error.code === '23505' || (error.message && error.message.toLowerCase().includes('duplicate'))) {
+              showNewsletterFeedback(form, 'You are already subscribed to Krabe private releases.', 'info');
+            } else {
+              throw error;
+            }
+          } else {
+            showNewsletterFeedback(form, 'Thank you for joining Krabe Kollection.', 'success');
+            if (input) input.value = '';
+          }
+        } catch (err) {
+          console.error('[Krabe Newsletter] Guest subscribe error:', err);
+          showNewsletterFeedback(form, 'Subscription failed. Please try again.', 'error');
+        } finally {
+          if (submitBtn) {
+            submitBtn.disabled = false;
+            submitBtn.textContent = 'Subscribe';
+          }
+        }
+      };
+    }
+  }
+
+  function renderAllNewsletterForms(user, subscriberRecord) {
+    const forms = document.querySelectorAll('.newsletter-form, [data-newsletter-form]');
+    forms.forEach(form => renderNewsletterForm(form, user, subscriberRecord));
+  }
+
+  async function syncNewsletterForms() {
+    if (isNewsletterChecking) return;
+    isNewsletterChecking = true;
+
+    try {
+      const user = getSupabaseUser();
+      let record = null;
+      if (user && user.email) {
+        record = await fetchUserNewsletterSubscription(user);
+      } else {
+        currentNewsletterSubscriber = null;
+      }
+      renderAllNewsletterForms(user, record);
+    } finally {
+      isNewsletterChecking = false;
+    }
+  }
+
+  window.KrabeNewsletter = {
+    sync: syncNewsletterForms,
+    getSubscriber: () => currentNewsletterSubscriber
+  };
+
+  // Initial newsletter sync on page mount
+  syncNewsletterForms();
 });

@@ -263,9 +263,10 @@
         </div>
         <div>
           <div class="footer-col-title">Private Releases</div>
-          <form class="newsletter-form" onsubmit="event.preventDefault(); alert('Subscribed to Krabe Kollection.');">
-            <input type="email" required placeholder="Enter your email" class="newsletter-input">
+          <form class="newsletter-form" data-newsletter-form novalidate>
+            <input type="email" required placeholder="Enter your email address" class="newsletter-input" autocomplete="email">
             <button type="submit" class="newsletter-btn">Subscribe</button>
+            <div class="newsletter-feedback" style="display: none;" role="status"></div>
           </form>
         </div>
       </div>
@@ -349,7 +350,7 @@
           <svg style="width: 22px; height: 22px;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
         </button>
       </div>
-      <div class="cart-free-shipping">✓ Free Nationwide Delivery on orders over ₦150,000</div>
+      <div class="cart-free-shipping">✓ Free Lagos Delivery on orders over ₦200,000</div>
       <div class="cart-drawer-body"></div>
       <div class="cart-drawer-footer">
         <div class="cart-subtotal-row">

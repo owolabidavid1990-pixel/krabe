@@ -18,7 +18,7 @@ const KRABE_OPTIONS = {
   delivery_option: [
     { value: 'pickup', label: 'Pickup' },
     { value: 'local delivery', label: 'Local Delivery' },
-    { value: 'international delivery', label: 'International Delivery' }
+    { value: 'nationwide delivery', label: 'Nationwide Delivery' }
   ],
   fabric: [
     { value: 'cotton', label: 'Cotton' },

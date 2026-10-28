@@ -18,7 +18,7 @@
     return `
       <!-- TOP ANNOUNCEMENT BAR -->
       <div class="announcement-bar" id="krabeAnnouncementBar">
-        <span>Free Nationwide Delivery on orders over ₦150,000 | In-Store Lagos Fittings &amp; Worldwide Shipping Available</span>
+        <span>Free Lagos Delivery on orders over ₦200,000 | Nationwide Shipping &amp; In-Store Lagos Fittings</span>
         <a href="bespoke.html">Book Studio Fitting &rarr;</a>
       </div>
 
@@ -36,10 +36,9 @@
           <!-- Primary Navigation Links -->
           <nav class="nav-links" id="krabeDesktopNav" aria-label="Main Navigation">
             <a href="shop.html" class="nav-link nav-link-always" data-link="shop">Made-to-Order</a>
-            <a href="bespoke.html" class="nav-link bespoke-highlight nav-link-always" data-link="bespoke">Bespoke</a>
+            <a href="bespoke.html" class="nav-link nav-link-always" data-link="bespoke">Bespoke</a>
             <a href="shop.html?category=native" class="nav-link nav-link-extra" data-link="native">Native Wear</a>
             <a href="shop.html?category=streetwear" class="nav-link nav-link-extra" data-link="streetwear">Streetwear</a>
-            <a href="lookbook.html" class="nav-link nav-link-extra" data-link="lookbook">Lookbook</a>
             <a href="about.html" class="nav-link nav-link-always" data-link="about">Our Story</a>
           </nav>
 
@@ -104,11 +103,10 @@
 
         <nav class="mobile-links" id="krabeMobileNav">
           <a href="shop.html" data-link="shop">Shop Made-to-Order</a>
-          <a href="bespoke.html" style="color: var(--color-gold);" data-link="bespoke">Bespoke</a>
+          <a href="bespoke.html" data-link="bespoke">Bespoke</a>
           <a href="shop.html?category=native" data-link="native">Native &amp; Agbada</a>
           <a href="shop.html?category=formal" data-link="formal">English &amp; Suiting</a>
           <a href="shop.html?category=streetwear" data-link="streetwear">Luxury Streetwear</a>
-          <a href="lookbook.html" data-link="lookbook">Lookbook</a>
           <a href="about.html" data-link="about">About Us</a>
           <a href="account.html" data-link="account">My Account &amp; Tracking</a>
           <a href="help.html" data-link="help">Support &amp; Studio Address</a>
@@ -124,7 +122,10 @@
   }
 
   function highlightActiveLinks() {
-    const rawPath = window.location.pathname.split('/').pop() || 'index.html';
+    let rawPath = window.location.pathname.split('/').filter(Boolean).pop() || 'index.html';
+    if (!rawPath.includes('.')) {
+      rawPath = rawPath + '.html';
+    }
     const params = new URLSearchParams(window.location.search);
     const category = params.get('category');
 
@@ -141,6 +142,11 @@
         
         if (category) {
           if (href.includes(`category=${category}`)) {
+            link.classList.add('active');
+          }
+        } else if (rawPath === 'product.html') {
+          // Garments on PDP belong to the Made-to-Order collection
+          if (href === 'shop.html') {
             link.classList.add('active');
           }
         } else {
@@ -227,6 +233,73 @@
     highlightActiveLinks();
     setupMobileMenu();
     setupAccountClick();
+    setupSmartReveal();
+    if (window.KrabeContact && typeof window.KrabeContact.applyToDOM === 'function') {
+      window.KrabeContact.applyToDOM();
+    }
+  }
+
+  function setupSmartReveal() {
+    const header = document.getElementById('krabeSiteHeader');
+    const container = document.getElementById(CONTAINER_ID);
+    if (!header) return;
+
+    let lastScrollY = window.pageYOffset || document.documentElement.scrollTop || 0;
+    let ticking = false;
+    const threshold = 6;
+    const topOffset = 110;
+
+    function updateHeader() {
+      const currentScrollY = window.pageYOffset || document.documentElement.scrollTop || 0;
+      const scrollDelta = currentScrollY - lastScrollY;
+
+      // Do not hide header if a modal, drawer, or search overlay is open
+      const isDrawerOpen = document.getElementById('mobileNavDrawer')?.classList.contains('active');
+      const isModalOpen = document.getElementById('krabeAuthModal')?.classList.contains('active') ||
+                          document.getElementById('searchModalOverlay')?.classList.contains('active') ||
+                          document.getElementById('cartDrawer')?.classList.contains('active');
+
+      if (isDrawerOpen || isModalOpen) {
+        lastScrollY = currentScrollY;
+        ticking = false;
+        return;
+      }
+
+      // At or near top: return to normal in-flow display below announcement bar
+      if (currentScrollY <= 40) {
+        header.classList.remove('header-sticky', 'header-hidden');
+        if (container) container.style.minHeight = '';
+        lastScrollY = currentScrollY;
+        ticking = false;
+        return;
+      }
+
+      // Scrolling DOWN -> Hide header
+      if (scrollDelta > threshold && currentScrollY > topOffset) {
+        if (container && !container.style.minHeight) {
+          container.style.minHeight = `${container.offsetHeight}px`;
+        }
+        header.classList.add('header-sticky', 'header-hidden');
+      } 
+      // Scrolling UP -> Reveal header smoothly
+      else if (scrollDelta < -threshold) {
+        if (container && !container.style.minHeight) {
+          container.style.minHeight = `${container.offsetHeight}px`;
+        }
+        header.classList.add('header-sticky');
+        header.classList.remove('header-hidden');
+      }
+
+      lastScrollY = currentScrollY;
+      ticking = false;
+    }
+
+    window.addEventListener('scroll', () => {
+      if (!ticking) {
+        window.requestAnimationFrame(updateHeader);
+        ticking = true;
+      }
+    }, { passive: true });
   }
 
   // Mount when DOM is ready

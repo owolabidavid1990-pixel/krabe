@@ -21,7 +21,7 @@ EXCEPTION WHEN duplicate_object THEN null; END $$;
 
 DO $$ BEGIN
   CREATE TYPE delivery_option AS ENUM (
-    'pickup', 'local delivery', 'international delivery'
+    'pickup', 'local delivery', 'nationwide delivery'
   );
 EXCEPTION WHEN duplicate_object THEN null; END $$;
 
@@ -95,7 +95,11 @@ CREATE TABLE IF NOT EXISTS public.app_variable (
   updated_at timestamp with time zone DEFAULT now(),
   store_location jsonb,
   slug text,
-  CONSTRAINT app_variable_pkey PRIMARY KEY (id)
+  whatsapp_contact text,
+  instagram text,
+  tiktok text,
+  CONSTRAINT app_variable_pkey PRIMARY KEY (id),
+  CONSTRAINT check_whatsapp_contact CHECK (whatsapp_contact IS NULL OR whatsapp_contact ~ '^\+?[0-9]{10,15}$')
 );
 
 -- Table 2: Appointments (Bespoke fitting and showroom bookings)
@@ -136,6 +140,7 @@ CREATE TABLE IF NOT EXISTS public.product (
   is_new_arrival boolean DEFAULT false,
   sold_out boolean DEFAULT false,
   favourited_count integer DEFAULT 0,
+  sales_count integer NOT NULL DEFAULT 0,
   search_text text,
   slug text,
   collection uuid,
@@ -158,6 +163,7 @@ CREATE TABLE IF NOT EXISTS public.product_variation (
   gallery_images text[] DEFAULT '{}'::text[],
   available boolean DEFAULT true,
   favorited_count integer DEFAULT 0,
+  sales_count integer NOT NULL DEFAULT 0,
   slug text,
   CONSTRAINT product_variation_pkey PRIMARY KEY (id),
   CONSTRAINT product_variations_product_id_fkey FOREIGN KEY (product_id) REFERENCES public.product(id) ON DELETE CASCADE
@@ -341,6 +347,20 @@ CREATE TABLE IF NOT EXISTS public.rtw_order_item (
   CONSTRAINT rtw_order_items_product_variant_id_fkey FOREIGN KEY (product_variant_id) REFERENCES public.product_variation(id) ON DELETE RESTRICT
 );
 
+-- Table 15: Newsletter Subscribers (Private releases & VIP drops)
+CREATE TABLE IF NOT EXISTS public.newsletter_subscriber (
+  id uuid NOT NULL DEFAULT gen_random_uuid(),
+  created_at timestamp with time zone DEFAULT now() NOT NULL,
+  updated_at timestamp with time zone DEFAULT now() NOT NULL,
+  user_id uuid,
+  email text NOT NULL,
+  is_active boolean NOT NULL DEFAULT true,
+  CONSTRAINT newsletter_subscriber_pkey PRIMARY KEY (id),
+  CONSTRAINT newsletter_subscriber_email_key UNIQUE (email),
+  CONSTRAINT newsletter_subscriber_user_id_fkey FOREIGN KEY (user_id) REFERENCES auth.users(id) ON DELETE SET NULL,
+  CONSTRAINT chk_newsletter_subscriber_email CHECK (email ~* '^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$')
+);
+
 
 -- ============================================================================
 -- 3. AUTOMATIC USER PROFILE TRIGGER & ROLE SECURITY
@@ -484,3 +504,153 @@ CREATE TRIGGER tr_ready_to_wear_order_updated_at BEFORE UPDATE ON public.ready_t
 
 DROP TRIGGER IF EXISTS tr_rtw_order_item_updated_at ON public.rtw_order_item;
 CREATE TRIGGER tr_rtw_order_item_updated_at BEFORE UPDATE ON public.rtw_order_item FOR EACH ROW EXECUTE FUNCTION public.set_updated_at();
+
+DROP TRIGGER IF EXISTS tr_newsletter_subscriber_updated_at ON public.newsletter_subscriber;
+CREATE TRIGGER tr_newsletter_subscriber_updated_at BEFORE UPDATE ON public.newsletter_subscriber FOR EACH ROW EXECUTE FUNCTION public.set_updated_at();
+
+-- =============================================================================
+-- ROW LEVEL SECURITY (RLS) & PUBLIC PERMISSIONS
+-- =============================================================================
+ALTER TABLE public.app_variable ENABLE ROW LEVEL SECURITY;
+
+DROP POLICY IF EXISTS "Allow public read access to app_variable" ON public.app_variable;
+CREATE POLICY "Allow public read access to app_variable"
+ON public.app_variable
+FOR SELECT
+TO anon, authenticated
+USING (true);
+
+GRANT SELECT ON public.app_variable TO anon, authenticated;
+
+-- RLS: newsletter_subscriber
+ALTER TABLE public.newsletter_subscriber ENABLE ROW LEVEL SECURITY;
+
+-- 1. Anonymous visitors and authenticated users can subscribe (INSERT)
+DROP POLICY IF EXISTS "Allow anon and auth insert to newsletter" ON public.newsletter_subscriber;
+CREATE POLICY "Allow anon and auth insert to newsletter"
+ON public.newsletter_subscriber
+FOR INSERT
+TO anon, authenticated
+WITH CHECK (true);
+
+-- 2. Authenticated users can view ONLY their own subscription status
+DROP POLICY IF EXISTS "Authenticated users can select own subscription" ON public.newsletter_subscriber;
+CREATE POLICY "Authenticated users can select own subscription"
+ON public.newsletter_subscriber
+FOR SELECT
+TO authenticated
+USING (
+  lower(email) = lower(auth.jwt()->>'email')
+  OR user_id = auth.uid()
+);
+
+-- 3. Authenticated users can update ONLY their own subscription (subscribe/unsubscribe)
+DROP POLICY IF EXISTS "Authenticated users can update own subscription" ON public.newsletter_subscriber;
+CREATE POLICY "Authenticated users can update own subscription"
+ON public.newsletter_subscriber
+FOR UPDATE
+TO authenticated
+USING (
+  lower(email) = lower(auth.jwt()->>'email')
+  OR user_id = auth.uid()
+)
+WITH CHECK (
+  lower(email) = lower(auth.jwt()->>'email')
+  OR user_id = auth.uid()
+);
+
+-- 4. Authenticated users can delete their own subscription
+DROP POLICY IF EXISTS "Authenticated users can delete own subscription" ON public.newsletter_subscriber;
+CREATE POLICY "Authenticated users can delete own subscription"
+ON public.newsletter_subscriber
+FOR DELETE
+TO authenticated
+USING (
+  lower(email) = lower(auth.jwt()->>'email')
+  OR user_id = auth.uid()
+);
+
+-- GRANTS:
+-- Anon can ONLY submit an email to join (cannot scrape or read subscriber list)
+GRANT INSERT ON public.newsletter_subscriber TO anon;
+
+-- Logged-in customers can read and manage their own subscription record
+GRANT SELECT, INSERT, UPDATE, DELETE ON public.newsletter_subscriber TO authenticated;
+
+-- =============================================================================
+-- BREVO NEWSLETTER AUTO-SYNC TRIGGER (via pg_net & Supabase Vault)
+-- =============================================================================
+CREATE EXTENSION IF NOT EXISTS pg_net WITH SCHEMA extensions;
+
+CREATE OR REPLACE FUNCTION public.sync_brevo_newsletter_subscriber()
+RETURNS trigger
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public, extensions, vault
+AS $$
+DECLARE
+  v_api_key text;
+  v_list_id int;
+BEGIN
+  -- Read secrets directly from Supabase Vault
+  SELECT decrypted_secret INTO v_api_key 
+  FROM vault.decrypted_secrets 
+  WHERE name = 'BREVO_API_KEY' 
+  LIMIT 1;
+
+  SELECT decrypted_secret::int INTO v_list_id 
+  FROM vault.decrypted_secrets 
+  WHERE name = 'BREVO_LIST_ID' 
+  LIMIT 1;
+
+  IF v_api_key IS NULL THEN
+    RAISE EXCEPTION 'BREVO_API_KEY not found in Supabase Vault. Cannot sync newsletter.';
+  END IF;
+
+  -- 1. When subscribed (INSERT or reactivated) -> Add to list AND ensure not blacklisted
+  IF (TG_OP = 'INSERT' AND NEW.is_active = true) OR (TG_OP = 'UPDATE' AND NEW.is_active = true AND OLD.is_active = false) THEN
+    PERFORM net.http_post(
+      url := 'https://api.brevo.com/v3/contacts',
+      headers := jsonb_build_object(
+        'api-key', v_api_key,
+        'Content-Type', 'application/json',
+        'Accept', 'application/json'
+      ),
+      body := jsonb_build_object(
+        'email', lower(trim(NEW.email)),
+        'updateEnabled', true,
+        'emailBlacklisted', false,
+        'listIds', CASE WHEN v_list_id IS NOT NULL THEN jsonb_build_array(v_list_id) ELSE jsonb_build_array() END
+      )
+    );
+
+  -- 2. When unsubscribed (is_active = false) -> Remove strictly from newsletter list
+  ELSIF (TG_OP = 'UPDATE' AND NEW.is_active = false AND OLD.is_active = true) THEN
+    IF v_list_id IS NOT NULL THEN
+      PERFORM net.http_post(
+        url := 'https://api.brevo.com/v3/contacts/lists/' || v_list_id || '/contacts/remove',
+        headers := jsonb_build_object(
+          'api-key', v_api_key,
+          'Content-Type', 'application/json',
+          'Accept', 'application/json'
+        ),
+        body := jsonb_build_object(
+          'emails', jsonb_build_array(lower(trim(NEW.email)))
+        )
+      );
+    END IF;
+  END IF;
+
+  RETURN NEW;
+END;
+$$;
+
+-- Protect the trigger function from being called from outside via API
+REVOKE EXECUTE ON FUNCTION public.sync_brevo_newsletter_subscriber() FROM PUBLIC, anon, authenticated;
+
+-- Attach trigger to public.newsletter_subscriber
+DROP TRIGGER IF EXISTS tr_sync_brevo_newsletter ON public.newsletter_subscriber;
+CREATE TRIGGER tr_sync_brevo_newsletter
+AFTER INSERT OR UPDATE ON public.newsletter_subscriber
+FOR EACH ROW EXECUTE FUNCTION public.sync_brevo_newsletter_subscriber();
+
