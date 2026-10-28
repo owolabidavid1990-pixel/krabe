@@ -85,22 +85,9 @@
       <!-- Gallery Column -->
       <div class="pdp-gallery-wrap">
         <div class="pdp-main-image">
-          <img id="mainPdpImg" src="Krabe Cloth Concepts_230226_205405_1.jpg" alt="Signature 3-Piece Agbada Set">
+          <img id="mainPdpImg" src="" alt="Product presentation" style="display: none;">
         </div>
-        <div class="pdp-thumbnails">
-          <button type="button" class="thumb-btn active" onclick="swapPdpImg(this, 'Krabe Cloth Concepts_230226_205405_1.jpg')">
-            <img src="Krabe Cloth Concepts_230226_205405_1.jpg" alt="Front view">
-          </button>
-          <button type="button" class="thumb-btn" onclick="swapPdpImg(this, 'Krabe Cloth Concepts_230226_205405_2.jpg')">
-            <img src="Krabe Cloth Concepts_230226_205405_2.jpg" alt="Back & fabric detail">
-          </button>
-          <button type="button" class="thumb-btn" onclick="swapPdpImg(this, 'Krabe Cloth Concepts_230226_205405_3.jpg')">
-            <img src="Krabe Cloth Concepts_230226_205405_3.jpg" alt="Embroidery detail">
-          </button>
-          <button type="button" class="thumb-btn" onclick="swapPdpImg(this, 'Krabe Cloth Concepts_230226_205405_6.jpg')">
-            <img src="Krabe Cloth Concepts_230226_205405_6.jpg" alt="Studio fitting view">
-          </button>
-        </div>
+        <div class="pdp-thumbnails" style="display: none;"></div>
       </div>
 
       <!-- Information & Purchasing Column -->
@@ -110,11 +97,6 @@
         
         <div class="pdp-price-row">
           <span class="pdp-price-current body-20" style="color: var(--color-primary); font-weight: 700;">₦195,000</span>
-          <span class="pdp-price-usd body-14" style="color: var(--color-text-muted);">($150 USD approx.)</span>
-        </div>
-
-        <div class="pdp-stock-status body-12" style="color: var(--color-success, #2e7d32); font-weight: 600;">
-          In Stock &bull; Ready for Immediate Lagos Dispatch or Studio Pickup
         </div>
 
         <p class="pdp-description-text body-14" style="color: var(--color-text-muted); line-height: 1.6;">
@@ -169,12 +151,12 @@
           </div>
 
           <button type="button" class="btn-add-bag js-quick-add body-14" 
-                  data-product-id="prod-agbada-signature"
-                  data-variant-id="var-agbada-midnight-blue"
-                  data-variation-id="var-agbada-midnight-blue"
-                  data-title="Signature 3-Piece Agbada Set" 
-                  data-price="195000" 
-                  data-image="Krabe Cloth Concepts_230226_205405_1.jpg">
+                  data-product-id=""
+                  data-variant-id=""
+                  data-variation-id=""
+                  data-title="" 
+                  data-price="" 
+                  data-image="">
             Add to Shopping Bag
           </button>
         </div>
@@ -218,90 +200,14 @@
   <!-- =========================================================================
        5. RELATED PRODUCTS ("You May Also Like")
        ========================================================================= -->
-  <section class="section-py" style="background: var(--color-white); border-top: 1px solid var(--color-border);">
+  <section class="section-py" id="complementarySection" style="background: var(--color-white); border-top: 1px solid var(--color-border); display: none;">
     <div class="container">
       <div class="section-header" style="margin-bottom: 36px; text-align: left;">
         <span class="section-tag body-12">Complete The Ensemble</span>
         <h2 class="section-title h2">Complementary Pieces</h2>
       </div>
 
-      <div class="products-grid">
-        <div class="product-card" data-category="native">
-          <div class="product-media">
-            <span class="product-badge badge-new body-10">Artisan Native</span>
-            <img src="Krabe Cloth Concepts_230226_205405_6.jpg" alt="Krabe Structured Modern Kaftan">
-            <div class="quick-add-overlay">
-              <button type="button" class="btn-quick-add js-quick-add body-12" data-title="Krabe Structured Modern Kaftan" data-price="120000" data-image="Krabe Cloth Concepts_230226_205405_6.jpg">
-                + Quick Add
-              </button>
-            </div>
-          </div>
-          <div class="product-info">
-            <span class="product-category-label body-10">Native Wear</span>
-            <h3 class="product-title body-14"><a href="product.html">Krabe Structured Modern Kaftan</a></h3>
-            <div class="product-price-row">
-              <span class="product-price body-18">₦120,000</span>
-            </div>
-          </div>
-        </div>
-
-        <div class="product-card" data-category="formal">
-          <div class="product-media">
-            <span class="product-badge badge-bespoke body-10">Made to Order</span>
-            <img src="Krabe Cloth Concepts_230226_205405_2.jpg" alt="Artisan Serif Minimalist Shirt">
-            <div class="quick-add-overlay">
-              <button type="button" class="btn-quick-add js-quick-add body-12" data-title="Artisan Serif Minimalist Shirt" data-price="78000" data-image="Krabe Cloth Concepts_230226_205405_2.jpg">
-                + Quick Add
-              </button>
-            </div>
-          </div>
-          <div class="product-info">
-            <span class="product-category-label body-10">English Wear</span>
-            <h3 class="product-title body-14"><a href="product.html">Artisan Serif Minimalist Shirt</a></h3>
-            <div class="product-price-row">
-              <span class="product-price body-18">₦78,000</span>
-            </div>
-          </div>
-        </div>
-
-        <div class="product-card" data-category="streetwear">
-          <div class="product-media">
-            <span class="product-badge badge-new body-10">New Drop</span>
-            <img src="Krabe Cloth Concepts_230226_205405_1.jpg" alt="Krabe Signature Script Tee">
-            <div class="quick-add-overlay">
-              <button type="button" class="btn-quick-add js-quick-add body-12" data-title="Krabe Signature Script Tee" data-price="45000" data-image="Krabe Cloth Concepts_230226_205405_1.jpg">
-                + Quick Add
-              </button>
-            </div>
-          </div>
-          <div class="product-info">
-            <span class="product-category-label body-10">Streetwear</span>
-            <h3 class="product-title body-14"><a href="product.html">Krabe Signature Script Tee</a></h3>
-            <div class="product-price-row">
-              <span class="product-price body-18">₦45,000</span>
-            </div>
-          </div>
-        </div>
-
-        <div class="product-card" data-category="streetwear">
-          <div class="product-media">
-            <span class="product-badge badge-bespoke body-10">Gold Edition</span>
-            <img src="Krabe Cloth Concepts_230226_205405_3.jpg" alt="Metallic Gold Brush Tee">
-            <div class="quick-add-overlay">
-              <button type="button" class="btn-quick-add js-quick-add body-12" data-title="Metallic Gold Brush Tee" data-price="55000" data-image="Krabe Cloth Concepts_230226_205405_3.jpg">
-                + Quick Add
-              </button>
-            </div>
-          </div>
-          <div class="product-info">
-            <span class="product-category-label body-10">Streetwear</span>
-            <h3 class="product-title body-14"><a href="product.html">Metallic Gold Brush Tee</a></h3>
-            <div class="product-price-row">
-              <span class="product-price body-18">₦55,000</span>
-            </div>
-          </div>
-        </div>
-      </div>
+      <div class="products-grid complementary-grid" id="complementaryGrid"></div>
     </div>
   </section>
 
@@ -526,18 +432,9 @@
   <script src="js/auth.js"></script>
   <script src="js/main.js"></script>
   <script>
-    // PDP Central State (Initialized with fallback defaults, updated by Supabase when loaded)
-    let currentProduct = {
-      id: 'prod-agbada-signature',
-      title: 'Signature 3-Piece Agbada Set'
-    };
-    let currentVariant = {
-      id: 'var-agbada-midnight-blue',
-      color: 'Midnight Blue',
-      color_code: '#2F475A',
-      price: 195000,
-      main_image: 'Krabe Cloth Concepts_230226_205405_1.jpg'
-    };
+    // PDP Central State (Populated dynamically from Supabase database)
+    let currentProduct = null;
+    let currentVariant = null;
 
     function swapPdpImg(btn, imgSrc) {
       document.querySelectorAll('.pdp-thumbnails .thumb-btn').forEach(b => b.classList.remove('active'));
@@ -589,8 +486,15 @@
 
       // 4. Update Big Display Image to this variant's main_image
       const mainImg = document.getElementById('mainPdpImg');
-      if (mainImg && target.main_image) {
-        mainImg.src = target.main_image;
+      if (mainImg) {
+        if (target.main_image) {
+          mainImg.src = target.main_image;
+          mainImg.alt = target.color ? `${target.color} garment` : (currentProduct?.title || 'Garment presentation');
+          mainImg.style.display = 'block';
+        } else {
+          mainImg.src = '';
+          mainImg.style.display = 'none';
+        }
       }
 
       // 5. Update Thumbnails strip below main image (main_image + gallery_images, max 4)
@@ -613,8 +517,6 @@
       const displayPrice = Number(target.price) || 0;
       const priceEl = document.querySelector('.pdp-price-current');
       if (priceEl) priceEl.textContent = '₦' + displayPrice.toLocaleString('en-NG');
-      const usdEl = document.querySelector('.pdp-price-usd');
-      if (usdEl) usdEl.textContent = `($${Math.round(displayPrice / 1300)} USD approx.)`;
 
       // 7. Update Add to Bag button
       const addBtn = document.querySelector('.btn-add-bag');
@@ -769,6 +671,7 @@
           slug,
           is_featured,
           is_new_arrival,
+          created_at,
           product_variation (
             id,
             color,
@@ -860,62 +763,162 @@
           }
         }
 
-        // Populate Related Products at bottom of PDP
-        const { data: relatedProducts } = await client
-          .from('product')
-          .select(`
-            id,
-            title,
-            category,
-            gender,
-            product_variation (
-              id,
-              color,
-              color_code,
-              price,
-              main_image
-            )
-          `)
-          .neq('id', prod.id)
-          .limit(4);
+        // Populate Complementary Pieces (four pieces only, same category & gender by sales_count, with OR fallback)
+        let complementaryPieces = [];
+        const currentCat = (prod.category || '').toString().trim();
+        const currentGen = (prod.gender || '').toString().trim();
 
-        const relGrid = document.querySelector('.products-grid');
-        if (relGrid && relatedProducts && relatedProducts.length > 0) {
-          relGrid.innerHTML = relatedProducts.map(rp => {
-            const rVars = rp.product_variation || [];
-            const rDef = rVars[0] || {};
-            const rPrice = Number(rDef.price) || 0;
-            const rImg = rDef.main_image || 'assets/brand/krabe main logo.svg';
-            return `
-              <div class="product-card" data-category="${rp.category || 'native'}">
-                <div class="product-media">
-                  <a href="product.html?id=${rp.id}" style="display: block; width: 100%; height: 100%;">
-                    <img src="${rImg}" alt="${rp.title}">
-                  </a>
-                  <div class="quick-add-overlay">
-                    <button type="button" class="btn-quick-add js-quick-add body-12" 
-                            data-product-id="${rp.id}"
-                            data-variant-id="${rDef.id || ''}"
-                            data-variation-id="${rDef.id || ''}"
-                            data-title="${rp.title}" 
-                            data-price="${rPrice}" 
-                            data-size="M"
-                            data-color="${rDef.color || 'Standard'}"
-                            data-image="${rImg}">
-                      + Quick Add (M)
-                    </button>
+        // 1. Primary: Same category AND same gender, sorted by sales_count desc (excluding current product)
+        if (currentCat && currentGen) {
+          try {
+            const { data: andData, error: andErr } = await client
+              .from('product')
+              .select(`
+                id,
+                title,
+                category,
+                gender,
+                sales_count,
+                created_at,
+                is_featured,
+                is_new_arrival,
+                product_variation (
+                  id,
+                  color,
+                  color_code,
+                  price,
+                  main_image,
+                  sales_count,
+                  created_at
+                )
+              `)
+              .neq('id', prod.id)
+              .eq('category', currentCat)
+              .eq('gender', currentGen)
+              .order('sales_count', { ascending: false })
+              .order('created_at', { ascending: false })
+              .limit(4);
+
+            if (!andErr && andData && andData.length > 0) {
+              complementaryPieces = andData;
+            }
+          } catch (e) {
+            console.warn('[Product PDP] AND query for complementary pieces error:', e);
+          }
+        }
+
+        // 2. Fallback: If no result, use the same constraint with OR instead of AND
+        if (complementaryPieces.length === 0 && (currentCat || currentGen)) {
+          try {
+            let orQuery = client
+              .from('product')
+              .select(`
+                id,
+                title,
+                category,
+                gender,
+                sales_count,
+                created_at,
+                is_featured,
+                is_new_arrival,
+                product_variation (
+                  id,
+                  color,
+                  color_code,
+                  price,
+                  main_image,
+                  sales_count,
+                  created_at
+                )
+              `)
+              .neq('id', prod.id);
+
+            if (currentCat && currentGen) {
+              orQuery = orQuery.or(`category.eq."${currentCat}",gender.eq."${currentGen}"`);
+            } else if (currentCat) {
+              orQuery = orQuery.eq('category', currentCat);
+            } else if (currentGen) {
+              orQuery = orQuery.eq('gender', currentGen);
+            }
+
+            const { data: orData, error: orErr } = await orQuery
+              .order('sales_count', { ascending: false })
+              .order('created_at', { ascending: false })
+              .limit(4);
+
+            if (!orErr && orData && orData.length > 0) {
+              complementaryPieces = orData;
+            }
+          } catch (e) {
+            console.warn('[Product PDP] OR query for complementary pieces error:', e);
+          }
+        }
+
+        const compSection = document.getElementById('complementarySection');
+        const relGrid = document.getElementById('complementaryGrid') || document.querySelector('.complementary-grid');
+
+        // Strictly guarantee current product is never included and cap at 4
+        const finalPieces = complementaryPieces
+          .filter(rp => rp && String(rp.id) !== String(prod.id))
+          .slice(0, 4);
+
+        if (finalPieces.length > 0) {
+          if (compSection) compSection.style.display = 'block';
+          if (relGrid) {
+            relGrid.innerHTML = finalPieces.map(rp => {
+              const rVars = rp.product_variation || [];
+              const sortedVars = [...rVars].sort((a, b) => {
+                const sDiff = (b.sales_count || 0) - (a.sales_count || 0);
+                if (sDiff !== 0) return sDiff;
+                return new Date(b.created_at || 0) - new Date(a.created_at || 0);
+              });
+              const rDef = sortedVars[0] || {};
+              const rPrice = Number(rDef.price) || 0;
+              const rImg = rDef.main_image || 'assets/brand/krabe main logo.svg';
+              const catClean = (rp.category || 'native').toLowerCase();
+              const badgeHTML = typeof window.getProductBadgesHTML === 'function'
+                ? window.getProductBadgesHTML(rp)
+                : '';
+
+              const productUrl = `product.html?id=${encodeURIComponent(rp.id)}${rDef.id ? `&variant=${encodeURIComponent(rDef.id)}` : ''}`;
+
+              return `
+                <div class="product-card" data-category="${catClean}" onclick="if (!event.target.closest('button') &amp;&amp; !event.target.closest('a')) window.location.href='${productUrl}';" style="cursor: pointer;">
+                  <div class="product-media">
+                    ${badgeHTML}
+                    <a href="${productUrl}" style="display: block; width: 100%; height: 100%;">
+                      <img src="${rImg}" alt="${rp.title}" loading="lazy">
+                    </a>
+                    <div class="quick-add-overlay">
+                      <button type="button" class="btn-quick-add js-quick-add body-12" 
+                              data-product-id="${rp.id}"
+                              data-variant-id="${rDef.id || ''}"
+                              data-variation-id="${rDef.id || ''}"
+                              data-title="${rp.title}" 
+                              data-price="${rPrice}" 
+                              data-size="M"
+                              data-color="${rDef.color || 'Standard'}"
+                              data-image="${rImg}">
+                        + Quick Add (M)
+                      </button>
+                    </div>
+                  </div>
+                  <div class="product-info">
+                    <span class="product-category-label body-10" style="color: var(--color-text-muted); font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase;">${catClean.toUpperCase()} &bull; ${(rp.gender || 'Unisex').toUpperCase()}</span>
+                    <h3 class="product-title body-14" style="font-weight: 700; margin-bottom: 8px;">
+                      <a href="${productUrl}">${rp.title}</a>
+                    </h3>
+                    <div class="product-price-row">
+                      <span class="product-price body-18" style="font-weight: 700; color: var(--color-text-main);">₦${rPrice.toLocaleString('en-NG')}</span>
+                    </div>
                   </div>
                 </div>
-                <div class="product-info">
-                  <span class="product-category-label body-10">${(rp.category || 'Native').toUpperCase()}</span>
-                  <h3 class="product-title body-14"><a href="product.html?id=${rp.id}">${rp.title}</a></h3>
-                  <div class="product-price-row">
-                    <span class="product-price body-18">₦${rPrice.toLocaleString('en-NG')}</span>
-                  </div>
-                </div>
-              </div>
-            `;
-          }).join('');
+              `;
+            }).join('');
+          }
+        } else {
+          if (compSection) compSection.style.display = 'none';
+          if (relGrid) relGrid.innerHTML = '';
         }
       } catch (err) {
         console.warn('[Product PDP] Could not fetch product details from DB:', err);

@@ -34,7 +34,7 @@
       
       <div class="hero-content">
         <div class="hero-pill body-12">Lagos Studio &bull; Autumn / Winter Drop</div>
-        <h1 class="hero-title h1">
+        <h1 class="hero-title h1" style="color: var(--color-white);">
           Modern African Elegance. <span>Tailored to Perfection.</span>
         </h1>
         <p class="hero-subtitle body-18" style="color: var(--color-sand);">
@@ -49,13 +49,13 @@
 
       <div class="hero-visual">
         <div class="hero-image-card" id="hero-pic">
-          <img src="Krabe Cloth Concepts_230226_205405_1.jpg" alt="Krabe Signature Apparel">
-          <div class="hero-floating-badge" id="hero-badge">
+          <img id="heroImg" alt="Krabe Signature Apparel" style="display: none;">
+          <div class="hero-floating-badge" id="hero-badge" style="display: none;">
             <div>
-              <p class="body-14" style="font-weight: 700; color: var(--color-obsidian); margin-bottom: 2px;">Krabe Athletic Script Collection</p>
-              <span class="body-12" style="color: var(--color-text-muted);">Crafted On Demand &bull; Limited Archive</span>
+              <p class="body-14" style="font-weight: 700; color: var(--color-white); margin-bottom: 2px;"></p>
+              <span class="body-12" style="color: var(--color-gold-light);"></span>
             </div>
-            <a href="shop.html" class="body-12" style="color: var(--color-gold); font-weight: 700;">View Drop &rarr;</a>
+            <a href="shop.html" class="body-12" style="color: var(--color-gold-light); font-weight: 700;">View Drop &rarr;</a>
           </div>
         </div>
       </div>
@@ -525,13 +525,16 @@
   <script src="js/auth.js"></script>
   <script src="js/main.js"></script>
   <script>
+    let homeFeaturedRetries = 0;
     async function loadHomeFeaturedFromDatabase() {
       const grid = document.getElementById('homeFeaturedGrid');
       if (!grid) return;
 
       const client = window.krabeClient || (window.KRABE_CONFIG && typeof window.KRABE_CONFIG.getClient === 'function' ? window.KRABE_CONFIG.getClient() : null);
       if (!client) {
-        setTimeout(loadHomeFeaturedFromDatabase, 150);
+        if (++homeFeaturedRetries <= 30) {
+          setTimeout(loadHomeFeaturedFromDatabase, 150);
+        }
         return;
       }
 
@@ -555,7 +558,7 @@
             )
           `)
           .order('created_at', { ascending: false })
-          .limit(24);
+          .limit(10);
 
         if (!error && products && products.length > 0) {
           grid.innerHTML = products.map(prod => {
@@ -565,16 +568,16 @@
             const displayImage = defaultVar.main_image || 'assets/brand/krabe main logo.svg';
             const variantId = defaultVar.id || '';
             const categoryClean = (prod.category || 'native').toLowerCase();
-            const badgeHTML = prod.is_new_arrival 
-              ? `<span class="product-badge badge-new body-10">New Drop</span>` 
-              : (prod.is_featured ? `<span class="product-badge badge-bespoke body-10">Ceremonial</span>` : '');
+            const badgeHTML = typeof window.getProductBadgesHTML === 'function'
+              ? window.getProductBadgesHTML(prod)
+              : '';
 
             return `
               <div class="product-card" data-category="${categoryClean}">
                 <div class="product-media">
                   ${badgeHTML}
                   <a href="product.html?id=${prod.id}" style="display: block; width: 100%; height: 100%;">
-                    <img src="${displayImage}" alt="${prod.title}">
+                    <img src="${displayImage}" alt="${prod.title}" loading="lazy">
                   </a>
                   <div class="quick-add-overlay">
                     <button type="button" class="btn-quick-add js-quick-add body-12" 
@@ -619,6 +622,7 @@
       }
     }
 
+    let heroProductRetries = 0;
     async function loadHeroProductFromDatabase() {
       const heroCard = document.getElementById('hero-pic');
       const heroBadge = document.getElementById('hero-badge');
@@ -626,7 +630,9 @@
 
       const client = window.krabeClient || (window.KRABE_CONFIG && typeof window.KRABE_CONFIG.getClient === 'function' ? window.KRABE_CONFIG.getClient() : null);
       if (!client) {
-        setTimeout(loadHeroProductFromDatabase, 150);
+        if (++heroProductRetries <= 30) {
+          setTimeout(loadHeroProductFromDatabase, 150);
+        }
         return;
       }
 
@@ -673,6 +679,7 @@
         if (heroImg && topVariant.main_image) {
           heroImg.src = topVariant.main_image;
           heroImg.alt = `${prod.title} - ${topVariant.color || ''}`;
+          heroImg.style.display = 'block';
         }
 
         // 2. Update Badge Text
@@ -693,6 +700,9 @@
         if (viewDropLink) {
           viewDropLink.href = `product.html?id=${prod.id}&variant=${topVariant.id}`;
         }
+
+        // 4. Reveal hero badge once loaded from database
+        heroBadge.style.display = 'flex';
       } catch (e) {
         console.warn('[Home] Could not load hero drop product:', e);
       }

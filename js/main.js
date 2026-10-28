@@ -43,6 +43,38 @@ function setStoredCart(cartItems) {
   window.dispatchEvent(new CustomEvent('krabe:cart:updated', { detail: { cart: cartItems } }));
 }
 
+/**
+ * Global Product Badge Generator
+ * - 'Featured' badge on top-left (when is_featured is true)
+ * - 'New Drop' badge on top-right (when created_at is within the last 30 days)
+ * Both badges can display simultaneously on the same product card.
+ */
+function getProductBadgesHTML(prod) {
+  if (!prod) return '';
+  let badges = '';
+
+  // 1. Featured badge (Left) — when is_featured is true
+  if (prod.is_featured === true || prod.is_featured === 'true' || prod.is_featured === 1) {
+    badges += `<span class="product-badge badge-featured body-10">Featured</span>`;
+  }
+
+  // 2. New Drop badge (Right) — when created_at is within the last 30 days
+  if (prod.created_at) {
+    const createdMs = new Date(prod.created_at).getTime();
+    if (!isNaN(createdMs)) {
+      const thirtyDaysMs = 30 * 24 * 60 * 60 * 1000;
+      const diffMs = Date.now() - createdMs;
+      // Allow 60 seconds clock skew, and strictly cap at 30 days
+      if (diffMs >= -60000 && diffMs <= thirtyDaysMs) {
+        badges += `<span class="product-badge badge-new body-10">New Drop</span>`;
+      }
+    }
+  }
+
+  return badges;
+}
+window.getProductBadgesHTML = getProductBadgesHTML;
+
 document.addEventListener('DOMContentLoaded', () => {
   // --- Cart State & Elements ---
   const cartOverlay = document.getElementById('cartOverlay');

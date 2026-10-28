@@ -255,6 +255,9 @@
       if (search) {
         return `Showing ${visible} ${resultWord} for: <strong>"${escapeHtml(search)}"</strong> &bull; <a href="javascript:void(0)" onclick="clearSearchFilter()" style="color: var(--color-primary); text-decoration: underline; font-weight: 600;">Clear Search</a>`;
       }
+      if (visible === 0) {
+        return `Showing 0 results`;
+      }
       if (total !== undefined && total > 0 && total !== visible) {
         const totalWord = total === 1 ? 'result' : 'results';
         return `Showing ${visible} of ${total} ${totalWord}`;
@@ -311,9 +314,9 @@
               ? `<div class="product-variants-note body-12" style="color: var(--color-text-muted); font-weight: 600; margin-top: 6px;">${variantCount} variants available</div>` 
               : '';
 
-            const badgeHTML = prod.is_new_arrival 
-              ? `<span class="product-badge badge-new body-10">New Drop</span>` 
-              : (prod.is_featured ? `<span class="product-badge badge-bespoke body-10">Ceremonial</span>` : '');
+            const badgeHTML = typeof window.getProductBadgesHTML === 'function'
+              ? window.getProductBadgesHTML(prod)
+              : '';
 
             return `
               <div class="product-card" 
@@ -425,9 +428,11 @@
         if (val === 'price-asc') return priceA - priceB;
         if (val === 'price-desc') return priceB - priceA;
         if (val === 'newest') return dateB - dateA;
-        // Default: featured first, then newest
-        if (featB !== featA) return featB - featA;
-        return dateB - dateA;
+        if (val === 'featured') {
+          if (featB !== featA) return featB - featA;
+          return dateB - dateA;
+        }
+        return 0;
       });
 
       cards.forEach(c => grid.appendChild(c));
