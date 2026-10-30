@@ -98,8 +98,10 @@ CREATE TABLE IF NOT EXISTS public.app_variable (
   whatsapp_contact text,
   instagram text,
   tiktok text,
+  contact_email text DEFAULT 'krabeapparel@gmail.com',
   CONSTRAINT app_variable_pkey PRIMARY KEY (id),
-  CONSTRAINT check_whatsapp_contact CHECK (whatsapp_contact IS NULL OR whatsapp_contact ~ '^\+?[0-9]{10,15}$')
+  CONSTRAINT check_whatsapp_contact CHECK (whatsapp_contact IS NULL OR whatsapp_contact ~ '^\+?[0-9]{10,15}$'),
+  CONSTRAINT check_contact_email CHECK (contact_email IS NULL OR contact_email ~* '^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$')
 );
 
 -- Table 2: Appointments (Bespoke fitting and showroom bookings)
@@ -508,6 +510,45 @@ CREATE TRIGGER tr_rtw_order_item_updated_at BEFORE UPDATE ON public.rtw_order_it
 DROP TRIGGER IF EXISTS tr_newsletter_subscriber_updated_at ON public.newsletter_subscriber;
 CREATE TRIGGER tr_newsletter_subscriber_updated_at BEFORE UPDATE ON public.newsletter_subscriber FOR EACH ROW EXECUTE FUNCTION public.set_updated_at();
 
+-- Auto-sync lowercase product search_text for server-side catalog search
+CREATE OR REPLACE FUNCTION public.fn_product_search_text_sync()
+RETURNS trigger
+LANGUAGE plpgsql
+SET search_path = public
+AS $$
+BEGIN
+  NEW.search_text := lower(
+    coalesce(NEW.title, '') || ' ' ||
+    coalesce(NEW.category::text, '') || ' ' ||
+    coalesce(NEW.gender::text, '') || ' ' ||
+    coalesce(NEW.type::text, '') || ' ' ||
+    coalesce(NEW.description, '')
+  );
+  RETURN NEW;
+END;
+$$;
+
+DROP TRIGGER IF EXISTS tr_product_search_text_sync ON public.product;
+CREATE TRIGGER tr_product_search_text_sync
+BEFORE INSERT OR UPDATE OF title, category, gender, type, description ON public.product
+FOR EACH ROW
+EXECUTE FUNCTION public.fn_product_search_text_sync();
+
+-- Backfill lowercase search_text for all existing products
+UPDATE public.product
+SET search_text = lower(
+  coalesce(title, '') || ' ' ||
+  coalesce(category::text, '') || ' ' ||
+  coalesce(gender::text, '') || ' ' ||
+  coalesce(type::text, '') || ' ' ||
+  coalesce(description, '')
+);
+
+-- Fast trigram GIN index on search_text for instant ilike searches
+CREATE EXTENSION IF NOT EXISTS pg_trgm;
+CREATE INDEX IF NOT EXISTS idx_product_search_text_trgm 
+ON public.product USING gin (search_text gin_trgm_ops);
+
 -- =============================================================================
 -- ROW LEVEL SECURITY (RLS) & PUBLIC PERMISSIONS
 -- =============================================================================
@@ -653,4 +694,153 @@ DROP TRIGGER IF EXISTS tr_sync_brevo_newsletter ON public.newsletter_subscriber;
 CREATE TRIGGER tr_sync_brevo_newsletter
 AFTER INSERT OR UPDATE ON public.newsletter_subscriber
 FOR EACH ROW EXECUTE FUNCTION public.sync_brevo_newsletter_subscriber();
+
+-- =============================================================================
+-- TABLE: CONTACT MESSAGES (Help & Studio Inquiries)
+-- =============================================================================
+CREATE TABLE IF NOT EXISTS public.contact_message (
+  id uuid NOT NULL DEFAULT gen_random_uuid(),
+  created_at timestamp with time zone DEFAULT now(),
+  name text NOT NULL,
+  email text NOT NULL,
+  subject text NOT NULL,
+  message text NOT NULL,
+  status public.email_status NOT NULL DEFAULT 'unsent'::public.email_status,
+  CONSTRAINT contact_message_pkey PRIMARY KEY (id),
+  CONSTRAINT check_contact_message_email CHECK (email ~* '^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$')
+);
+
+-- RLS: Anyone can submit an inquiry; authenticated staff can read/manage
+ALTER TABLE public.contact_message ENABLE ROW LEVEL SECURITY;
+
+DROP POLICY IF EXISTS "Public can submit contact messages" ON public.contact_message;
+CREATE POLICY "Public can submit contact messages"
+ON public.contact_message
+FOR INSERT
+TO anon, authenticated
+WITH CHECK (true);
+
+DROP POLICY IF EXISTS "Authenticated users can read and manage contact messages" ON public.contact_message;
+DROP POLICY IF EXISTS "Only admins can read and manage contact messages" ON public.contact_message;
+
+CREATE POLICY "Only admins can read and manage contact messages"
+ON public.contact_message
+FOR ALL
+TO authenticated
+USING (public.is_admin())
+WITH CHECK (public.is_admin());
+
+GRANT INSERT ON public.contact_message TO anon, authenticated;
+GRANT SELECT, UPDATE, DELETE ON public.contact_message TO authenticated;
+
+-- =============================================================================
+-- BREVO TRANSACTIONAL EMAIL TRIGGER FOR CLIENT INQUIRIES
+-- =============================================================================
+CREATE OR REPLACE FUNCTION public.send_brevo_contact_message()
+RETURNS trigger
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public, extensions, vault
+AS $$
+DECLARE
+  v_api_key text;
+  v_contact_email text;
+  v_clean_name text;
+  v_clean_subject text;
+  v_clean_message text;
+  v_html_body text;
+BEGIN
+  -- 1. Read Brevo API key from Supabase Vault
+  SELECT decrypted_secret INTO v_api_key 
+  FROM vault.decrypted_secrets 
+  WHERE name = 'BREVO_API_KEY' 
+  LIMIT 1;
+
+  -- 2. Read studio support email from app_variable table
+  SELECT contact_email INTO v_contact_email
+  FROM public.app_variable
+  LIMIT 1;
+
+  IF v_contact_email IS NULL OR v_contact_email = '' THEN
+    v_contact_email := 'krabeapparel@gmail.com';
+  END IF;
+
+  -- 3. Sanitize inputs for HTML email body
+  v_clean_name := replace(replace(replace(NEW.name, '&', '&amp;'), '<', '&lt;'), '>', '&gt;');
+  v_clean_subject := replace(replace(replace(NEW.subject, '&', '&amp;'), '<', '&lt;'), '>', '&gt;');
+  v_clean_message := replace(replace(replace(NEW.message, '&', '&amp;'), '<', '&lt;'), '>', '&gt;');
+
+  -- 4. Construct luxury styled HTML notification
+  v_html_body := '<div style="font-family: -apple-system, BlinkMacSystemFont, ''Segoe UI'', Roboto, sans-serif; max-width: 600px; margin: 0 auto; padding: 24px; border: 1px solid #E2E8F0; border-radius: 8px; background: #FFFFFF;">'
+    || '<div style="background-color: #121920; padding: 20px 24px; border-radius: 6px 6px 0 0; text-align: center;">'
+    || '<h2 style="color: #FAF8F5; margin: 0; font-size: 20px; letter-spacing: 2px; text-transform: uppercase;">Krabe Kollection</h2>'
+    || '<p style="color: #C58A55; margin: 4px 0 0 0; font-size: 11px; letter-spacing: 1.5px; text-transform: uppercase; font-weight: 600;">New Client Inquiry</p>'
+    || '</div>'
+    || '<div style="padding: 24px; background: #FAF8F5; border-radius: 0 0 6px 6px;">'
+    || '<table style="width: 100%; border-collapse: collapse; margin-bottom: 20px;">'
+    || '<tr><td style="padding: 8px 0; font-size: 13px; color: #64748B; width: 110px;">Client Name:</td><td style="padding: 8px 0; font-size: 14px; font-weight: bold; color: #121920;">' || v_clean_name || '</td></tr>'
+    || '<tr><td style="padding: 8px 0; font-size: 13px; color: #64748B;">Client Email:</td><td style="padding: 8px 0; font-size: 14px; color: #121920;"><a href="mailto:' || lower(trim(NEW.email)) || '" style="color: #7A2828; font-weight: 600;">' || lower(trim(NEW.email)) || '</a></td></tr>'
+    || '<tr><td style="padding: 8px 0; font-size: 13px; color: #64748B;">Inquiry Topic:</td><td style="padding: 8px 0; font-size: 14px; font-weight: 600; color: #7A2828;">' || v_clean_subject || '</td></tr>'
+    || '<tr><td style="padding: 8px 0; font-size: 13px; color: #64748B;">Submitted At:</td><td style="padding: 8px 0; font-size: 13px; color: #64748B;">' || to_char(NEW.created_at, 'YYYY-MM-DD HH24:MI:SS') || ' UTC</td></tr>'
+    || '</table>'
+    || '<div style="background: #FFFFFF; border: 1px solid #E2E8F0; border-radius: 6px; padding: 18px; margin-top: 14px;">'
+    || '<div style="font-size: 11px; font-weight: bold; color: #64748B; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px;">Message Content:</div>'
+    || '<div style="font-size: 14px; line-height: 1.6; color: #1E293B; white-space: pre-wrap;">' || v_clean_message || '</div>'
+    || '</div>'
+    || '<div style="margin-top: 24px; padding-top: 16px; border-top: 1px solid #E2E8F0; text-align: center; font-size: 12px; color: #94A3B8;">'
+    || 'Click "Reply" in your email client to respond directly to ' || v_clean_name || '.'
+    || '</div>'
+    || '</div>'
+    || '</div>';
+
+  -- 5. Trigger email dispatch via Brevo if API key is present
+  IF v_api_key IS NOT NULL AND v_api_key != '' THEN
+    BEGIN
+      PERFORM net.http_post(
+        url := 'https://api.brevo.com/v3/smtp/email',
+        headers := jsonb_build_object(
+          'api-key', v_api_key,
+          'Content-Type', 'application/json',
+          'Accept', 'application/json'
+        ),
+        body := jsonb_build_object(
+          'sender', jsonb_build_object(
+            'name', 'Krabe Concierge',
+            'email', v_contact_email
+          ),
+          'to', jsonb_build_array(
+            jsonb_build_object(
+              'email', v_contact_email,
+              'name', 'Krabe Support Team'
+            )
+          ),
+          'replyTo', jsonb_build_object(
+            'email', lower(trim(NEW.email)),
+            'name', NEW.name
+          ),
+          'subject', '[Krabe Client Inquiry] ' || NEW.subject || ' - ' || NEW.name,
+          'htmlContent', v_html_body
+        )
+      );
+      NEW.status := 'sent'::public.email_status;
+    EXCEPTION WHEN OTHERS THEN
+      NEW.status := 'failed'::public.email_status;
+    END;
+  ELSE
+    NEW.status := 'unsent'::public.email_status;
+  END IF;
+
+  RETURN NEW;
+END;
+$$;
+
+-- Restrict trigger execution permissions
+REVOKE EXECUTE ON FUNCTION public.send_brevo_contact_message() FROM PUBLIC, anon, authenticated;
+
+-- Attach trigger: Runs BEFORE INSERT so it updates NEW.status ('sent', 'unsent', 'failed')
+DROP TRIGGER IF EXISTS tr_send_brevo_contact_message ON public.contact_message;
+CREATE TRIGGER tr_send_brevo_contact_message
+BEFORE INSERT ON public.contact_message
+FOR EACH ROW EXECUTE FUNCTION public.send_brevo_contact_message();
+
 

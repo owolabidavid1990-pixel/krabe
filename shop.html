@@ -77,121 +77,15 @@
         <p class="body-14" style="color: var(--color-text-muted);">Loading collection from atelier...</p>
       </div>
     </div>
+
+    <!-- Catalog Pagination (Max 10 pages) -->
+    <div class="catalog-pagination" id="catalogPagination" style="display: none;"></div>
   </main>
 
   <!-- =========================================================================
-       5. GLOBAL FOOTER & SLIDE-OUT CART
+       5. GLOBAL FOOTER
        ========================================================================= -->
-  <footer class="site-footer">
-    <div class="container">
-      <div class="footer-top">
-        <div class="footer-brand">
-          <img src="assets/brand/krabe main logo.svg" alt="Krabe Kollection" style="height: 44px; margin-bottom: 14px;">
-          <p class="body-14" style="color: var(--color-text-muted);">
-            Premium Nigerian unisex fashion house combining ancestral textile heritage with contemporary minimalist tailoring.
-          </p>
-          <div class="footer-social-links" style="margin-top: 18px;">
-            <a href="https://instagram.com" target="_blank" rel="noopener" class="social-circle" aria-label="Instagram">
-              <svg style="width: 18px; height: 18px;" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
-            </a>
-            <a href="https://tiktok.com" target="_blank" rel="noopener" class="social-circle" aria-label="TikTok">
-              <svg style="width: 16px; height: 16px;" fill="currentColor" viewBox="0 0 24 24"><path d="M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.05-2.89-.35-4.2-.97-.57-.26-1.1-.59-1.62-.93-.01 2.92.01 5.84-.02 8.75-.08 1.4-.54 2.79-1.35 3.94-1.31 1.92-3.58 3.17-5.91 3.21-1.43.08-2.86-.31-4.08-1.03-2.02-1.19-3.44-3.37-3.65-5.71-.02-.5-.03-1-.01-1.49.18-1.9 1.12-3.72 2.58-4.96 1.66-1.44 3.98-2.13 6.15-1.72.02 1.48-.04 2.96-.04 4.44-.99-.32-2.15-.23-3.02.37-.63.41-1.11 1.04-1.36 1.75-.21.51-.24 1.07-.14 1.61.24 1.64 1.82 3.02 3.5 2.87 1.12-.01 2.19-.66 2.77-1.61.19-.33.4-.67.41-1.06.1-1.79.06-3.57.07-5.36.01-4.03-.01-8.05.02-12.07z"/></svg>
-            </a>
-          </div>
-        </div>
-        <div>
-          <div class="footer-col-title body-12" style="font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; color: var(--color-text-main);">Shop Krabe</div>
-          <ul class="footer-nav-list body-14">
-            <li><a href="shop.html">Made-to-Order Collections</a></li>
-            <li><a href="bespoke.html">Bespoke Orders</a></li>
-          </ul>
-        </div>
-        <div>
-          <div class="footer-col-title body-12" style="font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; color: var(--color-text-main);">Customer Care</div>
-          <ul class="footer-nav-list body-14">
-            <li><a href="bespoke.html#appointment">Book Studio Appointment</a></li>
-            <li><a href="help.html#faq">FAQ &amp; Shipping Policy</a></li>
-          </ul>
-        </div>
-        <div>
-          <div class="footer-col-title body-12" style="font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; color: var(--color-text-main);">Private Releases</div>
-          <form class="newsletter-form" data-newsletter-form novalidate>
-            <input type="email" required placeholder="Enter your email address" class="newsletter-input body-14" autocomplete="email">
-            <button type="submit" class="newsletter-btn body-12">Subscribe</button>
-            <div class="newsletter-feedback body-12" style="display: none;" role="status"></div>
-          </form>
-        </div>
-      </div>
-      <div class="footer-bottom body-12" style="color: var(--color-text-muted);">
-        <div>&copy; 2026 Krabe Kollection. All rights reserved. Registered in Nigeria.</div>
-      </div>
-    </div>
-  </footer>
-
-  <!-- Search Popup Modal -->
-  <div class="search-modal-overlay" id="searchModalOverlay" aria-hidden="true">
-    <div class="search-modal" role="dialog" aria-modal="true" aria-labelledby="searchInputField">
-      <div class="search-modal-header">
-        <div class="search-input-wrap">
-          <svg class="search-icon-svg" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
-          </svg>
-          <input type="text" id="searchInputField" class="search-modal-input body-16" placeholder="Search Kaftans, Agbadas, Streetwear, Suits..." autocomplete="off">
-          <button type="button" class="search-clear-btn" id="searchClearBtn" aria-label="Clear search">✕</button>
-        </div>
-        <button type="button" class="search-close-btn body-12" id="searchCloseBtn" aria-label="Close search">Close (Esc)</button>
-      </div>
-
-      <div class="search-modal-body">
-        <div class="search-suggestions-block">
-          <span class="search-section-label body-12" style="font-weight: 700; color: var(--color-text-muted); text-transform: uppercase; letter-spacing: 1px;">Popular Searches</span>
-          <div class="search-tags">
-            <a href="shop.html?category=native" class="search-tag body-12">Native Kaftans</a>
-            <a href="shop.html?category=native" class="search-tag body-12">Ceremonial Agbada</a>
-            <a href="shop.html?category=streetwear" class="search-tag body-12">Luxury Streetwear</a>
-            <a href="shop.html?category=formal" class="search-tag body-12">Senator Suits</a>
-            <a href="shop.html?category=formal" class="search-tag body-12">Artisan Linen Shirts</a>
-          </div>
-        </div>
-
-        <div class="search-preview-block">
-          <span class="search-section-label body-12" style="font-weight: 700; color: var(--color-text-muted); text-transform: uppercase; letter-spacing: 1px;">Quick Suggestions</span>
-          <div class="search-results-list">
-            <a href="product.html" class="search-result-item">
-              <img src="Krabe Cloth Concepts_230226_205405_1.jpg" alt="Signature 3-Piece Agbada Set">
-              <div class="search-result-info">
-                <div class="search-result-title body-14" style="font-weight: 700; color: var(--color-obsidian);">Signature 3-Piece Agbada Set</div>
-                <div class="search-result-meta body-12" style="color: var(--color-text-muted);">Native Wear &bull; Ceremonial Luxe</div>
-                <div class="search-result-price body-14" style="font-weight: 700; color: var(--color-primary);">₦185,000</div>
-              </div>
-            </a>
-            <a href="shop.html?category=native" class="search-result-item">
-              <img src="Krabe Cloth Concepts_230226_205405_6.jpg" alt="Krabe Structured Modern Kaftan">
-              <div class="search-result-info">
-                <div class="search-result-title body-14" style="font-weight: 700; color: var(--color-obsidian);">Krabe Structured Modern Kaftan</div>
-                <div class="search-result-meta body-12" style="color: var(--color-text-muted);">Native Wear &bull; Senator Cut</div>
-                <div class="search-result-price body-14" style="font-weight: 700; color: var(--color-primary);">₦120,000</div>
-              </div>
-            </a>
-            <a href="shop.html?category=streetwear" class="search-result-item">
-              <img src="Krabe Cloth Concepts_230226_205405_3.jpg" alt="Metallic Gold Brush Statement Tee">
-              <div class="search-result-info">
-                <div class="search-result-title body-14" style="font-weight: 700; color: var(--color-obsidian);">Metallic Gold Brush Statement Tee</div>
-                <div class="search-result-meta body-12" style="color: var(--color-text-muted);">Streetwear &bull; Unisex Limited Drop</div>
-                <div class="search-result-price body-14" style="font-weight: 700; color: var(--color-primary);">₦55,000</div>
-              </div>
-            </a>
-          </div>
-        </div>
-
-        <div class="search-modal-footer">
-          <button type="button" class="btn-search-submit body-14" id="searchSubmitBtn">
-            Explore All Made-to-Order &rarr;
-          </button>
-        </div>
-      </div>
-    </div>
-  </div>
+  <div id="krabeFooter"></div>
 
   <!-- Slide-Out Cart Drawer -->
   <div class="cart-drawer-overlay" id="cartOverlay" aria-hidden="true">
@@ -218,14 +112,22 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="js/config.js"></script>
   <script src="js/header.js"></script>
+  <script src="js/footer.js"></script>
   <script src="js/auth-modal.js"></script>
+  <script src="js/search-modal.js"></script>
   <script src="js/auth.js"></script>
   <script src="js/main.js"></script>
   <script>
-    // Live Filter & Catalog State (Gender, Category, Search, Sort)
+    // Live State (Gender, Category, Search, Sort, Pagination)
     let currentGender = 'all';
     let currentCategory = 'all';
     let currentSearch = '';
+    let currentSort = 'featured';
+    let currentPage = 1;
+    const PAGE_SIZE = 10;
+    const MAX_PAGES = 10;
+    let totalProductsCount = 0;
+    let catalogRetries = 0;
 
     function escapeHtml(str) {
       if (!str) return '';
@@ -250,33 +152,57 @@
       return 'UNISEX';
     }
 
-    function formatResultsCount(visible, total, search = '') {
-      const resultWord = visible === 1 ? 'result' : 'results';
-      if (search) {
-        return `Showing ${visible} ${resultWord} for: <strong>"${escapeHtml(search)}"</strong> &bull; <a href="javascript:void(0)" onclick="clearSearchFilter()" style="color: var(--color-primary); text-decoration: underline; font-weight: 600;">Clear Search</a>`;
+    function updateResultsCountBanner(visibleOnPage) {
+      const countEl = document.querySelector('.catalog-count');
+      if (!countEl) return;
+
+      if (totalProductsCount === 0) {
+        countEl.innerHTML = currentSearch
+          ? `Showing 0 results for: <strong>"${escapeHtml(currentSearch)}"</strong> &bull; <a href="javascript:void(0)" onclick="clearSearchFilter()" style="color: var(--color-primary); text-decoration: underline; font-weight: 600;">Clear Search</a>`
+          : 'Showing 0 results';
+        return;
       }
-      if (visible === 0) {
-        return `Showing 0 results`;
+
+      const from = (currentPage - 1) * PAGE_SIZE + 1;
+      const to = Math.min(from + visibleOnPage - 1, totalProductsCount);
+      const totalWord = totalProductsCount === 1 ? 'garment' : 'garments';
+
+      let text = '';
+      if (totalProductsCount <= PAGE_SIZE) {
+        text = `Showing ${totalProductsCount} ${totalWord}`;
+      } else {
+        text = `Showing ${from}–${to} of ${totalProductsCount} ${totalWord}`;
       }
-      if (total !== undefined && total > 0 && total !== visible) {
-        const totalWord = total === 1 ? 'result' : 'results';
-        return `Showing ${visible} of ${total} ${totalWord}`;
+
+      if (currentSearch) {
+        text += ` for: <strong>"${escapeHtml(currentSearch)}"</strong> &bull; <a href="javascript:void(0)" onclick="clearSearchFilter()" style="color: var(--color-primary); text-decoration: underline; font-weight: 600;">Clear Search</a>`;
       }
-      return `Showing ${visible} ${resultWord}`;
+
+      countEl.innerHTML = text;
     }
 
-    async function loadCatalogFromDatabase() {
+    async function fetchCatalogFromDatabase() {
       const grid = document.getElementById('catalogProductGrid');
+      const paginationEl = document.getElementById('catalogPagination');
       if (!grid) return;
 
       const client = window.krabeClient || (window.KRABE_CONFIG && typeof window.KRABE_CONFIG.getClient === 'function' ? window.KRABE_CONFIG.getClient() : null);
       if (!client) {
-        setTimeout(loadCatalogFromDatabase, 150);
+        if (++catalogRetries <= 30) {
+          setTimeout(fetchCatalogFromDatabase, 150);
+        }
         return;
       }
 
+      grid.innerHTML = `
+        <div style="grid-column: 1 / -1; text-align: center; padding: 48px 16px; color: var(--color-text-muted);">
+          <p class="body-14" style="color: var(--color-text-muted);">Loading collection from atelier...</p>
+        </div>
+      `;
+
       try {
-        const { data: products, error } = await client
+        // Base query with exact count
+        let query = client
           .from('product')
           .select(`
             id,
@@ -287,89 +213,214 @@
             is_featured,
             is_new_arrival,
             created_at,
+            search_text,
             product_variation (
               id,
               color,
               price,
               main_image
             )
-          `)
-          .order('created_at', { ascending: false });
+          `, { count: 'exact' });
 
+        // 1. Gender Constraint
+        if (currentGender === 'men' || currentGender === 'male') {
+          query = query.in('gender', ['male', 'unisex']);
+        } else if (currentGender === 'women' || currentGender === 'female') {
+          query = query.in('gender', ['female', 'unisex']);
+        } else if (currentGender === 'unisex') {
+          query = query.eq('gender', 'unisex');
+        }
+
+        // 2. Category Constraint
+        if (currentCategory && currentCategory !== 'all') {
+          query = query.eq('category', currentCategory);
+        }
+
+        // 3. Search Text (IGNORE constraint if empty; searches lowercase search_text)
+        if (currentSearch && currentSearch.trim().length > 0) {
+          const term = currentSearch.toLowerCase().trim();
+          query = query.ilike('search_text', `%${term}%`);
+        }
+
+        // 4. Sorting
+        if (currentSort === 'newest') {
+          query = query.order('created_at', { ascending: false });
+        } else {
+          // Default 'featured'
+          query = query
+            .order('is_featured', { ascending: false })
+            .order('created_at', { ascending: false });
+        }
+
+        // 5. Pagination Range (Max 10 items per page)
+        const from = (currentPage - 1) * PAGE_SIZE;
+        const to = from + PAGE_SIZE - 1;
+        query = query.range(from, to);
+
+        const { data: products, count, error } = await query;
         if (error) throw error;
 
+        totalProductsCount = typeof count === 'number' ? count : (products ? products.length : 0);
+
+        // Sort by variation price if price-asc / price-desc selected
         if (products && products.length > 0) {
-          grid.innerHTML = products.map(prod => {
-            const variations = prod.product_variation || [];
-            const defaultVar = variations[0] || {};
-            const displayPrice = defaultVar.price ? Number(defaultVar.price) : 0;
-            const displayImage = defaultVar.main_image || 'assets/brand/krabe main logo.svg';
-            const priceNaira = '₦' + displayPrice.toLocaleString('en-NG');
-            const variantId = defaultVar.id || '';
-            const catClean = (prod.category || 'native').toString().toLowerCase().trim();
-            const genderClean = (prod.gender || 'unisex').toString().toLowerCase().trim();
-
-            const variantCount = variations.length;
-            const variantBadgeHTML = variantCount > 1 
-              ? `<div class="product-variants-note body-12" style="color: var(--color-text-muted); font-weight: 600; margin-top: 6px;">${variantCount} variants available</div>` 
-              : '';
-
-            const badgeHTML = typeof window.getProductBadgesHTML === 'function'
-              ? window.getProductBadgesHTML(prod)
-              : '';
-
-            return `
-              <div class="product-card" 
-                   data-gender="${genderClean}" 
-                   data-category="${catClean}" 
-                   data-price="${displayPrice}"
-                   data-featured="${prod.is_featured ? '1' : '0'}"
-                   data-created="${prod.created_at || ''}">
-                <div class="product-media">
-                  ${badgeHTML}
-                  <a href="product.html?id=${prod.id}${variantId ? '&variant=' + variantId : ''}" style="display: block; width: 100%; height: 100%;">
-                    <img src="${displayImage}" alt="${prod.title}">
-                  </a>
-                  <div class="quick-add-overlay">
-                    <button type="button" class="btn-quick-add js-quick-add body-12" 
-                            data-product-id="${prod.id}"
-                            data-variant-id="${variantId}"
-                            data-variation-id="${variantId}"
-                            data-title="${prod.title}" 
-                            data-price="${displayPrice}" 
-                            data-size="M"
-                            data-color="${defaultVar.color || 'Standard'}"
-                            data-image="${displayImage}">
-                      + Quick Add (M)
-                    </button>
-                  </div>
-                </div>
-                <div class="product-info">
-                  <span class="product-category-label body-10">${formatCategory(catClean)} &bull; ${formatGender(genderClean)}</span>
-                  <h3 class="product-title body-14"><a href="product.html?id=${prod.id}${variantId ? '&variant=' + variantId : ''}">${prod.title}</a></h3>
-                  <div class="product-price-row">
-                    <span class="product-price body-18">${priceNaira}</span>
-                  </div>
-                  ${variantBadgeHTML}
-                </div>
-              </div>
-            `;
-          }).join('');
-
-          applySort();
-          applyFilters();
-        } else {
-          grid.innerHTML = `
-            <div style="grid-column: 1 / -1; text-align: center; padding: 48px 16px; color: var(--color-text-muted);">
-              <p class="body-16" style="font-weight: 700; color: var(--color-obsidian); margin-bottom: 8px;">No garments currently listed in atelier.</p>
-              <p class="body-14" style="color: var(--color-text-muted);">Check back soon for our next seasonal collection drop.</p>
-            </div>
-          `;
-          const countEl = document.querySelector('.catalog-count');
-          if (countEl) countEl.textContent = formatResultsCount(0, 0);
+          if (currentSort === 'price-asc') {
+            products.sort((a, b) => {
+              const pA = Number((a.product_variation?.[0] || {}).price) || 0;
+              const pB = Number((b.product_variation?.[0] || {}).price) || 0;
+              return pA - pB;
+            });
+          } else if (currentSort === 'price-desc') {
+            products.sort((a, b) => {
+              const pA = Number((a.product_variation?.[0] || {}).price) || 0;
+              const pB = Number((b.product_variation?.[0] || {}).price) || 0;
+              return pB - pA;
+            });
+          }
         }
+
+        renderProductGrid(products);
+        renderPagination();
+        updateResultsCountBanner(products ? products.length : 0);
+
       } catch (err) {
         console.warn('[Shop] Could not load products from database:', err);
+        grid.innerHTML = `
+          <div style="grid-column: 1 / -1; text-align: center; padding: 48px 16px; color: var(--color-text-muted);">
+            <p class="body-16" style="font-weight: 700; color: var(--color-obsidian); margin-bottom: 8px;">Error loading collection.</p>
+            <p class="body-14" style="color: var(--color-text-muted); margin-bottom: 16px;">Please check your connection and try again.</p>
+            <button type="button" class="btn btn-outline-dark body-12" onclick="fetchCatalogFromDatabase()" style="padding: 6px 16px; font-weight: 700;">Retry</button>
+          </div>
+        `;
+        if (paginationEl) paginationEl.style.display = 'none';
+      }
+    }
+
+    function renderProductGrid(products) {
+      const grid = document.getElementById('catalogProductGrid');
+      if (!grid) return;
+
+      if (!products || products.length === 0) {
+        grid.innerHTML = `
+          <div class="filter-empty-state" style="grid-column: 1 / -1; text-align: center; padding: 48px 16px; color: var(--color-text-muted);">
+            <p class="body-16" style="font-weight: 700; color: var(--color-obsidian); margin-bottom: 8px;">No garments found matching the selected criteria.</p>
+            <p class="body-14" style="color: var(--color-text-muted); margin-bottom: 16px;">Try adjusting your search terms or resetting active filters.</p>
+            <button type="button" class="btn btn-outline-dark body-12" onclick="resetAllFilters()" style="padding: 8px 20px; font-weight: 700;">Reset Filters</button>
+          </div>
+        `;
+        return;
+      }
+
+      grid.innerHTML = products.map(prod => {
+        const variations = prod.product_variation || [];
+        const defaultVar = variations[0] || {};
+        const displayPrice = defaultVar.price ? Number(defaultVar.price) : 0;
+        const displayImage = defaultVar.main_image || 'assets/brand/krabe main logo.svg';
+        const priceNaira = '₦' + displayPrice.toLocaleString('en-NG');
+        const variantId = defaultVar.id || '';
+        const catClean = (prod.category || 'native').toString().toLowerCase().trim();
+        const genderClean = (prod.gender || 'unisex').toString().toLowerCase().trim();
+
+        const variantCount = variations.length;
+        const variantBadgeHTML = variantCount > 1 
+          ? `<div class="product-variants-note body-12" style="color: var(--color-text-muted); font-weight: 600; margin-top: 6px;">${variantCount} variants available</div>` 
+          : '';
+
+        const badgeHTML = typeof window.getProductBadgesHTML === 'function'
+          ? window.getProductBadgesHTML(prod)
+          : '';
+
+        return `
+          <div class="product-card" 
+               data-gender="${genderClean}" 
+               data-category="${catClean}" 
+               data-price="${displayPrice}"
+               data-featured="${prod.is_featured ? '1' : '0'}"
+               data-created="${prod.created_at || ''}">
+            <div class="product-media">
+              ${badgeHTML}
+              <a href="product.html?id=${prod.id}${variantId ? '&variant=' + variantId : ''}" style="display: block; width: 100%; height: 100%;">
+                <img src="${displayImage}" alt="${escapeHtml(prod.title)}" loading="lazy">
+              </a>
+              <div class="quick-add-overlay">
+                <button type="button" class="btn-quick-add js-quick-add body-12" 
+                        data-product-id="${prod.id}"
+                        data-variant-id="${variantId}"
+                        data-variation-id="${variantId}"
+                        data-title="${escapeHtml(prod.title)}" 
+                        data-price="${displayPrice}" 
+                        data-size="M"
+                        data-color="${escapeHtml(defaultVar.color || 'Standard')}"
+                        data-image="${displayImage}">
+                  + Quick Add (M)
+                </button>
+              </div>
+            </div>
+            <div class="product-info">
+              <span class="product-category-label body-10">${formatCategory(catClean)} &bull; ${formatGender(genderClean)}</span>
+              <h3 class="product-title body-14"><a href="product.html?id=${prod.id}${variantId ? '&variant=' + variantId : ''}">${escapeHtml(prod.title)}</a></h3>
+              <div class="product-price-row">
+                <span class="product-price body-18">${priceNaira}</span>
+              </div>
+              ${variantBadgeHTML}
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function renderPagination() {
+      const paginationEl = document.getElementById('catalogPagination');
+      if (!paginationEl) return;
+
+      const totalPages = Math.min(Math.ceil(totalProductsCount / PAGE_SIZE) || 1, MAX_PAGES);
+
+      if (totalPages <= 1) {
+        paginationEl.style.display = 'none';
+        paginationEl.innerHTML = '';
+        return;
+      }
+
+      paginationEl.style.display = 'flex';
+
+      let html = `
+        <button type="button" class="page-btn page-btn-prev body-14" ${currentPage === 1 ? 'disabled' : ''} onclick="goToPage(${currentPage - 1})" aria-label="Previous Page">&larr;</button>
+      `;
+
+      for (let i = 1; i <= totalPages; i++) {
+        html += `
+          <button type="button" class="page-btn body-14 ${i === currentPage ? 'active' : ''}" onclick="goToPage(${i})" aria-label="Page ${i}">${i}</button>
+        `;
+      }
+
+      html += `
+        <button type="button" class="page-btn page-btn-next body-14" ${currentPage === totalPages ? 'disabled' : ''} onclick="goToPage(${currentPage + 1})" aria-label="Next Page">&rarr;</button>
+      `;
+
+      paginationEl.innerHTML = html;
+    }
+
+    function goToPage(page) {
+      const totalPages = Math.min(Math.ceil(totalProductsCount / PAGE_SIZE) || 1, MAX_PAGES);
+      if (page < 1 || page > totalPages || page === currentPage) return;
+
+      currentPage = page;
+
+      try {
+        const url = new URL(window.location);
+        if (currentPage === 1) {
+          url.searchParams.delete('page');
+        } else {
+          url.searchParams.set('page', currentPage);
+        }
+        window.history.replaceState({}, '', url);
+      } catch (e) {}
+
+      fetchCatalogFromDatabase();
+
+      const grid = document.getElementById('catalogProductGrid');
+      if (grid) {
+        grid.scrollIntoView({ behavior: 'smooth', block: 'start' });
       }
     }
 
@@ -377,7 +428,20 @@
       document.querySelectorAll('.gender-btn').forEach(b => b.classList.remove('active'));
       if (btn) btn.classList.add('active');
       currentGender = (gender || 'all').toLowerCase();
-      applyFilters();
+      currentPage = 1;
+
+      try {
+        const url = new URL(window.location);
+        url.searchParams.delete('page');
+        if (currentGender === 'all') {
+          url.searchParams.delete('gender');
+        } else {
+          url.searchParams.set('gender', currentGender);
+        }
+        window.history.replaceState({}, '', url);
+      } catch (e) {}
+
+      fetchCatalogFromDatabase();
     }
 
     function setCategoryFilter(btn, cat) {
@@ -392,10 +456,11 @@
       }
 
       currentCategory = (cat || 'all').toLowerCase();
+      currentPage = 1;
 
-      // Sync URL parameter without reload
       try {
         const url = new URL(window.location);
+        url.searchParams.delete('page');
         if (currentCategory === 'all') {
           url.searchParams.delete('category');
         } else {
@@ -404,114 +469,27 @@
         window.history.replaceState({}, '', url);
       } catch (e) {}
 
-      applyFilters();
-    }
-
-    function applySort() {
-      const sortSelect = document.querySelector('.sort-select-compact');
-      if (!sortSelect) return;
-      const val = sortSelect.value;
-      const grid = document.getElementById('catalogProductGrid');
-      if (!grid) return;
-
-      const cards = Array.from(grid.querySelectorAll('.product-card'));
-      if (cards.length === 0) return;
-
-      cards.sort((a, b) => {
-        const priceA = Number(a.dataset.price) || 0;
-        const priceB = Number(b.dataset.price) || 0;
-        const featA = Number(a.dataset.featured) || 0;
-        const featB = Number(b.dataset.featured) || 0;
-        const dateA = new Date(a.dataset.created || 0).getTime();
-        const dateB = new Date(b.dataset.created || 0).getTime();
-
-        if (val === 'price-asc') return priceA - priceB;
-        if (val === 'price-desc') return priceB - priceA;
-        if (val === 'newest') return dateB - dateA;
-        if (val === 'featured') {
-          if (featB !== featA) return featB - featA;
-          return dateB - dateA;
-        }
-        return 0;
-      });
-
-      cards.forEach(c => grid.appendChild(c));
-    }
-
-    function applyFilters() {
-      const cards = document.querySelectorAll('#catalogProductGrid .product-card');
-      let visibleCount = 0;
-
-      cards.forEach(card => {
-        const cGender = (card.dataset.gender || 'unisex').toLowerCase();
-        const cCat = (card.dataset.category || '').toLowerCase();
-        const title = (card.querySelector('.product-title')?.textContent || '').toLowerCase();
-
-        // 1. Gender Match ('men'/'male', 'women'/'female', 'unisex')
-        let matchGender = (currentGender === 'all') || (cGender === 'unisex');
-        if (currentGender === 'men' || currentGender === 'male') {
-          matchGender = matchGender || (cGender === 'male' || cGender === 'men');
-        } else if (currentGender === 'women' || currentGender === 'female') {
-          matchGender = matchGender || (cGender === 'female' || cGender === 'women');
-        } else if (currentGender === 'unisex') {
-          matchGender = (cGender === 'unisex');
-        }
-
-        // 2. Category Match
-        const matchCategory = (currentCategory === 'all') || (cCat === currentCategory);
-
-        // 3. Search Query Match
-        const matchSearch = !currentSearch || title.includes(currentSearch) || cCat.includes(currentSearch);
-
-        if (matchGender && matchCategory && matchSearch) {
-          card.style.display = 'flex';
-          visibleCount++;
-        } else {
-          card.style.display = 'none';
-        }
-      });
-
-      // Update Catalog Count Banner (Validated for 1 result, 0 results, and >1 results)
-      const countEl = document.querySelector('.catalog-count');
-      if (countEl) {
-        countEl.innerHTML = formatResultsCount(visibleCount, cards.length, currentSearch);
-      }
-
-      // Handle Empty State
-      const grid = document.getElementById('catalogProductGrid');
-      let emptyMsg = grid ? grid.querySelector('.filter-empty-state') : null;
-      if (visibleCount === 0 && cards.length > 0) {
-        if (!emptyMsg && grid) {
-          emptyMsg = document.createElement('div');
-          emptyMsg.className = 'filter-empty-state';
-          emptyMsg.style.cssText = 'grid-column: 1 / -1; text-align: center; padding: 48px 16px; color: var(--color-text-muted);';
-          emptyMsg.innerHTML = `
-            <p class="body-16" style="font-weight: 700; color: var(--color-obsidian); margin-bottom: 8px;">No garments found matching the selected filters.</p>
-            <p class="body-14" style="color: var(--color-text-muted); margin-bottom: 16px;">Try selecting another category or resetting your active filters.</p>
-            <button type="button" class="btn btn-outline-dark body-12" onclick="resetAllFilters()" style="padding: 6px 16px; font-weight: 700;">Reset Filters</button>
-          `;
-          grid.appendChild(emptyMsg);
-        }
-      } else if (emptyMsg) {
-        emptyMsg.remove();
-      }
+      fetchCatalogFromDatabase();
     }
 
     function clearSearchFilter() {
       currentSearch = '';
+      currentPage = 1;
       try {
         const url = new URL(window.location);
         url.searchParams.delete('search');
         url.searchParams.delete('q');
+        url.searchParams.delete('page');
         window.history.replaceState({}, '', url);
       } catch (e) {}
-      applyFilters();
+      fetchCatalogFromDatabase();
     }
 
     function resetAllFilters() {
       currentCategory = 'all';
       currentGender = 'all';
       currentSearch = '';
+      currentPage = 1;
 
       document.querySelectorAll('.category-pill').forEach(b => b.classList.toggle('active', b.dataset.category === 'all'));
       document.querySelectorAll('.gender-btn').forEach(b => b.classList.toggle('active', b.textContent.trim().toLowerCase() === 'all'));
@@ -519,22 +497,40 @@
       try {
         const url = new URL(window.location);
         url.searchParams.delete('category');
+        url.searchParams.delete('gender');
         url.searchParams.delete('search');
         url.searchParams.delete('q');
+        url.searchParams.delete('page');
         window.history.replaceState({}, '', url);
       } catch (e) {}
 
-      applyFilters();
+      fetchCatalogFromDatabase();
     }
 
-    // Auto-filter based on URL Query Parameters (?search= or ?category=)
+    // Auto-filter based on URL Query Parameters (?search=, ?category=, ?gender=, ?page=)
     window.addEventListener('DOMContentLoaded', () => {
       const urlParams = new URLSearchParams(window.location.search);
       const catParam = urlParams.get('category');
+      const genderParam = urlParams.get('gender');
       const searchParam = urlParams.get('search') || urlParams.get('q');
+      const pageParam = parseInt(urlParams.get('page'), 10);
+
+      if (pageParam && pageParam > 1) {
+        currentPage = Math.min(pageParam, MAX_PAGES);
+      }
 
       if (searchParam) {
         currentSearch = searchParam.toLowerCase().trim();
+      }
+
+      if (genderParam) {
+        currentGender = genderParam.toLowerCase().trim();
+        const genderBtns = Array.from(document.querySelectorAll('.gender-btn'));
+        const activeBtn = genderBtns.find(b => b.textContent.trim().toLowerCase() === currentGender);
+        if (activeBtn) {
+          genderBtns.forEach(b => b.classList.remove('active'));
+          activeBtn.classList.add('active');
+        }
       }
 
       if (catParam) {
@@ -557,13 +553,15 @@
       // Hook up sort dropdown
       const sortSelect = document.querySelector('.sort-select-compact');
       if (sortSelect) {
+        currentSort = sortSelect.value || 'featured';
         sortSelect.addEventListener('change', () => {
-          applySort();
-          applyFilters();
+          currentSort = sortSelect.value;
+          currentPage = 1;
+          fetchCatalogFromDatabase();
         });
       }
 
-      loadCatalogFromDatabase();
+      fetchCatalogFromDatabase();
     });
   </script>
 </body>

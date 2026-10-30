@@ -514,89 +514,10 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // Search Modal Elements & Logic
-  const searchModalOverlay = document.getElementById('searchModalOverlay');
-  const searchOpenBtns = document.querySelectorAll('.js-open-search');
-  const searchCloseBtn = document.getElementById('searchCloseBtn');
-  const searchInputField = document.getElementById('searchInputField');
-  const searchClearBtn = document.getElementById('searchClearBtn');
-  const searchSubmitBtn = document.getElementById('searchSubmitBtn');
-
-  function openSearch(e) {
-    if (e) e.preventDefault();
-    if (searchModalOverlay) {
-      searchModalOverlay.classList.add('active');
-      document.body.style.overflow = 'hidden';
-      setTimeout(() => {
-        if (searchInputField) searchInputField.focus();
-      }, 100);
-    }
-  }
-
-  function closeSearch() {
-    if (searchModalOverlay) {
-      searchModalOverlay.classList.remove('active');
-      document.body.style.overflow = '';
-    }
-  }
-
-  function executeSearch() {
-    const query = searchInputField ? searchInputField.value.trim() : '';
-    if (query) {
-      window.location.href = `shop.html?search=${encodeURIComponent(query)}`;
-    } else {
-      window.location.href = 'shop.html';
-    }
-  }
-
-  searchOpenBtns.forEach(btn => btn.addEventListener('click', openSearch));
-  if (searchCloseBtn) searchCloseBtn.addEventListener('click', closeSearch);
-  if (searchModalOverlay) {
-    searchModalOverlay.addEventListener('click', (e) => {
-      if (e.target === searchModalOverlay) closeSearch();
-    });
-  }
-
-  if (searchInputField) {
-    searchInputField.addEventListener('input', () => {
-      if (searchClearBtn) {
-        if (searchInputField.value.length > 0) {
-          searchClearBtn.classList.add('visible');
-        } else {
-          searchClearBtn.classList.remove('visible');
-        }
-      }
-    });
-
-    searchInputField.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter') {
-        e.preventDefault();
-        executeSearch();
-      }
-    });
-  }
-
-  if (searchClearBtn) {
-    searchClearBtn.addEventListener('click', () => {
-      if (searchInputField) {
-        searchInputField.value = '';
-        searchInputField.focus();
-      }
-      searchClearBtn.classList.remove('visible');
-    });
-  }
-
-  if (searchSubmitBtn) {
-    searchSubmitBtn.addEventListener('click', (e) => {
-      e.preventDefault();
-      executeSearch();
-    });
-  }
-
   document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape') {
       closeCart();
-      closeSearch();
+      if (window.KrabeSearchModal) window.KrabeSearchModal.close();
       if (mobileNavDrawer) mobileNavDrawer.classList.remove('active');
     }
   });

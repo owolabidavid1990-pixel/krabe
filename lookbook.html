@@ -238,110 +238,9 @@
   </div>
 
   <!-- =========================================================================
-       8. GLOBAL FOOTER & SLIDE-OUT CART
+       8. GLOBAL FOOTER
        ========================================================================= -->
-  <footer class="site-footer">
-    <div class="container">
-      <div class="footer-top">
-        <div class="footer-brand">
-          <img src="assets/brand/krabe main logo.svg" alt="Krabe Kollection" style="height: 44px; margin-bottom: 14px;">
-          <p class="body-14" style="color: var(--color-text-muted);">
-            Premium Nigerian unisex fashion house combining ancestral textile heritage with contemporary minimalist tailoring.
-          </p>
-        </div>
-        <div>
-          <div class="footer-col-title body-12" style="font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; color: var(--color-text-main);">Shop Krabe</div>
-          <ul class="footer-nav-list body-14">
-            <li><a href="shop.html">Made-to-Order Collections</a></li>
-            <li><a href="bespoke.html">Bespoke Orders</a></li>
-          </ul>
-        </div>
-        <div>
-          <div class="footer-col-title body-12" style="font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; color: var(--color-text-main);">Customer Care</div>
-          <ul class="footer-nav-list body-14">
-            <li><a href="bespoke.html#appointment-section">Book Studio Appointment</a></li>
-            <li><a href="help.html#faq">FAQ &amp; Shipping Policy</a></li>
-          </ul>
-        </div>
-        <div>
-          <div class="footer-col-title body-12" style="font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; color: var(--color-text-main);">Private Releases</div>
-          <form class="newsletter-form" data-newsletter-form novalidate>
-            <input type="email" required placeholder="Enter your email address" class="newsletter-input body-14" autocomplete="email">
-            <button type="submit" class="newsletter-btn body-12">Subscribe</button>
-            <div class="newsletter-feedback body-12" style="display: none;" role="status"></div>
-          </form>
-        </div>
-      </div>
-      <div class="footer-bottom body-12" style="color: var(--color-text-muted);">
-        <div>&copy; 2026 Krabe Kollection. All rights reserved. Registered in Nigeria.</div>
-      </div>
-    </div>
-  </footer>
-
-  <!-- Search Popup Modal -->
-  <div class="search-modal-overlay" id="searchModalOverlay" aria-hidden="true">
-    <div class="search-modal" role="dialog" aria-modal="true" aria-labelledby="searchInputField">
-      <div class="search-modal-header">
-        <div class="search-input-wrap">
-          <svg class="search-icon-svg" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
-          </svg>
-          <input type="text" id="searchInputField" class="search-modal-input body-16" placeholder="Search Kaftans, Agbadas, Streetwear, Suits..." autocomplete="off">
-          <button type="button" class="search-clear-btn" id="searchClearBtn" aria-label="Clear search">✕</button>
-        </div>
-        <button type="button" class="search-close-btn body-12" id="searchCloseBtn" aria-label="Close search">Close (Esc)</button>
-      </div>
-
-      <div class="search-modal-body">
-        <div class="search-suggestions-block">
-          <span class="search-section-label body-12" style="font-weight: 700; color: var(--color-text-muted); text-transform: uppercase; letter-spacing: 1px;">Popular Searches</span>
-          <div class="search-tags">
-            <a href="shop.html?category=native" class="search-tag body-12">Native Kaftans</a>
-            <a href="shop.html?category=native" class="search-tag body-12">Ceremonial Agbada</a>
-            <a href="shop.html?category=streetwear" class="search-tag body-12">Luxury Streetwear</a>
-            <a href="shop.html?category=formal" class="search-tag body-12">Senator Suits</a>
-            <a href="shop.html?category=formal" class="search-tag body-12">Artisan Linen Shirts</a>
-          </div>
-        </div>
-
-        <div class="search-preview-block">
-          <span class="search-section-label body-12" style="font-weight: 700; color: var(--color-text-muted); text-transform: uppercase; letter-spacing: 1px;">Quick Suggestions</span>
-          <div class="search-results-list">
-            <a href="product.html" class="search-result-item">
-              <img src="Krabe Cloth Concepts_230226_205405_1.jpg" alt="Signature 3-Piece Agbada Set">
-              <div class="search-result-info">
-                <div class="search-result-title body-14" style="font-weight: 700; color: var(--color-obsidian);">Signature 3-Piece Agbada Set</div>
-                <div class="search-result-meta body-12" style="color: var(--color-text-muted);">Native Wear &bull; Ceremonial Luxe</div>
-                <div class="search-result-price body-14" style="font-weight: 700; color: var(--color-primary);">₦185,000</div>
-              </div>
-            </a>
-            <a href="shop.html?category=native" class="search-result-item">
-              <img src="assets/lookbook/lookbook_4_senator.jpg" alt="Krabe Structured Modern Kaftan">
-              <div class="search-result-info">
-                <div class="search-result-title body-14" style="font-weight: 700; color: var(--color-obsidian);">Krabe Structured Modern Kaftan</div>
-                <div class="search-result-meta body-12" style="color: var(--color-text-muted);">Native Wear &bull; Senator Cut</div>
-                <div class="search-result-price body-14" style="font-weight: 700; color: var(--color-primary);">₦120,000</div>
-              </div>
-            </a>
-            <a href="shop.html?category=streetwear" class="search-result-item">
-              <img src="assets/lookbook/lookbook_5_goldbrush.jpg" alt="Metallic Gold Brush Statement Tee">
-              <div class="search-result-info">
-                <div class="search-result-title body-14" style="font-weight: 700; color: var(--color-obsidian);">Metallic Gold Brush Statement Tee</div>
-                <div class="search-result-meta body-12" style="color: var(--color-text-muted);">Streetwear &bull; Unisex Limited Drop</div>
-                <div class="search-result-price body-14" style="font-weight: 700; color: var(--color-primary);">₦55,000</div>
-              </div>
-            </a>
-          </div>
-        </div>
-
-        <div class="search-modal-footer">
-          <button type="button" class="btn-search-submit body-14" id="searchSubmitBtn">
-            Explore All Made-to-Order &rarr;
-          </button>
-        </div>
-      </div>
-    </div>
-  </div>
+  <div id="krabeFooter"></div>
 
   <!-- Slide-Out Cart Drawer -->
   <div class="cart-drawer-overlay" id="cartOverlay" aria-hidden="true">
@@ -368,7 +267,9 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="js/config.js"></script>
   <script src="js/header.js"></script>
+  <script src="js/footer.js"></script>
   <script src="js/auth-modal.js"></script>
+  <script src="js/search-modal.js"></script>
   <script src="js/auth.js"></script>
   <script src="js/main.js"></script>
   <script>

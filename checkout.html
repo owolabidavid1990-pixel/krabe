@@ -84,7 +84,7 @@
                   <span>Lagos Studio Pickup</span>
                   <span class="body-12" style="color: var(--color-gold);">Free</span>
                 </div>
-                <div class="delivery-opt-desc body-12">Collect at Victoria Island flagship studio</div>
+                <div class="delivery-opt-desc body-12">Collect at <span data-store-area>our</span> flagship studio</div>
               </div>
             </div>
 
@@ -158,9 +158,9 @@
               <div style="display: flex; gap: 14px; align-items: flex-start;">
                 <span class="body-20">📍</span>
                 <div>
-                  <h4 class="h5" style="color: var(--color-obsidian); margin-bottom: 4px;">Krabe Flagship Studio &bull; Victoria Island</h4>
+                  <h4 class="h5" style="color: var(--color-obsidian); margin-bottom: 4px;">Krabe Flagship Studio &bull; <span data-store-area>Lagos Atelier</span></h4>
                   <p class="body-14" style="color: var(--color-text-muted); line-height: 1.6; margin-bottom: 8px;">
-                    Plot 12, Adeola Odeku Street, Victoria Island, Lagos.<br>
+                    <span data-store-address></span><br>
                     Pickup Hours: <strong>Monday – Saturday: 10:00 AM – 7:00 PM (WAT)</strong>
                   </p>
                   <span class="body-10" style="display: inline-block; background: rgba(197, 138, 85, 0.15); color: var(--color-gold); font-weight: 700; padding: 3px 8px; border-radius: var(--radius-sm);">
@@ -472,7 +472,8 @@
         pickInfo.style.display = 'block';
         shipping = 0;
         document.getElementById('summaryShipping').textContent = 'FREE';
-        document.getElementById('confirmFulfillmentMethod').textContent = 'Lagos Studio Pickup (Victoria Island Flagship)';
+        const pickupArea = (window.KrabeLocation && window.KrabeLocation.getArea()) || '';
+        document.getElementById('confirmFulfillmentMethod').textContent = `Lagos Studio Pickup${pickupArea ? ` (${pickupArea} Flagship)` : ''}`;
       }
       calculateTotal();
     }

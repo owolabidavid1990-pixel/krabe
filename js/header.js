@@ -39,7 +39,7 @@
             <a href="bespoke.html" class="nav-link nav-link-always body-14" data-link="bespoke">Bespoke</a>
             <a href="shop.html?category=native" class="nav-link nav-link-extra body-14" data-link="native">Native Wear</a>
             <a href="shop.html?category=streetwear" class="nav-link nav-link-extra body-14" data-link="streetwear">Streetwear</a>
-            <a href="about.html" class="nav-link nav-link-always body-14" data-link="about">Our Story</a>
+            <a href="about.html" class="nav-link nav-link-extra body-14" data-link="about">Our Story</a>
           </nav>
 
           <!-- Header Utilities (Search, Account, WhatsApp, Cart, 3-Dot Menu) -->
@@ -59,7 +59,7 @@
             </a>
 
             <!-- Direct WhatsApp Concierge (Official Speech Bubble Icon) -->
-            <a href="https://wa.me/2348000000000?text=Hello%20Krabe%20Kollection,%20I%20would%20like%20to%20inquire%20about%20a%20piece" target="_blank" rel="noopener" class="action-btn" aria-label="WhatsApp Stylist" title="Chat with Stylist">
+            <a href="https://wa.me/2349162166470?text=Hello%20Krabe%20Kollection,%20I%20would%20like%20to%20inquire%20about%20a%20piece" target="_blank" rel="noopener" class="action-btn" aria-label="WhatsApp Stylist" title="Chat with Stylist">
               <svg viewBox="0 0 24 24" style="width: 22px; height: 22px;" fill="none">
                 <path d="M12.004 2C6.486 2 2 6.486 2 12.004c0 1.98.577 3.829 1.575 5.394L2.3 22l4.743-1.244A9.957 9.957 0 0012.004 22C17.522 22 22 17.522 22 12.004 22 6.486 17.522 2 12.004 2z" fill="#25D366"/>
                 <path d="M17.472 14.382c-.301-.15-1.78-.879-2.056-.98-.276-.1-.476-.15-.677.15-.2.301-.777.98-.952 1.18-.175.201-.351.226-.652.076-.301-.15-1.272-.469-2.423-1.496-.896-.799-1.502-1.787-1.678-2.088-.175-.301-.019-.464.132-.614.135-.135.301-.351.451-.527.15-.175.2-.301.301-.501.1-.2.05-.376-.025-.526-.075-.15-.677-1.632-.927-2.235-.244-.588-.493-.509-.677-.518-.175-.009-.376-.009-.577-.009-.2 0-.526.075-.802.376-.276.301-1.053 1.028-1.053 2.508 0 1.48 1.078 2.909 1.229 3.11.15.2 2.122 3.24 5.14 4.544.718.31 1.278.496 1.716.634.721.23 1.376.197 1.895.12.578-.087 1.78-.727 2.03-1.43.251-.703.251-1.304.176-1.43-.075-.126-.276-.201-.577-.351z" fill="#ffffff"/>
@@ -267,26 +267,34 @@
 
       // At or near top: return to normal in-flow display below announcement bar
       if (currentScrollY <= 40) {
-        header.classList.remove('header-sticky', 'header-hidden');
+        if (header.classList.contains('header-sticky')) {
+          header.classList.remove('header-sticky', 'header-hidden');
+          header.style.transition = '';
+        }
         if (container) container.style.minHeight = '';
         lastScrollY = currentScrollY;
         ticking = false;
         return;
       }
 
-      // Scrolling DOWN -> Hide header
+      // Scrolling DOWN -> Hide header if currently sticky; do nothing if already scrolled off naturally
       if (scrollDelta > threshold && currentScrollY > topOffset) {
-        if (container && !container.style.minHeight) {
-          container.style.minHeight = `${container.offsetHeight}px`;
+        if (header.classList.contains('header-sticky') && !header.classList.contains('header-hidden')) {
+          header.classList.add('header-hidden');
         }
-        header.classList.add('header-sticky', 'header-hidden');
       } 
       // Scrolling UP -> Reveal header smoothly
-      else if (scrollDelta < -threshold) {
+      else if (scrollDelta < -threshold && currentScrollY > topOffset) {
         if (container && !container.style.minHeight) {
           container.style.minHeight = `${container.offsetHeight}px`;
         }
-        header.classList.add('header-sticky');
+        // If not already sticky, initialize offscreen first without transition to eliminate any flicker
+        if (!header.classList.contains('header-sticky')) {
+          header.style.transition = 'none';
+          header.classList.add('header-sticky', 'header-hidden');
+          void header.offsetHeight; // force browser layout
+          header.style.transition = '';
+        }
         header.classList.remove('header-hidden');
       }
 

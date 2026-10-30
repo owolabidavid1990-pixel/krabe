@@ -725,6 +725,45 @@ ul {
   gap: 24px;
 }
 
+/* Horizontal repeating group for index.html Crafted-on-Demand collection */
+#homeFeaturedGrid {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scroll-snap-type: x mandatory;
+  gap: 20px;
+  padding-bottom: 16px;
+  scrollbar-width: thin;
+}
+
+#homeFeaturedGrid::-webkit-scrollbar {
+  height: 6px;
+}
+
+#homeFeaturedGrid::-webkit-scrollbar-track {
+  background: var(--color-sand);
+  border-radius: 3px;
+}
+
+#homeFeaturedGrid::-webkit-scrollbar-thumb {
+  background: var(--color-border);
+  border-radius: 3px;
+}
+
+#homeFeaturedGrid .product-card {
+  flex: 0 0 280px;
+  width: 280px;
+  min-width: 280px;
+  scroll-snap-align: start;
+}
+
+#homeFeaturedGrid > div:not(.product-card) {
+  width: 100%;
+  flex: 1 0 100%;
+}
+
 .complementary-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
@@ -1602,12 +1641,12 @@ ul {
     display: inline-flex !important;
   }
 
-  /* Only Made-to-Order, Bespoke, and Our Story are present; hide extra links */
+  /* Only Made-to-Order and Bespoke are present; hide extra links (Native Wear, Streetwear, Our Story) */
   .nav-link-extra {
     display: none !important;
   }
 
-  /* Ensure Made-to-Order, Bespoke, and Our Story stay present throughout */
+  /* Ensure Made-to-Order and Bespoke stay present throughout */
   .nav-links {
     display: flex !important;
     align-items: center;
@@ -2022,6 +2061,11 @@ ul {
   background: var(--color-primary);
   color: var(--color-white);
   border-color: var(--color-primary);
+}
+.page-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  pointer-events: none;
 }
 
 @media (max-width: 1024px) {
@@ -2739,10 +2783,6 @@ ul {
 .mobile-filter-container {
   background: var(--color-white);
   border-bottom: 1px solid var(--color-border);
-  position: sticky;
-  top: var(--header-height);
-  z-index: 95;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
 }
 
 /* Row 1: Gender Toggle */
@@ -4259,10 +4299,6 @@ ul {
 .help-nav-bar {
   background: var(--color-white);
   border-bottom: 1px solid var(--color-border);
-  position: sticky;
-  top: var(--header-height);
-  z-index: 90;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
 }
 
 .help-tabs-list {

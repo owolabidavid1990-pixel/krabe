@@ -84,8 +84,8 @@
             The Lagos Flagship Studio
           </h2>
           <p class="body-14" style="color: var(--color-text-muted); line-height: 1.6; margin-bottom: 24px;">
-            Plot 12, Adeola Odeku Street<br>
-            Victoria Island, Lagos State, Nigeria
+            <span data-store-street></span><br>
+            <span data-store-area></span>
           </p>
 
           <div class="body-14" style="display: flex; flex-direction: column; gap: 14px; margin-bottom: 28px;">
@@ -100,7 +100,7 @@
             </div>
             <div>
               <strong style="display: block; color: var(--color-obsidian); margin-bottom: 2px;">Concierge Email</strong>
-              <a href="mailto:concierge@krabekollection.com" style="color: var(--color-primary); font-weight: 600;">concierge@krabekollection.com</a>
+              <a href="mailto:krabeapparel@gmail.com" data-store-email-link style="color: var(--color-primary); font-weight: 600;"><span data-store-email>krabeapparel@gmail.com</span></a>
             </div>
           </div>
 
@@ -116,7 +116,7 @@
             Our client care concierge typically responds within 2 business hours.
           </p>
 
-          <form onsubmit="event.preventDefault(); alert('Message sent successfully! Our client concierge will be in touch shortly.'); this.reset();">
+          <form id="contactMessageForm" onsubmit="handleContactSubmit(event)" novalidate>
             <div class="form-group">
               <label for="msgName" class="body-12">Your Name</label>
               <input type="text" id="msgName" class="form-input body-14" placeholder="e.g. David Adeleke" required>
@@ -128,18 +128,23 @@
             <div class="form-group">
               <label for="msgSubject" class="body-12">Inquiry Topic</label>
               <select id="msgSubject" class="form-input body-14" style="padding: 12px 14px;">
-                <option>Bespoke Commission / Wedding Fitting</option>
-                <option>Made-to-Order Inquiry</option>
-                <option>Alteration &amp; Tailoring Adjustment</option>
-                <option>Press &amp; Collaborations</option>
-                <option>General Question</option>
+                <option value="Bespoke Commission / Wedding Fitting">Bespoke Commission / Wedding Fitting</option>
+                <option value="Made-to-Order Inquiry">Made-to-Order Inquiry</option>
+                <option value="Alteration &amp; Tailoring Adjustment">Alteration &amp; Tailoring Adjustment</option>
+                <option value="Press &amp; Collaborations">Press &amp; Collaborations</option>
+                <option value="General Question">General Question</option>
               </select>
             </div>
             <div class="form-group">
               <label for="msgBody" class="body-12">Your Message</label>
               <textarea id="msgBody" class="form-input body-14" rows="4" placeholder="How may we assist your sartorial journey?" required></textarea>
             </div>
-            <button type="submit" class="btn btn-primary body-14" style="width: 100%;">Transmit Message</button>
+
+            <div id="contactFormFeedback" class="body-12" style="display: none; padding: 12px 14px; border-radius: var(--radius-sm); margin-bottom: 14px;" role="status"></div>
+
+            <button type="submit" id="msgSubmitBtn" class="btn btn-primary body-14" style="width: 100%;">
+              <span>Send Message</span>
+            </button>
           </form>
         </div>
 
@@ -178,7 +183,7 @@
             We offer two effortless paths for bespoke tailoring:
             <ol style="margin-top: 8px; margin-left: 20px; line-height: 1.7;">
               <li><strong>Direct WhatsApp Consultation:</strong> Chat directly with our head stylist, share reference photos or measurements, and receive instant fabric recommendations and a quote.</li>
-              <li><strong>In-Person Studio Fitting:</strong> Book a private appointment at our Victoria Island flagship studio in Lagos, where our master tailors will take your exact physical measurements.</li>
+              <li><strong>In-Person Studio Fitting:</strong> Book a private appointment at our <span data-store-area>Lagos</span> flagship studio, where our master tailors will take your exact physical measurements.</li>
             </ol>
           </div>
         </div>
@@ -262,7 +267,7 @@
                 <td>₦4,500 standard rate</td>
               </tr>
               <tr>
-                <td><strong>Lagos Studio Pickup (Victoria Island)</strong></td>
+                <td><strong>Lagos Studio Pickup (<span data-store-area>Flagship Studio</span>)</strong></td>
                 <td>Ready within 24 hours</td>
                 <td><strong>FREE</strong></td>
               </tr>
@@ -273,7 +278,7 @@
         <div class="policy-section">
           <h3 class="policy-heading h4">3. Studio Pickup Collection Guidelines</h3>
           <p class="policy-text body-14">
-            When selecting <strong>"In-Store Lagos Studio Pickup"</strong> at checkout, your garment will be steamed and packaged in our luxury garment bag within 24 hours. You will receive an SMS and WhatsApp notification once your order is ready for collection at our Victoria Island flagship studio.
+            When selecting <strong>"In-Store Lagos Studio Pickup"</strong> at checkout, your garment will be steamed and packaged in our luxury garment bag within 24 hours. You will receive an SMS and WhatsApp notification once your order is ready for collection at our <span data-store-area>Lagos</span> flagship studio.
           </p>
           <div class="policy-callout body-12">
             <strong>Bonus Fitting:</strong> When picking up in person, you are welcome to use our private fitting suites. If any minor alteration is required, our on-site tailors will adjust it on the spot.
@@ -298,7 +303,7 @@
             Because sovereign African tailoring demands a perfect posture, all Made-to-Order garments purchased on our website qualify for <strong>one round of complimentary fitting alterations</strong> (such as waist tapering, sleeve adjustments, or trouser hemming).
           </p>
           <p class="policy-text body-14">
-            You may request an alteration within <strong>14 days of receipt</strong> directly through your <a href="account.html" style="color: var(--color-primary); font-weight: 700;">Client Portal</a> or by bringing the item to our Victoria Island studio.
+            You may request an alteration within <strong>14 days of receipt</strong> directly through your <a href="account.html" style="color: var(--color-primary); font-weight: 700;">Client Portal</a> or by bringing the item to our <span data-store-area>Lagos</span> studio.
           </p>
         </div>
 
@@ -320,7 +325,7 @@
             Because bespoke garments are handcrafted exclusively to your individual anatomy, <strong>bespoke commissions cannot be canceled or refunded once textile cutting has commenced</strong>. 
           </p>
           <div class="policy-callout body-12">
-            <strong>Fit Guarantee:</strong> We provide unlimited in-person fit adjustments at our Victoria Island studio until your bespoke ensemble fits to perfection.
+            <strong>Fit Guarantee:</strong> We provide unlimited in-person fit adjustments at our <span data-store-area>Lagos</span> studio until your bespoke ensemble fits to perfection.
           </div>
         </div>
 
@@ -396,73 +401,6 @@
   </main>
 
   <!-- =========================================================================
-       6. GLOBAL SEARCH POPUP MODAL
-       ========================================================================= -->
-  <div class="search-modal-overlay" id="searchModalOverlay" aria-hidden="true">
-    <div class="search-modal" role="dialog" aria-modal="true" aria-labelledby="searchInputField">
-      <div class="search-modal-header">
-        <div class="search-input-wrap">
-          <svg class="search-icon-svg" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
-          </svg>
-          <input type="text" id="searchInputField" class="search-modal-input body-16" placeholder="Search Kaftans, Agbadas, Streetwear, Suits..." autocomplete="off">
-          <button type="button" class="search-clear-btn body-14" id="searchClearBtn" aria-label="Clear search">✕</button>
-        </div>
-        <button type="button" class="search-close-btn body-12" id="searchCloseBtn" aria-label="Close search">Close (Esc)</button>
-      </div>
-
-      <div class="search-modal-body">
-        <div class="search-suggestions-block">
-          <span class="search-section-label body-12" style="font-weight: 700; color: var(--color-text-muted); text-transform: uppercase; letter-spacing: 1px;">Popular Searches</span>
-          <div class="search-tags">
-            <a href="shop.html?category=native" class="search-tag body-12">Native Kaftans</a>
-            <a href="shop.html?category=native" class="search-tag body-12">Ceremonial Agbada</a>
-            <a href="shop.html?category=streetwear" class="search-tag body-12">Luxury Streetwear</a>
-            <a href="shop.html?category=formal" class="search-tag body-12">Senator Suits</a>
-            <a href="shop.html?category=formal" class="search-tag body-12">Artisan Linen Shirts</a>
-          </div>
-        </div>
-
-        <div class="search-preview-block">
-          <span class="search-section-label body-12" style="font-weight: 700; color: var(--color-text-muted); text-transform: uppercase; letter-spacing: 1px;">Quick Suggestions</span>
-          <div class="search-results-list">
-            <a href="product.html" class="search-result-item">
-              <img src="Krabe Cloth Concepts_230226_205405_1.jpg" alt="Signature 3-Piece Agbada Set">
-              <div class="search-result-info">
-                <div class="search-result-title body-14" style="font-weight: 700; color: var(--color-obsidian);">Signature 3-Piece Agbada Set</div>
-                <div class="search-result-meta body-12" style="color: var(--color-text-muted);">Native Wear &bull; Ceremonial Luxe</div>
-                <div class="search-result-price body-14" style="font-weight: 700; color: var(--color-primary);">₦185,000</div>
-              </div>
-            </a>
-            <a href="shop.html?category=native" class="search-result-item">
-              <img src="assets/lookbook/lookbook_4_senator.jpg" alt="Krabe Structured Modern Kaftan">
-              <div class="search-result-info">
-                <div class="search-result-title body-14" style="font-weight: 700; color: var(--color-obsidian);">Krabe Structured Modern Kaftan</div>
-                <div class="search-result-meta body-12" style="color: var(--color-text-muted);">Native Wear &bull; Senator Cut</div>
-                <div class="search-result-price body-14" style="font-weight: 700; color: var(--color-primary);">₦120,000</div>
-              </div>
-            </a>
-            <a href="shop.html?category=streetwear" class="search-result-item">
-              <img src="assets/lookbook/lookbook_5_goldbrush.jpg" alt="Metallic Gold Brush Statement Tee">
-              <div class="search-result-info">
-                <div class="search-result-title body-14" style="font-weight: 700; color: var(--color-obsidian);">Metallic Gold Brush Statement Tee</div>
-                <div class="search-result-meta body-12" style="color: var(--color-text-muted);">Streetwear &bull; Unisex Limited Drop</div>
-                <div class="search-result-price body-14" style="font-weight: 700; color: var(--color-primary);">₦55,000</div>
-              </div>
-            </a>
-          </div>
-        </div>
-
-        <div class="search-modal-footer">
-          <button type="button" class="btn-search-submit body-14" id="searchSubmitBtn">
-            Explore All Made-to-Order &rarr;
-          </button>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- =========================================================================
        7. SLIDE-OUT CART DRAWER
        ========================================================================= -->
   <div class="cart-drawer-overlay" id="cartOverlay" aria-hidden="true">
@@ -488,57 +426,15 @@
   <!-- =========================================================================
        9. GLOBAL FOOTER
        ========================================================================= -->
-  <footer class="site-footer">
-    <div class="container">
-      <div class="footer-top">
-        <div class="footer-brand">
-          <img src="assets/brand/krabe main logo.svg" alt="Krabe Kollection" style="height: 44px; margin-bottom: 14px;">
-          <p class="body-14" style="color: var(--color-text-muted);">Premium Nigerian unisex fashion house combining ancestral textile heritage with contemporary minimalist tailoring.</p>
-          <div class="footer-social-links" style="margin-top: 18px;">
-            <a href="https://instagram.com" target="_blank" rel="noopener" class="social-circle" aria-label="Instagram">
-              <svg style="width: 18px; height: 18px;" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
-            </a>
-            <a href="https://tiktok.com" target="_blank" rel="noopener" class="social-circle" aria-label="TikTok">
-              <svg style="width: 16px; height: 16px;" fill="currentColor" viewBox="0 0 24 24"><path d="M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.05-2.89-.35-4.2-.97-.57-.26-1.1-.59-1.62-.93-.01 2.92.01 5.84-.02 8.75-.08 1.4-.54 2.79-1.35 3.94-1.31 1.92-3.58 3.17-5.91 3.21-1.43.08-2.86-.31-4.08-1.03-2.02-1.19-3.44-3.37-3.65-5.71-.02-.5-.03-1-.01-1.49.18-1.9 1.12-3.72 2.58-4.96 1.66-1.44 3.98-2.13 6.15-1.72.02 1.48-.04 2.96-.04 4.44-.99-.32-2.15-.23-3.02.37-.63.41-1.11 1.04-1.36 1.75-.21.51-.24 1.07-.14 1.61.24 1.64 1.82 3.02 3.5 2.87 1.12-.01 2.19-.66 2.77-1.61.19-.33.4-.67.41-1.06.1-1.79.06-3.57.07-5.36.01-4.03-.01-8.05.02-12.07z"/></svg>
-            </a>
-          </div>
-        </div>
-        <div>
-          <div class="footer-col-title body-12" style="font-weight: 700; color: var(--color-obsidian); text-transform: uppercase; letter-spacing: 1.5px;">Shop Krabe</div>
-          <ul class="footer-nav-list body-14">
-            <li><a href="shop.html">Made-to-Order Collections</a></li>
-            <li><a href="bespoke.html">Bespoke Orders</a></li>
-          </ul>
-        </div>
-        <div>
-          <div class="footer-col-title body-12" style="font-weight: 700; color: var(--color-obsidian); text-transform: uppercase; letter-spacing: 1.5px;">Customer Care</div>
-          <ul class="footer-nav-list body-14">
-            <li><a href="help.html#contact">Studio Address &amp; Map</a></li>
-            <li><a href="help.html#faq">Frequently Asked Questions</a></li>
-            <li><a href="help.html#shipping">Delivery &amp; Pickup Policy</a></li>
-            <li><a href="help.html#returns">Returns &amp; Alterations</a></li>
-          </ul>
-        </div>
-        <div>
-          <div class="footer-col-title body-12" style="font-weight: 700; color: var(--color-obsidian); text-transform: uppercase; letter-spacing: 1.5px;">Private Releases</div>
-          <form class="newsletter-form" data-newsletter-form novalidate>
-            <input type="email" required placeholder="Enter your email address" class="newsletter-input body-14" autocomplete="email">
-            <button type="submit" class="newsletter-btn body-12">Subscribe</button>
-            <div class="newsletter-feedback body-12" style="display: none;" role="status"></div>
-          </form>
-        </div>
-      </div>
-      <div class="footer-bottom body-12" style="color: var(--color-text-muted);">
-        <div>&copy; 2026 Krabe Kollection. All rights reserved. Registered in Nigeria.</div>
-      </div>
-    </div>
-  </footer>
+  <div id="krabeFooter"></div>
 
   <!-- Supabase SDK & Krabe Stack -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="js/config.js"></script>
   <script src="js/header.js"></script>
+  <script src="js/footer.js"></script>
   <script src="js/auth-modal.js"></script>
+  <script src="js/search-modal.js"></script>
   <script src="js/auth.js"></script>
   <script src="js/main.js"></script>
   <script>
@@ -589,12 +485,109 @@
     }
 
     // Auto-detect URL Hash on Page Load (e.g. help.html#faq or help.html#returns)
-    window.addEventListener('DOMContentLoaded', () => {
+    window.addEventListener('DOMContentLoaded', async () => {
       const hash = window.location.hash.replace('#', '');
       if (hash && ['contact', 'faq', 'shipping', 'returns', 'terms', 'privacy'].includes(hash)) {
         switchHelpTab(hash);
       }
+
+      // Pre-fill email and name if client is logged in
+      try {
+        const client = window.krabeClient || (window.KRABE_CONFIG && window.KRABE_CONFIG.getClient());
+        if (client && client.auth) {
+          const { data: { session } } = await client.auth.getSession();
+          if (session && session.user) {
+            const emailField = document.getElementById('msgEmail');
+            if (emailField && !emailField.value && session.user.email) {
+              emailField.value = session.user.email;
+            }
+            const nameField = document.getElementById('msgName');
+            if (nameField && !nameField.value && session.user.user_metadata) {
+              const meta = session.user.user_metadata;
+              const fullName = [meta.first_name, meta.last_name].filter(Boolean).join(' ') || meta.full_name || meta.name || '';
+              if (fullName) nameField.value = fullName;
+            }
+          }
+        }
+      } catch (_) {}
     });
+
+    // Contact Us Message Submission
+    async function handleContactSubmit(e) {
+      e.preventDefault();
+      const nameInput = document.getElementById('msgName');
+      const emailInput = document.getElementById('msgEmail');
+      const subjectInput = document.getElementById('msgSubject');
+      const bodyInput = document.getElementById('msgBody');
+      const submitBtn = document.getElementById('msgSubmitBtn');
+      const feedback = document.getElementById('contactFormFeedback');
+
+      const name = nameInput ? nameInput.value.trim() : '';
+      const email = emailInput ? emailInput.value.trim() : '';
+      const subject = subjectInput ? subjectInput.value : 'General Question';
+      const message = bodyInput ? bodyInput.value.trim() : '';
+
+      // Validation
+      if (!name || !email || !message) {
+        showContactFeedback('Please fill in your name, email, and message.', 'error');
+        return;
+      }
+
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(email)) {
+        showContactFeedback('Please enter a valid email address.', 'error');
+        return;
+      }
+
+      // Loading state
+      submitBtn.disabled = true;
+      submitBtn.style.opacity = '0.7';
+      const originalText = submitBtn.innerHTML;
+      submitBtn.innerHTML = '<span>Sending...</span>';
+      if (feedback) feedback.style.display = 'none';
+
+      try {
+        const client = window.krabeClient || (window.KRABE_CONFIG && window.KRABE_CONFIG.getClient());
+        if (!client) throw new Error('Database client not ready. Please try again.');
+
+        const { error } = await client
+          .from('contact_message')
+          .insert([{
+            name,
+            email: email.toLowerCase(),
+            subject,
+            message
+          }]);
+
+        if (error) throw error;
+
+        showContactFeedback('✓ Message sent successfully! Our client concierge will be in touch shortly.', 'success');
+        e.target.reset();
+      } catch (err) {
+        console.error('[Contact Form Error]:', err);
+        showContactFeedback('Could not send message right now. Please reach us directly on WhatsApp or email.', 'error');
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.style.opacity = '1';
+        submitBtn.innerHTML = originalText;
+      }
+    }
+
+    function showContactFeedback(msg, type) {
+      const fb = document.getElementById('contactFormFeedback');
+      if (!fb) return;
+      fb.textContent = msg;
+      fb.style.display = 'block';
+      if (type === 'success') {
+        fb.style.background = '#DEF7EC';
+        fb.style.color = '#0E9F6E';
+        fb.style.border = '1px solid #BCF0DA';
+      } else {
+        fb.style.background = '#FDE8E8';
+        fb.style.color = '#E02424';
+        fb.style.border = '1px solid #FBD5D5';
+      }
+    }
   </script>
 </body>
 </html>

@@ -104,16 +104,24 @@
   }
 
   // =========================================================================
-  // 3.5 DYNAMIC APP VARIABLES (WHATSAPP, INSTAGRAM & TIKTOK SYNC)
+  // 3.5 DYNAMIC APP VARIABLES (WHATSAPP, INSTAGRAM, TIKTOK & STORE LOCATION)
   // =========================================================================
   let cachedContact = null;
   let cachedInstagram = null;
   let cachedTikTok = null;
+  let cachedLocation = null;
+  let cachedEmail = 'krabeapparel@gmail.com';
 
   try {
     cachedContact = sessionStorage.getItem('krabe_whatsapp_contact') || localStorage.getItem('krabe_whatsapp_contact');
     cachedInstagram = sessionStorage.getItem('krabe_instagram') || localStorage.getItem('krabe_instagram');
     cachedTikTok = sessionStorage.getItem('krabe_tiktok') || localStorage.getItem('krabe_tiktok');
+    const storedEmail = sessionStorage.getItem('krabe_contact_email') || localStorage.getItem('krabe_contact_email');
+    if (storedEmail) cachedEmail = storedEmail;
+    const rawLoc = sessionStorage.getItem('krabe_store_location') || localStorage.getItem('krabe_store_location');
+    if (rawLoc) {
+      cachedLocation = JSON.parse(rawLoc);
+    }
   } catch (_) {}
 
   function cleanWhatsAppDigits(raw) {
@@ -214,6 +222,85 @@
     }));
   }
 
+  function applyEmailToDOM(rawEmail) {
+    const email = (rawEmail || cachedEmail || 'krabeapparel@gmail.com').trim();
+    if (!email) return;
+
+    // 1. Update studio contact mailto: links
+    document.querySelectorAll('a[href^="mailto:"], [data-store-email-link]').forEach(link => {
+      link.setAttribute('href', `mailto:${email}`);
+    });
+
+    // 2. Update all visible email display spans
+    document.querySelectorAll('[data-store-email], .js-contact-email').forEach(el => {
+      el.textContent = email;
+    });
+
+    // 3. Dispatch event
+    window.dispatchEvent(new CustomEvent('krabe:email:updated', {
+      detail: { email }
+    }));
+  }
+
+  function applyStoreLocationToDOM(loc) {
+    const targetLoc = loc || cachedLocation;
+    if (!targetLoc || typeof targetLoc !== 'object') return;
+
+    const formatted = (targetLoc.formatted_address || [targetLoc.street, targetLoc.area, targetLoc.city, targetLoc.state, targetLoc.country].filter(Boolean).join(', ')).trim();
+    const street = (targetLoc.street || targetLoc.name || '').trim();
+    const area = (targetLoc.area || targetLoc.neighborhood || targetLoc.city || '').trim();
+    const city = (targetLoc.city || '').trim();
+    const state = (targetLoc.state || '').trim();
+    const postal = (targetLoc.postal_code || '').trim();
+
+    let mapUrl = '';
+    if (targetLoc.geometry && targetLoc.geometry.location && targetLoc.geometry.location.lat) {
+      mapUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(formatted || `${targetLoc.geometry.location.lat},${targetLoc.geometry.location.lng}`)}`;
+    } else if (formatted) {
+      mapUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(formatted)}`;
+    }
+
+    if (formatted) {
+      document.querySelectorAll('[data-store-address]').forEach(el => {
+        el.textContent = formatted;
+      });
+    }
+    if (street) {
+      document.querySelectorAll('[data-store-street]').forEach(el => {
+        el.textContent = street;
+      });
+    }
+    if (area) {
+      document.querySelectorAll('[data-store-area]').forEach(el => {
+        el.textContent = area;
+      });
+    }
+    if (city) {
+      document.querySelectorAll('[data-store-city]').forEach(el => {
+        el.textContent = city;
+      });
+    }
+    if (state) {
+      document.querySelectorAll('[data-store-state]').forEach(el => {
+        el.textContent = state;
+      });
+    }
+    if (postal) {
+      document.querySelectorAll('[data-store-postal]').forEach(el => {
+        el.textContent = postal;
+      });
+    }
+    if (mapUrl) {
+      document.querySelectorAll('[data-store-map-link]').forEach(el => {
+        el.href = mapUrl;
+      });
+    }
+
+    window.dispatchEvent(new CustomEvent('krabe:location:updated', { 
+      detail: { location: targetLoc, formatted, area, mapUrl } 
+    }));
+  }
+
   async function fetchAppVariableContact() {
     const sb = client || initClient();
     if (!sb) {
@@ -222,7 +309,7 @@
     }
 
     try {
-      // Single call fetches all app_variables (WhatsApp, Instagram, TikTok, etc.)
+      // Single call fetches all app_variables (WhatsApp, Instagram, TikTok, store_location, etc.)
       const { data, error } = await sb
         .from('app_variable')
         .select('*')
@@ -263,22 +350,48 @@
 
         // Apply updated socials immediately
         applySocialsToDOM(cachedInstagram, cachedTikTok);
+
+        // 4. Store Location (JSONB)
+        const loc = data.store_location;
+        if (loc && typeof loc === 'object') {
+          cachedLocation = loc;
+          try {
+            sessionStorage.setItem('krabe_store_location', JSON.stringify(loc));
+            localStorage.setItem('krabe_store_location', JSON.stringify(loc));
+          } catch (_) {}
+          applyStoreLocationToDOM(loc);
+        }
+
+        // 5. Contact / Support Email
+        const email = data.contact_email || data['contact email'] || data.support_email || null;
+        if (email) {
+          cachedEmail = String(email).trim();
+          try {
+            sessionStorage.setItem('krabe_contact_email', cachedEmail);
+            localStorage.setItem('krabe_contact_email', cachedEmail);
+          } catch (_) {}
+          applyEmailToDOM(cachedEmail);
+        }
       }
     } catch (err) {
       console.warn('[Krabe Config] Could not load app_variables:', err);
     }
   }
 
-  // Eagerly apply cached contact and socials as soon as DOM is interactive
+  // Eagerly apply cached contact, socials, email and location as soon as DOM is interactive
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', () => {
       if (cachedContact) applyWhatsAppToDOM(cachedContact);
       applySocialsToDOM(cachedInstagram, cachedTikTok);
+      applyEmailToDOM(cachedEmail);
+      if (cachedLocation) applyStoreLocationToDOM(cachedLocation);
       fetchAppVariableContact();
     });
   } else {
     if (cachedContact) applyWhatsAppToDOM(cachedContact);
     applySocialsToDOM(cachedInstagram, cachedTikTok);
+    applyEmailToDOM(cachedEmail);
+    if (cachedLocation) applyStoreLocationToDOM(cachedLocation);
     fetchAppVariableContact();
   }
 
@@ -301,10 +414,21 @@
     getDisplay: () => formatPhoneDisplay(cachedContact),
     getInstagram: () => formatInstagramUrl(cachedInstagram),
     getTikTok: () => formatTikTokUrl(cachedTikTok),
+    getEmail: () => cachedEmail || 'krabeapparel@gmail.com',
     applyToDOM: () => {
       applyWhatsAppToDOM();
       applySocialsToDOM();
+      applyEmailToDOM();
     },
+    refresh: fetchAppVariableContact
+  };
+
+  window.KrabeLocation = {
+    getLocation: () => cachedLocation,
+    getAddress: () => cachedLocation ? (cachedLocation.formatted_address || [cachedLocation.street, cachedLocation.area, cachedLocation.city].filter(Boolean).join(', ')) : '',
+    getArea: () => cachedLocation ? (cachedLocation.area || cachedLocation.city || '') : '',
+    getCity: () => cachedLocation ? (cachedLocation.city || '') : '',
+    applyToDOM: applyStoreLocationToDOM,
     refresh: fetchAppVariableContact
   };
 
