@@ -182,10 +182,12 @@ CREATE TABLE IF NOT EXISTS public.cart_item (
   quantity integer NOT NULL DEFAULT 1,
   unit_price numeric NOT NULL,
   slug text,
+  custom_measurement_id uuid,
   CONSTRAINT cart_item_pkey PRIMARY KEY (id),
   CONSTRAINT cart_items_user_id_fkey FOREIGN KEY (user_id) REFERENCES auth.users(id) ON DELETE CASCADE,
   CONSTRAINT cart_items_product_variation_id_fkey FOREIGN KEY (product_variation_id) REFERENCES public.product_variation(id) ON DELETE CASCADE,
-  CONSTRAINT unique_user_cart_item UNIQUE (user_id, product_variation_id, selected_size)
+  CONSTRAINT cart_items_custom_measurement_id_fkey FOREIGN KEY (custom_measurement_id) REFERENCES public.custom_measurement(id) ON DELETE SET NULL,
+  CONSTRAINT unique_user_cart_item UNIQUE NULLS NOT DISTINCT (user_id, product_variation_id, selected_size, custom_measurement_id)
 );
 
 -- Table 7: Chart Display (Measurement guide diagrams by gender)
@@ -344,9 +346,12 @@ CREATE TABLE IF NOT EXISTS public.rtw_order_item (
   price numeric NOT NULL,
   quantity integer DEFAULT 1,
   slug text,
+  custom_measurement_id uuid,
+  measurement_snapshot jsonb DEFAULT NULL,
   CONSTRAINT rtw_order_item_pkey PRIMARY KEY (id),
   CONSTRAINT rtw_order_items_parent_order_id_fkey FOREIGN KEY (parent_order_id) REFERENCES public.ready_to_wear_order(id) ON DELETE CASCADE,
-  CONSTRAINT rtw_order_items_product_variant_id_fkey FOREIGN KEY (product_variant_id) REFERENCES public.product_variation(id) ON DELETE RESTRICT
+  CONSTRAINT rtw_order_items_product_variant_id_fkey FOREIGN KEY (product_variant_id) REFERENCES public.product_variation(id) ON DELETE RESTRICT,
+  CONSTRAINT rtw_order_items_custom_measurement_id_fkey FOREIGN KEY (custom_measurement_id) REFERENCES public.custom_measurement(id) ON DELETE SET NULL
 );
 
 -- Table 15: Newsletter Subscribers (Private releases & VIP drops)
@@ -745,6 +750,7 @@ AS $$
 DECLARE
   v_api_key text;
   v_contact_email text;
+  v_sender_email text;
   v_clean_name text;
   v_clean_subject text;
   v_clean_message text;
@@ -756,7 +762,7 @@ BEGIN
   WHERE name = 'BREVO_API_KEY' 
   LIMIT 1;
 
-  -- 2. Read studio support email from app_variable table
+  -- 2. Read studio support email from app_variable table (destination inbox)
   SELECT contact_email INTO v_contact_email
   FROM public.app_variable
   LIMIT 1;
@@ -765,12 +771,15 @@ BEGIN
     v_contact_email := 'krabeapparel@gmail.com';
   END IF;
 
-  -- 3. Sanitize inputs for HTML email body
+  -- 3. Verified Brevo sender (must match verified sender in Brevo dashboard)
+  v_sender_email := 'admin@krabe.store';
+
+  -- 4. Sanitize inputs for HTML email body
   v_clean_name := replace(replace(replace(NEW.name, '&', '&amp;'), '<', '&lt;'), '>', '&gt;');
   v_clean_subject := replace(replace(replace(NEW.subject, '&', '&amp;'), '<', '&lt;'), '>', '&gt;');
   v_clean_message := replace(replace(replace(NEW.message, '&', '&amp;'), '<', '&lt;'), '>', '&gt;');
 
-  -- 4. Construct luxury styled HTML notification
+  -- 5. Construct luxury styled HTML notification
   v_html_body := '<div style="font-family: -apple-system, BlinkMacSystemFont, ''Segoe UI'', Roboto, sans-serif; max-width: 600px; margin: 0 auto; padding: 24px; border: 1px solid #E2E8F0; border-radius: 8px; background: #FFFFFF;">'
     || '<div style="background-color: #121920; padding: 20px 24px; border-radius: 6px 6px 0 0; text-align: center;">'
     || '<h2 style="color: #FAF8F5; margin: 0; font-size: 20px; letter-spacing: 2px; text-transform: uppercase;">Krabe Kollection</h2>'
@@ -806,7 +815,7 @@ BEGIN
         body := jsonb_build_object(
           'sender', jsonb_build_object(
             'name', 'Krabe Concierge',
-            'email', v_contact_email
+            'email', v_sender_email
           ),
           'to', jsonb_build_array(
             jsonb_build_object(

@@ -519,7 +519,7 @@
 
       if (user && user.id && client) {
         try {
-          const { data, error } = await client
+          let { data, error } = await client
             .from('cart_item')
             .select(`
               id,
@@ -527,12 +527,18 @@
               unit_price,
               selected_size,
               product_variation_id,
-              product_variation:product_variation_id (
+              custom_measurement_id,
+              custom_measurement (
+                id,
+                label,
+                gender
+              ),
+              product_variation (
                 id,
                 color,
                 price,
                 main_image,
-                product:product_id (
+                product (
                   id,
                   title
                 )
@@ -540,18 +546,78 @@
             `)
             .eq('user_id', user.id);
 
+          // Fallback if schema cache is refreshing
+          if (error) {
+            console.warn('[Checkout] Direct embed notice, trying fallback join:', error.message);
+            const fallbackRes = await client
+              .from('cart_item')
+              .select(`
+                id,
+                quantity,
+                unit_price,
+                selected_size,
+                product_variation_id,
+                custom_measurement_id,
+                product_variation (
+                  id,
+                  color,
+                  price,
+                  main_image,
+                  product (
+                    id,
+                    title
+                  )
+                )
+              `)
+              .eq('user_id', user.id);
+
+            if (!fallbackRes.error && Array.isArray(fallbackRes.data)) {
+              data = fallbackRes.data;
+              error = null;
+
+              const cmIds = [...new Set(data.map(i => i.custom_measurement_id).filter(Boolean))];
+              if (cmIds.length > 0) {
+                try {
+                  const { data: cmData } = await client
+                    .from('custom_measurement')
+                    .select('id, label, gender')
+                    .in('id', cmIds);
+
+                  if (Array.isArray(cmData)) {
+                    const cmMap = Object.fromEntries(cmData.map(c => [String(c.id), c]));
+                    data.forEach(row => {
+                      if (row.custom_measurement_id && cmMap[String(row.custom_measurement_id)]) {
+                        row.custom_measurement = cmMap[String(row.custom_measurement_id)];
+                      }
+                    });
+                  }
+                } catch (cmErr) {
+                  console.warn('[Checkout] Could not fetch custom measurement names:', cmErr);
+                }
+              }
+            }
+          }
+
           if (!error && Array.isArray(data) && data.length > 0) {
             cart = data.map(row => {
               const pv = row.product_variation || {};
               const prod = pv.product || {};
+              const cm = row.custom_measurement || {};
               const itemSize = row.selected_size || 'M';
+              const isCustom = String(itemSize).toLowerCase() === 'custom';
+              const variantLabel = isCustom && cm.label
+                ? `${pv.color || 'Standard'} • Custom: ${cm.label}`
+                : `${pv.color || 'Standard'} • Size ${itemSize}`;
+
               return {
                 id: row.id,
                 variant_id: row.product_variation_id,
                 product_variation_id: row.product_variation_id,
                 title: prod.title || 'Signature Garment',
-                variant: `${pv.color || 'Standard'} • Size ${itemSize}`,
+                variant: variantLabel,
                 size: itemSize,
+                custom_measurement_id: row.custom_measurement_id || null,
+                custom_measurement_label: cm.label || null,
                 price: Number(row.unit_price) || Number(pv.price) || 0,
                 qty: Number(row.quantity) || 1,
                 image: pv.main_image || 'assets/brand/krabe main logo.svg'

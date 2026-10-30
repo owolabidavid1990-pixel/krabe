@@ -164,7 +164,7 @@ document.addEventListener('DOMContentLoaded', () => {
             <div class="cart-item-details">
               <h4 class="h4">${item.title}</h4>
               <div class="cart-item-meta body-12" style="display: flex; align-items: center; flex-wrap: wrap; gap: 6px;">
-                <span>${item.color || 'Standard'} &bull; Size: <strong>${item.size || 'M'}</strong></span>
+                <span>${item.color || 'Standard'} &bull; Size: <strong>${item.custom_measurement_label ? `Custom (${item.custom_measurement_label})` : (item.size || 'M')}</strong></span>
                 ${item.product_id ? `
                   <a href="product.html?id=${item.product_id}&size=${encodeURIComponent(item.size || 'M')}&color=${encodeURIComponent(item.color || '')}" class="js-cart-edit-link body-10" style="color: var(--color-primary); font-weight: 600; text-decoration: underline;">
                     Edit
@@ -267,7 +267,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (user && user.id && client) {
       try {
-        const { data, error } = await client
+        let { data, error } = await client
           .from('cart_item')
           .select(`
             id,
@@ -275,13 +275,19 @@ document.addEventListener('DOMContentLoaded', () => {
             unit_price,
             selected_size,
             product_variation_id,
-            product_variation:product_variation_id (
+            custom_measurement_id,
+            custom_measurement (
+              id,
+              label,
+              gender
+            ),
+            product_variation (
               id,
               color,
               color_code,
               price,
               main_image,
-              product:product_id (
+              product (
                 id,
                 title
               )
@@ -289,19 +295,81 @@ document.addEventListener('DOMContentLoaded', () => {
           `)
           .eq('user_id', user.id);
 
+        // Fallback: If PostgREST API schema cache is refreshing, fetch without custom_measurement embed
+        if (error) {
+          console.warn('[Krabe Cart] Direct embed notice, trying fallback join:', error.message);
+          const fallbackRes = await client
+            .from('cart_item')
+            .select(`
+              id,
+              quantity,
+              unit_price,
+              selected_size,
+              product_variation_id,
+              custom_measurement_id,
+              product_variation (
+                id,
+                color,
+                color_code,
+                price,
+                main_image,
+                product (
+                  id,
+                  title
+                )
+              )
+            `)
+            .eq('user_id', user.id);
+
+          if (!fallbackRes.error && Array.isArray(fallbackRes.data)) {
+            data = fallbackRes.data;
+            error = null;
+
+            // Fetch measurement details directly if any items have custom_measurement_id
+            const cmIds = [...new Set(data.map(i => i.custom_measurement_id).filter(Boolean))];
+            if (cmIds.length > 0) {
+              try {
+                const { data: cmData } = await client
+                  .from('custom_measurement')
+                  .select('id, label, gender')
+                  .in('id', cmIds);
+
+                if (Array.isArray(cmData)) {
+                  const cmMap = Object.fromEntries(cmData.map(c => [String(c.id), c]));
+                  data.forEach(row => {
+                    if (row.custom_measurement_id && cmMap[String(row.custom_measurement_id)]) {
+                      row.custom_measurement = cmMap[String(row.custom_measurement_id)];
+                    }
+                  });
+                }
+              } catch (cmErr) {
+                console.warn('[Krabe Cart] Could not fetch custom measurement names:', cmErr);
+              }
+            }
+          }
+        }
+
         if (!error && Array.isArray(data)) {
           cart = data.map(row => {
             const pv = row.product_variation || {};
             const prod = pv.product || {};
+            const cm = row.custom_measurement || {};
             const itemSize = row.selected_size || 'M';
+            const isCustom = String(itemSize).toLowerCase() === 'custom';
+            const displayVariant = isCustom && cm.label
+              ? `${pv.color || 'Standard'} / Custom: ${cm.label}`
+              : `${pv.color || 'Standard'} / ${itemSize}`;
+
             return {
               id: row.id,
               product_id: prod.id || null,
               variant_id: row.product_variation_id,
               product_variation_id: row.product_variation_id,
               title: prod.title || 'Signature Garment',
-              variant: `${pv.color || 'Standard'} / ${itemSize}`,
+              variant: displayVariant,
               size: itemSize,
+              custom_measurement_id: row.custom_measurement_id || null,
+              custom_measurement_label: cm.label || null,
               color: pv.color || 'Standard',
               price: Number(row.unit_price) || Number(pv.price) || 0,
               qty: Number(row.quantity) || 1,
@@ -322,26 +390,36 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // Add Item to Cart Function (handles DB persistence for logged-in, localStorage for guest with variant_id + size deduplication, capped at 100)
-  async function addToCart({ id, variant_id, product_variation_id, product_id, title, price, image, size, color, qty, setExact = false, skipOpen = false }) {
+  async function addToCart({ id, variant_id, product_variation_id, product_id, title, price, image, size, color, qty, custom_measurement_id = null, custom_measurement_label = null, setExact = false, skipOpen = false }) {
     const targetVariantId = variant_id || product_variation_id || id;
     const chosenSize = size || 'M';
     const chosenColor = color || 'Standard';
     const chosenQty = Math.min(100, Math.max(1, Number(qty) || 1));
-    const variantLabel = `${chosenColor} / ${chosenSize}`;
+    const isCustom = String(chosenSize).toLowerCase() === 'custom';
+    const variantLabel = isCustom && custom_measurement_label
+      ? `${chosenColor} / Custom: ${custom_measurement_label}`
+      : `${chosenColor} / ${chosenSize}`;
 
     const user = getSupabaseUser();
     const client = getSupabaseClient();
 
-    // 1. Logged-in user: Persist directly into Supabase cart_item using variant_id & selected_size
+    // 1. Logged-in user: Persist directly into Supabase cart_item using variant_id & selected_size & custom_measurement_id
     if (user && user.id && client && targetVariantId) {
       try {
-        const { data: existing } = await client
+        let query = client
           .from('cart_item')
           .select('id, quantity')
           .eq('user_id', user.id)
           .eq('product_variation_id', targetVariantId)
-          .eq('selected_size', chosenSize)
-          .maybeSingle();
+          .eq('selected_size', chosenSize);
+
+        if (custom_measurement_id) {
+          query = query.eq('custom_measurement_id', custom_measurement_id);
+        } else {
+          query = query.is('custom_measurement_id', null);
+        }
+
+        const { data: existing } = await query.maybeSingle();
 
         if (existing && existing.id) {
           const newQty = Math.min(100, Math.max(1, setExact ? chosenQty : ((Number(existing.quantity) || 0) + chosenQty)));
@@ -360,6 +438,7 @@ document.addEventListener('DOMContentLoaded', () => {
               user_id: user.id,
               product_variation_id: targetVariantId,
               selected_size: chosenSize,
+              custom_measurement_id: custom_measurement_id || null,
               quantity: chosenQty,
               unit_price: Number(price) || 0,
               slug: title ? title.toLowerCase().replace(/[^a-z0-9]+/g, '-') : null
@@ -378,6 +457,9 @@ document.addEventListener('DOMContentLoaded', () => {
       if (id && String(item.id) === String(id)) return true;
       const matchSize = String(item.size || 'M').toLowerCase() === String(chosenSize).toLowerCase();
       if (!matchSize) return false;
+      if (isCustom && custom_measurement_id && String(item.custom_measurement_id) !== String(custom_measurement_id)) {
+        return false;
+      }
       if (targetVariantId && (String(item.variant_id) === String(targetVariantId) || String(item.product_variation_id) === String(targetVariantId) || String(item.id) === String(targetVariantId))) {
         return true;
       }
@@ -393,13 +475,15 @@ document.addEventListener('DOMContentLoaded', () => {
       cart[existingIndex].qty = Math.min(100, Math.max(1, setExact ? chosenQty : (cart[existingIndex].qty + chosenQty)));
     } else {
       cart.push({
-        id: targetVariantId ? `${targetVariantId}-${chosenSize}` : Date.now(),
+        id: targetVariantId ? `${targetVariantId}-${chosenSize}${custom_measurement_id ? `-${custom_measurement_id}` : ''}` : Date.now(),
         product_id: product_id || null,
         variant_id: targetVariantId,
         product_variation_id: targetVariantId,
         title,
         variant: variantLabel,
         size: chosenSize,
+        custom_measurement_id: custom_measurement_id || null,
+        custom_measurement_label: custom_measurement_label || null,
         color: chosenColor,
         price: Number(price) || 0,
         qty: chosenQty,
@@ -413,7 +497,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // Remove Item from Cart Function (handles DB persistence for logged-in, localStorage for guest)
-  async function removeFromCart({ id, variant_id, product_variation_id, size, title, color }) {
+  async function removeFromCart({ id, variant_id, product_variation_id, size, title, color, custom_measurement_id }) {
     const targetVariantId = variant_id || product_variation_id;
     const targetSize = size || 'M';
     const user = getSupabaseUser();
@@ -426,6 +510,11 @@ document.addEventListener('DOMContentLoaded', () => {
           query = query.eq('id', id);
         } else if (targetVariantId) {
           query = query.eq('product_variation_id', targetVariantId).eq('selected_size', targetSize);
+          if (custom_measurement_id) {
+            query = query.eq('custom_measurement_id', custom_measurement_id);
+          } else {
+            query = query.is('custom_measurement_id', null);
+          }
         }
         await query;
         await loadActiveCart();
@@ -439,6 +528,9 @@ document.addEventListener('DOMContentLoaded', () => {
       if (id && String(item.id) === String(id)) return false;
       const matchSize = String(item.size || 'M').toLowerCase() === String(targetSize).toLowerCase();
       if (!matchSize) return true;
+      if (custom_measurement_id && String(item.custom_measurement_id) !== String(custom_measurement_id)) {
+        return true;
+      }
       if (targetVariantId && (String(item.variant_id) === String(targetVariantId) || String(item.product_variation_id) === String(targetVariantId))) {
         return false;
       }
@@ -456,9 +548,12 @@ document.addEventListener('DOMContentLoaded', () => {
   // Global Cart API for page synchronization
   window.KrabeCart = {
     getCart: () => cart,
-    getItem: (variantId, size, title, color) => cart.find(i => {
+    getItem: (variantId, size, title, color, custom_measurement_id) => cart.find(i => {
       const matchSize = String(i.size || 'M').toLowerCase() === String(size || 'M').toLowerCase();
       if (!matchSize) return false;
+      if (custom_measurement_id && String(i.custom_measurement_id) !== String(custom_measurement_id)) {
+        return false;
+      }
       if (variantId && (String(i.variant_id) === String(variantId) || String(i.product_variation_id) === String(variantId) || String(i.id) === String(variantId))) {
         return true;
       }
@@ -551,9 +646,36 @@ document.addEventListener('DOMContentLoaded', () => {
       const size = activeSizeBtn?.textContent.trim() || 'M';
       const color = document.getElementById('colorLabel')?.textContent.trim() || 'Standard';
 
+      const isCustom = String(size).toLowerCase() === 'custom';
+      const custom_measurement_id = activeSizeBtn?.dataset.customMeasurementId || window.pdpSelectedCustomMeasurementId || null;
+      const custom_measurement_label = activeSizeBtn?.dataset.customMeasurementLabel || window.pdpSelectedCustomMeasurementLabel || null;
+
+      if (isCustom) {
+        const currentUser = getSupabaseUser();
+        if (!currentUser || !currentUser.id) {
+          alert('Please sign in or create an account to select or create a custom measurement.');
+          if (window.KrabeAuthModal && typeof window.KrabeAuthModal.open === 'function') {
+            window.KrabeAuthModal.open('signup');
+          }
+          return;
+        }
+
+        if (!custom_measurement_id) {
+          if (typeof window.openCustomPickerModal === 'function') {
+            window.openCustomPickerModal();
+          } else {
+            alert('Please select a custom measurement first.');
+          }
+          return;
+        }
+      }
+
       const existingCartItem = cart.find(i => {
         const matchSize = String(i.size || 'M').toLowerCase() === String(size).toLowerCase();
         if (!matchSize) return false;
+        if (isCustom && custom_measurement_id && String(i.custom_measurement_id) !== String(custom_measurement_id)) {
+          return false;
+        }
         if (variant_id && (String(i.variant_id) === String(variant_id) || String(i.product_variation_id) === String(variant_id) || String(i.id) === String(variant_id))) {
           return true;
         }
@@ -567,14 +689,27 @@ document.addEventListener('DOMContentLoaded', () => {
 
       if (existingCartItem) {
         // In cart: remove item from shopping bag
-        await removeFromCart({ id: existingCartItem.id, variant_id, size, title, color });
+        await removeFromCart({ id: existingCartItem.id, variant_id, size, title, color, custom_measurement_id });
         const qtyValEl = document.getElementById('pdpQtyVal');
         if (qtyValEl) qtyValEl.textContent = '1';
       } else {
         // Not in cart: add exact staged quantity to bag (capped at 100)
         const qtyValEl = document.getElementById('pdpQtyVal');
         const stagedQty = Math.min(100, Math.max(1, Number(qtyValEl?.textContent.trim()) || 1));
-        await addToCart({ variant_id, product_variation_id: variant_id, product_id, title, price, image, size, color, qty: stagedQty, setExact: true });
+        await addToCart({ 
+          variant_id, 
+          product_variation_id: variant_id, 
+          product_id, 
+          title, 
+          price, 
+          image, 
+          size, 
+          color, 
+          qty: stagedQty, 
+          custom_measurement_id, 
+          custom_measurement_label, 
+          setExact: true 
+        });
       }
     });
   }

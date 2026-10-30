@@ -244,15 +244,23 @@
           const qtyToAdd = Number(item.qty) || 1;
           const unitPrice = Number(item.price) || 0;
           const chosenSize = item.size || 'M';
+          const customMeasurementId = item.custom_measurement_id || null;
 
-          // Check if user already has this variation with this size in cart_item
-          const { data: existing } = await client
+          // Check if user already has this variation with this size & measurement in cart_item
+          let query = client
             .from('cart_item')
             .select('id, quantity')
             .eq('user_id', user.id)
             .eq('product_variation_id', variationId)
-            .eq('selected_size', chosenSize)
-            .maybeSingle();
+            .eq('selected_size', chosenSize);
+
+          if (customMeasurementId) {
+            query = query.eq('custom_measurement_id', customMeasurementId);
+          } else {
+            query = query.is('custom_measurement_id', null);
+          }
+
+          const { data: existing } = await query.maybeSingle();
 
           if (existing && existing.id) {
             const updatedQty = (Number(existing.quantity) || 0) + qtyToAdd;
@@ -271,6 +279,7 @@
                 user_id: user.id,
                 product_variation_id: variationId,
                 selected_size: chosenSize,
+                custom_measurement_id: customMeasurementId,
                 quantity: qtyToAdd,
                 unit_price: unitPrice,
                 slug: item.title ? item.title.toLowerCase().replace(/[^a-z0-9]+/g, '-') : null

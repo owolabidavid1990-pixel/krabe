@@ -2431,19 +2431,54 @@ ul {
   color: var(--color-obsidian);
 }
 
-.size-table {
+.size-chart-table {
   width: 100%;
   border-collapse: collapse;
-  margin: 20px 0;
+  table-layout: fixed;
+  text-align: center;
+  background: #FFFFFF;
 }
-.size-table th, .size-table td {
-  padding: 12px 14px;
+
+.size-chart-table th,
+.size-chart-table td {
+  padding: 12px 8px;
+  text-align: center;
+  vertical-align: middle;
+  white-space: nowrap !important;
   border-bottom: 1px solid var(--color-border);
-  text-align: left;
+  font-variant-numeric: tabular-nums;
+  box-sizing: border-box;
 }
-.size-table th {
-  background: var(--color-sand);
+
+.size-chart-table th {
   font-weight: 700;
+  letter-spacing: 0.3px;
+}
+
+.size-chart-table td {
+  font-size: 12.5px;
+  color: var(--color-obsidian);
+}
+
+.size-chart-table .col-size-sticky {
+  position: sticky;
+  left: 0;
+  z-index: 2;
+  background: var(--color-sand) !important;
+  border-right: 2px solid var(--color-border);
+  box-shadow: 2px 0 5px rgba(0, 0, 0, 0.04);
+}
+
+.size-chart-table .col-divider {
+  border-right: 1px solid var(--color-border);
+}
+
+.size-chart-table tr:hover td {
+  background: #FAF8F5;
+}
+
+.size-chart-table tr:hover td.col-size-sticky {
+  background: #F1ECE4 !important;
 }
 
 @media (max-width: 900px) {

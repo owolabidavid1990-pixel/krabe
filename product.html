@@ -117,6 +117,11 @@
             <button type="button" class="size-btn body-12" onclick="selectSize(this)">XXL</button>
             <button type="button" class="size-btn body-12" onclick="selectSize(this)">Custom</button>
           </div>
+          <!-- Selected Custom Fit Pill -->
+          <div id="selectedCustomFitPill" style="display: none; margin-top: 10px; align-items: center; justify-content: space-between; background: var(--color-sand); padding: 8px 14px; border-radius: var(--radius-sm); border: 1px solid var(--color-border); font-size: 13px;">
+            <span style="color: var(--color-obsidian);">✓ Custom Measurement: <strong id="customFitLabelDisplay">My Measurement</strong></span>
+            <button type="button" onclick="openCustomPickerModal()" style="background: none; border: none; color: var(--color-primary); text-decoration: underline; cursor: pointer; font-size: 12px; font-weight: 600; padding: 0;">Change</button>
+          </div>
         </div>
 
         <!-- Color Swatches -->
@@ -201,75 +206,388 @@
   </section>
 
   <!-- =========================================================================
-       6. SIZE GUIDE MODAL (Reusable Component)
+       6. SIZE GUIDE & MEASUREMENTS MODAL (International Men's & Women's)
        ========================================================================= -->
-  <div class="modal-overlay" id="sizeGuideModal" aria-hidden="true">
-    <div class="modal-card">
-      <button type="button" class="modal-close" onclick="closeSizeGuideModal()" aria-label="Close Size Guide">
-        <svg style="width: 22px; height: 22px;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+  <div class="modal-overlay" id="sizeGuideModal" aria-hidden="true" onclick="if(event.target === this) closeSizeGuideModal()">
+    <div class="modal-card" style="max-width: 1040px; width: 95%; max-height: 90vh; overflow-y: auto; padding: 36px 30px; position: relative; background: var(--color-bone, #FAF8F5); border: 1px solid var(--color-border); border-radius: 8px; box-shadow: 0 20px 40px rgba(0,0,0,0.25);">
+      <button type="button" class="modal-close" onclick="closeSizeGuideModal()" aria-label="Close Size Guide" style="position: absolute; top: 22px; right: 22px; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; border-radius: 50%; background: rgba(0,0,0,0.05); border: none; cursor: pointer; color: var(--color-obsidian); transition: all 0.2s; z-index: 10;">
+        <svg style="width: 20px; height: 20px;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
       </button>
 
-      <h3 class="h3" style="margin-bottom: 6px;">Size Guide &amp; Body Measurements</h3>
-      <p class="body-14" style="color: var(--color-text-muted); margin-bottom: 20px;">All measurements are in inches. If you fall between sizes or have broader shoulders, we recommend sizing up or ordering a custom Bespoke piece.</p>
-
-      <table class="size-table body-12">
-        <thead>
-          <tr>
-            <th>Size Label</th>
-            <th>Chest (in)</th>
-            <th>Shoulder (in)</th>
-            <th>Sleeve (in)</th>
-            <th>Waist (in)</th>
-            <th>Trouser Length (in)</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td><strong>Small (S)</strong></td>
-            <td>36 - 38</td>
-            <td>17.0</td>
-            <td>24.5</td>
-            <td>30 - 32</td>
-            <td>40.0</td>
-          </tr>
-          <tr>
-            <td><strong>Medium (M)</strong></td>
-            <td>39 - 41</td>
-            <td>18.0</td>
-            <td>25.0</td>
-            <td>33 - 34</td>
-            <td>41.5</td>
-          </tr>
-          <tr>
-            <td><strong>Large (L)</strong></td>
-            <td>42 - 44</td>
-            <td>19.0</td>
-            <td>25.5</td>
-            <td>35 - 37</td>
-            <td>42.5</td>
-          </tr>
-          <tr>
-            <td><strong>Extra Large (XL)</strong></td>
-            <td>45 - 47</td>
-            <td>20.0</td>
-            <td>26.0</td>
-            <td>38 - 40</td>
-            <td>43.5</td>
-          </tr>
-          <tr>
-            <td><strong>Double XL (XXL)</strong></td>
-            <td>48 - 50</td>
-            <td>21.0</td>
-            <td>26.5</td>
-            <td>41 - 44</td>
-            <td>44.0</td>
-          </tr>
-        </tbody>
-      </table>
-
-      <div class="body-12" style="background: var(--color-sand); padding: 16px; border-radius: var(--radius-sm); line-height: 1.5; color: var(--color-text-main);">
-        <strong>How to Measure:</strong> Wrap a flexible measuring tape comfortably around the widest part of your chest, keeping tape level. For trouser length, measure from natural waistline to the top of your shoe.
+      <div style="margin-bottom: 22px; padding-bottom: 16px; border-bottom: 1px solid var(--color-border); padding-right: 56px;">
+        <div style="display: flex; align-items: baseline; justify-content: space-between; flex-wrap: wrap; gap: 8px; margin-bottom: 6px;">
+          <h3 class="h3" id="sizeGuideTitle" style="margin: 0; color: var(--color-obsidian); font-size: 20px; font-weight: 700;">International Size Guide &amp; Measurements</h3>
+          <span class="body-12" style="color: var(--color-gold); font-weight: 700; letter-spacing: 1px; text-transform: uppercase;">International Standard Chart</span>
+        </div>
+        <p class="body-14" id="sizeGuideSubtitle" style="color: var(--color-text-muted); margin: 0; font-size: 13.5px; line-height: 1.5;">
+          All body measurements in inches. Features universal international conversions for bespoke tailoring and ready-to-wear sizing.
+        </p>
       </div>
+
+      <!-- Gender Switcher Tabs -->
+      <div class="size-guide-gender-tabs" style="display: flex; gap: 8px; margin-bottom: 18px; border-bottom: 1px solid var(--color-border); padding-bottom: 12px;">
+        <button type="button" id="tabMaleGuide" class="btn body-12 active" onclick="switchSizeGuideTab('male')" style="padding: 7px 18px; border-radius: 20px; font-weight: 600; cursor: pointer; transition: all 0.2s ease; background: var(--color-obsidian); color: #FFFFFF;">
+          Men's Chart (Tops &amp; Trousers)
+        </button>
+        <button type="button" id="tabFemaleGuide" class="btn btn-outline body-12" onclick="switchSizeGuideTab('female')" style="padding: 7px 18px; border-radius: 20px; font-weight: 600; cursor: pointer; transition: all 0.2s ease; background: transparent; color: var(--color-obsidian);">
+          Women's Chart (Tops, Trousers, Skirts &amp; Gowns)
+        </button>
+      </div>
+
+      <!-- Scroll indicator on mobile -->
+      <div class="body-11" style="color: var(--color-text-muted); margin-bottom: 8px; text-align: right; display: block;">
+        <span>Swipe horizontally to view all specifications &rarr;</span>
+      </div>
+
+      <!-- MALE CONTENT: Full Tops & Trousers -->
+      <div id="maleGuideContent">
+        <div class="size-chart-scroll-wrap" style="overflow-x: auto; -webkit-overflow-scrolling: touch; border: 1px solid var(--color-border); border-radius: 6px; margin-bottom: 20px;">
+          <table class="size-chart-table body-12" style="min-width: 1680px;">
+            <colgroup>
+              <col style="width: 70px;">
+              <col style="width: 115px;">
+              <col style="width: 115px;">
+              <col style="width: 115px;">
+              <col style="width: 115px;">
+              <col style="width: 115px;">
+              <col style="width: 115px;">
+              <col style="width: 115px;">
+              <col style="width: 115px;">
+              <col style="width: 115px;">
+              <col style="width: 115px;">
+              <col style="width: 115px;">
+              <col style="width: 115px;">
+              <col style="width: 115px;">
+              <col style="width: 115px;">
+            </colgroup>
+            <thead>
+              <tr style="background: var(--color-sand);">
+                <th rowspan="2" class="col-size-sticky" style="vertical-align: middle; text-align: center; font-weight: 700;">Size</th>
+                <th colspan="2" class="col-divider" style="text-align: center; background: rgba(0,0,0,0.03);">International</th>
+                <th colspan="5" class="col-divider" style="text-align: center; background: rgba(68,99,123,0.08); color: var(--color-primary); font-weight: 700;">Top &amp; Shirt Specs (in)</th>
+                <th colspan="7" style="text-align: center; background: rgba(197,138,85,0.08); color: var(--color-obsidian); font-weight: 700;">Trouser Specs (in)</th>
+              </tr>
+              <tr style="background: var(--color-sand); font-size: 11px;">
+                <th class="col-divider">UK / US</th>
+                <th class="col-divider">EU</th>
+                <th>Chest</th>
+                <th>Shoulder</th>
+                <th>Neck</th>
+                <th>Sleeve</th>
+                <th class="col-divider">Top Length</th>
+                <th>Waist</th>
+                <th>Hip</th>
+                <th>Thigh</th>
+                <th>Flap</th>
+                <th>Inseam</th>
+                <th>Trouser Length</th>
+                <th>Ankle</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="col-size-sticky" style="font-weight: 700;">S</td>
+                <td class="col-divider">36 – 38</td>
+                <td class="col-divider">46 – 48</td>
+                <td>36 – 38</td>
+                <td>17.5</td>
+                <td>14.5 – 15.0</td>
+                <td>24.5</td>
+                <td class="col-divider">30.0</td>
+                <td>30 – 31</td>
+                <td>37 – 39</td>
+                <td>22.5</td>
+                <td>10.5</td>
+                <td>30.0</td>
+                <td>40.0</td>
+                <td>14.0</td>
+              </tr>
+              <tr>
+                <td class="col-size-sticky" style="font-weight: 700;">M</td>
+                <td class="col-divider">39 – 41</td>
+                <td class="col-divider">48 – 50</td>
+                <td>39 – 41</td>
+                <td>18.5</td>
+                <td>15.5 – 16.0</td>
+                <td>25.0</td>
+                <td class="col-divider">31.0</td>
+                <td>32 – 34</td>
+                <td>40 – 42</td>
+                <td>24.0</td>
+                <td>11.0</td>
+                <td>32.0</td>
+                <td>41.5</td>
+                <td>15.0</td>
+              </tr>
+              <tr>
+                <td class="col-size-sticky" style="font-weight: 700;">L</td>
+                <td class="col-divider">42 – 44</td>
+                <td class="col-divider">52 – 54</td>
+                <td>42 – 44</td>
+                <td>19.5</td>
+                <td>16.5 – 17.0</td>
+                <td>25.5</td>
+                <td class="col-divider">32.0</td>
+                <td>35 – 37</td>
+                <td>43 – 45</td>
+                <td>25.5</td>
+                <td>11.5</td>
+                <td>32.0</td>
+                <td>42.5</td>
+                <td>15.5</td>
+              </tr>
+              <tr>
+                <td class="col-size-sticky" style="font-weight: 700;">XL</td>
+                <td class="col-divider">45 – 47</td>
+                <td class="col-divider">56 – 58</td>
+                <td>45 – 47</td>
+                <td>20.5</td>
+                <td>17.5 – 18.0</td>
+                <td>26.0</td>
+                <td class="col-divider">33.0</td>
+                <td>38 – 40</td>
+                <td>46 – 48</td>
+                <td>27.0</td>
+                <td>12.0</td>
+                <td>33.0</td>
+                <td>43.5</td>
+                <td>16.0</td>
+              </tr>
+              <tr>
+                <td class="col-size-sticky" style="font-weight: 700;">XXL</td>
+                <td class="col-divider">48 – 50</td>
+                <td class="col-divider">60 – 62</td>
+                <td>48 – 50</td>
+                <td>21.5</td>
+                <td>18.5 – 19.0</td>
+                <td>26.5</td>
+                <td class="col-divider">34.0</td>
+                <td>41 – 44</td>
+                <td>49 – 51</td>
+                <td>28.5</td>
+                <td>12.5</td>
+                <td>34.0</td>
+                <td>44.5</td>
+                <td>16.5</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="body-12" style="background: var(--color-sand); padding: 18px 20px; border-radius: var(--radius-sm); line-height: 1.6; color: var(--color-text-main);">
+          <strong style="color: var(--color-obsidian); display: block; margin-bottom: 4px;">Men's Measuring Guidelines:</strong>
+          <ul style="margin: 0; padding-left: 18px; color: var(--color-text-muted);">
+            <li><strong>Chest:</strong> Measure horizontally around the fullest part of your chest, keeping tape level under armpits.</li>
+            <li><strong>Shoulder:</strong> Measure across the back from the edge of one shoulder bone across to the other.</li>
+            <li><strong>Neck:</strong> Measure around the base of the neck where the shirt/tunic collar rests.</li>
+            <li><strong>Waist:</strong> Measure around your natural waistline where you fasten your trousers.</li>
+            <li><strong>Flap (Crotch Rise):</strong> Distance from the front center waistband down to the base of the crotch seam.</li>
+            <li><strong>Inseam &amp; Trouser Length:</strong> Inseam is from crotch to ankle bone; Trouser Length is total outseam from waistband to shoe top.</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- FEMALE CONTENT: Full Tops, Trousers, Skirts & Gowns -->
+      <div id="femaleGuideContent" style="display: none;">
+        <div class="size-chart-scroll-wrap" style="overflow-x: auto; -webkit-overflow-scrolling: touch; border: 1px solid var(--color-border); border-radius: 6px; margin-bottom: 20px;">
+          <table class="size-chart-table body-12" style="min-width: 1910px;">
+            <colgroup>
+              <col style="width: 70px;">
+              <col style="width: 115px;">
+              <col style="width: 115px;">
+              <col style="width: 115px;">
+              <col style="width: 115px;">
+              <col style="width: 115px;">
+              <col style="width: 115px;">
+              <col style="width: 115px;">
+              <col style="width: 115px;">
+              <col style="width: 115px;">
+              <col style="width: 115px;">
+              <col style="width: 115px;">
+              <col style="width: 115px;">
+              <col style="width: 115px;">
+              <col style="width: 115px;">
+              <col style="width: 115px;">
+              <col style="width: 115px;">
+            </colgroup>
+            <thead>
+              <tr style="background: var(--color-sand);">
+                <th rowspan="2" class="col-size-sticky" style="vertical-align: middle; text-align: center; font-weight: 700;">Size</th>
+                <th colspan="3" class="col-divider" style="text-align: center; background: rgba(0,0,0,0.03);">International</th>
+                <th colspan="6" class="col-divider" style="text-align: center; background: rgba(68,99,123,0.08); color: var(--color-primary); font-weight: 700;">Top &amp; Gown Specs (in)</th>
+                <th colspan="7" style="text-align: center; background: rgba(197,138,85,0.08); color: var(--color-obsidian); font-weight: 700;">Trouser &amp; Skirt Specs (in)</th>
+              </tr>
+              <tr style="background: var(--color-sand); font-size: 11px;">
+                <th>UK</th>
+                <th>US</th>
+                <th class="col-divider">EU</th>
+                <th>Bust</th>
+                <th>Underbust</th>
+                <th>Shoulder</th>
+                <th>Sleeve</th>
+                <th>Top Length</th>
+                <th class="col-divider">Gown Length</th>
+                <th>Waist</th>
+                <th>Hip</th>
+                <th>Thigh</th>
+                <th>Flap</th>
+                <th>Inseam</th>
+                <th>Trouser Length</th>
+                <th>Skirt Length</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="col-size-sticky" style="font-weight: 700;">S</td>
+                <td>8 – 10</td>
+                <td>4 – 6</td>
+                <td class="col-divider">36 – 38</td>
+                <td>34 – 35</td>
+                <td>28 – 29</td>
+                <td>14.5</td>
+                <td>22.5</td>
+                <td>23.0</td>
+                <td class="col-divider">56.0</td>
+                <td>26 – 27</td>
+                <td>36 – 37</td>
+                <td>20.5</td>
+                <td>10.0</td>
+                <td>29.0</td>
+                <td>37.5</td>
+                <td>38.0</td>
+              </tr>
+              <tr>
+                <td class="col-size-sticky" style="font-weight: 700;">M</td>
+                <td>10 – 12</td>
+                <td>8 – 10</td>
+                <td class="col-divider">38 – 40</td>
+                <td>36 – 37</td>
+                <td>30 – 31</td>
+                <td>15.2</td>
+                <td>23.0</td>
+                <td>24.0</td>
+                <td class="col-divider">57.0</td>
+                <td>28 – 29</td>
+                <td>38.5 – 39.5</td>
+                <td>22.0</td>
+                <td>10.5</td>
+                <td>30.0</td>
+                <td>38.5</td>
+                <td>38.5</td>
+              </tr>
+              <tr>
+                <td class="col-size-sticky" style="font-weight: 700;">L</td>
+                <td>14 – 16</td>
+                <td>12 – 14</td>
+                <td class="col-divider">42 – 44</td>
+                <td>38.5 – 40</td>
+                <td>32 – 34</td>
+                <td>16.0</td>
+                <td>23.5</td>
+                <td>25.0</td>
+                <td class="col-divider">58.0</td>
+                <td>30.5 – 32</td>
+                <td>41 – 42.5</td>
+                <td>23.5</td>
+                <td>11.0</td>
+                <td>30.5</td>
+                <td>39.0</td>
+                <td>39.0</td>
+              </tr>
+              <tr>
+                <td class="col-size-sticky" style="font-weight: 700;">XL</td>
+                <td>16 – 18</td>
+                <td>16 – 18</td>
+                <td class="col-divider">46 – 48</td>
+                <td>41.5 – 43</td>
+                <td>35 – 37</td>
+                <td>16.8</td>
+                <td>24.0</td>
+                <td>26.0</td>
+                <td class="col-divider">58.5</td>
+                <td>33.5 – 35</td>
+                <td>44 – 45.5</td>
+                <td>25.0</td>
+                <td>11.5</td>
+                <td>31.0</td>
+                <td>39.5</td>
+                <td>39.5</td>
+              </tr>
+              <tr>
+                <td class="col-size-sticky" style="font-weight: 700;">XXL</td>
+                <td>20 – 22</td>
+                <td>20 – 22</td>
+                <td class="col-divider">50 – 52</td>
+                <td>44 – 46</td>
+                <td>38 – 40</td>
+                <td>17.5</td>
+                <td>24.5</td>
+                <td>27.0</td>
+                <td class="col-divider">59.0</td>
+                <td>36 – 38</td>
+                <td>47 – 49</td>
+                <td>26.5</td>
+                <td>12.0</td>
+                <td>31.0</td>
+                <td>40.0</td>
+                <td>40.0</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="body-12" style="background: var(--color-sand); padding: 18px 20px; border-radius: var(--radius-sm); line-height: 1.6; color: var(--color-text-main);">
+          <strong style="color: var(--color-obsidian); display: block; margin-bottom: 4px;">Women's Measuring Guidelines:</strong>
+          <ul style="margin: 0; padding-left: 18px; color: var(--color-text-muted);">
+            <li><strong>Bust &amp; Underbust:</strong> Measure across the fullest point of bust (wearing a non-padded bra), and directly below the bust line.</li>
+            <li><strong>Waist &amp; Hip:</strong> Measure the narrowest point of your natural waist (approx. 1–2 in above navel), and fullest curve of your hips/seat.</li>
+            <li><strong>Flap (Crotch Rise):</strong> Distance from the front center waistband down to the base of the crotch seam.</li>
+            <li><strong>Inseam &amp; Trouser Length:</strong> Inseam is from crotch seam to ankle hem; Trouser Length is total outseam from waistband to outer hem.</li>
+            <li><strong>Skirt &amp; Gown Length:</strong> Skirt length is measured from waist to hem; Gown length is measured from high shoulder point straight to hem.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- =========================================================================
+       CUSTOM MEASUREMENT MODAL (Unified List & In-Place Creation)
+       ========================================================================= -->
+  <div class="modal-overlay" id="customMeasurementPickerModal" aria-hidden="true" onclick="if(event.target === this) closeCustomPickerModal()">
+    <div class="modal-card" style="max-width: 760px; width: 100%; max-height: 88vh; overflow-y: auto; padding: 36px 30px; position: relative; background: var(--color-bone, #FAF8F5); border: 1px solid var(--color-border); border-radius: 8px; box-shadow: 0 20px 40px rgba(0,0,0,0.25);">
+      
+      <!-- Close Button with generous clearance & bottom gap -->
+      <button type="button" class="modal-close" onclick="closeCustomPickerModal()" aria-label="Close Custom Measurement Selector" style="position: absolute; top: 22px; right: 22px; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; border-radius: 50%; background: rgba(0,0,0,0.05); border: none; cursor: pointer; color: var(--color-obsidian); transition: all 0.2s; z-index: 10;">
+        <svg style="width: 20px; height: 20px;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+      </button>
+
+      <!-- ==========================================
+           VIEW 1: SAVED CUSTOM MEASUREMENTS LIST
+           ========================================== -->
+      <div id="pdpMeasurementListView">
+        <div style="margin-bottom: 24px; padding-bottom: 16px; border-bottom: 1px solid var(--color-border); padding-right: 56px;">
+          <div style="display: flex; align-items: baseline; justify-content: space-between; flex-wrap: wrap; gap: 8px; margin-bottom: 6px;">
+            <h3 class="h3" style="margin: 0; color: var(--color-obsidian); font-size: 20px; font-weight: 700;">Select Custom Measurement</h3>
+            <span class="body-12" style="color: var(--color-gold); font-weight: 700; letter-spacing: 1px; text-transform: uppercase;">Private Client Vault</span>
+          </div>
+          <p class="body-14" style="color: var(--color-text-muted); margin: 0; font-size: 13.5px; line-height: 1.5;">
+            Choose a saved custom measurement so our master artisans can cut this garment to your exact fit, or create a new one.
+          </p>
+        </div>
+
+        <!-- Picker Content (Injected dynamically) -->
+        <div id="customMeasurementListContainer" style="min-height: 180px; max-height: 58vh; overflow-y: auto; padding-right: 4px;">
+          <!-- Injected via JavaScript -->
+        </div>
+      </div>
+
+      <!-- ==========================================
+           VIEW 2: CREATE CUSTOM MEASUREMENT IN-PLACE
+           ========================================== -->
+      <div id="pdpMeasurementCreateView" style="display: none;">
+        <!-- Dropped in dynamically via window.KrabeMeasurementForm.mount() -->
+      </div>
+
     </div>
   </div>
 
@@ -307,11 +625,44 @@
   <script src="js/auth-modal.js"></script>
   <script src="js/search-modal.js"></script>
   <script src="js/auth.js"></script>
+  <script src="js/measurement-modal.js"></script>
   <script src="js/main.js"></script>
   <script>
     // PDP Central State (Populated dynamically from Supabase database)
     let currentProduct = null;
     let currentVariant = null;
+    let pdpSelectedCustomMeasurementId = null;
+    let pdpSelectedCustomMeasurementLabel = null;
+    let loadedCustomProfiles = [];
+    window.pdpSelectedCustomMeasurementId = null;
+    window.pdpSelectedCustomMeasurementLabel = null;
+
+    function getActiveUser() {
+      if (window.krabeUser) return window.krabeUser;
+      if (window.krabeSession && window.krabeSession.user) return window.krabeSession.user;
+      if (window.KrabeAuth && typeof window.KrabeAuth.getUser === 'function') {
+        return window.KrabeAuth.getUser();
+      }
+      return null;
+    }
+
+    function getActiveClient() {
+      if (window.krabeClient) return window.krabeClient;
+      if (window.KRABE_CONFIG && typeof window.KRABE_CONFIG.getClient === 'function') {
+        return window.KRABE_CONFIG.getClient();
+      }
+      return null;
+    }
+
+    function escapeHtml(str) {
+      if (!str) return '';
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+    }
 
     function swapPdpImg(btn, imgSrc) {
       document.querySelectorAll('.pdp-thumbnails .thumb-btn').forEach(b => b.classList.remove('active'));
@@ -321,11 +672,260 @@
     }
 
     function selectSize(btn) {
+      const sizeText = btn.textContent.trim();
+
+      if (sizeText.toLowerCase() === 'custom') {
+        const user = getActiveUser();
+        if (!user || !user.id) {
+          alert('Please sign in or create an account to select or create a custom measurement.');
+          if (window.KrabeAuthModal && typeof window.KrabeAuthModal.open === 'function') {
+            window.KrabeAuthModal.open('signup');
+          }
+          return;
+        }
+
+        if (pdpSelectedCustomMeasurementId) {
+          document.querySelectorAll('.size-btn').forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+          btn.dataset.customMeasurementId = pdpSelectedCustomMeasurementId;
+          btn.dataset.customMeasurementLabel = pdpSelectedCustomMeasurementLabel || 'Custom Fit';
+          const pill = document.getElementById('selectedCustomFitPill');
+          if (pill) pill.style.display = 'flex';
+          pdpQty = 1;
+          syncPdpQtyWithCart();
+          return;
+        }
+
+        // Open the custom measurement picker
+        openCustomPickerModal();
+        return;
+      }
+
+      // Standard size
       document.querySelectorAll('.size-btn').forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
+      const pill = document.getElementById('selectedCustomFitPill');
+      if (pill) pill.style.display = 'none';
       pdpQty = 1;
       syncPdpQtyWithCart();
     }
+
+    async function openCustomPickerModal() {
+      const modal = document.getElementById('customMeasurementPickerModal');
+      if (!modal) return;
+      modal.classList.add('active');
+      document.body.style.overflow = 'hidden';
+      switchToMeasurementListView();
+    }
+
+    function closeCustomPickerModal() {
+      const modal = document.getElementById('customMeasurementPickerModal');
+      if (!modal) return;
+      modal.classList.remove('active');
+      document.body.style.overflow = '';
+    }
+    window.openCustomPickerModal = openCustomPickerModal;
+    window.closeCustomPickerModal = closeCustomPickerModal;
+
+    function switchToCreateMeasurementView() {
+      const listView = document.getElementById('pdpMeasurementListView');
+      const createView = document.getElementById('pdpMeasurementCreateView');
+      if (listView) listView.style.display = 'none';
+      if (createView) {
+        createView.style.display = 'block';
+
+        const defaultGender = currentProduct?.gender
+          ? (String(currentProduct.gender).toLowerCase().trim() === 'female' ? 'female' : 'male')
+          : 'male';
+
+        if (window.KrabeMeasurementForm && typeof window.KrabeMeasurementForm.mount === 'function') {
+          window.KrabeMeasurementForm.mount(createView, {
+            gender: defaultGender,
+            submitLabel: 'Save &amp; Apply Custom Measurement &rarr;',
+            onBack: switchToMeasurementListView,
+            onSuccess: (newMeasurement) => {
+              loadedCustomProfiles.unshift(newMeasurement);
+              applySelectedCustomMeasurement(newMeasurement);
+              closeCustomPickerModal();
+            }
+          });
+        }
+
+        const card = createView.closest('.modal-card');
+        if (card) card.scrollTop = 0;
+      }
+    }
+    window.switchToCreateMeasurementView = switchToCreateMeasurementView;
+
+    function switchToMeasurementListView() {
+      const listView = document.getElementById('pdpMeasurementListView');
+      const createView = document.getElementById('pdpMeasurementCreateView');
+      if (createView) createView.style.display = 'none';
+      if (listView) listView.style.display = 'block';
+      loadUserCustomMeasurements();
+    }
+    window.switchToMeasurementListView = switchToMeasurementListView;
+
+    async function loadUserCustomMeasurements() {
+      const container = document.getElementById('customMeasurementListContainer');
+      if (!container) return;
+
+      const user = getActiveUser();
+      const client = getActiveClient();
+
+      if (!user || !user.id) {
+        container.innerHTML = `
+          <div style="text-align: center; padding: 36px 16px;">
+            <p class="body-14" style="color: var(--color-text-muted); margin-bottom: 16px;">Please sign in to view your saved custom measurements.</p>
+            <button type="button" class="btn body-13" onclick="closeCustomPickerModal(); if(window.KrabeAuthModal) window.KrabeAuthModal.open('signin');" style="background: var(--color-obsidian); color: #fff; padding: 9px 20px; border-radius: 4px;">Sign In</button>
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = `
+        <div style="text-align: center; padding: 48px 16px; color: var(--color-text-muted);">
+          <div style="display: inline-block; width: 28px; height: 28px; border: 2.5px solid var(--color-border); border-top-color: var(--color-obsidian); border-radius: 50%; animation: spin 0.8s linear infinite;"></div>
+          <p class="body-13" style="margin-top: 12px;">Loading your private vault measurements...</p>
+        </div>
+      `;
+
+      try {
+        const { data: measurements, error } = await client
+          .from('custom_measurement')
+          .select('*')
+          .eq('user_id', user.id)
+          .order('created_at', { ascending: false });
+
+        if (error) throw error;
+        loadedCustomProfiles = Array.isArray(measurements) ? measurements : [];
+
+        if (loadedCustomProfiles.length === 0) {
+          // Empty state
+          container.innerHTML = `
+            <div style="text-align: center; padding: 36px 20px; background: var(--color-sand); border-radius: var(--radius-sm); border: 1px dashed var(--color-border);">
+              <div style="font-size: 32px; margin-bottom: 10px;">✂️</div>
+              <h4 class="h4" style="margin: 0 0 8px 0; color: var(--color-obsidian); font-weight: 700;">No Saved Custom Measurements Found</h4>
+              <p class="body-14" style="color: var(--color-text-muted); max-width: 440px; margin: 0 auto 20px auto; line-height: 1.5;">
+                You haven't saved any custom measurements yet. Create your first custom measurement now so our master artisans can hand-tailor this garment to your exact body.
+              </p>
+              <button type="button" class="btn body-13" onclick="switchToCreateMeasurementView()" style="padding: 11px 24px; background: var(--color-obsidian); color: #FFFFFF; font-weight: 700; border-radius: 4px; cursor: pointer; border: none;">
+                + Add Custom Measurement
+              </button>
+            </div>
+          `;
+          return;
+        }
+
+        // List of custom measurements
+        container.innerHTML = `
+          <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; padding-bottom: 12px; border-bottom: 1px solid var(--color-border);">
+            <span class="body-12" style="color: var(--color-text-muted); font-weight: 700; letter-spacing: 0.5px;">${loadedCustomProfiles.length} SAVED CUSTOM MEASUREMENT${loadedCustomProfiles.length > 1 ? 'S' : ''}</span>
+            <button type="button" class="btn body-12" onclick="switchToCreateMeasurementView()" style="padding: 6px 14px; background: transparent; border: 1px solid var(--color-obsidian); color: var(--color-obsidian); border-radius: 4px; font-weight: 700; cursor: pointer;">
+              + Add New Custom Measurement
+            </button>
+          </div>
+          <div style="display: flex; flex-direction: column; gap: 12px;">
+            ${loadedCustomProfiles.map(p => {
+              const isSelected = p.id === pdpSelectedCustomMeasurementId;
+              const highlights = [];
+              if (p.gender === 'female') {
+                if (p.round_bust) highlights.push(`Bust: ${p.round_bust}"`);
+                if (p.waist) highlights.push(`Waist: ${p.waist}"`);
+                if (p.hip) highlights.push(`Hip: ${p.hip}"`);
+                if (p.shoulder) highlights.push(`Shoulder: ${p.shoulder}"`);
+                if (p.trouser_length_long) highlights.push(`Trouser: ${p.trouser_length_long}"`);
+              } else {
+                if (p.round_chest) highlights.push(`Chest: ${p.round_chest}"`);
+                if (p.shoulder) highlights.push(`Shoulder: ${p.shoulder}"`);
+                if (p.waist) highlights.push(`Waist: ${p.waist}"`);
+                if (p.trouser_length_long) highlights.push(`Trouser: ${p.trouser_length_long}"`);
+                if (p.sleeve_length_long) highlights.push(`Sleeve: ${p.sleeve_length_long}"`);
+              }
+              const summaryText = highlights.slice(0, 4).join(' • ');
+
+              return `
+                <div style="border: 1.5px solid ${isSelected ? 'var(--color-obsidian)' : 'var(--color-border)'}; background: ${isSelected ? '#FAF8F5' : '#FFFFFF'}; border-radius: 6px; padding: 14px 16px; display: flex; align-items: center; justify-content: space-between; gap: 14px; transition: all 0.2s ease;">
+                  <div style="flex: 1; min-width: 0;">
+                    <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 4px; flex-wrap: wrap;">
+                      <h4 class="h5" style="margin: 0; color: var(--color-obsidian); font-weight: 700;">${escapeHtml(p.label || 'Custom Measurement')}</h4>
+                      <span style="font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; padding: 2px 7px; border-radius: 10px; background: ${p.gender === 'female' ? '#FCE7F3; color: #9D174D;' : '#E0F2FE; color: #0369A1;'}">
+                        ${p.gender === 'female' ? 'Female' : 'Male'}
+                      </span>
+                    </div>
+                    <div class="body-12" style="color: var(--color-text-muted); margin-bottom: 4px;">
+                      ${summaryText ? `<span>${summaryText}</span>` : '<span style="font-style: italic;">Custom fit</span>'}
+                    </div>
+                    ${p.notes ? `<div class="body-11" style="color: var(--color-text-muted); font-style: italic; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 380px;">"${escapeHtml(p.notes)}"</div>` : ''}
+                  </div>
+                  <div>
+                    <button type="button" class="btn body-12" onclick="selectCustomProfile('${p.id}')" style="padding: 8px 16px; border-radius: 4px; font-weight: 700; cursor: pointer; white-space: nowrap; ${isSelected ? 'background: var(--color-primary); color: #FFFFFF; border: none;' : 'background: var(--color-obsidian); color: #FFFFFF; border: none;'}">
+                      ${isSelected ? '✓ Selected' : 'Select'}
+                    </button>
+                  </div>
+                </div>
+              `;
+            }).join('')}
+          </div>
+        `;
+      } catch (err) {
+        console.error('[Krabe Custom Measurements Error]:', err);
+        container.innerHTML = `
+          <div style="text-align: center; padding: 32px 16px; color: #DC2626;">
+            <p class="body-14" style="margin-bottom: 12px;">Failed to load saved measurements. Please try again.</p>
+            <button type="button" class="btn body-12" onclick="loadUserCustomMeasurements()" style="padding: 6px 14px; background: var(--color-obsidian); color: #fff; border-radius: 4px;">Retry</button>
+          </div>
+        `;
+      }
+    }
+
+    function selectCustomProfile(profileId) {
+      const profile = loadedCustomProfiles.find(p => String(p.id) === String(profileId));
+      if (!profile) return;
+      applySelectedCustomMeasurement(profile);
+      closeCustomPickerModal();
+    }
+
+    function applySelectedCustomMeasurement(profile) {
+      pdpSelectedCustomMeasurementId = profile.id;
+      pdpSelectedCustomMeasurementLabel = profile.label || 'Custom Fit';
+      window.pdpSelectedCustomMeasurementId = profile.id;
+      window.pdpSelectedCustomMeasurementLabel = profile.label || 'Custom Fit';
+
+      const sizeBtns = document.querySelectorAll('.size-btn');
+      sizeBtns.forEach(b => {
+        if (b.textContent.trim().toLowerCase() === 'custom') {
+          b.classList.add('active');
+          b.dataset.customMeasurementId = profile.id;
+          b.dataset.customMeasurementLabel = profile.label || 'Custom Fit';
+        } else {
+          b.classList.remove('active');
+        }
+      });
+
+      const pill = document.getElementById('selectedCustomFitPill');
+      const labelSpan = document.getElementById('customFitLabelDisplay');
+      if (pill && labelSpan) {
+        labelSpan.textContent = profile.label || 'Custom Fit';
+        pill.style.display = 'flex';
+      }
+
+      pdpQty = 1;
+      syncPdpQtyWithCart();
+    }
+
+    function launchMeasurementModal() {
+      openCustomPickerModal();
+      switchToCreateMeasurementView();
+    }
+
+    window.addEventListener('krabe:measurement:saved', (e) => {
+      const newProfile = e.detail?.measurement;
+      if (newProfile && newProfile.id) {
+        applySelectedCustomMeasurement(newProfile);
+        closeCustomPickerModal();
+      }
+    });
 
     function selectColor(btn, colorName) {
       document.querySelectorAll('.swatch-circle-btn').forEach(b => b.classList.remove('active'));
@@ -416,12 +1016,14 @@
     function findPdpCartItem() {
       const activeSizeBtn = document.querySelector('.size-btn.active');
       const activeSize = activeSizeBtn ? activeSizeBtn.textContent.trim() : 'M';
+      const isCustom = activeSize.toLowerCase() === 'custom';
+      const customMeasurementId = isCustom ? (activeSizeBtn?.dataset.customMeasurementId || pdpSelectedCustomMeasurementId || null) : null;
       const variantId = currentVariant?.id;
       const title = currentProduct?.title || document.querySelector('.pdp-title')?.textContent.trim();
       const color = document.getElementById('colorLabel')?.textContent.trim() || currentVariant?.color;
 
       if (window.KrabeCart && typeof window.KrabeCart.getItem === 'function') {
-        const item = window.KrabeCart.getItem(variantId, activeSize, title, color);
+        const item = window.KrabeCart.getItem(variantId, activeSize, title, color, customMeasurementId);
         if (item) return item;
       }
 
@@ -430,6 +1032,9 @@
         return stored.find(i => {
           const sizeMatches = String(i.size || 'M').toLowerCase() === String(activeSize).toLowerCase();
           if (!sizeMatches) return false;
+          if (isCustom && customMeasurementId && String(i.custom_measurement_id) !== String(customMeasurementId)) {
+            return false;
+          }
           if (variantId && (String(i.variant_id) === String(variantId) || String(i.product_variation_id) === String(variantId) || String(i.id) === String(variantId))) {
             return true;
           }
@@ -475,6 +1080,8 @@
     async function adjustPdpQty(diff) {
       const activeSizeBtn = document.querySelector('.size-btn.active');
       const activeSize = activeSizeBtn ? activeSizeBtn.textContent.trim() : 'M';
+      const isCustom = activeSize.toLowerCase() === 'custom';
+      const customMeasurementId = isCustom ? (activeSizeBtn?.dataset.customMeasurementId || pdpSelectedCustomMeasurementId || null) : null;
       const cartItem = findPdpCartItem();
 
       if (cartItem && Number(cartItem.qty) > 0) {
@@ -490,6 +1097,8 @@
             variant_id: cartItem.variant_id || currentVariant?.id,
             product_variation_id: cartItem.product_variation_id || currentVariant?.id,
             size: activeSize,
+            custom_measurement_id: customMeasurementId,
+            custom_measurement_label: pdpSelectedCustomMeasurementLabel,
             qty: newQty,
             title: cartItem.title || currentProduct?.title,
             price: cartItem.price || currentVariant?.price,
@@ -516,7 +1125,49 @@
       btn.querySelector('span').textContent = isOpen ? '+' : '−';
     }
 
+    function switchSizeGuideTab(gender) {
+      const maleTab = document.getElementById('tabMaleGuide');
+      const femaleTab = document.getElementById('tabFemaleGuide');
+      const maleContent = document.getElementById('maleGuideContent');
+      const femaleContent = document.getElementById('femaleGuideContent');
+      const title = document.getElementById('sizeGuideTitle');
+
+      if (gender === 'female') {
+        if (maleTab) {
+          maleTab.className = 'btn btn-outline body-12';
+          maleTab.style.background = 'transparent';
+          maleTab.style.color = 'var(--color-obsidian)';
+        }
+        if (femaleTab) {
+          femaleTab.className = 'btn body-12 active';
+          femaleTab.style.background = 'var(--color-obsidian)';
+          femaleTab.style.color = '#FFFFFF';
+        }
+        if (maleContent) maleContent.style.display = 'none';
+        if (femaleContent) femaleContent.style.display = 'block';
+        if (title) title.textContent = "Women's International Size Guide & Measurements";
+      } else {
+        if (femaleTab) {
+          femaleTab.className = 'btn btn-outline body-12';
+          femaleTab.style.background = 'transparent';
+          femaleTab.style.color = 'var(--color-obsidian)';
+        }
+        if (maleTab) {
+          maleTab.className = 'btn body-12 active';
+          maleTab.style.background = 'var(--color-obsidian)';
+          maleTab.style.color = '#FFFFFF';
+        }
+        if (femaleContent) femaleContent.style.display = 'none';
+        if (maleContent) maleContent.style.display = 'block';
+        if (title) title.textContent = "Men's International Size Guide & Measurements";
+      }
+    }
+
     function openSizeGuideModal() {
+      if (currentProduct && currentProduct.gender) {
+        const g = String(currentProduct.gender).toLowerCase().trim();
+        switchSizeGuideTab(g === 'female' ? 'female' : 'male');
+      }
       document.getElementById('sizeGuideModal').classList.add('active');
       document.body.style.overflow = 'hidden';
     }
