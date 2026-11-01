@@ -40,7 +40,7 @@
           <div>
             <div class="footer-col-title body-12" style="font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; color: var(--color-text-main);">Shop Krabe</div>
             <ul class="footer-nav-list body-14">
-              <li><a href="shop.html">Made-to-Order Collections</a></li>
+              <li><a href="shop.html">The Collection</a></li>
               <li><a href="shop.html?category=native">Native &amp; Agbada</a></li>
               <li><a href="shop.html?category=formal">English &amp; Suiting</a></li>
               <li><a href="shop.html?category=streetwear">Luxury Streetwear</a></li>

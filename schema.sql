@@ -151,7 +151,7 @@ CREATE TABLE IF NOT EXISTS public.product (
   CONSTRAINT products_collection_fkey FOREIGN KEY (collection) REFERENCES public.collection(id) ON DELETE SET NULL
 );
 
--- Table 5: Product Variations (Colors, color codes, fabrics, prices, images)
+-- Table 5: Product Variations (Colors, color codes, fabrics, prices, images, stock quantity, size)
 CREATE TABLE IF NOT EXISTS public.product_variation (
   id uuid NOT NULL DEFAULT gen_random_uuid(),
   created_at timestamp with time zone DEFAULT now(),
@@ -167,9 +167,16 @@ CREATE TABLE IF NOT EXISTS public.product_variation (
   favorited_count integer DEFAULT 0,
   sales_count integer NOT NULL DEFAULT 0,
   slug text,
+  quantity integer DEFAULT NULL,
+  size text DEFAULT NULL,
   CONSTRAINT product_variation_pkey PRIMARY KEY (id),
   CONSTRAINT product_variations_product_id_fkey FOREIGN KEY (product_id) REFERENCES public.product(id) ON DELETE CASCADE
 );
+
+-- Unique index for RTW variations: Enforces one variant per (product, color, size) combination when size is specified
+CREATE UNIQUE INDEX IF NOT EXISTS unique_rtw_product_color_size 
+ON public.product_variation (product_id, COALESCE(color, ''), size)
+WHERE size IS NOT NULL;
 
 -- Table 6: Cart Items (Shopping bags for registered accounts)
 CREATE TABLE IF NOT EXISTS public.cart_item (
@@ -851,5 +858,77 @@ DROP TRIGGER IF EXISTS tr_send_brevo_contact_message ON public.contact_message;
 CREATE TRIGGER tr_send_brevo_contact_message
 BEFORE INSERT ON public.contact_message
 FOR EACH ROW EXECUTE FUNCTION public.send_brevo_contact_message();
+
+-- =========================================================================
+-- RTW INVENTORY & SIZE INTEGRITY TRIGGERS
+-- =========================================================================
+
+-- Trigger function 1: Enforce physical quantity, valid standard size, and non-custom size on RTW variants
+CREATE OR REPLACE FUNCTION public.validate_variant_quantity_for_rtw()
+RETURNS trigger
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public
+AS $$
+DECLARE
+  v_product_type public.product_type;
+BEGIN
+  SELECT type INTO v_product_type
+  FROM public.product
+  WHERE id = NEW.product_id;
+
+  IF v_product_type = 'ready to wear' THEN
+    IF NEW.quantity IS NULL THEN
+      RAISE EXCEPTION 'Variants for "ready to wear" products must have a physical stock quantity (cannot be NULL).';
+    END IF;
+    IF NEW.size IS NULL OR TRIM(NEW.size) = '' THEN
+      RAISE EXCEPTION 'Variants for "ready to wear" products must have a specific size specified (cannot be NULL or empty).';
+    END IF;
+    IF LOWER(TRIM(NEW.size)) = 'custom' THEN
+      RAISE EXCEPTION 'Variants for "ready to wear" products cannot use "custom" size.';
+    END IF;
+  END IF;
+
+  RETURN NEW;
+END;
+$$;
+
+REVOKE EXECUTE ON FUNCTION public.validate_variant_quantity_for_rtw() FROM PUBLIC, anon;
+
+DROP TRIGGER IF EXISTS tr_validate_variant_quantity_for_rtw ON public.product_variation;
+CREATE TRIGGER tr_validate_variant_quantity_for_rtw
+BEFORE INSERT OR UPDATE OF quantity, size, product_id ON public.product_variation
+FOR EACH ROW
+EXECUTE FUNCTION public.validate_variant_quantity_for_rtw();
+
+-- Trigger function 2: Prevent switching a product type to RTW if any variant lacks stock quantity or standard size
+CREATE OR REPLACE FUNCTION public.validate_product_type_switch_to_rtw()
+RETURNS trigger
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public
+AS $$
+BEGIN
+  IF NEW.type = 'ready to wear' THEN
+    IF EXISTS (
+      SELECT 1 FROM public.product_variation 
+      WHERE product_id = NEW.id 
+        AND (quantity IS NULL OR size IS NULL OR TRIM(size) = '' OR LOWER(TRIM(size)) = 'custom')
+    ) THEN
+      RAISE EXCEPTION 'Cannot set product type to "ready to wear" while any of its variants have a NULL quantity or missing/custom size.';
+    END IF;
+  END IF;
+  RETURN NEW;
+END;
+$$;
+
+REVOKE EXECUTE ON FUNCTION public.validate_product_type_switch_to_rtw() FROM PUBLIC, anon;
+
+DROP TRIGGER IF EXISTS tr_validate_product_type_switch_to_rtw ON public.product;
+CREATE TRIGGER tr_validate_product_type_switch_to_rtw
+BEFORE UPDATE OF type ON public.product
+FOR EACH ROW
+EXECUTE FUNCTION public.validate_product_type_switch_to_rtw();
+
 
 

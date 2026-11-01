@@ -207,6 +207,7 @@
           .select(`
             id,
             title,
+            slug,
             category,
             gender,
             type,
@@ -218,7 +219,9 @@
               id,
               color,
               price,
-              main_image
+              main_image,
+              quantity,
+              size
             )
           `, { count: 'exact' });
 
@@ -313,11 +316,20 @@
 
       grid.innerHTML = products.map(prod => {
         const variations = prod.product_variation || [];
-        const defaultVar = variations[0] || {};
+        const isRTW = (prod.type || '').toLowerCase() === 'ready to wear';
+
+        // For RTW, prefer an in-stock variant if available
+        let defaultVar = variations[0] || {};
+        if (isRTW && variations.length > 0) {
+          const inStock = variations.find(v => v.quantity != null && Number(v.quantity) > 0);
+          if (inStock) defaultVar = inStock;
+        }
+
         const displayPrice = defaultVar.price ? Number(defaultVar.price) : 0;
         const displayImage = defaultVar.main_image || 'assets/brand/krabe main logo.svg';
         const priceNaira = '₦' + displayPrice.toLocaleString('en-NG');
         const variantId = defaultVar.id || '';
+        const defaultSize = defaultVar.size || 'M';
         const catClean = (prod.category || 'native').toString().toLowerCase().trim();
         const genderClean = (prod.gender || 'unisex').toString().toLowerCase().trim();
 
@@ -330,6 +342,35 @@
           ? window.getProductBadgesHTML(prod)
           : '';
 
+        const productParam = prod.slug ? `slug=${encodeURIComponent(prod.slug)}` : `id=${prod.id}`;
+        const productLink = `product.html?${productParam}${variantId ? '&variant_id=' + variantId : ''}`;
+
+        const totalStock = isRTW ? variations.reduce((sum, v) => sum + (Number(v.quantity) || 0), 0) : null;
+        const isSoldOut = isRTW && (variations.length === 0 || totalStock <= 0 || (defaultVar.quantity != null && Number(defaultVar.quantity) <= 0));
+        const stockQty = (isRTW && defaultVar.quantity != null) ? Number(defaultVar.quantity) : null;
+
+        const quickAddButtonHTML = isSoldOut
+          ? `
+            <button type="button" class="btn-quick-add body-12" disabled style="opacity: 0.6; cursor: not-allowed; pointer-events: none; background: rgba(0,0,0,0.65);">
+              Sold Out
+            </button>
+          `
+          : `
+            <button type="button" class="btn-quick-add js-quick-add body-12" 
+                    data-product-id="${prod.id}"
+                    data-variant-id="${variantId}"
+                    data-variation-id="${variantId}"
+                    data-title="${escapeHtml(prod.title)}" 
+                    data-price="${displayPrice}" 
+                    data-size="${escapeHtml(defaultSize)}"
+                    data-color="${escapeHtml(defaultVar.color || 'Standard')}"
+                    data-image="${displayImage}"
+                    data-product-type="${escapeHtml(prod.type || '')}"
+                    data-stock-quantity="${stockQty != null ? stockQty : ''}">
+              + Quick Add (${escapeHtml(defaultSize)})
+            </button>
+          `;
+
         return `
           <div class="product-card" 
                data-gender="${genderClean}" 
@@ -339,26 +380,16 @@
                data-created="${prod.created_at || ''}">
             <div class="product-media">
               ${badgeHTML}
-              <a href="product.html?id=${prod.id}${variantId ? '&variant=' + variantId : ''}" style="display: block; width: 100%; height: 100%;">
+              <a href="${productLink}" style="display: block; width: 100%; height: 100%;">
                 <img src="${displayImage}" alt="${escapeHtml(prod.title)}" loading="lazy">
               </a>
               <div class="quick-add-overlay">
-                <button type="button" class="btn-quick-add js-quick-add body-12" 
-                        data-product-id="${prod.id}"
-                        data-variant-id="${variantId}"
-                        data-variation-id="${variantId}"
-                        data-title="${escapeHtml(prod.title)}" 
-                        data-price="${displayPrice}" 
-                        data-size="M"
-                        data-color="${escapeHtml(defaultVar.color || 'Standard')}"
-                        data-image="${displayImage}">
-                  + Quick Add (M)
-                </button>
+                ${quickAddButtonHTML}
               </div>
             </div>
             <div class="product-info">
               <span class="product-category-label body-10">${formatCategory(catClean)} &bull; ${formatGender(genderClean)}</span>
-              <h3 class="product-title body-14"><a href="product.html?id=${prod.id}${variantId ? '&variant=' + variantId : ''}">${escapeHtml(prod.title)}</a></h3>
+              <h3 class="product-title body-14"><a href="${productLink}">${escapeHtml(prod.title)}</a></h3>
               <div class="product-price-row">
                 <span class="product-price body-18">${priceNaira}</span>
               </div>

@@ -49,17 +49,13 @@
 
             <div class="form-group">
               <label for="cEmail" class="body-12">Email Address (for order receipts &amp; dispatch tracking)</label>
-              <input type="email" id="cEmail" class="form-input body-14" placeholder="david.adeleke@example.com" value="david.adeleke@example.com" required>
+              <input type="email" id="cEmail" class="form-input body-14" placeholder="e.g. client@example.com" value="" required>
             </div>
 
             <div class="form-group" style="margin-bottom: 8px;">
               <label for="cPhone" class="body-12">WhatsApp / Mobile Number (for courier coordination)</label>
-              <input type="tel" id="cPhone" class="form-input body-14" placeholder="+234 800 000 0000" value="+234 803 123 4567" required>
+              <input type="tel" id="cPhone" class="form-input body-14" placeholder="e.g. +234 803 000 0000" value="" required>
             </div>
-
-            <label class="body-12" style="display: flex; align-items: center; gap: 8px; color: var(--color-text-muted); cursor: pointer; margin-top: 10px;">
-              <input type="checkbox" checked> Send me courier dispatch updates via WhatsApp &amp; SMS
-            </label>
           </div>
 
           <!-- Step 2: Delivery vs Store Pickup -->
@@ -74,7 +70,7 @@
               <div class="delivery-opt-card active" id="optDelivery" onclick="selectFulfillment('delivery')">
                 <div class="delivery-opt-title body-14">
                   <span>Doorstep Delivery</span>
-                  <span class="body-12" style="color: #15803D;">Free</span>
+                  <span class="body-12" style="color: #15803D;" id="deliveryOptionPriceTag">Free</span>
                 </div>
                 <div class="delivery-opt-desc body-12">GIG Logistics / DHL nationwide delivery</div>
               </div>
@@ -93,17 +89,17 @@
               <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px;">
                 <div class="form-group">
                   <label for="cFirstName" class="body-12">First Name</label>
-                  <input type="text" id="cFirstName" class="form-input body-14" value="David" required>
+                  <input type="text" id="cFirstName" class="form-input body-14" placeholder="e.g. David" value="" required>
                 </div>
                 <div class="form-group">
                   <label for="cLastName" class="body-12">Last Name</label>
-                  <input type="text" id="cLastName" class="form-input body-14" value="Adeleke" required>
+                  <input type="text" id="cLastName" class="form-input body-14" placeholder="e.g. Adeleke" value="" required>
                 </div>
               </div>
 
               <div class="form-group">
                 <label for="cAddress" class="body-12">Street Address &amp; House / Apartment Number</label>
-                <input type="text" id="cAddress" class="form-input body-14" value="Plot 14, Block 2, Admiralty Way" required>
+                <input type="text" id="cAddress" class="form-input body-14" placeholder="e.g. Plot 14, Block 2, Admiralty Way" value="" required>
               </div>
 
               <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px;">
@@ -122,34 +118,19 @@
                 </div>
                 <div class="form-group">
                   <label for="cCity" class="body-12">City / LGA</label>
-                  <input type="text" id="cCity" class="form-input body-14" value="Lekki Phase 1, Eti-Osa" required>
+                  <input type="text" id="cCity" class="form-input body-14" placeholder="e.g. Lekki Phase 1, Eti-Osa" value="" required>
                 </div>
               </div>
 
               <div class="form-group">
                 <label for="cLandmark" class="body-12">Closest Landmark / Delivery Note</label>
-                <input type="text" id="cLandmark" class="form-input body-14" placeholder="e.g. Near Ebeano Supermarket, Black gate" value="Opposite Prince Ebeano Supermarket">
+                <input type="text" id="cLandmark" class="form-input body-14" placeholder="e.g. Near Ebeano Supermarket, Black gate" value="">
               </div>
 
-              <!-- Shipping Speed Option -->
-              <div style="margin-top: 14px;">
-                <label class="body-12" style="font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: var(--color-obsidian); margin-bottom: 8px; display: block;">Shipping Speed</label>
-                <div style="display: flex; flex-direction: column; gap: 8px;">
-                  <label class="body-14" style="display: flex; justify-content: space-between; align-items: center; padding: 12px 16px; border: 1px solid var(--color-border); border-radius: var(--radius-sm); background: var(--color-bone); cursor: pointer;">
-                    <span style="display: flex; align-items: center; gap: 8px;">
-                      <input type="radio" name="shippingSpeed" value="0" checked onchange="updateShipping(0)">
-                      <span>Standard Delivery</span>
-                    </span>
-                    <strong style="color: #15803D;">FREE in Lagos (Over ₦200k)</strong>
-                  </label>
-                  <label class="body-14" style="display: flex; justify-content: space-between; align-items: center; padding: 12px 16px; border: 1px solid var(--color-border); border-radius: var(--radius-sm); background: var(--color-bone); cursor: pointer;">
-                    <span style="display: flex; align-items: center; gap: 8px;">
-                      <input type="radio" name="shippingSpeed" value="6000" onchange="updateShipping(6000)">
-                      <span>Priority Same-Day / Next-Day Lagos Courier</span>
-                    </span>
-                    <strong>+₦6,000</strong>
-                  </label>
-                </div>
+              <!-- Dispatch & Tailoring Notice -->
+              <div style="margin-top: 16px; padding: 12px 14px; background: var(--color-sand); border: 1px solid var(--color-border); border-radius: var(--radius-sm); color: var(--color-obsidian);" class="body-12">
+                <div>✓ <strong>Ready-to-Wear:</strong> In-stock pieces dispatched immediately (same-day delivery in Lagos for orders placed before 2:00 PM).</div>
+                <div style="margin-top: 4px;">✓ <strong>Made-to-Order:</strong> Individually tailored on demand; dispatched after 72 hours (3 working days) tailoring period.</div>
               </div>
             </div>
 
@@ -163,8 +144,8 @@
                     <span data-store-address></span><br>
                     Pickup Hours: <strong>Monday – Saturday: 10:00 AM – 7:00 PM (WAT)</strong>
                   </p>
-                  <span class="body-10" style="display: inline-block; background: rgba(197, 138, 85, 0.15); color: var(--color-gold); font-weight: 700; padding: 3px 8px; border-radius: var(--radius-sm);">
-                    ✓ Ready within 24 hours &bull; Complimentary Studio Steaming &amp; Try-On
+                  <span class="body-10" id="pickupReadyTimeline" style="display: inline-block; background: rgba(197, 138, 85, 0.15); color: var(--color-gold); font-weight: 700; padding: 3px 8px; border-radius: var(--radius-sm);">
+                    ✓ Ready same day for Ready-to-Wear (orders before 2 PM) &bull; Ready after 72 hours for Made-to-Order &bull; Complimentary Steaming &amp; Try-On
                   </span>
                 </div>
               </div>
@@ -172,47 +153,32 @@
 
           </div>
 
-          <!-- Step 3: Payment Method -->
+          <!-- Step 3: Payment & Security -->
           <div class="checkout-step-box">
             <h2 class="checkout-step-title h5">
               <span class="step-num body-14">3</span>
-              <span>Payment Method</span>
+              <span>Payment &amp; Confirmation</span>
             </h2>
 
-            <div class="payment-method-card active" id="payOptPaystack" onclick="selectPayment('paystack')">
-              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-                <label class="body-14" style="display: flex; align-items: center; gap: 10px; font-weight: 700; cursor: pointer;">
-                  <input type="radio" name="paymentOption" checked>
-                  <span>Paystack Secure Gateway</span>
-                </label>
-                <div style="display: flex; gap: 6px;">
+            <div style="background: var(--color-bone); border: 1px solid var(--color-border); border-radius: var(--radius-sm); padding: 18px 20px;">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; flex-wrap: wrap; gap: 8px;">
+                <span class="body-14" style="font-weight: 700; color: var(--color-obsidian);">Paystack Secure Checkout</span>
+                <div style="display: flex; gap: 6px; align-items: center;">
                   <span class="body-10" style="background: #FFF; border: 1px solid #CBD5E1; padding: 2px 6px; border-radius: 3px; font-weight: 700; color: #1E3A8A;">VISA</span>
                   <span class="body-10" style="background: #FFF; border: 1px solid #CBD5E1; padding: 2px 6px; border-radius: 3px; font-weight: 700; color: #DC2626;">Mastercard</span>
                   <span class="body-10" style="background: #FFF; border: 1px solid #CBD5E1; padding: 2px 6px; border-radius: 3px; font-weight: 700; color: #047857;">Verve</span>
+                  <span class="body-10" style="background: #FFF; border: 1px solid #CBD5E1; padding: 2px 6px; border-radius: 3px; font-weight: 700; color: var(--color-primary);">Transfer</span>
                 </div>
               </div>
-              <p class="body-12" style="color: var(--color-text-muted); line-height: 1.5; margin-left: 24px;">
-                Pay securely using Debit Card, Bank Transfer, USSD, or Apple Pay. Certified PCI-DSS Level 1 compliant.
-              </p>
-            </div>
-
-            <div class="payment-method-card" id="payOptTransfer" onclick="selectPayment('transfer')">
-              <div style="display: flex; justify-content: space-between; align-items: center;">
-                <label class="body-14" style="display: flex; align-items: center; gap: 10px; font-weight: 700; cursor: pointer;">
-                  <input type="radio" name="paymentOption">
-                  <span>Instant Nigerian Bank Transfer</span>
-                </label>
-                <span class="body-12" style="color: var(--color-primary); font-weight: 700;">Zero Card Needed</span>
-              </div>
-              <p class="body-12" style="color: var(--color-text-muted); line-height: 1.5; margin-left: 24px; margin-top: 6px;">
-                A dynamic one-time virtual bank account number will be generated for immediate automated payment verification.
+              <p class="body-12" style="color: var(--color-text-muted); line-height: 1.6; margin: 0;">
+                All transactions are encrypted and certified PCI-DSS Level 1 compliant. You can pay seamlessly via Debit Card, Instant Bank Transfer (dynamic account), USSD, or Apple Pay inside the secure Paystack checkout.
               </p>
             </div>
 
             <!-- Submit Button -->
             <div style="margin-top: 24px;">
               <button type="submit" class="btn btn-primary body-14" id="btnPlaceOrder" style="width: 100%; padding: 18px; letter-spacing: 1.5px; text-transform: uppercase;">
-                Pay <span id="btnPayAmount">₦185,000</span> Now &rarr;
+                Pay <span id="btnPayAmount">₦0</span> Now &rarr;
               </button>
               <div class="body-12" style="text-align: center; margin-top: 12px; color: var(--color-text-muted);">
                 🔒 Guaranteed 100% secure payment &bull; Free alterations within Lagos
@@ -234,23 +200,10 @@
             <!-- Rendered dynamically from localStorage ('krabe_cart') -->
           </div>
 
-          <!-- Coupon Promo Code -->
-          <div class="coupon-row">
-            <input type="text" id="couponInput" class="coupon-input body-14" placeholder="Promo / VIP Code" value="KRABEVIP10">
-            <button type="button" class="coupon-btn body-12" onclick="applyPromoCode()">Apply</button>
-          </div>
-          <div id="couponMsg" class="body-12" style="color: #15803D; margin-top: -10px; margin-bottom: 12px; display: none;">
-            ✓ VIP code applied: 10% off (₦18,500 savings)
-          </div>
-
           <!-- Calculations -->
           <div class="summary-row body-14">
             <span>Subtotal</span>
-            <span id="summarySubtotal">₦185,000</span>
-          </div>
-          <div class="summary-row body-14" id="discountRow" style="display: none; color: #15803D;">
-            <span>VIP Privilege Discount</span>
-            <span id="summaryDiscount">-₦18,500</span>
+            <span id="summarySubtotal">₦0</span>
           </div>
           <div class="summary-row body-14">
             <span>Shipping</span>
@@ -263,7 +216,7 @@
 
           <div class="summary-row total body-18">
             <span>Total to Pay</span>
-            <span id="summaryTotal" style="color: var(--color-primary);">₦185,000</span>
+            <span id="summaryTotal" style="color: var(--color-primary);">₦0</span>
           </div>
 
           <!-- Trust Guarantees -->
@@ -299,21 +252,21 @@
         Thank You for Your Order
       </h1>
       <p class="body-16" style="color: var(--color-text-muted); line-height: 1.6; margin-bottom: 24px;">
-        Order reference <strong>#KB-2026-9821</strong> has been successfully placed via Paystack. A receipt and measurement confirmation has been dispatched to <strong>david.adeleke@example.com</strong>.
+        Order reference <strong id="confirmOrderRef">#KB-ORD</strong> has been successfully placed. A receipt and order confirmation has been dispatched to <strong id="confirmEmail">your email</strong>.
       </p>
 
       <div class="body-14" style="background: var(--color-bone); border: 1px solid var(--color-border); border-radius: var(--radius-sm); padding: 20px; text-align: left; margin-bottom: 28px;">
         <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
-          <span style="color: var(--color-text-muted);">Estimated Delivery</span>
-          <strong>Friday, 09 Oct 2026</strong>
+          <span style="color: var(--color-text-muted);">Estimated Dispatch / Ready</span>
+          <strong id="confirmEstimatedDelivery">Calculated upon confirmation</strong>
         </div>
         <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
           <span style="color: var(--color-text-muted);">Fulfillment</span>
-          <strong id="confirmFulfillmentMethod">Doorstep Delivery (Lekki Phase 1, Lagos)</strong>
+          <strong id="confirmFulfillmentMethod">Doorstep Delivery</strong>
         </div>
         <div style="display: flex; justify-content: space-between;">
           <span style="color: var(--color-text-muted);">Total Charged</span>
-          <strong id="confirmTotalCharged" style="color: var(--color-primary);">₦185,000</strong>
+          <strong id="confirmTotalCharged" style="color: var(--color-primary);">₦0</strong>
         </div>
       </div>
 
@@ -321,7 +274,7 @@
         <a href="account.html" class="btn btn-primary body-14">
           View &amp; Track in Client Portal &rarr;
         </a>
-        <a href="https://wa.me/2348000000000?text=Hello%20Krabe,%20I%20just%20placed%20order%20KB-2026-9821%20and%20want%20to%20confirm." target="_blank" rel="noopener" class="btn-whatsapp body-14">
+        <a href="https://wa.me/2349162166470?text=Hello%20Krabe,%20I%20would%20like%20to%20confirm%20my%20recent%20order." target="_blank" rel="noopener" class="btn-whatsapp body-14" id="confirmWhatsAppBtn">
           WhatsApp Order Desk
         </a>
       </div>
@@ -334,113 +287,49 @@
     </div>
   </div>
 
+  <!-- =========================================================================
+       REUSABLE SLIDE-OUT CART DRAWER
+       ========================================================================= -->
+  <div class="cart-drawer-overlay" id="cartOverlay" aria-hidden="true">
+    <div class="cart-drawer" id="cartDrawer" role="dialog" aria-modal="true" aria-labelledby="cartDrawerTitle">
+      <div class="cart-drawer-header">
+        <h3 class="cart-drawer-title h5" id="cartDrawerTitle">Shopping Bag</h3>
+        <button type="button" class="cart-close-btn" id="cartCloseBtn" aria-label="Close Shopping Bag">
+          <svg style="width: 22px; height: 22px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+          </svg>
+        </button>
+      </div>
+      <div class="cart-free-shipping body-12">
+        ✓ Free Lagos Delivery on orders over ₦200,000
+      </div>
+      <div class="cart-drawer-body">
+        <!-- Rendered dynamically by main.js -->
+      </div>
+      <div class="cart-drawer-footer">
+        <div class="cart-subtotal-row">
+          <span class="cart-subtotal-label body-14">Subtotal</span>
+          <span class="cart-subtotal-amount body-18">₦0</span>
+        </div>
+        <a href="checkout.html" class="btn-checkout body-14">Proceed to Checkout &rarr;</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Supabase SDK & Krabe Stack -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/config.js"></script>
+  <script src="js/header.js"></script>
+  <script src="js/auth-modal.js"></script>
+  <script src="js/search-modal.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/main.js"></script>
+
   <script>
-    const KRABE_CART_STORAGE_KEY = 'krabe_cart';
-
-    function getStoredCart() {
-      try {
-        const raw = localStorage.getItem(KRABE_CART_STORAGE_KEY);
-        if (raw) {
-          const parsed = JSON.parse(raw);
-          if (Array.isArray(parsed)) return parsed;
-        }
-      } catch (e) {
-        console.warn('[Checkout] Failed reading cart:', e);
-      }
-      return [];
-    }
-
-    let cart = getStoredCart();
-    let subtotal = 0;
-    let shipping = 0;
-    let discount = 0;
     let currentFulfillment = 'delivery';
 
     function formatNaira(num) {
       return '₦' + Number(num || 0).toLocaleString('en-NG');
-    }
-
-    function renderCheckoutItems() {
-      const container = document.getElementById('checkoutItemsList');
-      const btnPlaceOrder = document.getElementById('btnPlaceOrder');
-      if (!container) return;
-
-      if (!cart || cart.length === 0) {
-        container.innerHTML = `
-          <div style="text-align: center; padding: 32px 12px; color: var(--color-text-muted);">
-            <svg style="width: 44px; height: 44px; margin-bottom: 12px; opacity: 0.4;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/>
-            </svg>
-            <p class="body-14" style="margin-bottom: 16px;">Your shopping bag is currently empty.</p>
-            <a href="shop.html" class="btn btn-outline body-12" style="padding: 10px 18px; letter-spacing: 1.5px; text-transform: uppercase;">
-              Explore Collections &rarr;
-            </a>
-          </div>
-        `;
-        subtotal = 0;
-        shipping = 0;
-        discount = 0;
-        if (btnPlaceOrder) {
-          btnPlaceOrder.disabled = true;
-          btnPlaceOrder.style.opacity = '0.5';
-          btnPlaceOrder.style.cursor = 'not-allowed';
-          btnPlaceOrder.innerHTML = 'Shopping Bag is Empty';
-        }
-      } else {
-        container.innerHTML = cart.map(item => `
-          <div class="summary-line-item">
-            <img src="${item.image || 'assets/brand/krabe main logo.svg'}" alt="${item.title}" class="summary-item-img">
-            <div class="summary-item-info">
-              <div class="summary-item-title body-14">${item.title}</div>
-              <div class="summary-item-variant body-12">${item.variant || `${item.color || 'Standard'} • Size ${item.size || 'M'}`} &bull; Qty: ${item.qty || 1}</div>
-              <div class="summary-item-price body-14">${formatNaira((Number(item.price) || 0) * (Number(item.qty) || 1))}</div>
-            </div>
-          </div>
-        `).join('');
-
-        subtotal = cart.reduce((sum, item) => sum + ((Number(item.price) || 0) * (Number(item.qty) || 1)), 0);
-
-        if (btnPlaceOrder) {
-          btnPlaceOrder.disabled = false;
-          btnPlaceOrder.style.opacity = '1';
-          btnPlaceOrder.style.cursor = 'pointer';
-        }
-      }
-
-      // Dynamic Free Shipping evaluation (₦200k threshold for Lagos delivery)
-      const stateSelect = document.getElementById('cState');
-      const isLagos = !stateSelect || stateSelect.value === 'Lagos';
-
-      if (currentFulfillment === 'delivery') {
-        if (isLagos && (subtotal >= 200000 || subtotal === 0)) {
-          shipping = 0;
-          document.getElementById('summaryShipping').textContent = 'FREE';
-        } else {
-          // If subtotal under 200k in Lagos: ₦3,500; Outside Lagos: ₦4,500
-          shipping = isLagos ? 3500 : 4500;
-          document.getElementById('summaryShipping').textContent = formatNaira(shipping);
-        }
-      } else {
-        shipping = 0;
-        document.getElementById('summaryShipping').textContent = 'FREE';
-      }
-
-      if (stateSelect && !stateSelect.dataset.hasListener) {
-        stateSelect.dataset.hasListener = 'true';
-        stateSelect.addEventListener('change', () => updateCartSummary());
-      }
-
-      document.getElementById('summarySubtotal').textContent = formatNaira(subtotal);
-      calculateTotal();
-    }
-
-    function calculateTotal() {
-      const total = Math.max(0, subtotal - discount + shipping);
-      document.getElementById('summaryTotal').textContent = formatNaira(total);
-      const btnPay = document.getElementById('btnPayAmount');
-      if (btnPay) btnPay.textContent = formatNaira(total);
-      const confTotal = document.getElementById('confirmTotalCharged');
-      if (confTotal) confTotal.textContent = formatNaira(total);
     }
 
     function selectFulfillment(mode) {
@@ -451,253 +340,169 @@
       const pickInfo = document.getElementById('pickupInfo');
 
       if (mode === 'delivery') {
-        optDel.classList.add('active');
-        optPick.classList.remove('active');
-        delFields.style.display = 'block';
-        pickInfo.style.display = 'none';
-        document.getElementById('confirmFulfillmentMethod').textContent = 'Doorstep Delivery (Lekki Phase 1, Lagos)';
-        const stateSelect = document.getElementById('cState');
-        const isLagos = !stateSelect || stateSelect.value === 'Lagos';
-        if (isLagos && (subtotal >= 200000 || subtotal === 0)) {
-          shipping = 0;
-          document.getElementById('summaryShipping').textContent = 'FREE';
-        } else {
-          shipping = isLagos ? 3500 : 4500;
-          document.getElementById('summaryShipping').textContent = formatNaira(shipping);
+        if (optDel) optDel.classList.add('active');
+        if (optPick) optPick.classList.remove('active');
+        if (delFields) delFields.style.display = 'block';
+        if (pickInfo) pickInfo.style.display = 'none';
+        const cityVal = document.getElementById('cCity')?.value.trim();
+        const stateVal = document.getElementById('cState')?.value || 'Lagos';
+        const confFulfill = document.getElementById('confirmFulfillmentMethod');
+        if (confFulfill) {
+          confFulfill.textContent = `Doorstep Delivery (${cityVal ? `${cityVal}, ` : ''}${stateVal})`;
         }
       } else {
-        optPick.classList.add('active');
-        optDel.classList.remove('active');
-        delFields.style.display = 'none';
-        pickInfo.style.display = 'block';
-        shipping = 0;
-        document.getElementById('summaryShipping').textContent = 'FREE';
+        if (optPick) optPick.classList.add('active');
+        if (optDel) optDel.classList.remove('active');
+        if (delFields) delFields.style.display = 'none';
+        if (pickInfo) pickInfo.style.display = 'block';
         const pickupArea = (window.KrabeLocation && window.KrabeLocation.getArea()) || '';
-        document.getElementById('confirmFulfillmentMethod').textContent = `Lagos Studio Pickup${pickupArea ? ` (${pickupArea} Flagship)` : ''}`;
+        const confFulfill = document.getElementById('confirmFulfillmentMethod');
+        if (confFulfill) {
+          confFulfill.textContent = `Lagos Studio Pickup${pickupArea ? ` (${pickupArea} Flagship)` : ''}`;
+        }
       }
-      calculateTotal();
-    }
 
-    function updateShipping(fee) {
-      shipping = Number(fee);
-      document.getElementById('summaryShipping').textContent = fee === 0 ? 'FREE' : formatNaira(fee);
-      calculateTotal();
-    }
-
-    function selectPayment(method) {
-      const cardPay = document.getElementById('payOptPaystack');
-      const cardTrans = document.getElementById('payOptTransfer');
-
-      if (method === 'paystack') {
-        cardPay.classList.add('active');
-        cardTrans.classList.remove('active');
-        cardPay.querySelector('input').checked = true;
-      } else {
-        cardTrans.classList.add('active');
-        cardPay.classList.remove('active');
-        cardTrans.querySelector('input').checked = true;
+      // Re-trigger central updateCartUI in main.js so shipping & totals refresh
+      if (window.KrabeCart && typeof window.KrabeCart.updateCartUI === 'function') {
+        window.KrabeCart.updateCartUI();
       }
     }
 
-    function applyPromoCode() {
-      if (subtotal === 0) return;
-      const val = document.getElementById('couponInput').value.trim().toUpperCase();
-      if (val === 'KRABEVIP10') {
-        discount = subtotal * 0.10;
-        document.getElementById('discountRow').style.display = 'flex';
-        document.getElementById('summaryDiscount').textContent = '-' + formatNaira(discount);
-        document.getElementById('couponMsg').style.display = 'block';
-        calculateTotal();
-      } else {
-        alert('Invalid promo code. Use KRABEVIP10 for testing.');
-      }
-    }
-
-    async function loadCheckoutCart() {
+    async function populateUserProfile() {
       const client = window.krabeClient || (window.KRABE_CONFIG && typeof window.KRABE_CONFIG.getClient === 'function' ? window.KRABE_CONFIG.getClient() : null);
       const user = window.krabeUser || (window.KrabeAuth && typeof window.KrabeAuth.getUser === 'function' ? window.KrabeAuth.getUser() : null);
+      if (!user || !user.id) return;
 
-      if (user && user.id && client) {
+      const emailInput = document.getElementById('cEmail');
+      if (emailInput && !emailInput.value && user.email) {
+        emailInput.value = user.email;
+      }
+
+      if (client) {
         try {
-          let { data, error } = await client
-            .from('cart_item')
-            .select(`
-              id,
-              quantity,
-              unit_price,
-              selected_size,
-              product_variation_id,
-              custom_measurement_id,
-              custom_measurement (
-                id,
-                label,
-                gender
-              ),
-              product_variation (
-                id,
-                color,
-                price,
-                main_image,
-                product (
-                  id,
-                  title
-                )
-              )
-            `)
-            .eq('user_id', user.id);
+          const { data: profile } = await client
+            .from('profile')
+            .select('name, phone_number, whatsapp_number, addresses')
+            .eq('id', user.id)
+            .maybeSingle();
 
-          // Fallback if schema cache is refreshing
-          if (error) {
-            console.warn('[Checkout] Direct embed notice, trying fallback join:', error.message);
-            const fallbackRes = await client
-              .from('cart_item')
-              .select(`
-                id,
-                quantity,
-                unit_price,
-                selected_size,
-                product_variation_id,
-                custom_measurement_id,
-                product_variation (
-                  id,
-                  color,
-                  price,
-                  main_image,
-                  product (
-                    id,
-                    title
-                  )
-                )
-              `)
-              .eq('user_id', user.id);
+          if (profile) {
+            if (profile.name) {
+              const parts = profile.name.trim().split(/\s+/);
+              const firstNameInput = document.getElementById('cFirstName');
+              const lastNameInput = document.getElementById('cLastName');
+              if (firstNameInput && !firstNameInput.value) firstNameInput.value = parts[0] || '';
+              if (lastNameInput && !lastNameInput.value) lastNameInput.value = parts.slice(1).join(' ') || '';
+            }
 
-            if (!fallbackRes.error && Array.isArray(fallbackRes.data)) {
-              data = fallbackRes.data;
-              error = null;
+            const phoneInput = document.getElementById('cPhone');
+            const phoneVal = profile.whatsapp_number || profile.phone_number;
+            if (phoneInput && !phoneInput.value && phoneVal) {
+              phoneInput.value = phoneVal;
+            }
 
-              const cmIds = [...new Set(data.map(i => i.custom_measurement_id).filter(Boolean))];
-              if (cmIds.length > 0) {
-                try {
-                  const { data: cmData } = await client
-                    .from('custom_measurement')
-                    .select('id, label, gender')
-                    .in('id', cmIds);
+            if (Array.isArray(profile.addresses) && profile.addresses.length > 0) {
+              const defaultAddr = profile.addresses.find(a => a.is_default) || profile.addresses[0];
+              if (defaultAddr) {
+                const addrInput = document.getElementById('cAddress');
+                const cityInput = document.getElementById('cCity');
+                const stateSelect = document.getElementById('cState');
+                const landmarkInput = document.getElementById('cLandmark');
 
-                  if (Array.isArray(cmData)) {
-                    const cmMap = Object.fromEntries(cmData.map(c => [String(c.id), c]));
-                    data.forEach(row => {
-                      if (row.custom_measurement_id && cmMap[String(row.custom_measurement_id)]) {
-                        row.custom_measurement = cmMap[String(row.custom_measurement_id)];
-                      }
-                    });
+                if (addrInput && !addrInput.value && defaultAddr.street) addrInput.value = defaultAddr.street;
+                if (cityInput && !cityInput.value && defaultAddr.city) cityInput.value = defaultAddr.city;
+                if (landmarkInput && !landmarkInput.value && defaultAddr.landmark) landmarkInput.value = defaultAddr.landmark;
+                if (stateSelect && defaultAddr.state) {
+                  const stateVal = defaultAddr.state.toLowerCase();
+                  for (let i = 0; i < stateSelect.options.length; i++) {
+                    if (stateSelect.options[i].value.toLowerCase().includes(stateVal)) {
+                      stateSelect.selectedIndex = i;
+                      break;
+                    }
                   }
-                } catch (cmErr) {
-                  console.warn('[Checkout] Could not fetch custom measurement names:', cmErr);
                 }
               }
             }
           }
-
-          if (!error && Array.isArray(data) && data.length > 0) {
-            cart = data.map(row => {
-              const pv = row.product_variation || {};
-              const prod = pv.product || {};
-              const cm = row.custom_measurement || {};
-              const itemSize = row.selected_size || 'M';
-              const isCustom = String(itemSize).toLowerCase() === 'custom';
-              const variantLabel = isCustom && cm.label
-                ? `${pv.color || 'Standard'} • Custom: ${cm.label}`
-                : `${pv.color || 'Standard'} • Size ${itemSize}`;
-
-              return {
-                id: row.id,
-                variant_id: row.product_variation_id,
-                product_variation_id: row.product_variation_id,
-                title: prod.title || 'Signature Garment',
-                variant: variantLabel,
-                size: itemSize,
-                custom_measurement_id: row.custom_measurement_id || null,
-                custom_measurement_label: cm.label || null,
-                price: Number(row.unit_price) || Number(pv.price) || 0,
-                qty: Number(row.quantity) || 1,
-                image: pv.main_image || 'assets/brand/krabe main logo.svg'
-              };
-            });
-            renderCheckoutItems();
-            return;
-          }
-        } catch (e) {
-          console.warn('[Checkout] Failed fetching DB cart:', e);
+        } catch (err) {
+          console.warn('[Checkout] Failed fetching user profile for autofill:', err);
         }
       }
-
-      // Guest cart fallback from localStorage
-      cart = getStoredCart();
-      renderCheckoutItems();
     }
 
     function processCheckout(e) {
       e.preventDefault();
+      const cart = (window.KrabeCart && typeof window.KrabeCart.getCart === 'function')
+        ? window.KrabeCart.getCart()
+        : [];
+
       if (!cart || cart.length === 0) {
         alert('Your shopping bag is empty.');
         return;
       }
 
       const btn = document.getElementById('btnPlaceOrder');
-      btn.textContent = 'Processing Payment via Paystack...';
-      btn.style.opacity = '0.7';
-      btn.disabled = true;
+      if (btn) {
+        btn.textContent = 'Processing Payment via Paystack...';
+        btn.style.opacity = '0.7';
+        btn.disabled = true;
+      }
 
       setTimeout(async () => {
-        // Clear stored cart upon confirmed checkout
-        try {
-          localStorage.removeItem(KRABE_CART_STORAGE_KEY);
-        } catch (err) {}
-
-        const client = window.krabeClient || (window.KRABE_CONFIG && typeof window.KRABE_CONFIG.getClient === 'function' ? window.KRABE_CONFIG.getClient() : null);
-        const user = window.krabeUser || (window.KrabeAuth && typeof window.KrabeAuth.getUser === 'function' ? window.KrabeAuth.getUser() : null);
-        if (user && user.id && client) {
-          try {
-            await client.from('cart_item').delete().eq('user_id', user.id);
-          } catch (err) {}
+        // Clear stored cart upon confirmed checkout using centralized KrabeCart API
+        if (window.KrabeCart && typeof window.KrabeCart.clearCart === 'function') {
+          await window.KrabeCart.clearCart();
         }
 
-        window.dispatchEvent(new CustomEvent('krabe:cart:updated', { detail: { cart: [] } }));
-
-        document.getElementById('checkoutFlowContainer').style.display = 'none';
-        document.getElementById('orderSuccessScreen').style.display = 'block';
+        const flow = document.getElementById('checkoutFlowContainer');
+        const success = document.getElementById('orderSuccessScreen');
+        if (flow) flow.style.display = 'none';
+        if (success) success.style.display = 'block';
         window.scrollTo({ top: 0, behavior: 'smooth' });
       }, 1200);
     }
 
-    // Listen for storage changes across windows
-    window.addEventListener('storage', (e) => {
-      if (e.key === KRABE_CART_STORAGE_KEY) {
-        cart = getStoredCart();
-        renderCheckoutItems();
+    // Dynamic State & City listeners to update shipping/confirmation
+    document.addEventListener('DOMContentLoaded', () => {
+      const stateSelect = document.getElementById('cState');
+      if (stateSelect) {
+        stateSelect.addEventListener('change', () => {
+          if (window.KrabeCart && typeof window.KrabeCart.updateCartUI === 'function') {
+            window.KrabeCart.updateCartUI();
+          }
+          const cityVal = document.getElementById('cCity')?.value.trim();
+          const stateVal = stateSelect.value || 'Lagos';
+          const confFulfill = document.getElementById('confirmFulfillmentMethod');
+          if (confFulfill && currentFulfillment === 'delivery') {
+            confFulfill.textContent = `Doorstep Delivery (${cityVal ? `${cityVal}, ` : ''}${stateVal})`;
+          }
+        });
+      }
+
+      const cityInput = document.getElementById('cCity');
+      if (cityInput) {
+        cityInput.addEventListener('input', () => {
+          const cityVal = cityInput.value.trim();
+          const stateVal = document.getElementById('cState')?.value || 'Lagos';
+          const confFulfill = document.getElementById('confirmFulfillmentMethod');
+          if (confFulfill && currentFulfillment === 'delivery') {
+            confFulfill.textContent = `Doorstep Delivery (${cityVal ? `${cityVal}, ` : ''}${stateVal})`;
+          }
+        });
+      }
+
+      populateUserProfile();
+      if (window.KrabeCart && typeof window.KrabeCart.updateCartUI === 'function') {
+        window.KrabeCart.updateCartUI();
       }
     });
 
-    // Database Cart Sync Events
-    window.addEventListener('krabe:cart:synced', () => {
-      loadCheckoutCart();
-    });
-
     window.addEventListener('krabe:session:changed', () => {
-      loadCheckoutCart();
-    });
-
-    // Initial render
-    document.addEventListener('DOMContentLoaded', () => {
-      loadCheckoutCart();
+      populateUserProfile();
+      if (window.KrabeCart && typeof window.KrabeCart.updateCartUI === 'function') {
+        window.KrabeCart.updateCartUI();
+      }
     });
   </script>
-  <!-- Supabase SDK & Krabe Stack -->
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="js/config.js"></script>
-  <script src="js/header.js"></script>
-  <script src="js/auth-modal.js"></script>
-  <script src="js/auth.js"></script>
-  <script src="js/main.js"></script>
 </body>
 </html>

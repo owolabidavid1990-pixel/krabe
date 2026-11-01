@@ -226,7 +226,12 @@
       return;
     }
 
-    if (guestCart.length === 0) return;
+    if (guestCart.length === 0) {
+      if (window.KrabeCart && typeof window.KrabeCart.refreshUserCart === 'function') {
+        window.KrabeCart.refreshUserCart();
+      }
+      return;
+    }
 
     console.log(`[Krabe Cart Sync] Found ${guestCart.length} guest cart item(s). Syncing to Supabase cart_item for user ${user.id}...`);
 
@@ -241,10 +246,12 @@
 
         // Upsert into public.cart_item using verified product_variation_id and selected_size
         if (isUUID) {
-          const qtyToAdd = Number(item.qty) || 1;
+          const isRTW = item.product_type === 'ready to wear';
+          const stockCap = isRTW && item.stock_quantity != null ? Number(item.stock_quantity) : 100;
+          const qtyToAdd = Math.min(stockCap, Math.max(1, Number(item.qty) || 1));
           const unitPrice = Number(item.price) || 0;
           const chosenSize = item.size || 'M';
-          const customMeasurementId = item.custom_measurement_id || null;
+          const customMeasurementId = (isRTW ? null : item.custom_measurement_id) || null;
 
           // Check if user already has this variation with this size & measurement in cart_item
           let query = client
@@ -263,7 +270,7 @@
           const { data: existing } = await query.maybeSingle();
 
           if (existing && existing.id) {
-            const updatedQty = (Number(existing.quantity) || 0) + qtyToAdd;
+            const updatedQty = Math.min(stockCap, (Number(existing.quantity) || 0) + qtyToAdd);
             await client
               .from('cart_item')
               .update({
@@ -890,7 +897,14 @@
 
       if (currentUser) {
         await syncGuestCartToDatabase(currentUser);
+        if (window.KrabeCart && typeof window.KrabeCart.refreshUserCart === 'function') {
+          window.KrabeCart.refreshUserCart();
+        }
       }
+
+      window.dispatchEvent(new CustomEvent('krabe:session:changed', {
+        detail: { event: 'INITIAL_SESSION', session: currentSession, user: currentUser }
+      }));
 
       // Realtime listener across tabs and auth state updates
       client.auth.onAuthStateChange(async (event, session) => {

@@ -97,6 +97,7 @@
         
         <div class="pdp-price-row">
           <span class="pdp-price-current body-20" style="color: var(--color-primary); font-weight: 700;">₦195,000</span>
+          <span id="pdpStockBadge" class="body-12" style="display: none; padding: 4px 10px; border-radius: 4px; font-weight: 600; letter-spacing: 0.5px;"></span>
         </div>
 
         <p class="pdp-description-text body-14" style="color: var(--color-text-muted); line-height: 1.6;">
@@ -167,8 +168,8 @@
         </div>
 
         <!-- Trust Badges -->
-        <div class="body-14" style="background: var(--color-sand); padding: 18px 20px; border-radius: var(--radius-sm); margin-bottom: 30px; color: var(--color-text-main); display: flex; flex-direction: column; gap: 8px;">
-          <div>✓ <strong>Crafted On Demand:</strong> Hand-tailored from our limited fabric archive; ready for dispatch within 72 hours. <span class="body-12" style="opacity: 0.9;">(For large quantities, production timeline may exceed 72 hours.)</span></div>
+        <div id="pdpTrustBadges" class="body-14" style="background: var(--color-sand); padding: 18px 20px; border-radius: var(--radius-sm); margin-bottom: 30px; color: var(--color-text-main); display: flex; flex-direction: column; gap: 8px;">
+          <div>✓ <strong>Crafted On Demand:</strong> Hand-tailored from our limited fabric archive; ready for dispatch after 72 hours. <span class="body-12" style="opacity: 0.9;">(For large quantities, production timeline may exceed 72 hours.)</span></div>
           <div>✓ <strong>Doorstep Delivery:</strong> 1-2 business days in Lagos; 3-5 business days across Nigeria.</div>
           <div>✓ <strong>Studio Pickup:</strong> Try on &amp; collect at our <span data-store-area>Lagos</span> atelier.</div>
           <div>✓ <strong>Complimentary Alteration Guarantee:</strong> Free fitting adjustments within Lagos.</div>
@@ -177,10 +178,10 @@
         <!-- Collapsible Accordions -->
         <div class="pdp-accordions">
           <div class="accordion-item">
-            <button type="button" class="accordion-header body-14" onclick="toggleAccordion(this)">
+            <button type="button" id="pdpShippingAccordionHeader" class="accordion-header body-14" onclick="toggleAccordion(this)">
               Made-to-Order, Pickup &amp; Returns <span>+</span>
             </button>
-            <div class="accordion-body body-14" style="color: var(--color-text-muted);">
+            <div id="pdpShippingAccordionBody" class="accordion-body body-14" style="color: var(--color-text-muted);">
               Every garment is crafted on demand from our curated fabric vault upon receipt of your order. Please allow 72 hours for cutting, tailoring, and quality inspection (for large quantities, production timeline may exceed 72 hours), after which your order is immediately dispatched via courier (1-2 days Lagos, 3-5 days nationwide). Returns or size exchanges are accepted within 3 days of delivery provided garments remain unworn with original tags attached.
             </div>
           </div>
@@ -634,8 +635,83 @@
     let pdpSelectedCustomMeasurementId = null;
     let pdpSelectedCustomMeasurementLabel = null;
     let loadedCustomProfiles = [];
+    window.currentProduct = null;
+    window.currentVariant = null;
     window.pdpSelectedCustomMeasurementId = null;
     window.pdpSelectedCustomMeasurementLabel = null;
+
+    function selectRtwColor(colorName) {
+      if (!currentProduct || currentProduct.type !== 'ready to wear') return;
+      const activeSizeBtn = document.querySelector('.size-btn.active');
+      const preferredSize = activeSizeBtn?.dataset.size || activeSizeBtn?.textContent.trim() || 'M';
+      renderRtwSizes(colorName, preferredSize);
+    }
+
+    function selectRtwVariant(variantId) {
+      selectVariant(variantId);
+    }
+
+    function renderRtwSizes(colorName, preferredSize) {
+      if (!currentProduct || currentProduct.type !== 'ready to wear') return;
+      const variations = currentProduct.product_variation || [];
+      const targetColor = (colorName || 'Standard').trim().toLowerCase();
+
+      // All variants for this color
+      const colorVariants = variations.filter(v => (v.color || 'Standard').trim().toLowerCase() === targetColor);
+      if (colorVariants.length === 0) return;
+
+      const sizeGrid = document.querySelector('.size-options-grid');
+      if (!sizeGrid) return;
+
+      // Ensure custom fit pill is hidden for RTW
+      const pill = document.getElementById('selectedCustomFitPill');
+      if (pill) pill.style.display = 'none';
+
+      // Sort order preference
+      const sizeOrder = ['XS', 'S', 'M', 'L', 'XL', 'XXL', 'XXXL'];
+      colorVariants.sort((a, b) => {
+        const idxA = sizeOrder.indexOf(String(a.size || '').toUpperCase());
+        const idxB = sizeOrder.indexOf(String(b.size || '').toUpperCase());
+        if (idxA !== -1 && idxB !== -1) return idxA - idxB;
+        if (idxA !== -1) return -1;
+        if (idxB !== -1) return 1;
+        return String(a.size || '').localeCompare(String(b.size || ''));
+      });
+
+      // Target variant: preferredSize match, or currently selected variant if in this color, or first in-stock variant, or first
+      let activeVar = null;
+      if (preferredSize) {
+        activeVar = colorVariants.find(v => String(v.size || '').toUpperCase() === String(preferredSize).toUpperCase());
+      }
+      if (!activeVar && currentVariant && colorVariants.some(v => String(v.id) === String(currentVariant.id))) {
+        activeVar = currentVariant;
+      }
+      if (!activeVar) {
+        activeVar = colorVariants.find(v => v.quantity != null && Number(v.quantity) > 0) || colorVariants[0];
+      }
+
+      sizeGrid.innerHTML = colorVariants.map(v => {
+        const s = v.size || 'M';
+        const isOutOfStock = v.quantity != null && Number(v.quantity) <= 0;
+        const isSelected = activeVar && String(v.id) === String(activeVar.id);
+        const stockTitle = isOutOfStock ? 'Sold Out in ' + s : s + (v.quantity != null ? ' (' + v.quantity + ' in stock)' : '');
+        return `
+          <button type="button" 
+                  class="size-btn body-12 ${isSelected ? 'active' : ''} ${isOutOfStock ? 'is-out-of-stock' : ''}" 
+                  data-variant-id="${v.id}"
+                  data-size="${escapeHtml(s)}"
+                  style="${isOutOfStock ? 'opacity: 0.55; text-decoration: line-through; cursor: pointer;' : ''}"
+                  title="${escapeHtml(stockTitle)}"
+                  onclick="selectRtwVariant('${v.id}')">
+            ${escapeHtml(s)}
+          </button>
+        `;
+      }).join('');
+
+      if (activeVar) {
+        selectVariant(activeVar.id);
+      }
+    }
 
     function getActiveUser() {
       if (window.krabeUser) return window.krabeUser;
@@ -946,20 +1022,35 @@
       if (!target) return;
 
       currentVariant = target;
+      window.currentVariant = target;
+      window.currentProduct = currentProduct;
+
+      const isRTW = currentProduct?.type === 'ready to wear';
+      const targetColor = (target.color || 'Standard').trim();
 
       // 1. Sync active state on round color swatches
       document.querySelectorAll('.swatch-circle-btn').forEach(btn => {
-        btn.classList.toggle('active', String(btn.dataset.variantId) === String(target.id));
+        if (isRTW) {
+          const btnColor = (btn.dataset.color || '').trim();
+          btn.classList.toggle('active', btnColor.toLowerCase() === targetColor.toLowerCase());
+        } else {
+          btn.classList.toggle('active', String(btn.dataset.variantId) === String(target.id));
+        }
       });
 
       // 2. Sync active state on variant image cards
       document.querySelectorAll('.variant-thumb-card').forEach(card => {
-        card.classList.toggle('active', String(card.dataset.variantId) === String(target.id));
+        if (isRTW) {
+          const cardColor = (card.dataset.color || '').trim();
+          card.classList.toggle('active', cardColor.toLowerCase() === targetColor.toLowerCase());
+        } else {
+          card.classList.toggle('active', String(card.dataset.variantId) === String(target.id));
+        }
       });
 
       // 3. Update single Color Label text (no extra label on cards as requested)
       const colorLabel = document.getElementById('colorLabel');
-      if (colorLabel) colorLabel.textContent = target.color || 'Standard';
+      if (colorLabel) colorLabel.textContent = targetColor;
 
       // 4. Update Big Display Image to this variant's main_image
       const mainImg = document.getElementById('mainPdpImg');
@@ -990,10 +1081,43 @@
         }
       }
 
-      // 6. Update Price Display
+      // 6. Update Price and Stock Display
       const displayPrice = Number(target.price) || 0;
       const priceEl = document.querySelector('.pdp-price-current');
       if (priceEl) priceEl.textContent = '₦' + displayPrice.toLocaleString('en-NG');
+
+      const stockBadge = document.getElementById('pdpStockBadge');
+      if (stockBadge) {
+        if (isRTW && target.quantity != null) {
+          const qty = Number(target.quantity);
+          stockBadge.style.display = 'inline-block';
+          if (qty <= 0) {
+            stockBadge.textContent = 'Sold Out';
+            stockBadge.style.background = '#FEE2E2';
+            stockBadge.style.color = '#DC2626';
+          } else if (qty <= 5) {
+            stockBadge.textContent = `Only ${qty} left in stock`;
+            stockBadge.style.background = '#FEF3C7';
+            stockBadge.style.color = '#B45309';
+          } else {
+            stockBadge.textContent = `${qty} in stock`;
+            stockBadge.style.background = '#ECFDF5';
+            stockBadge.style.color = '#059669';
+          }
+        } else {
+          stockBadge.style.display = 'none';
+        }
+      }
+
+      // Sync active state on size buttons
+      if (isRTW) {
+        document.querySelectorAll('.size-btn').forEach(btn => {
+          const btnSize = btn.dataset.size || btn.textContent.trim();
+          const isMatch = (btn.dataset.variantId && String(btn.dataset.variantId) === String(target.id)) ||
+                          (target.size && String(btnSize).toUpperCase() === String(target.size).toUpperCase());
+          btn.classList.toggle('active', Boolean(isMatch));
+        });
+      }
 
       // 7. Update Add to Bag button
       const addBtn = document.querySelector('.btn-add-bag');
@@ -1004,18 +1128,28 @@
         addBtn.dataset.price = displayPrice;
         addBtn.dataset.title = currentProduct.title;
         addBtn.dataset.image = target.main_image;
+        addBtn.dataset.productType = currentProduct.type || '';
+        addBtn.dataset.stockQuantity = target.quantity != null ? target.quantity : '';
+        addBtn.dataset.size = target.size || 'M';
       }
 
       // 8. Sync quantity counter with cart for this variant (defaults staging to 1 if not in cart)
       pdpQty = 1;
       syncPdpQtyWithCart();
+
+      // 9. Sync URL address bar without reloading page
+      try {
+        const currentUrl = new URL(window.location.href);
+        currentUrl.searchParams.set('variant_id', target.id);
+        window.history.replaceState(null, '', currentUrl.toString());
+      } catch (e) {}
     }
 
     let pdpQty = 1;
 
     function findPdpCartItem() {
       const activeSizeBtn = document.querySelector('.size-btn.active');
-      const activeSize = activeSizeBtn ? activeSizeBtn.textContent.trim() : 'M';
+      const activeSize = activeSizeBtn ? (activeSizeBtn.dataset.size || activeSizeBtn.textContent.trim()) : (currentVariant?.size || 'M');
       const isCustom = activeSize.toLowerCase() === 'custom';
       const customMeasurementId = isCustom ? (activeSizeBtn?.dataset.customMeasurementId || pdpSelectedCustomMeasurementId || null) : null;
       const variantId = currentVariant?.id;
@@ -1053,24 +1187,46 @@
       const cartItem = findPdpCartItem();
       const addBtn = document.querySelector('.btn-add-bag');
       const wasInCart = addBtn && (addBtn.dataset.inCart === 'true' || addBtn.classList.contains('is-in-cart'));
+      const isRTW = currentProduct?.type === 'ready to wear';
+      const isSoldOut = isRTW && currentVariant && currentVariant.quantity !== null && Number(currentVariant.quantity) <= 0;
+      const maxCap = (isRTW && currentVariant && currentVariant.quantity !== null) ? Number(currentVariant.quantity) : 100;
 
-      if (cartItem && Number(cartItem.qty) > 0) {
-        pdpQty = Math.min(100, Number(cartItem.qty));
+      if (isSoldOut) {
+        pdpQty = 0;
+        if (addBtn) {
+          addBtn.textContent = 'Sold Out';
+          addBtn.classList.remove('is-in-cart');
+          addBtn.dataset.inCart = 'false';
+          addBtn.disabled = true;
+          addBtn.style.opacity = '0.5';
+          addBtn.style.cursor = 'not-allowed';
+          addBtn.style.pointerEvents = 'none';
+        }
+      } else if (cartItem && Number(cartItem.qty) > 0) {
+        pdpQty = Math.min(maxCap, Number(cartItem.qty));
         if (addBtn) {
           addBtn.textContent = 'Remove from Shopping Bag';
           addBtn.classList.add('is-in-cart');
           addBtn.dataset.inCart = 'true';
+          addBtn.disabled = false;
+          addBtn.style.opacity = '1';
+          addBtn.style.cursor = 'pointer';
+          addBtn.style.pointerEvents = 'auto';
         }
       } else {
         // Item is not in cart
         // If it was previously in the cart (just removed by clicking Remove or by clicking the bin icon in the cart drawer), default back to 1
-        if (wasInCart || !pdpQty) {
-          pdpQty = 1;
+        if (wasInCart || !pdpQty || pdpQty > maxCap) {
+          pdpQty = Math.min(maxCap, 1);
         }
         if (addBtn) {
           addBtn.textContent = 'Add to Shopping Bag';
           addBtn.classList.remove('is-in-cart');
           addBtn.dataset.inCart = 'false';
+          addBtn.disabled = false;
+          addBtn.style.opacity = '1';
+          addBtn.style.cursor = 'pointer';
+          addBtn.style.pointerEvents = 'auto';
         }
       }
       const qtyValEl = document.getElementById('pdpQtyVal');
@@ -1079,14 +1235,18 @@
 
     async function adjustPdpQty(diff) {
       const activeSizeBtn = document.querySelector('.size-btn.active');
-      const activeSize = activeSizeBtn ? activeSizeBtn.textContent.trim() : 'M';
+      const activeSize = activeSizeBtn ? (activeSizeBtn.dataset.size || activeSizeBtn.textContent.trim()) : (currentVariant?.size || 'M');
       const isCustom = activeSize.toLowerCase() === 'custom';
       const customMeasurementId = isCustom ? (activeSizeBtn?.dataset.customMeasurementId || pdpSelectedCustomMeasurementId || null) : null;
       const cartItem = findPdpCartItem();
 
+      const isRTW = currentProduct?.type === 'ready to wear';
+      const maxCap = (isRTW && currentVariant && currentVariant.quantity !== null) ? Number(currentVariant.quantity) : 100;
+      if (maxCap <= 0) return;
+
       if (cartItem && Number(cartItem.qty) > 0) {
-        // Item is in cart: update cart directly in real-time (cart is single source of truth, capped at 100)
-        const newQty = Math.min(100, Math.max(1, Number(cartItem.qty) + diff));
+        // Item is in cart: update cart directly in real-time (cart is single source of truth, capped at maxCap)
+        const newQty = Math.min(maxCap, Math.max(1, Number(cartItem.qty) + diff));
         pdpQty = newQty;
         const qtyValEl = document.getElementById('pdpQtyVal');
         if (qtyValEl) qtyValEl.textContent = pdpQty;
@@ -1104,12 +1264,14 @@
             price: cartItem.price || currentVariant?.price,
             image: cartItem.image || currentVariant?.main_image,
             color: cartItem.color || currentVariant?.color,
-            product_id: cartItem.product_id || currentProduct?.id
+            product_id: cartItem.product_id || currentProduct?.id,
+            stock_quantity: currentVariant?.quantity,
+            product_type: currentProduct?.type
           });
         }
       } else {
-        // Item is NOT in cart: stage quantity locally on the page (1 to 100)
-        pdpQty = Math.min(100, Math.max(1, pdpQty + diff));
+        // Item is NOT in cart: stage quantity locally on the page (1 to maxCap)
+        pdpQty = Math.min(maxCap, Math.max(1, pdpQty + diff));
         const qtyValEl = document.getElementById('pdpQtyVal');
         if (qtyValEl) qtyValEl.textContent = pdpQty;
       }
@@ -1186,6 +1348,7 @@
       }
 
       const urlParams = new URLSearchParams(window.location.search);
+      const targetSlug = urlParams.get('slug');
       const targetId = urlParams.get('id');
 
       try {
@@ -1207,11 +1370,15 @@
             price,
             main_image,
             gallery_images,
-            available
+            available,
+            quantity,
+            size
           )
         `);
 
-        if (targetId) {
+        if (targetSlug) {
+          query = query.eq('slug', targetSlug);
+        } else if (targetId) {
           query = query.eq('id', targetId);
         }
 
@@ -1222,6 +1389,59 @@
         if (!prod) return;
 
         currentProduct = prod;
+
+        // RTW handling: Adapt UI for Ready-to-Wear garments
+        const isRTW = prod.type === 'ready to wear';
+        const customSizeBtn = Array.from(document.querySelectorAll('.size-btn')).find(b => b.textContent.trim().toLowerCase() === 'custom');
+        if (customSizeBtn) {
+          if (isRTW) {
+            customSizeBtn.style.display = 'none';
+            // If custom size was previously active, fallback to M
+            if (customSizeBtn.classList.contains('active')) {
+              const defaultSizeBtn = Array.from(document.querySelectorAll('.size-btn')).find(b => b.textContent.trim().toUpperCase() === 'M') || document.querySelector('.size-btn');
+              if (defaultSizeBtn) selectSize(defaultSizeBtn);
+            }
+          } else {
+            customSizeBtn.style.display = '';
+          }
+        }
+
+        // Adapt trust badges and shipping accordion for RTW
+        const trustBadgesEl = document.getElementById('pdpTrustBadges');
+        const shippingHeaderEl = document.getElementById('pdpShippingAccordionHeader');
+        const shippingBodyEl = document.getElementById('pdpShippingAccordionBody');
+
+        if (isRTW) {
+          if (trustBadgesEl) {
+            trustBadgesEl.innerHTML = `
+              <div>✓ <strong>In Stock &amp; Ready to Ship:</strong> Pre-crafted luxury stock ready for immediate dispatch.</div>
+              <div>✓ <strong>Doorstep Delivery:</strong> 1-2 business days in Lagos; 3-5 business days across Nigeria.</div>
+              <div>✓ <strong>Studio Pickup:</strong> Try on &amp; collect at our <span data-store-area>Lagos</span> atelier.</div>
+              <div>✓ <strong>Complimentary Alteration Guarantee:</strong> Free fitting adjustments within Lagos.</div>
+            `;
+          }
+          if (shippingHeaderEl) {
+            shippingHeaderEl.innerHTML = `Ready-to-Wear, Pickup &amp; Returns <span>+</span>`;
+          }
+          if (shippingBodyEl) {
+            shippingBodyEl.textContent = 'This garment is from our exclusive Ready-to-Wear collection and is available in physical stock. Once your order is placed, items are immediately packaged and dispatched (1-2 days within Lagos, 3-5 days nationwide) or ready for studio pickup. Returns or size exchanges are accepted within 3 days of delivery provided garments remain unworn with original tags attached.';
+          }
+        } else {
+          if (trustBadgesEl) {
+            trustBadgesEl.innerHTML = `
+              <div>✓ <strong>Crafted On Demand:</strong> Hand-tailored from our limited fabric archive; ready for dispatch after 72 hours. <span class="body-12" style="opacity: 0.9;">(For large quantities, production timeline may exceed 72 hours.)</span></div>
+              <div>✓ <strong>Doorstep Delivery:</strong> 1-2 business days in Lagos; 3-5 business days across Nigeria.</div>
+              <div>✓ <strong>Studio Pickup:</strong> Try on &amp; collect at our <span data-store-area>Lagos</span> atelier.</div>
+              <div>✓ <strong>Complimentary Alteration Guarantee:</strong> Free fitting adjustments within Lagos.</div>
+            `;
+          }
+          if (shippingHeaderEl) {
+            shippingHeaderEl.innerHTML = `Made-to-Order, Pickup &amp; Returns <span>+</span>`;
+          }
+          if (shippingBodyEl) {
+            shippingBodyEl.textContent = 'Every garment is crafted on demand from our curated fabric vault upon receipt of your order. Please allow 72 hours for cutting, tailoring, and quality inspection (for large quantities, production timeline may exceed 72 hours), after which your order is immediately dispatched via courier (1-2 days Lagos, 3-5 days nationwide). Returns or size exchanges are accepted within 3 days of delivery provided garments remain unworn with original tags attached.';
+          }
+        }
 
         // Populate Main Product Details
         const titleEl = document.querySelector('.pdp-title');
@@ -1236,58 +1456,118 @@
         const variations = prod.product_variation || [];
 
         if (variations.length > 0) {
-          // 1. Populate Color Circles dynamically from variants
-          const swatchesContainer = document.querySelector('.color-swatches-grid');
-          if (swatchesContainer) {
-            swatchesContainer.innerHTML = variations.map(v => `
-              <button type="button" 
-                      class="swatch-circle-btn" 
-                      style="background-color: ${v.color_code || '#2F475A'};" 
-                      title="${v.color || 'Standard'}" 
-                      data-variant-id="${v.id}"
-                      onclick="selectVariant('${v.id}')">
-              </button>
-            `).join('');
-          }
-
-          // 2. Populate Variants Visual Cards below color circles (no duplicate text label)
-          const varThumbGrid = document.getElementById('variantThumbnailsGrid');
-          if (varThumbGrid) {
-            varThumbGrid.innerHTML = variations.map(v => `
-              <button type="button" 
-                      class="variant-thumb-card" 
-                      data-variant-id="${v.id}"
-                      title="${v.color || 'Variant'}"
-                      onclick="selectVariant('${v.id}')">
-                <img src="${v.main_image || 'assets/brand/krabe main logo.svg'}" alt="${v.color || 'Variant'}">
-              </button>
-            `).join('');
-          }
-
-          // 3. Determine initial variant (from URL param 'variant' / 'variant_id' or 'color', or first variant)
-          const preselectedVariantId = urlParams.get('variant') || urlParams.get('variant_id');
-          const preselectedColor = urlParams.get('color');
-          let initialVariant = variations[0];
-          if (preselectedVariantId) {
-            const matched = variations.find(v => String(v.id) === String(preselectedVariantId));
-            if (matched) initialVariant = matched;
-          } else if (preselectedColor) {
-            const matched = variations.find(v => v.color && v.color.toLowerCase() === preselectedColor.toLowerCase());
-            if (matched) initialVariant = matched;
-          }
-
-          // Set initial PDP custom state
-          selectVariant(initialVariant.id);
-
-          // 4. Preselect size if navigating from cart "Edit" link
-          const preselectedSize = urlParams.get('size');
-          if (preselectedSize) {
-            const sizeBtns = document.querySelectorAll('.size-btn');
-            sizeBtns.forEach(btn => {
-              if (btn.textContent.trim().toLowerCase() === preselectedSize.toLowerCase()) {
-                selectSize(btn);
+          if (isRTW) {
+            // RTW: Group variants by unique color
+            const uniqueColorVariants = [];
+            const seenColors = new Set();
+            variations.forEach(v => {
+              const col = (v.color || 'Standard').trim().toLowerCase();
+              if (!seenColors.has(col)) {
+                seenColors.add(col);
+                uniqueColorVariants.push(v);
               }
             });
+
+            // 1. Color swatches (1 per distinct color)
+            const swatchesContainer = document.querySelector('.color-swatches-grid');
+            if (swatchesContainer) {
+              swatchesContainer.innerHTML = uniqueColorVariants.map(v => `
+                <button type="button" 
+                        class="swatch-circle-btn" 
+                        style="background-color: ${v.color_code || '#2F475A'};" 
+                        title="${escapeHtml(v.color || 'Standard')}" 
+                        data-color="${escapeHtml(v.color || 'Standard')}"
+                        data-variant-id="${v.id}"
+                        onclick="selectRtwColor('${escapeHtml(v.color || 'Standard')}')">
+                </button>
+              `).join('');
+            }
+
+            // 2. Visual thumbnail cards (1 per distinct color)
+            const varThumbGrid = document.getElementById('variantThumbnailsGrid');
+            if (varThumbGrid) {
+              varThumbGrid.innerHTML = uniqueColorVariants.map(v => `
+                <button type="button" 
+                        class="variant-thumb-card" 
+                        data-color="${escapeHtml(v.color || 'Standard')}"
+                        data-variant-id="${v.id}"
+                        title="${escapeHtml(v.color || 'Variant')}"
+                        onclick="selectRtwColor('${escapeHtml(v.color || 'Standard')}')">
+                  <img src="${v.main_image || 'assets/brand/krabe main logo.svg'}" alt="${escapeHtml(v.color || 'Variant')}">
+                </button>
+              `).join('');
+            }
+
+            // 3. Determine initial variant & size
+            const preselectedVariantId = urlParams.get('variant') || urlParams.get('variant_id');
+            const preselectedSize = urlParams.get('size');
+            let initialVariant = null;
+
+            if (preselectedVariantId) {
+              initialVariant = variations.find(v => String(v.id) === String(preselectedVariantId));
+            }
+            if (!initialVariant && preselectedSize) {
+              initialVariant = variations.find(v => String(v.size || '').toUpperCase() === String(preselectedSize).toUpperCase());
+            }
+            if (!initialVariant) {
+              initialVariant = variations.find(v => v.quantity != null && Number(v.quantity) > 0) || variations[0];
+            }
+
+            // Render sizes for this initial variant's color
+            const initialColor = initialVariant.color || 'Standard';
+            const initialSize = preselectedSize || initialVariant.size || 'M';
+            renderRtwSizes(initialColor, initialSize);
+            selectVariant(initialVariant.id);
+          } else {
+            // MTW: 1 variant = 1 fabric/color option
+            const swatchesContainer = document.querySelector('.color-swatches-grid');
+            if (swatchesContainer) {
+              swatchesContainer.innerHTML = variations.map(v => `
+                <button type="button" 
+                        class="swatch-circle-btn" 
+                        style="background-color: ${v.color_code || '#2F475A'};" 
+                        title="${v.color || 'Standard'}" 
+                        data-variant-id="${v.id}"
+                        onclick="selectVariant('${v.id}')">
+                </button>
+              `).join('');
+            }
+
+            // Populate Variants Visual Cards below color circles (no duplicate text label)
+            const varThumbGrid = document.getElementById('variantThumbnailsGrid');
+            if (varThumbGrid) {
+              varThumbGrid.innerHTML = variations.map(v => `
+                <button type="button" 
+                        class="variant-thumb-card" 
+                        data-variant-id="${v.id}"
+                        title="${v.color || 'Variant'}"
+                        onclick="selectVariant('${v.id}')">
+                  <img src="${v.main_image || 'assets/brand/krabe main logo.svg'}" alt="${v.color || 'Variant'}">
+                </button>
+              `).join('');
+            }
+
+            // Determine initial variant (strictly from URL param 'variant' / 'variant_id', or first variant)
+            const preselectedVariantId = urlParams.get('variant') || urlParams.get('variant_id');
+            let initialVariant = variations[0];
+            if (preselectedVariantId) {
+              const matched = variations.find(v => String(v.id) === String(preselectedVariantId));
+              if (matched) initialVariant = matched;
+            }
+
+            // Set initial PDP custom state
+            selectVariant(initialVariant.id);
+
+            // Preselect size if navigating from cart "Edit" link
+            const preselectedSize = urlParams.get('size');
+            if (preselectedSize) {
+              const sizeBtns = document.querySelectorAll('.size-btn');
+              sizeBtns.forEach(btn => {
+                if (btn.textContent.trim().toLowerCase() === preselectedSize.toLowerCase()) {
+                  selectSize(btn);
+                }
+              });
+            }
           }
         }
 
@@ -1304,8 +1584,10 @@
               .select(`
                 id,
                 title,
+                slug,
                 category,
                 gender,
+                type,
                 sales_count,
                 created_at,
                 is_featured,
@@ -1316,6 +1598,8 @@
                   color_code,
                   price,
                   main_image,
+                  quantity,
+                  size,
                   sales_count,
                   created_at
                 )
@@ -1343,8 +1627,10 @@
               .select(`
                 id,
                 title,
+                slug,
                 category,
                 gender,
+                type,
                 sales_count,
                 created_at,
                 is_featured,
@@ -1355,6 +1641,8 @@
                   color_code,
                   price,
                   main_image,
+                  quantity,
+                  size,
                   sales_count,
                   created_at
                 )
@@ -1400,15 +1688,50 @@
                 if (sDiff !== 0) return sDiff;
                 return new Date(b.created_at || 0) - new Date(a.created_at || 0);
               });
-              const rDef = sortedVars[0] || {};
+
+              const isRTW = (rp.type || '').toLowerCase() === 'ready to wear';
+              let rDef = sortedVars[0] || {};
+              if (isRTW && sortedVars.length > 0) {
+                const inStock = sortedVars.find(v => v.quantity != null && Number(v.quantity) > 0);
+                if (inStock) rDef = inStock;
+              }
+
               const rPrice = Number(rDef.price) || 0;
               const rImg = rDef.main_image || 'assets/brand/krabe main logo.svg';
+              const rDefSize = rDef.size || 'M';
               const catClean = (rp.category || 'native').toLowerCase();
               const badgeHTML = typeof window.getProductBadgesHTML === 'function'
                 ? window.getProductBadgesHTML(rp)
                 : '';
 
-              const productUrl = `product.html?id=${encodeURIComponent(rp.id)}${rDef.id ? `&variant=${encodeURIComponent(rDef.id)}` : ''}`;
+              const productParam = rp.slug ? `slug=${encodeURIComponent(rp.slug)}` : `id=${encodeURIComponent(rp.id)}`;
+              const productUrl = `product.html?${productParam}${rDef.id ? '&variant_id=' + encodeURIComponent(rDef.id) : ''}`;
+
+              const totalStock = isRTW ? rVars.reduce((sum, v) => sum + (Number(v.quantity) || 0), 0) : null;
+              const isSoldOut = isRTW && (rVars.length === 0 || totalStock <= 0 || (rDef.quantity != null && Number(rDef.quantity) <= 0));
+              const stockQty = (isRTW && rDef.quantity != null) ? Number(rDef.quantity) : null;
+
+              const quickAddButtonHTML = isSoldOut
+                ? `
+                  <button type="button" class="btn-quick-add body-12" disabled style="opacity: 0.6; cursor: not-allowed; pointer-events: none; background: rgba(0,0,0,0.65);">
+                    Sold Out
+                  </button>
+                `
+                : `
+                  <button type="button" class="btn-quick-add js-quick-add body-12" 
+                          data-product-id="${rp.id}"
+                          data-variant-id="${rDef.id || ''}"
+                          data-variation-id="${rDef.id || ''}"
+                          data-title="${rp.title}" 
+                          data-price="${rPrice}" 
+                          data-size="${rDefSize}"
+                          data-color="${rDef.color || 'Standard'}"
+                          data-image="${rImg}"
+                          data-product-type="${rp.type || ''}"
+                          data-stock-quantity="${stockQty != null ? stockQty : ''}">
+                    + Quick Add (${rDefSize})
+                  </button>
+                `;
 
               return `
                 <div class="product-card" data-category="${catClean}" onclick="if (!event.target.closest('button') &amp;&amp; !event.target.closest('a')) window.location.href='${productUrl}';" style="cursor: pointer;">
@@ -1418,17 +1741,7 @@
                       <img src="${rImg}" alt="${rp.title}" loading="lazy">
                     </a>
                     <div class="quick-add-overlay">
-                      <button type="button" class="btn-quick-add js-quick-add body-12" 
-                              data-product-id="${rp.id}"
-                              data-variant-id="${rDef.id || ''}"
-                              data-variation-id="${rDef.id || ''}"
-                              data-title="${rp.title}" 
-                              data-price="${rPrice}" 
-                              data-size="M"
-                              data-color="${rDef.color || 'Standard'}"
-                              data-image="${rImg}">
-                        + Quick Add (M)
-                      </button>
+                      ${quickAddButtonHTML}
                     </div>
                   </div>
                   <div class="product-info">

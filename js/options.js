@@ -70,7 +70,8 @@ const KRABE_OPTIONS = {
   ],
   product_type: [
     { value: 'bespoke', label: 'Bespoke' },
-    { value: 'made to order', label: 'Made to Order' }
+    { value: 'made to order', label: 'Made to Order' },
+    { value: 'ready to wear', label: 'Ready to Wear' }
   ],
   return_status: [
     { value: 'requested', label: 'Requested' },

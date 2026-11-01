@@ -88,7 +88,7 @@
 
             <div class="search-modal-footer">
               <button type="button" class="btn-search-submit body-14" id="searchSubmitBtn">
-                Explore All Made-to-Order &rarr;
+                Explore Full Collection &rarr;
               </button>
             </div>
           </div>

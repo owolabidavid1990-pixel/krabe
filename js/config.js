@@ -19,13 +19,14 @@
   }
 
   // =========================================================================
-  // 1. SUPABASE PROJECT CREDENTIALS (TWO SEPARATE FREE PROJECTS)
+  // 1. SUPABASE & PAYSTACK CREDENTIALS (TWO SEPARATE ENVIRONMENTS)
   // =========================================================================
   const ENV_CONFIGS = {
     // Development Project (used when running on VS Code Live Server / localhost)
     development: {
       supabaseUrl: normalizeUrl('https://myqtjagrzcgchfxhixzw.supabase.co/rest/v1/'),
       publishableKey: 'sb_publishable_VYAE1NTo38INYJzHE0j8CQ_Nd6jUSx6',
+      paystackPublicKey: 'pk_test_794ad03e520abfefe726e8bb103fcd9dd4da1baf',
       envName: 'Development (Live Server / Localhost)'
     },
 
@@ -33,6 +34,7 @@
     production: {
       supabaseUrl: normalizeUrl('https://gwknzycxxafhcyubtpps.supabase.co/rest/v1/'),
       publishableKey: 'sb_publishable_4M35YS4iivlnHaLcbvlKRA_I5id9F_k',
+      paystackPublicKey: 'pk_live_9223d76a6805bb64c6b0796282bfba8db0508753',
       envName: 'Production (Live Storefront)'
     }
   };
@@ -402,6 +404,7 @@
     isLocal,
     env: activeEnv,
     config: activeConfig,
+    paystackPublicKey: activeConfig.paystackPublicKey,
     getClient: () => client || initClient(),
     get client() {
       return client || initClient();

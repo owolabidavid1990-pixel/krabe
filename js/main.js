@@ -158,7 +158,12 @@ document.addEventListener('DOMContentLoaded', () => {
           checkoutBtn.style.opacity = '1';
         }
 
-        cartBody.innerHTML = cart.map(item => `
+        cartBody.innerHTML = `
+          <div class="cart-items-top-bar" style="display: flex; align-items: center; justify-content: space-between; padding-bottom: 10px; border-bottom: 1px solid var(--color-border); margin-bottom: -4px;">
+            <span class="body-12" style="color: var(--color-text-muted); font-weight: 600; letter-spacing: 0.5px;">${totalCount} ITEM${totalCount > 1 ? 'S' : ''}</span>
+            <button type="button" class="js-clear-cart-btn body-12" style="background: none; border: none; color: #DC2626; cursor: pointer; text-decoration: underline; font-weight: 600; padding: 0;">Clear Bag</button>
+          </div>
+          ${cart.map(item => `
           <div class="cart-item" data-id="${item.id}">
             <img src="${item.image || 'assets/brand/krabe main logo.svg'}" alt="${item.title}" class="cart-item-img">
             <div class="cart-item-details">
@@ -166,7 +171,7 @@ document.addEventListener('DOMContentLoaded', () => {
               <div class="cart-item-meta body-12" style="display: flex; align-items: center; flex-wrap: wrap; gap: 6px;">
                 <span>${item.color || 'Standard'} &bull; Size: <strong>${item.custom_measurement_label ? `Custom (${item.custom_measurement_label})` : (item.size || 'M')}</strong></span>
                 ${item.product_id ? `
-                  <a href="product.html?id=${item.product_id}&size=${encodeURIComponent(item.size || 'M')}&color=${encodeURIComponent(item.color || '')}" class="js-cart-edit-link body-10" style="color: var(--color-primary); font-weight: 600; text-decoration: underline;">
+                  <a href="product.html?id=${encodeURIComponent(item.product_id)}${item.variant_id ? `&variant_id=${encodeURIComponent(item.variant_id)}` : ''}&size=${encodeURIComponent(item.size || 'M')}" class="js-cart-edit-link body-10" style="color: var(--color-primary); font-weight: 600; text-decoration: underline;">
                     Edit
                   </a>
                 ` : ''}
@@ -184,23 +189,28 @@ document.addEventListener('DOMContentLoaded', () => {
               </svg>
             </button>
           </div>
-        `).join('');
+        `).join('')}
+        `;
 
         // Attach listeners for Line Item Plus
         cartBody.querySelectorAll('.js-qty-plus').forEach(btn => {
           btn.addEventListener('click', async () => {
             const id = btn.dataset.id;
             const target = cart.find(i => String(i.id) === String(id));
-            if (target && target.qty < 100) {
-              target.qty = Math.min(100, target.qty + 1);
-              const user = getSupabaseUser();
-              const client = getSupabaseClient();
-              if (user && user.id && client && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id)) {
-                await client.from('cart_item').update({ quantity: target.qty, updated_at: new Date().toISOString() }).eq('id', id);
-              } else {
-                setStoredCart(cart);
+            if (target) {
+              const isRTW = target.product_type === 'ready to wear';
+              const cap = isRTW && target.stock_quantity != null ? target.stock_quantity : 100;
+              if (target.qty < cap) {
+                target.qty = Math.min(cap, target.qty + 1);
+                const user = getSupabaseUser();
+                const client = getSupabaseClient();
+                if (user && user.id && client && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id)) {
+                  await client.from('cart_item').update({ quantity: target.qty, updated_at: new Date().toISOString() }).eq('id', id);
+                } else {
+                  setStoredCart(cart);
+                }
+                updateCartUI();
               }
-              updateCartUI();
             }
           });
         });
@@ -256,7 +266,119 @@ document.addEventListener('DOMContentLoaded', () => {
             closeCart();
           });
         });
+
+        // Attach listener for Clear Bag (In-place two-step confirmation, no browser alert)
+        const clearCartBtn = cartBody.querySelector('.js-clear-cart-btn');
+        if (clearCartBtn) {
+          clearCartBtn.addEventListener('click', async () => {
+            if (clearCartBtn.dataset.confirming === 'true') {
+              clearTimeout(clearCartBtn._timer);
+              await clearCart();
+            } else {
+              clearCartBtn.dataset.confirming = 'true';
+              clearCartBtn.textContent = 'Confirm Clear Bag?';
+              clearCartBtn.style.color = '#B91C1C';
+              clearCartBtn.style.fontWeight = '700';
+              clearCartBtn._timer = setTimeout(() => {
+                if (clearCartBtn) {
+                  clearCartBtn.dataset.confirming = 'false';
+                  clearCartBtn.textContent = 'Clear Bag';
+                  clearCartBtn.style.color = '#DC2626';
+                  clearCartBtn.style.fontWeight = '600';
+                }
+              }, 3000);
+            }
+          });
+        }
       }
+    }
+
+    // 4. Checkout Page Order Summary Rendering (if present on checkout.html)
+    const checkoutItemsContainer = document.getElementById('checkoutItemsList');
+    if (checkoutItemsContainer) {
+      const btnPlaceOrder = document.getElementById('btnPlaceOrder');
+
+      if (cart.length === 0) {
+        checkoutItemsContainer.innerHTML = `
+          <div style="text-align: center; padding: 32px 12px; color: var(--color-text-muted);">
+            <svg style="width: 44px; height: 44px; margin: 0 auto 12px; opacity: 0.4; display: block;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/>
+            </svg>
+            <p class="body-14" style="margin-bottom: 16px;">Your shopping bag is currently empty.</p>
+            <a href="shop.html" class="btn btn-outline body-12" style="padding: 10px 18px; letter-spacing: 1.5px; text-transform: uppercase;">
+              Explore Collections &rarr;
+            </a>
+          </div>
+        `;
+        if (btnPlaceOrder) {
+          btnPlaceOrder.disabled = true;
+          btnPlaceOrder.style.opacity = '0.5';
+          btnPlaceOrder.style.cursor = 'not-allowed';
+          btnPlaceOrder.innerHTML = 'Shopping Bag is Empty';
+        }
+      } else {
+        checkoutItemsContainer.innerHTML = cart.map(item => {
+          const itemImg = item.image || 'assets/brand/krabe main logo.svg';
+          const itemTitle = item.title || 'Signature Garment';
+          const itemVariant = item.variant || (
+            item.custom_measurement_label
+              ? `${item.color || 'Standard'} • Custom: ${item.custom_measurement_label}`
+              : `${item.color || 'Standard'} • Size ${item.size || 'M'}`
+          );
+          const itemQty = Number(item.qty) || 1;
+          const itemPrice = Number(item.price) || 0;
+          return `
+            <div class="summary-line-item">
+              <img src="${itemImg}" alt="${itemTitle}" class="summary-item-img">
+              <div class="summary-item-info">
+                <div class="summary-item-title body-14">${itemTitle}</div>
+                <div class="summary-item-variant body-12">${itemVariant} &bull; Qty: ${itemQty}</div>
+                <div class="summary-item-price body-14">${formatNaira(itemPrice * itemQty)}</div>
+              </div>
+            </div>
+          `;
+        }).join('');
+
+        if (btnPlaceOrder) {
+          btnPlaceOrder.disabled = false;
+          btnPlaceOrder.style.opacity = '1';
+          btnPlaceOrder.style.cursor = 'pointer';
+        }
+      }
+
+      // Shipping & Total calculations for checkout page
+      const optPick = document.getElementById('optPickup');
+      const isPickup = optPick && optPick.classList.contains('active');
+      const stateSelect = document.getElementById('cState');
+      const isLagos = !stateSelect || stateSelect.value === 'Lagos';
+      let shipping = 0;
+
+      if (isPickup) {
+        shipping = 0;
+      } else if (isLagos && (subtotal >= 200000 || subtotal === 0)) {
+        shipping = 0;
+      } else {
+        shipping = isLagos ? 3500 : 4500;
+      }
+
+      const shipEl = document.getElementById('summaryShipping');
+      if (shipEl) {
+        if (shipping === 0) {
+          shipEl.textContent = 'FREE';
+          shipEl.style.color = '#15803D';
+        } else {
+          shipEl.textContent = formatNaira(shipping);
+          shipEl.style.color = '';
+        }
+      }
+
+      const total = Math.max(0, subtotal + shipping);
+      const totalEl = document.getElementById('summaryTotal');
+      if (totalEl) totalEl.textContent = formatNaira(total);
+      const btnPay = document.getElementById('btnPayAmount');
+      if (btnPay) btnPay.textContent = formatNaira(total);
+      const confTotal = document.getElementById('confirmTotalCharged');
+      if (confTotal) confTotal.textContent = formatNaira(total);
     }
   }
 
@@ -287,9 +409,11 @@ document.addEventListener('DOMContentLoaded', () => {
               color_code,
               price,
               main_image,
+              quantity,
               product (
                 id,
-                title
+                title,
+                type
               )
             )
           `)
@@ -313,9 +437,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 color_code,
                 price,
                 main_image,
+                quantity,
                 product (
                   id,
-                  title
+                  title,
+                  type
                 )
               )
             `)
@@ -373,7 +499,9 @@ document.addEventListener('DOMContentLoaded', () => {
               color: pv.color || 'Standard',
               price: Number(row.unit_price) || Number(pv.price) || 0,
               qty: Number(row.quantity) || 1,
-              image: pv.main_image || 'assets/brand/krabe main logo.svg'
+              image: pv.main_image || 'assets/brand/krabe main logo.svg',
+              stock_quantity: (pv.quantity != null) ? Number(pv.quantity) : null,
+              product_type: prod.type || null
             };
           });
           updateCartUI();
@@ -386,16 +514,76 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Guest fallback
     cart = getStoredCart();
+
+    // Guest cart integrity check: verify all variant IDs still exist in DB, remove discontinued items,
+    // and re-cap RTW quantities against live stock — all in one query
+    if (client) {
+      const allVariantIds = [...new Set(
+        cart.map(i => i.variant_id || i.product_variation_id).filter(v => v && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(v))
+      )];
+      if (allVariantIds.length > 0) {
+        try {
+          const { data: stockData } = await client
+            .from('product_variation')
+            .select('id, quantity')
+            .in('id', allVariantIds);
+
+          if (Array.isArray(stockData) && stockData.length > 0) {
+            const stockMap = Object.fromEntries(stockData.map(r => [String(r.id), r.quantity]));
+            let changed = false;
+
+            // Remove items whose variant ID was not returned (product deleted / discontinued)
+            const beforeCount = cart.length;
+            cart = cart.filter(item => {
+              const vid = item.variant_id || item.product_variation_id;
+              return !vid || stockMap.hasOwnProperty(String(vid));
+            });
+            if (cart.length < beforeCount) changed = true;
+
+            // For RTW items: update live stock_quantity and cap qty if stock dropped
+            cart.forEach(item => {
+              if (item.product_type !== 'ready to wear') return;
+              const vid = String(item.variant_id || item.product_variation_id || '');
+              const liveStock = stockMap[vid];
+              if (liveStock != null) {
+                item.stock_quantity = Number(liveStock);
+                if (item.qty > liveStock) {
+                  item.qty = Math.max(0, Number(liveStock));
+                  changed = true;
+                }
+              }
+            });
+
+            // Remove RTW items that are now sold out (qty === 0)
+            cart = cart.filter(i => !(i.product_type === 'ready to wear' && i.qty === 0));
+            if (changed) setStoredCart(cart);
+          }
+        } catch (stockErr) {
+          console.warn('[Krabe Cart] Could not validate guest cart against DB:', stockErr);
+        }
+      }
+    }
+
     updateCartUI();
   }
 
-  // Add Item to Cart Function (handles DB persistence for logged-in, localStorage for guest with variant_id + size deduplication, capped at 100)
-  async function addToCart({ id, variant_id, product_variation_id, product_id, title, price, image, size, color, qty, custom_measurement_id = null, custom_measurement_label = null, setExact = false, skipOpen = false }) {
+  // Add Item to Cart Function (handles DB persistence for logged-in, localStorage for guest with variant_id + size deduplication, capped at 100 or stock_quantity for RTW)
+  async function addToCart({ id, variant_id, product_variation_id, product_id, title, price, image, size, color, qty, custom_measurement_id = null, custom_measurement_label = null, setExact = false, skipOpen = false, stock_quantity = null, product_type = null }) {
     const targetVariantId = variant_id || product_variation_id || id;
     const chosenSize = size || 'M';
     const chosenColor = color || 'Standard';
-    const chosenQty = Math.min(100, Math.max(1, Number(qty) || 1));
     const isCustom = String(chosenSize).toLowerCase() === 'custom';
+    const isRTW = product_type === 'ready to wear';
+
+    // RTW cannot use custom measurements
+    if (isRTW && isCustom) {
+      alert('Ready-to-wear products cannot use custom measurements. Please select a standard size.');
+      return;
+    }
+
+    // Cap quantity: RTW uses stock_quantity if available, otherwise 100
+    const cap = isRTW && stock_quantity != null ? stock_quantity : 100;
+    const chosenQty = Math.min(cap, Math.max(1, Number(qty) || 1));
     const variantLabel = isCustom && custom_measurement_label
       ? `${chosenColor} / Custom: ${custom_measurement_label}`
       : `${chosenColor} / ${chosenSize}`;
@@ -422,7 +610,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const { data: existing } = await query.maybeSingle();
 
         if (existing && existing.id) {
-          const newQty = Math.min(100, Math.max(1, setExact ? chosenQty : ((Number(existing.quantity) || 0) + chosenQty)));
+          const newQty = Math.min(cap, Math.max(1, setExact ? chosenQty : ((Number(existing.quantity) || 0) + chosenQty)));
           await client
             .from('cart_item')
             .update({
@@ -472,7 +660,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     if (existingIndex > -1) {
-      cart[existingIndex].qty = Math.min(100, Math.max(1, setExact ? chosenQty : (cart[existingIndex].qty + chosenQty)));
+      cart[existingIndex].qty = Math.min(cap, Math.max(1, setExact ? chosenQty : (cart[existingIndex].qty + chosenQty)));
     } else {
       cart.push({
         id: targetVariantId ? `${targetVariantId}-${chosenSize}${custom_measurement_id ? `-${custom_measurement_id}` : ''}` : Date.now(),
@@ -487,7 +675,9 @@ document.addEventListener('DOMContentLoaded', () => {
         color: chosenColor,
         price: Number(price) || 0,
         qty: chosenQty,
-        image: image || 'assets/brand/krabe main logo.svg'
+        image: image || 'assets/brand/krabe main logo.svg',
+        stock_quantity: stock_quantity != null ? Number(stock_quantity) : null,
+        product_type: product_type || null
       });
     }
 
@@ -545,6 +735,22 @@ document.addEventListener('DOMContentLoaded', () => {
     updateCartUI();
   }
 
+  // Clear Entire Cart Function (handles DB deletion for logged-in, localStorage for guest)
+  async function clearCart() {
+    cart = [];
+    const user = getSupabaseUser();
+    const client = getSupabaseClient();
+    if (user && user.id && client) {
+      try {
+        await client.from('cart_item').delete().eq('user_id', user.id);
+      } catch (err) {
+        console.warn('[Krabe Cart] Could not clear cart in DB:', err);
+      }
+    }
+    setStoredCart(cart);
+    updateCartUI();
+  }
+
   // Global Cart API for page synchronization
   window.KrabeCart = {
     getCart: () => cart,
@@ -567,18 +773,7 @@ document.addEventListener('DOMContentLoaded', () => {
     setQuantity: (params) => addToCart({ ...params, setExact: true, skipOpen: true }),
     addToCart: (params) => addToCart(params),
     removeFromCart: (params) => removeFromCart(params),
-    clearCart: async () => {
-      cart = [];
-      const user = getSupabaseUser();
-      const client = getSupabaseClient();
-      if (user && user.id && client) {
-        try {
-          await client.from('cart_item').delete().eq('user_id', user.id);
-        } catch (err) {}
-      }
-      setStoredCart(cart);
-      updateCartUI();
-    },
+    clearCart: () => clearCart(),
     refreshUserCart: () => loadActiveCart(),
     loadActiveCart: () => loadActiveCart(),
     updateCartUI: () => updateCartUI(),
@@ -602,6 +797,12 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   cartOpenBtns.forEach(btn => btn.addEventListener('click', openCart));
+  document.addEventListener('click', (e) => {
+    if (e.target.closest('.js-open-cart')) {
+      e.preventDefault();
+      openCart();
+    }
+  });
   if (cartCloseBtn) cartCloseBtn.addEventListener('click', closeCart);
   if (cartOverlay) {
     cartOverlay.addEventListener('click', (e) => {
@@ -650,6 +851,17 @@ document.addEventListener('DOMContentLoaded', () => {
       const custom_measurement_id = activeSizeBtn?.dataset.customMeasurementId || window.pdpSelectedCustomMeasurementId || null;
       const custom_measurement_label = activeSizeBtn?.dataset.customMeasurementLabel || window.pdpSelectedCustomMeasurementLabel || null;
 
+      // Read RTW stock info from the current product loaded on the PDP
+      const productType = window.currentProduct?.type || null;
+      const isRTW = productType === 'ready to wear';
+      const stockQty = (isRTW && window.currentVariant?.quantity != null) ? Number(window.currentVariant.quantity) : null;
+
+      // RTW cannot use custom measurements
+      if (isRTW && isCustom) {
+        alert('Ready-to-wear products cannot use custom measurements. Please select a standard size.');
+        return;
+      }
+
       if (isCustom) {
         const currentUser = getSupabaseUser();
         if (!currentUser || !currentUser.id) {
@@ -693,9 +905,10 @@ document.addEventListener('DOMContentLoaded', () => {
         const qtyValEl = document.getElementById('pdpQtyVal');
         if (qtyValEl) qtyValEl.textContent = '1';
       } else {
-        // Not in cart: add exact staged quantity to bag (capped at 100)
+        // Not in cart: add exact staged quantity to bag (capped at stock_quantity for RTW, 100 for others)
         const qtyValEl = document.getElementById('pdpQtyVal');
-        const stagedQty = Math.min(100, Math.max(1, Number(qtyValEl?.textContent.trim()) || 1));
+        const cap = isRTW && stockQty != null ? stockQty : 100;
+        const stagedQty = Math.min(cap, Math.max(1, Number(qtyValEl?.textContent.trim()) || 1));
         await addToCart({ 
           variant_id, 
           product_variation_id: variant_id, 
@@ -708,7 +921,9 @@ document.addEventListener('DOMContentLoaded', () => {
           qty: stagedQty, 
           custom_measurement_id, 
           custom_measurement_label, 
-          setExact: true 
+          setExact: true,
+          stock_quantity: stockQty,
+          product_type: productType
         });
       }
     });
@@ -728,6 +943,24 @@ document.addEventListener('DOMContentLoaded', () => {
     const productId = btn.dataset.productId || null;
     const size = btn.dataset.size || 'M';
     const color = btn.dataset.color || 'Standard';
+    const productType = btn.dataset.productType || null;
+    const isRTW = productType === 'ready to wear';
+    const rawStock = btn.dataset.stockQuantity;
+    const stockQty = (isRTW && rawStock !== '' && rawStock != null) ? Number(rawStock) : null;
+
+    if (isRTW && stockQty !== null && stockQty <= 0) {
+      alert('This ready-to-wear piece is currently sold out.');
+      return;
+    }
+
+    // Check if quantity in cart has already reached physical stock limit
+    if (isRTW && stockQty !== null && window.KrabeCart && typeof window.KrabeCart.getItem === 'function') {
+      const existing = window.KrabeCart.getItem(variantId, size, productTitle, color);
+      if (existing && Number(existing.qty) >= stockQty) {
+        alert(`Only ${stockQty} unit${stockQty > 1 ? 's' : ''} available in stock for this piece.`);
+        return;
+      }
+    }
 
     addToCart({
       variant_id: variantId,
@@ -738,7 +971,9 @@ document.addEventListener('DOMContentLoaded', () => {
       image: productImage,
       size,
       color,
-      qty: 1
+      qty: 1,
+      stock_quantity: stockQty,
+      product_type: productType
     });
   });
 
