@@ -484,6 +484,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         if (!error && Array.isArray(data)) {
+          const syncPromises = [];
           cart = data.map(row => {
             const pv = row.product_variation || {};
             const prod = pv.product || {};
@@ -498,11 +499,16 @@ document.addEventListener('DOMContentLoaded', () => {
             const stockQty = (pv.quantity != null) ? Number(pv.quantity) : null;
             let currentQty = Number(row.quantity) || 1;
 
-            // Re-cap if RTW stock dropped in DB
+            // Option 2: Permanent overwrite in DB if RTW stock dropped below cart quantity
             if (isRTW && stockQty !== null && currentQty > stockQty) {
               currentQty = Math.max(0, stockQty);
-              // Asynchronously sync database cart_item row
-              client.from('cart_item').update({ quantity: currentQty, updated_at: new Date().toISOString() }).eq('id', row.id);
+              // Permanently persist new clamped quantity into Supabase cart_item row
+              syncPromises.push(
+                client.from('cart_item')
+                  .update({ quantity: currentQty, updated_at: new Date().toISOString() })
+                  .eq('id', row.id)
+                  .eq('user_id', user.id)
+              );
             }
 
             return {
@@ -523,6 +529,25 @@ document.addEventListener('DOMContentLoaded', () => {
               product_type: prod.type || null
             };
           });
+
+          // Filter out completely sold-out RTW items (qty === 0) and remove from DB
+          cart = cart.filter(i => {
+            const isRTW = (i.product_type || '').toLowerCase() === 'ready to wear';
+            if (isRTW && i.qty === 0) {
+              syncPromises.push(client.from('cart_item').delete().eq('id', i.id).eq('user_id', user.id));
+              return false;
+            }
+            return true;
+          });
+
+          if (syncPromises.length > 0) {
+            try {
+              await Promise.all(syncPromises);
+            } catch (pErr) {
+              console.warn('[Krabe Cart] Could not persist stock clamp to DB:', pErr);
+            }
+          }
+
           updateCartUI();
           return;
         }

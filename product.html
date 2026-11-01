@@ -1188,8 +1188,11 @@
       const addBtn = document.querySelector('.btn-add-bag');
       const wasInCart = addBtn && (addBtn.dataset.inCart === 'true' || addBtn.classList.contains('is-in-cart'));
       const isRTW = currentProduct?.type === 'ready to wear';
-      const isSoldOut = isRTW && currentVariant && currentVariant.quantity !== null && Number(currentVariant.quantity) <= 0;
-      const maxCap = (isRTW && currentVariant && currentVariant.quantity !== null) ? Number(currentVariant.quantity) : 100;
+      const liveStock = (cartItem && cartItem.stock_quantity != null)
+        ? Number(cartItem.stock_quantity)
+        : (currentVariant && currentVariant.quantity !== null ? Number(currentVariant.quantity) : null);
+      const isSoldOut = isRTW && liveStock !== null && liveStock <= 0;
+      const maxCap = (isRTW && liveStock !== null) ? liveStock : 100;
 
       if (isSoldOut) {
         pdpQty = 0;
@@ -1241,7 +1244,10 @@
       const cartItem = findPdpCartItem();
 
       const isRTW = currentProduct?.type === 'ready to wear';
-      const maxCap = (isRTW && currentVariant && currentVariant.quantity !== null) ? Number(currentVariant.quantity) : 100;
+      const liveStock = (cartItem && cartItem.stock_quantity != null)
+        ? Number(cartItem.stock_quantity)
+        : (currentVariant && currentVariant.quantity !== null ? Number(currentVariant.quantity) : null);
+      const maxCap = (isRTW && liveStock !== null) ? liveStock : 100;
       if (maxCap <= 0) return;
 
       if (cartItem && Number(cartItem.qty) > 0) {
