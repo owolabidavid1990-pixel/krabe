@@ -122,21 +122,11 @@ document.addEventListener('DOMContentLoaded', () => {
       el.textContent = formatNaira(subtotal);
     });
 
-    // Free delivery indicator (threshold: ₦200,000 for Lagos delivery)
-    const freeShippingEl = document.querySelector('.cart-free-shipping');
-    if (freeShippingEl) {
-      if (subtotal >= 200000) {
-        freeShippingEl.innerHTML = '✓ You qualify for <strong>Free Lagos Delivery</strong>';
-        freeShippingEl.style.color = '#15803D';
-      } else if (subtotal > 0) {
-        const remaining = 200000 - subtotal;
-        freeShippingEl.innerHTML = `Add <strong>${formatNaira(remaining)}</strong> more for Free Lagos Delivery`;
-        freeShippingEl.style.color = 'var(--color-primary, #44637B)';
-      } else {
-        freeShippingEl.innerHTML = '✓ Free Lagos Delivery on orders over ₦200,000';
-        freeShippingEl.style.color = '';
-      }
-    }
+    // Delivery indicator disabled - delivery fees paid to dispatch rider separately
+    const freeShippingEls = document.querySelectorAll('.cart-free-shipping');
+    freeShippingEls.forEach(el => {
+      el.style.display = 'none';
+    });
 
     // 3. Line Items Rendering in Cart Drawer
     if (cartBody) {
@@ -354,33 +344,23 @@ document.addEventListener('DOMContentLoaded', () => {
         }
       }
 
-      // Shipping & Total calculations for checkout page
+      // Shipping & Total calculations for checkout page (delivery fees paid to rider separately)
       const optPick = document.getElementById('optPickup');
       const isPickup = optPick && optPick.classList.contains('active');
-      const stateSelect = document.getElementById('cState');
-      const isLagos = !stateSelect || stateSelect.value === 'Lagos';
-      let shipping = 0;
-
-      if (isPickup) {
-        shipping = 0;
-      } else if (isLagos && (subtotal >= 200000 || subtotal === 0)) {
-        shipping = 0;
-      } else {
-        shipping = isLagos ? 3500 : 4500;
-      }
 
       const shipEl = document.getElementById('summaryShipping');
       if (shipEl) {
-        if (shipping === 0) {
-          shipEl.textContent = 'FREE';
+        if (isPickup) {
+          shipEl.textContent = 'FREE (Pickup)';
           shipEl.style.color = '#15803D';
         } else {
-          shipEl.textContent = formatNaira(shipping);
-          shipEl.style.color = '';
+          shipEl.textContent = 'Pay to rider upon delivery';
+          shipEl.style.color = 'var(--color-text-muted, #6E7175)';
         }
       }
 
-      const total = Math.max(0, subtotal + shipping);
+      // Online checkout total equals subtotal (0 shipping added)
+      const total = Math.max(0, subtotal);
       const totalEl = document.getElementById('summaryTotal');
       if (totalEl) totalEl.textContent = formatNaira(total);
 

@@ -1468,11 +1468,7 @@ ul {
 }
 
 .cart-free-shipping {
-  background-color: var(--color-primary-light);
-  padding: 12px 24px;
-  color: var(--color-primary-dark);
-  font-weight: 600;
-  text-align: center;
+  display: none !important;
 }
 
 .cart-drawer-body {

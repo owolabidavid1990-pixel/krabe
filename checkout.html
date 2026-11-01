@@ -70,9 +70,9 @@
               <div class="delivery-opt-card active" id="optDelivery" onclick="selectFulfillment('delivery')">
                 <div class="delivery-opt-title body-14">
                   <span>Doorstep Delivery</span>
-                  <span class="body-12" style="color: #15803D;" id="deliveryOptionPriceTag">Free</span>
+                  <span class="body-12" style="color: var(--color-text-muted);" id="deliveryOptionPriceTag">Pay to rider</span>
                 </div>
-                <div class="delivery-opt-desc body-12">GIG Logistics / DHL nationwide delivery</div>
+                <div class="delivery-opt-desc body-12">Dispatched to your address &bull; Rider delivery fee paid separately</div>
               </div>
 
               <div class="delivery-opt-card" id="optPickup" onclick="selectFulfillment('pickup')">
@@ -123,7 +123,8 @@
 
               <!-- Dispatch & Tailoring Notice -->
               <div style="margin-top: 16px; padding: 12px 14px; background: var(--color-sand); border: 1px solid var(--color-border); border-radius: var(--radius-sm); color: var(--color-obsidian);" class="body-12">
-                <div>✓ <strong>Ready-to-Wear:</strong> In-stock pieces dispatched immediately (same-day delivery in Lagos for orders placed before 2:00 PM).</div>
+                <div>✓ <strong>Delivery Fee:</strong> Paid separately and directly to the dispatch rider upon receiving your parcel.</div>
+                <div style="margin-top: 4px;">✓ <strong>Ready-to-Wear:</strong> In-stock pieces dispatched immediately (same-day delivery in Lagos for orders placed before 2:00 PM).</div>
                 <div style="margin-top: 4px;">✓ <strong>Made-to-Order:</strong> Individually tailored on demand; dispatched after 72 hours (3 working days) tailoring period.</div>
               </div>
             </div>
@@ -201,7 +202,7 @@
           </div>
           <div class="summary-row body-14">
             <span>Shipping</span>
-            <span id="summaryShipping" style="color: #15803D;">FREE</span>
+            <span id="summaryShipping" style="color: var(--color-text-muted); font-size: 13px;">Pay to rider upon delivery</span>
           </div>
           <div class="summary-row body-14">
             <span>VAT / Taxes</span>

@@ -18,7 +18,7 @@
     return `
       <!-- TOP ANNOUNCEMENT BAR -->
       <div class="announcement-bar body-12" id="krabeAnnouncementBar">
-        <span>Free Lagos Delivery on orders over ₦200,000 | Nationwide Shipping &amp; In-Store Lagos Fittings</span>
+        <span>Nationwide Dispatch Delivery &bull; In-Store Lagos Atelier Fittings</span>
         <a href="bespoke.html">Book Studio Fitting &rarr;</a>
       </div>
 
