@@ -96,6 +96,14 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function updateCartUI() {
+    // Inventory integrity clamp: enforce that RTW quantities in memory never exceed physical stock
+    cart.forEach(item => {
+      const isRTW = (item.product_type || '').toLowerCase() === 'ready to wear';
+      if (isRTW && item.stock_quantity != null && Number(item.qty) > Number(item.stock_quantity)) {
+        item.qty = Math.max(0, Number(item.stock_quantity));
+      }
+    });
+
     window.krabeCartItems = cart;
     window.dispatchEvent(new CustomEvent('krabe:cart:updated', { detail: { cart } }));
 
@@ -486,6 +494,17 @@ document.addEventListener('DOMContentLoaded', () => {
               ? `${pv.color || 'Standard'} / Custom: ${cm.label}`
               : `${pv.color || 'Standard'} / ${itemSize}`;
 
+            const isRTW = (prod.type || '').toLowerCase() === 'ready to wear';
+            const stockQty = (pv.quantity != null) ? Number(pv.quantity) : null;
+            let currentQty = Number(row.quantity) || 1;
+
+            // Re-cap if RTW stock dropped in DB
+            if (isRTW && stockQty !== null && currentQty > stockQty) {
+              currentQty = Math.max(0, stockQty);
+              // Asynchronously sync database cart_item row
+              client.from('cart_item').update({ quantity: currentQty, updated_at: new Date().toISOString() }).eq('id', row.id);
+            }
+
             return {
               id: row.id,
               product_id: prod.id || null,
@@ -498,9 +517,9 @@ document.addEventListener('DOMContentLoaded', () => {
               custom_measurement_label: cm.label || null,
               color: pv.color || 'Standard',
               price: Number(row.unit_price) || Number(pv.price) || 0,
-              qty: Number(row.quantity) || 1,
+              qty: currentQty,
               image: pv.main_image || 'assets/brand/krabe main logo.svg',
-              stock_quantity: (pv.quantity != null) ? Number(pv.quantity) : null,
+              stock_quantity: stockQty,
               product_type: prod.type || null
             };
           });
@@ -542,7 +561,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
             // For RTW items: update live stock_quantity and cap qty if stock dropped
             cart.forEach(item => {
-              if (item.product_type !== 'ready to wear') return;
+              const isRTW = (item.product_type || '').toLowerCase() === 'ready to wear';
+              if (!isRTW) return;
               const vid = String(item.variant_id || item.product_variation_id || '');
               const liveStock = stockMap[vid];
               if (liveStock != null) {
