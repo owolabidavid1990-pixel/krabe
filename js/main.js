@@ -383,8 +383,15 @@ document.addEventListener('DOMContentLoaded', () => {
       const total = Math.max(0, subtotal + shipping);
       const totalEl = document.getElementById('summaryTotal');
       if (totalEl) totalEl.textContent = formatNaira(total);
+
+      if (btnPlaceOrder) {
+        if (cart.length > 0) {
+          btnPlaceOrder.innerHTML = `Pay <span id="btnPayAmount">${formatNaira(total)}</span> Now &rarr;`;
+        }
+      }
       const btnPay = document.getElementById('btnPayAmount');
       if (btnPay) btnPay.textContent = formatNaira(total);
+
       const confTotal = document.getElementById('confirmTotalCharged');
       if (confTotal) confTotal.textContent = formatNaira(total);
     }

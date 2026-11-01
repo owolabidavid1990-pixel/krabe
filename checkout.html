@@ -86,15 +86,9 @@
 
             <!-- Fields for Option A: Doorstep Delivery -->
             <div id="deliveryFields">
-              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px;">
-                <div class="form-group">
-                  <label for="cFirstName" class="body-12">First Name</label>
-                  <input type="text" id="cFirstName" class="form-input body-14" placeholder="e.g. David" value="" required>
-                </div>
-                <div class="form-group">
-                  <label for="cLastName" class="body-12">Last Name</label>
-                  <input type="text" id="cLastName" class="form-input body-14" placeholder="e.g. Adeleke" value="" required>
-                </div>
+              <div class="form-group">
+                <label for="cFullName" class="body-12">Full Name</label>
+                <input type="text" id="cFullName" class="form-input body-14" placeholder="e.g. David Adeleke" value="" required>
               </div>
 
               <div class="form-group">
@@ -219,22 +213,6 @@
             <span id="summaryTotal" style="color: var(--color-primary);">₦0</span>
           </div>
 
-          <!-- Trust Guarantees -->
-          <div class="body-12" style="margin-top: 24px; padding-top: 20px; border-top: 1px solid var(--color-border); color: var(--color-text-muted); display: flex; flex-direction: column; gap: 8px;">
-            <div style="display: flex; align-items: center; gap: 8px;">
-              <span>🛡️</span>
-              <span>100% Handcrafted Nigerian Damask &amp; Linens</span>
-            </div>
-            <div style="display: flex; align-items: center; gap: 8px;">
-              <span>✂️</span>
-              <span>Complimentary Doorstep Alteration Service</span>
-            </div>
-            <div style="display: flex; align-items: center; gap: 8px;">
-              <span>📞</span>
-              <span>24/7 WhatsApp Styling Support</span>
-            </div>
-          </div>
-
         </div>
       </aside>
 
@@ -342,8 +320,15 @@
       if (mode === 'delivery') {
         if (optDel) optDel.classList.add('active');
         if (optPick) optPick.classList.remove('active');
-        if (delFields) delFields.style.display = 'block';
-        if (pickInfo) pickInfo.style.display = 'none';
+        if (delFields) {
+          delFields.style.display = 'block';
+          const nameEl = document.getElementById('cFullName');
+          const addrEl = document.getElementById('cAddress');
+          const cityEl = document.getElementById('cCity');
+          if (nameEl) nameEl.required = true;
+          if (addrEl) addrEl.required = true;
+          if (cityEl) cityEl.required = true;
+        }
         const cityVal = document.getElementById('cCity')?.value.trim();
         const stateVal = document.getElementById('cState')?.value || 'Lagos';
         const confFulfill = document.getElementById('confirmFulfillmentMethod');
@@ -353,8 +338,15 @@
       } else {
         if (optPick) optPick.classList.add('active');
         if (optDel) optDel.classList.remove('active');
-        if (delFields) delFields.style.display = 'none';
-        if (pickInfo) pickInfo.style.display = 'block';
+        if (delFields) {
+          delFields.style.display = 'none';
+          const nameEl = document.getElementById('cFullName');
+          const addrEl = document.getElementById('cAddress');
+          const cityEl = document.getElementById('cCity');
+          if (nameEl) nameEl.required = false;
+          if (addrEl) addrEl.required = false;
+          if (cityEl) cityEl.required = false;
+        }
         const pickupArea = (window.KrabeLocation && window.KrabeLocation.getArea()) || '';
         const confFulfill = document.getElementById('confirmFulfillmentMethod');
         if (confFulfill) {
@@ -388,11 +380,8 @@
 
           if (profile) {
             if (profile.name) {
-              const parts = profile.name.trim().split(/\s+/);
-              const firstNameInput = document.getElementById('cFirstName');
-              const lastNameInput = document.getElementById('cLastName');
-              if (firstNameInput && !firstNameInput.value) firstNameInput.value = parts[0] || '';
-              if (lastNameInput && !lastNameInput.value) lastNameInput.value = parts.slice(1).join(' ') || '';
+              const fullNameInput = document.getElementById('cFullName');
+              if (fullNameInput && !fullNameInput.value) fullNameInput.value = profile.name.trim();
             }
 
             const phoneInput = document.getElementById('cPhone');
