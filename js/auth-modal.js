@@ -165,7 +165,7 @@
           <!-- VIEW 3: FORGOT PASSWORD FORM -->
           <form id="krabeForgotForm" class="krabe-auth-view" autocomplete="on">
             <p class="body-14" style="color: var(--color-text-muted); line-height: 1.5; margin-bottom: 20px;">
-              Enter your registered email address and we will send you a secure link to reset your account credentials.
+              Enter your registered email address and we will send you a 6-digit code to reset your password.
             </p>
 
             <div class="form-group">
@@ -175,7 +175,7 @@
 
             <button type="submit" class="btn btn-primary krabe-auth-btn" id="krabeForgotSubmit">
               <span class="spinner"></span>
-              <span class="btn-text">Send Recovery Link</span>
+              <span class="btn-text">Send Reset Code</span>
             </button>
 
             <div style="text-align: center; margin-top: 16px;">
@@ -213,6 +213,59 @@
                 &larr; Edit details
               </button>
               <button type="button" id="krabeResendOtpBtn" style="background: none; border: none; color: var(--color-primary); font-weight: 600; cursor: pointer; padding: 0;">
+                Resend code
+              </button>
+            </div>
+          </form>
+
+          <!-- VIEW 5: RESET PASSWORD OTP & NEW PASSWORD FORM -->
+          <form id="krabeResetOtpForm" class="krabe-auth-view" autocomplete="off">
+            <div style="text-align: center; margin-bottom: 20px;">
+              <p class="body-14" style="color: var(--color-obsidian); font-weight: 700; margin-bottom: 6px; letter-spacing: 0.5px;">
+                Reset Password Code
+              </p>
+              <p class="body-12" style="color: var(--color-text-muted); line-height: 1.5;">
+                Enter the 6-digit code sent to <strong id="krabeResetOtpEmailDisplay" style="color: var(--color-obsidian);">your email</strong>.
+              </p>
+            </div>
+
+            <div class="form-group" style="margin-bottom: 16px;">
+              <input type="text" id="krabeResetOtpCode" name="resetOtpCode" class="form-input" 
+                     placeholder="• • • • • •" maxlength="6" pattern="[0-9]{6}" inputmode="numeric" 
+                     required autocomplete="one-time-code"
+                     style="text-align: center; font-size: 24px; font-weight: 700; letter-spacing: 8px; padding: 12px 16px;">
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="krabeResetNewPassword">New Password <span class="req">*</span></label>
+              <div class="krabe-input-wrap">
+                <input type="password" id="krabeResetNewPassword" name="newPassword" class="form-input" placeholder="At least 8 characters" required minlength="8" autocomplete="new-password">
+                <button type="button" class="krabe-pwd-toggle" data-target="krabeResetNewPassword" aria-label="Toggle password visibility">
+                  ${ICONS.eye}
+                </button>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="krabeResetConfirmPassword">Confirm New Password <span class="req">*</span></label>
+              <div class="krabe-input-wrap">
+                <input type="password" id="krabeResetConfirmPassword" name="confirmNewPassword" class="form-input" placeholder="Re-enter new password" required minlength="8" autocomplete="new-password">
+                <button type="button" class="krabe-pwd-toggle" data-target="krabeResetConfirmPassword" aria-label="Toggle password visibility">
+                  ${ICONS.eye}
+                </button>
+              </div>
+            </div>
+
+            <button type="submit" class="btn btn-primary krabe-auth-btn" id="krabeResetOtpSubmit">
+              <span class="spinner"></span>
+              <span class="btn-text">Reset Password &amp; Sign In &rarr;</span>
+            </button>
+
+            <div class="body-12" style="display: flex; justify-content: space-between; align-items: center; margin-top: 18px;">
+              <button type="button" id="krabeBackToForgotBtn" style="background: none; border: none; color: var(--color-text-muted); cursor: pointer; padding: 0;">
+                &larr; Change email
+              </button>
+              <button type="button" id="krabeResendResetOtpBtn" style="background: none; border: none; color: var(--color-primary); font-weight: 600; cursor: pointer; padding: 0;">
                 Resend code
               </button>
             </div>
@@ -257,9 +310,10 @@
     const formRegister = document.getElementById('krabeRegisterForm');
     const formForgot = document.getElementById('krabeForgotForm');
     const formOtp = document.getElementById('krabeOtpForm');
+    const formResetOtp = document.getElementById('krabeResetOtpForm');
 
     // Remove active from all forms
-    [formSignIn, formRegister, formForgot, formOtp].forEach(f => f && f.classList.remove('active'));
+    [formSignIn, formRegister, formForgot, formOtp, formResetOtp].forEach(f => f && f.classList.remove('active'));
 
     if (view === 'signin') {
       if (tabsContainer) tabsContainer.style.display = 'flex';
@@ -296,16 +350,22 @@
       if (tabsContainer) tabsContainer.style.display = 'none'; // Hide tabs on forgot view
       if (formForgot) formForgot.classList.add('active');
       if (titleEl) titleEl.textContent = 'Account Recovery';
-      if (subtitleEl) subtitleEl.textContent = 'Follow the steps below to restore access to your account.';
+      if (subtitleEl) subtitleEl.textContent = 'Enter your email to receive a 6-digit password reset code.';
     } else if (view === 'otp') {
       if (tabsContainer) tabsContainer.style.display = 'none'; // Hide tabs on OTP view
       if (formOtp) formOtp.classList.add('active');
       if (titleEl) titleEl.textContent = 'Verification';
       if (subtitleEl) subtitleEl.textContent = 'Enter the 6-digit code sent to your inbox.';
+    } else if (view === 'reset-otp') {
+      if (tabsContainer) tabsContainer.style.display = 'none'; // Hide tabs on reset OTP view
+      if (formResetOtp) formResetOtp.classList.add('active');
+      if (titleEl) titleEl.textContent = 'Set New Password';
+      if (subtitleEl) subtitleEl.textContent = 'Enter the 6-digit code and choose your new password.';
     }
   }
 
   let pendingEmail = '';
+  let pendingResetEmail = '';
 
   function promptOtp(email) {
     ensureMounted();
@@ -320,6 +380,20 @@
     const otpInput = document.getElementById('krabeOtpCode');
     if (otpInput) otpInput.value = '';
     switchView('otp');
+  }
+
+  function promptResetOtp(email) {
+    ensureMounted();
+    pendingResetEmail = (email || '').trim();
+    const emailDisplay = document.getElementById('krabeResetOtpEmailDisplay');
+    if (emailDisplay && pendingResetEmail) emailDisplay.textContent = pendingResetEmail;
+    const otpInput = document.getElementById('krabeResetOtpCode');
+    if (otpInput) otpInput.value = '';
+    const newPass = document.getElementById('krabeResetNewPassword');
+    if (newPass) newPass.value = '';
+    const confirmPass = document.getElementById('krabeResetConfirmPassword');
+    if (confirmPass) confirmPass.value = '';
+    switchView('reset-otp');
   }
 
   function open(view = 'signin') {
@@ -571,6 +645,71 @@
         window.dispatchEvent(event);
       });
     }
+
+    // Reset Password OTP & New Password Form submission
+    const formResetOtp = document.getElementById('krabeResetOtpForm');
+    if (formResetOtp) {
+      formResetOtp.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const code = document.getElementById('krabeResetOtpCode').value.trim();
+        if (code.length !== 6) {
+          showAlert('Please enter the complete 6-digit verification code.', 'error');
+          return;
+        }
+
+        const newPass = document.getElementById('krabeResetNewPassword').value;
+        const confirmPass = document.getElementById('krabeResetConfirmPassword').value;
+
+        if (newPass.length < 8) {
+          showAlert('New password must be at least 8 characters long.', 'error');
+          return;
+        }
+
+        if (newPass !== confirmPass) {
+          showAlert('Passwords do not match. Please verify and try again.', 'error');
+          return;
+        }
+
+        let email = pendingResetEmail;
+        if (!email) {
+          const forgotInput = document.getElementById('krabeForgotEmail');
+          if (forgotInput) email = forgotInput.value.trim();
+        }
+
+        const event = new CustomEvent('krabe:auth:reset-verify-otp', {
+          detail: {
+            email,
+            token: code,
+            newPassword: newPass
+          }
+        });
+        window.dispatchEvent(event);
+      });
+    }
+
+    const backToForgotBtn = document.getElementById('krabeBackToForgotBtn');
+    if (backToForgotBtn) {
+      backToForgotBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        switchView('forgot');
+      });
+    }
+
+    const resendResetOtpBtn = document.getElementById('krabeResendResetOtpBtn');
+    if (resendResetOtpBtn) {
+      resendResetOtpBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        let email = pendingResetEmail;
+        if (!email) {
+          const forgotInput = document.getElementById('krabeForgotEmail');
+          if (forgotInput) email = forgotInput.value.trim();
+        }
+        const event = new CustomEvent('krabe:auth:forgot', {
+          detail: { email }
+        });
+        window.dispatchEvent(event);
+      });
+    }
   }
 
   // Keyboard Escape listener
@@ -606,6 +745,7 @@
     close,
     switchView,
     promptOtp,
+    promptResetOtp,
     showAlert,
     clearAlert,
     setLoading

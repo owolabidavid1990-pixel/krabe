@@ -625,9 +625,7 @@
     try {
       if (window.KrabeAuthModal) window.KrabeAuthModal.setLoading('krabeForgotForm', true);
 
-      const { data, error } = await client.auth.resetPasswordForEmail(email, {
-        redirectTo: window.location.origin + '/account.html'
-      });
+      const { data, error } = await client.auth.resetPasswordForEmail(email.trim());
 
       if (error) {
         if (window.KrabeAuthModal) {
@@ -639,7 +637,8 @@
 
       if (window.KrabeAuthModal) {
         window.KrabeAuthModal.setLoading('krabeForgotForm', false);
-        window.KrabeAuthModal.showAlert('Password reset link sent! Check your inbox.', 'success');
+        window.KrabeAuthModal.showAlert('6-digit reset code sent! Check your inbox.', 'success');
+        window.KrabeAuthModal.promptResetOtp(email.trim());
       }
 
       return { data };
@@ -647,6 +646,73 @@
       if (window.KrabeAuthModal) {
         window.KrabeAuthModal.setLoading('krabeForgotForm', false);
         window.KrabeAuthModal.showAlert(err.message || 'Password reset request failed.', 'error');
+      }
+      return { error: err };
+    }
+  }
+
+  async function verifyResetOtpAndSetPassword(email, token, newPassword) {
+    const client = getClient();
+    if (!client) return { error: new Error('Client not initialized') };
+
+    try {
+      if (window.KrabeAuthModal) window.KrabeAuthModal.setLoading('krabeResetOtpForm', true);
+
+      // 1. Verify OTP with type: 'recovery'
+      const { data: verifyData, error: verifyError } = await client.auth.verifyOtp({
+        email: email.trim(),
+        token: token.trim(),
+        type: 'recovery'
+      });
+
+      if (verifyError) {
+        if (window.KrabeAuthModal) {
+          window.KrabeAuthModal.setLoading('krabeResetOtpForm', false);
+          window.KrabeAuthModal.showAlert(verifyError.message || 'Invalid or expired reset code.', 'error');
+        }
+        return { error: verifyError };
+      }
+
+      // 2. Verification succeeded, now update user password
+      const { data: updateData, error: updateError } = await client.auth.updateUser({
+        password: newPassword
+      });
+
+      if (updateError) {
+        if (window.KrabeAuthModal) {
+          window.KrabeAuthModal.setLoading('krabeResetOtpForm', false);
+          window.KrabeAuthModal.showAlert(updateError.message || 'Could not update password. Please try again.', 'error');
+        }
+        return { error: updateError };
+      }
+
+      // 3. User is now authenticated with updated password
+      currentUser = updateData.user || verifyData.user;
+      currentSession = verifyData.session || (await client.auth.getSession()).data?.session;
+      window.krabeUser = currentUser;
+      window.krabeSession = currentSession;
+      window.krabeIsLoggedIn = Boolean(currentUser);
+
+      updateAuthUI(currentUser);
+      await syncGuestCartToDatabase(currentUser);
+
+      if (window.KrabeAuthModal) {
+        window.KrabeAuthModal.setLoading('krabeResetOtpForm', false);
+        window.KrabeAuthModal.showAlert('Password updated successfully! Welcome back.', 'success');
+        setTimeout(() => {
+          window.KrabeAuthModal.close();
+          const currentPath = window.location.pathname.split('/').pop() || 'index.html';
+          if (currentPath === 'account.html') {
+            window.location.reload();
+          }
+        }, 800);
+      }
+
+      return { data: updateData };
+    } catch (err) {
+      if (window.KrabeAuthModal) {
+        window.KrabeAuthModal.setLoading('krabeResetOtpForm', false);
+        window.KrabeAuthModal.showAlert(err.message || 'Reset failed. Please try again.', 'error');
       }
       return { error: err };
     }
@@ -846,6 +912,13 @@
     }
   });
 
+  window.addEventListener('krabe:auth:reset-verify-otp', (e) => {
+    const { email, token, newPassword } = e.detail || {};
+    if (email && token && newPassword) {
+      verifyResetOtpAndSetPassword(email, token, newPassword);
+    }
+  });
+
   window.addEventListener('krabe:auth:verify-otp', (e) => {
     const { email, token } = e.detail || {};
     if (email && token) {
@@ -952,6 +1025,7 @@
     resendOtp,
     signOut,
     resetPassword,
+    verifyResetOtpAndSetPassword,
     updateAuthUI,
     syncGuestCart: syncGuestCartToDatabase
   };
