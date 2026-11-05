@@ -17,6 +17,18 @@
 
   <!-- Core Stylesheet -->
   <link rel="stylesheet" href="css/styles.css">
+
+  <!-- Immediate Client Auth Guard -->
+  <script>
+    (function () {
+      try {
+        const hasSession = Object.keys(localStorage).some(key => key.startsWith('sb-') && key.endsWith('-auth-token'));
+        if (!hasSession) {
+          window.location.replace('index.html');
+        }
+      } catch (_) {}
+    })();
+  </script>
 </head>
 <body>
 

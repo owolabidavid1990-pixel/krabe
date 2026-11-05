@@ -77,7 +77,7 @@
       });
 
       mobileAccountLinks.forEach(link => {
-        link.textContent = `My Account (${fullName.split(' ')[0]})`;
+        link.textContent = 'My Account';
       });
 
       // Ensure Sign Out button exists in mobile drawer if logged in
@@ -99,11 +99,14 @@
       });
 
       mobileAccountLinks.forEach(link => {
-        link.textContent = 'My Account & Tracking';
+        link.textContent = 'Sign In / Register';
       });
 
       const signOutBtn = document.getElementById('krabeMobileSignOutBtn');
       if (signOutBtn) signOutBtn.remove();
+
+      // If unauthenticated on account page, redirect immediately to index.html
+      syncAccountPage(null);
     }
   }
 
@@ -129,11 +132,8 @@
     if (!isAccountPage) return;
 
     if (!user) {
-      setTimeout(() => {
-        if (!window.krabeIsLoggedIn && window.KrabeAuthModal) {
-          window.KrabeAuthModal.open('signin');
-        }
-      }, 350);
+      // Unauthenticated user on account page: redirect to home
+      window.location.replace('index.html');
       return;
     }
 
@@ -1001,6 +1001,10 @@
 
     } catch (err) {
       console.error('[Krabe Auth] Init error:', err);
+      const isAccountPage = (window.location.pathname.split('/').pop() || '') === 'account.html';
+      if (isAccountPage) {
+        window.location.replace('index.html');
+      }
     }
   }
 

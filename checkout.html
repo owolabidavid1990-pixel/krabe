@@ -295,8 +295,9 @@
     </div>
   </div>
 
-  <!-- Supabase SDK & Krabe Stack -->
+  <!-- Supabase SDK, Paystack Inline & Krabe Stack -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="https://js.paystack.co/v1/inline.js"></script>
   <script src="js/config.js"></script>
   <script src="js/header.js"></script>
   <script src="js/auth-modal.js"></script>
@@ -420,7 +421,7 @@
       }
     }
 
-    function processCheckout(e) {
+    async function processCheckout(e) {
       e.preventDefault();
       const cart = (window.KrabeCart && typeof window.KrabeCart.getCart === 'function')
         ? window.KrabeCart.getCart()
@@ -432,24 +433,147 @@
       }
 
       const btn = document.getElementById('btnPlaceOrder');
+      const originalBtnHTML = btn ? btn.innerHTML : 'Pay Now';
       if (btn) {
-        btn.textContent = 'Processing Payment via Paystack...';
+        btn.textContent = 'Preparing Secure Payment...';
         btn.style.opacity = '0.7';
         btn.disabled = true;
       }
 
-      setTimeout(async () => {
-        // Clear stored cart upon confirmed checkout using centralized KrabeCart API
-        if (window.KrabeCart && typeof window.KrabeCart.clearCart === 'function') {
-          await window.KrabeCart.clearCart();
+      const email = document.getElementById('cEmail')?.value?.trim();
+      const phone = document.getElementById('cPhone')?.value?.trim();
+      const fullName = document.getElementById('cFullName')?.value?.trim() || '';
+      const address = document.getElementById('cAddress')?.value?.trim() || '';
+      const state = document.getElementById('cState')?.value || 'Lagos';
+      const city = document.getElementById('cCity')?.value?.trim() || '';
+      const landmark = document.getElementById('cLandmark')?.value?.trim() || '';
+
+      const deliveryOption = currentFulfillment === 'pickup'
+        ? 'pickup'
+        : (state.toLowerCase().includes('lagos') ? 'local delivery' : 'nationwide delivery');
+
+      const items = cart.map(item => ({
+        variant_id: item.variant_id || item.product_variation_id || item.id,
+        size: item.selected_size || item.size || 'M',
+        quantity: item.quantity || 1,
+        custom_measurement_id: item.custom_measurement_id || null
+      }));
+
+      // Check if this browser already has an active pending guest order
+      let pendingOrderId = null;
+      try {
+        pendingOrderId = localStorage.getItem('krabe_pending_order_id');
+      } catch (_) {}
+
+      try {
+        const client = window.krabeClient || (window.KRABE_CONFIG && typeof window.KRABE_CONFIG.getClient === 'function' ? window.KRABE_CONFIG.getClient() : null);
+        if (!client) {
+          throw new Error('Supabase client is not available. Please refresh the page.');
         }
 
-        const flow = document.getElementById('checkoutFlowContainer');
-        const success = document.getElementById('orderSuccessScreen');
-        if (flow) flow.style.display = 'none';
-        if (success) success.style.display = 'block';
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-      }, 1200);
+        const { data, error } = await client.functions.invoke('create-order', {
+          body: {
+            email,
+            phone,
+            delivery_option: deliveryOption,
+            delivery_address: {
+              full_name: fullName,
+              street: address,
+              city,
+              state,
+              landmark
+            },
+            items,
+            pending_order_id: pendingOrderId || null
+          }
+        });
+
+        if (error || !data || !data.access_code) {
+          const errMsg = (data && data.error) || error?.message || 'Could not initialize payment with Paystack.';
+          throw new Error(errMsg);
+        }
+
+        // Remember the pending order ID in browser storage so we can update it if needed
+        try {
+          if (data.order_id) {
+            localStorage.setItem('krabe_pending_order_id', data.order_id);
+          }
+        } catch (_) {}
+
+        // Verify Paystack Inline SDK is loaded
+        const paystackKey = (window.KRABE_CONFIG && window.KRABE_CONFIG.paystackPublicKey) || '';
+        if (!window.PaystackPop) {
+          throw new Error('Paystack payment system could not be loaded. Please check your internet connection.');
+        }
+
+        // Open Paystack popup modal using access_code token
+        const handlePaymentSuccess = async function (paymentResponse) {
+          // Remove stored pending order on successful payment
+          try {
+            localStorage.removeItem('krabe_pending_order_id');
+          } catch (_) {}
+
+          // Clear stored cart upon confirmed payment
+          if (window.KrabeCart && typeof window.KrabeCart.clearCart === 'function') {
+            await window.KrabeCart.clearCart();
+          }
+
+          // Populate success screen details
+          const refEl = document.getElementById('confirmOrderRef');
+          if (refEl) refEl.textContent = '#' + (data.reference || paymentResponse?.reference || 'KRABE');
+
+          const emailEl = document.getElementById('confirmEmail');
+          if (emailEl) emailEl.textContent = email;
+
+          const chargedEl = document.getElementById('confirmTotalCharged');
+          if (chargedEl) chargedEl.textContent = formatNaira(data.total_amount);
+
+          const fulfillEl = document.getElementById('confirmFulfillmentMethod');
+          if (fulfillEl) {
+            fulfillEl.textContent = currentFulfillment === 'pickup'
+              ? 'Lagos Studio Pickup'
+              : `Doorstep Delivery (${city ? `${city}, ` : ''}${state})`;
+          }
+
+          const waBtn = document.getElementById('confirmWhatsAppBtn');
+          if (waBtn) {
+            const waText = encodeURIComponent(`Hello Krabe Kollection, I just completed payment for order #${data.reference}. My email is ${email}.`);
+            waBtn.href = `https://wa.me/2349162166470?text=${waText}`;
+          }
+
+          // Reveal order confirmed screen
+          const flow = document.getElementById('checkoutFlowContainer');
+          const success = document.getElementById('orderSuccessScreen');
+          if (flow) flow.style.display = 'none';
+          if (success) success.style.display = 'block';
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        };
+
+        const handler = window.PaystackPop.setup({
+          key: paystackKey,
+          access_code: data.access_code,
+          callback: handlePaymentSuccess,
+          onSuccess: handlePaymentSuccess,
+          onClose: function () {
+            // Restore button so customer can retry or change bag items
+            if (btn) {
+              btn.innerHTML = originalBtnHTML;
+              btn.style.opacity = '1';
+              btn.disabled = false;
+            }
+          }
+        });
+
+        handler.openIframe();
+      } catch (err) {
+        console.error('[Checkout Error]:', err);
+        alert(err.message || 'An error occurred while creating your order. Please try again.');
+        if (btn) {
+          btn.innerHTML = originalBtnHTML;
+          btn.style.opacity = '1';
+          btn.disabled = false;
+        }
+      }
     }
 
     // Dynamic State & City listeners to update shipping/confirmation

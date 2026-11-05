@@ -1589,7 +1589,7 @@ ul {
   width: 100%;
   max-width: 320px;
   background-color: var(--color-bone);
-  z-index: 201;
+  z-index: 1000;
   transform: translateX(-100%);
   transition: transform var(--transition-smooth);
   display: flex;

@@ -108,7 +108,7 @@
           <a href="shop.html?category=formal" class="body-16" data-link="formal">English &amp; Suiting</a>
           <a href="shop.html?category=streetwear" class="body-16" data-link="streetwear">Luxury Streetwear</a>
           <a href="about.html" class="body-16" data-link="about">About Us</a>
-          <a href="account.html" class="body-16" data-link="account">My Account &amp; Tracking</a>
+          <a href="account.html" class="body-16" id="mobileAccountLink" data-link="account">Sign In / Register</a>
           <a href="help.html" class="body-16" data-link="help">Support &amp; Studio Address</a>
         </nav>
 
@@ -191,20 +191,41 @@
 
   function setupAccountClick() {
     const accountBtn = document.getElementById('headerAccountBtn');
-    if (!accountBtn) return;
+    const mobileLink = document.getElementById('mobileAccountLink');
 
-    accountBtn.addEventListener('click', (e) => {
+    function handleAccountClick(e) {
       // If user is already on account.html, let default navigation happen
       const currentPath = window.location.pathname.split('/').pop() || 'index.html';
       if (currentPath === 'account.html') return;
 
       // If auth modal is available and user is NOT logged in, open the modal instead of navigating away!
-      const isUserLoggedIn = Boolean(window.krabeUser || (window.krabeClient && window.krabeClient.auth && window.krabeClient.auth.getUser && window.krabeIsLoggedIn));
+      const isUserLoggedIn = Boolean(window.krabeUser || (window.krabeClient && window.krabeClient.auth && window.krabeIsLoggedIn));
       if (!isUserLoggedIn && window.KrabeAuthModal && typeof window.KrabeAuthModal.open === 'function') {
         e.preventDefault();
+        // If mobile drawer is open, close it cleanly
+        const drawer = document.getElementById('mobileNavDrawer');
+        if (drawer) {
+          drawer.classList.remove('active');
+          document.body.style.overflow = '';
+        }
         window.KrabeAuthModal.open('signin');
       }
-    });
+    }
+
+    if (accountBtn) {
+      accountBtn.addEventListener('click', handleAccountClick);
+    }
+    if (mobileLink) {
+      mobileLink.addEventListener('click', handleAccountClick);
+    }
+
+    // Initial label check based on current auth state
+    if (mobileLink) {
+      const isUserLoggedIn = Boolean(window.krabeUser || (window.krabeClient && window.krabeClient.auth && window.krabeIsLoggedIn));
+      if (isUserLoggedIn) {
+        mobileLink.textContent = 'My Account';
+      }
+    }
   }
 
   function render() {
