@@ -17,6 +17,19 @@
 
   <!-- Core Stylesheet -->
   <link rel="stylesheet" href="css/styles.css">
+
+  <style>
+    /* Form Validation Error State */
+    .form-input.input-error {
+      border-color: #DC2626 !important;
+      background-color: #FEF2F2 !important;
+    }
+    .form-input.input-error:focus {
+      outline: none !important;
+      border-color: #DC2626 !important;
+      box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.15) !important;
+    }
+  </style>
 </head>
 <body style="background-color: var(--color-bone);">
 
@@ -89,6 +102,7 @@
               <div class="form-group">
                 <label for="cFullName" class="body-12">Full Name</label>
                 <input type="text" id="cFullName" class="form-input body-14" placeholder="e.g. David Adeleke" value="" required>
+                <div id="cFullNameError" class="body-12" style="display: none; color: #DC2626; margin-top: 6px; font-weight: 500;">Please enter your full name.</div>
               </div>
 
               <div class="form-group">
@@ -100,24 +114,54 @@
                 <div class="form-group">
                   <label for="cState" class="body-12">State</label>
                   <select id="cState" class="form-input body-14" style="padding: 12px 14px;">
-                    <option value="Lagos" selected>Lagos State</option>
-                    <option value="Abuja">Abuja FCT</option>
-                    <option value="Rivers">Rivers State (Port Harcourt)</option>
-                    <option value="Ogun">Ogun State</option>
-                    <option value="Oyo">Oyo State (Ibadan)</option>
-                    <option value="Enugu">Enugu State</option>
-                    <option value="Delta">Delta State</option>
-                    <option value="Other">Other State</option>
+                    <option value="Abia">Abia</option>
+                    <option value="Adamawa">Adamawa</option>
+                    <option value="Akwa Ibom">Akwa Ibom</option>
+                    <option value="Anambra">Anambra</option>
+                    <option value="Bauchi">Bauchi</option>
+                    <option value="Bayelsa">Bayelsa</option>
+                    <option value="Benue">Benue</option>
+                    <option value="Borno">Borno</option>
+                    <option value="Cross River">Cross River</option>
+                    <option value="Delta">Delta</option>
+                    <option value="Ebonyi">Ebonyi</option>
+                    <option value="Edo">Edo</option>
+                    <option value="Ekiti">Ekiti</option>
+                    <option value="Enugu">Enugu</option>
+                    <option value="FCT - Abuja">FCT - Abuja</option>
+                    <option value="Gombe">Gombe</option>
+                    <option value="Imo">Imo</option>
+                    <option value="Jigawa">Jigawa</option>
+                    <option value="Kaduna">Kaduna</option>
+                    <option value="Kano">Kano</option>
+                    <option value="Katsina">Katsina</option>
+                    <option value="Kebbi">Kebbi</option>
+                    <option value="Kogi">Kogi</option>
+                    <option value="Kwara">Kwara</option>
+                    <option value="Lagos" selected>Lagos</option>
+                    <option value="Nasarawa">Nasarawa</option>
+                    <option value="Niger">Niger</option>
+                    <option value="Ogun">Ogun</option>
+                    <option value="Ondo">Ondo</option>
+                    <option value="Osun">Osun</option>
+                    <option value="Oyo">Oyo</option>
+                    <option value="Plateau">Plateau</option>
+                    <option value="Rivers">Rivers</option>
+                    <option value="Sokoto">Sokoto</option>
+                    <option value="Taraba">Taraba</option>
+                    <option value="Yobe">Yobe</option>
+                    <option value="Zamfara">Zamfara</option>
                   </select>
                 </div>
                 <div class="form-group">
                   <label for="cCity" class="body-12">City / LGA</label>
                   <input type="text" id="cCity" class="form-input body-14" placeholder="e.g. Lekki Phase 1, Eti-Osa" value="" required>
+                  <div id="cCityError" class="body-12" style="display: none; color: #DC2626; margin-top: 6px; font-weight: 500;">Please enter your city or LGA.</div>
                 </div>
               </div>
 
               <div class="form-group">
-                <label for="cLandmark" class="body-12">Closest Landmark / Delivery Note</label>
+                <label for="cLandmark" class="body-12">Closest Landmark / Delivery Note (Optional)</label>
                 <input type="text" id="cLandmark" class="form-input body-14" placeholder="e.g. Near Ebeano Supermarket, Black gate" value="">
               </div>
 
@@ -302,11 +346,13 @@
   <script src="js/header.js"></script>
   <script src="js/auth-modal.js"></script>
   <script src="js/search-modal.js"></script>
+  <script src="js/places-searchbox.js"></script>
   <script src="js/auth.js"></script>
   <script src="js/main.js"></script>
 
   <script>
     let currentFulfillment = 'delivery';
+    let addressSearchBox = null;
 
     function formatNaira(num) {
       return '₦' + Number(num || 0).toLocaleString('en-NG');
@@ -345,9 +391,22 @@
           const nameEl = document.getElementById('cFullName');
           const addrEl = document.getElementById('cAddress');
           const cityEl = document.getElementById('cCity');
-          if (nameEl) nameEl.required = false;
-          if (addrEl) addrEl.required = false;
-          if (cityEl) cityEl.required = false;
+          if (nameEl) {
+            nameEl.required = false;
+            nameEl.classList.remove('input-error');
+            const nameErr = document.getElementById('cFullNameError');
+            if (nameErr) nameErr.style.display = 'none';
+          }
+          if (addrEl) {
+            addrEl.required = false;
+            if (addressSearchBox) addressSearchBox.clearError();
+          }
+          if (cityEl) {
+            cityEl.required = false;
+            cityEl.classList.remove('input-error');
+            const cityErr = document.getElementById('cCityError');
+            if (cityErr) cityErr.style.display = 'none';
+          }
         }
         const pickupArea = (window.KrabeLocation && window.KrabeLocation.getArea()) || '';
         const confFulfill = document.getElementById('confirmFulfillmentMethod');
@@ -364,61 +423,130 @@
 
     async function populateUserProfile() {
       const client = window.krabeClient || (window.KRABE_CONFIG && typeof window.KRABE_CONFIG.getClient === 'function' ? window.KRABE_CONFIG.getClient() : null);
-      const user = window.krabeUser || (window.KrabeAuth && typeof window.KrabeAuth.getUser === 'function' ? window.KrabeAuth.getUser() : null);
+      if (!client) return;
+
+      // 1. Resolve user (cached or await live Supabase session)
+      let user = window.krabeUser || (window.KrabeAuth && typeof window.KrabeAuth.getUser === 'function' ? window.KrabeAuth.getUser() : null);
+      if (!user && client.auth) {
+        try {
+          const { data } = await client.auth.getSession();
+          user = data?.session?.user || null;
+        } catch (_) {}
+      }
       if (!user || !user.id) return;
 
+      // 2. Autofill Email
       const emailInput = document.getElementById('cEmail');
       if (emailInput && !emailInput.value && user.email) {
         emailInput.value = user.email;
       }
 
-      if (client) {
-        try {
-          const { data: profile } = await client
-            .from('profile')
-            .select('name, phone_number, whatsapp_number, addresses')
-            .eq('id', user.id)
-            .maybeSingle();
+      // 3. Fallback Name & Phone from user auth metadata
+      const meta = user.user_metadata || {};
+      const fullNameInput = document.getElementById('cFullName');
+      if (fullNameInput && !fullNameInput.value && (meta.full_name || meta.name)) {
+        fullNameInput.value = (meta.full_name || meta.name).trim();
+      }
 
-          if (profile) {
-            if (profile.name) {
-              const fullNameInput = document.getElementById('cFullName');
-              if (fullNameInput && !fullNameInput.value) fullNameInput.value = profile.name.trim();
-            }
+      const phoneInput = document.getElementById('cPhone');
+      if (phoneInput && !phoneInput.value && (meta.phone || meta.phone_number)) {
+        phoneInput.value = meta.phone || meta.phone_number;
+      }
 
-            const phoneInput = document.getElementById('cPhone');
-            const phoneVal = profile.whatsapp_number || profile.phone_number;
-            if (phoneInput && !phoneInput.value && phoneVal) {
-              phoneInput.value = phoneVal;
-            }
+      // 4. Fetch database profile for custom details & saved address
+      try {
+        const { data: profile } = await client
+          .from('profile')
+          .select('name, phone_number, whatsapp_number, addresses')
+          .eq('id', user.id)
+          .maybeSingle();
 
-            if (Array.isArray(profile.addresses) && profile.addresses.length > 0) {
-              const defaultAddr = profile.addresses.find(a => a.is_default) || profile.addresses[0];
-              if (defaultAddr) {
-                const addrInput = document.getElementById('cAddress');
-                const cityInput = document.getElementById('cCity');
-                const stateSelect = document.getElementById('cState');
-                const landmarkInput = document.getElementById('cLandmark');
+        if (profile) {
+          if (fullNameInput && profile.name) {
+            fullNameInput.value = profile.name.trim();
+          }
 
-                if (addrInput && !addrInput.value && defaultAddr.street) addrInput.value = defaultAddr.street;
-                if (cityInput && !cityInput.value && defaultAddr.city) cityInput.value = defaultAddr.city;
-                if (landmarkInput && !landmarkInput.value && defaultAddr.landmark) landmarkInput.value = defaultAddr.landmark;
-                if (stateSelect && defaultAddr.state) {
-                  const stateVal = defaultAddr.state.toLowerCase();
-                  for (let i = 0; i < stateSelect.options.length; i++) {
-                    if (stateSelect.options[i].value.toLowerCase().includes(stateVal)) {
-                      stateSelect.selectedIndex = i;
-                      break;
-                    }
+          const phoneVal = profile.whatsapp_number || profile.phone_number;
+          if (phoneInput && phoneVal) {
+            phoneInput.value = phoneVal;
+          }
+
+          if (Array.isArray(profile.addresses) && profile.addresses.length > 0) {
+            const defaultAddr = profile.addresses.find(a => a.is_default) || profile.addresses[0];
+            if (defaultAddr) {
+              if (defaultAddr.street) {
+                if (addressSearchBox) {
+                  addressSearchBox.setValue(defaultAddr.street);
+                } else {
+                  const addrInput = document.getElementById('cAddress');
+                  if (addrInput) addrInput.value = defaultAddr.street;
+                }
+              }
+              const cityInput = document.getElementById('cCity');
+              if (cityInput && !cityInput.value && defaultAddr.city) cityInput.value = defaultAddr.city;
+              const landmarkInput = document.getElementById('cLandmark');
+              if (landmarkInput && !landmarkInput.value && defaultAddr.landmark) landmarkInput.value = defaultAddr.landmark;
+
+              const stateSelect = document.getElementById('cState');
+              if (stateSelect && defaultAddr.state) {
+                const stateVal = defaultAddr.state.toLowerCase();
+                for (let i = 0; i < stateSelect.options.length; i++) {
+                  if (stateSelect.options[i].value.toLowerCase().includes(stateVal)) {
+                    stateSelect.selectedIndex = i;
+                    break;
                   }
                 }
               }
             }
           }
-        } catch (err) {
-          console.warn('[Checkout] Failed fetching user profile for autofill:', err);
         }
+      } catch (err) {
+        console.warn('[Checkout] Autofill profile error:', err);
       }
+    }
+
+    function validateDeliveryFields() {
+      if (currentFulfillment === 'pickup') return true;
+
+      let isValid = true;
+      let firstInvalidInput = null;
+
+      const nameInput = document.getElementById('cFullName');
+      const nameErr = document.getElementById('cFullNameError');
+      if (!nameInput || nameInput.value.trim().length < 2) {
+        if (nameInput) nameInput.classList.add('input-error');
+        if (nameErr) nameErr.style.display = 'block';
+        if (!firstInvalidInput) firstInvalidInput = nameInput;
+        isValid = false;
+      } else if (nameInput) {
+        nameInput.classList.remove('input-error');
+        if (nameErr) nameErr.style.display = 'none';
+      }
+
+      if (!addressSearchBox || !addressSearchBox.isValid()) {
+        if (addressSearchBox) addressSearchBox.showError();
+        if (!firstInvalidInput) firstInvalidInput = document.getElementById('cAddress');
+        isValid = false;
+      }
+
+      const cityInput = document.getElementById('cCity');
+      const cityErr = document.getElementById('cCityError');
+      if (!cityInput || cityInput.value.trim().length < 2) {
+        if (cityInput) cityInput.classList.add('input-error');
+        if (cityErr) cityErr.style.display = 'block';
+        if (!firstInvalidInput) firstInvalidInput = cityInput;
+        isValid = false;
+      } else if (cityInput) {
+        cityInput.classList.remove('input-error');
+        if (cityErr) cityErr.style.display = 'none';
+      }
+
+      if (!isValid && firstInvalidInput) {
+        firstInvalidInput.focus();
+        firstInvalidInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+
+      return isValid;
     }
 
     async function processCheckout(e) {
@@ -429,6 +557,11 @@
 
       if (!cart || cart.length === 0) {
         alert('Your shopping bag is empty.');
+        return;
+      }
+
+      // Validate delivery fields (Bubble-style validation)
+      if (!validateDeliveryFields()) {
         return;
       }
 
@@ -443,7 +576,7 @@
       const email = document.getElementById('cEmail')?.value?.trim();
       const phone = document.getElementById('cPhone')?.value?.trim();
       const fullName = document.getElementById('cFullName')?.value?.trim() || '';
-      const address = document.getElementById('cAddress')?.value?.trim() || '';
+      const address = addressSearchBox ? addressSearchBox.getValue() : (document.getElementById('cAddress')?.value?.trim() || '');
       const state = document.getElementById('cState')?.value || 'Lagos';
       const city = document.getElementById('cCity')?.value?.trim() || '';
       const landmark = document.getElementById('cLandmark')?.value?.trim() || '';
@@ -578,6 +711,65 @@
 
     // Dynamic State & City listeners to update shipping/confirmation
     document.addEventListener('DOMContentLoaded', () => {
+      // Attach reusable Address Searchbox component
+      if (window.KrabeAddressSearchBox) {
+        addressSearchBox = window.KrabeAddressSearchBox.attach('#cAddress', {
+          onPlaceSelect: (parsed) => {
+            const cityInput = document.getElementById('cCity');
+            if (cityInput && parsed.city) {
+              cityInput.value = parsed.city;
+              cityInput.classList.remove('input-error');
+              const cityErr = document.getElementById('cCityError');
+              if (cityErr) cityErr.style.display = 'none';
+              cityInput.dispatchEvent(new Event('input'));
+            }
+
+            if (parsed.state) {
+              const stateSelect = document.getElementById('cState');
+              if (stateSelect) {
+                const cleanState = parsed.state.toLowerCase();
+                for (let i = 0; i < stateSelect.options.length; i++) {
+                  const optVal = stateSelect.options[i].value.toLowerCase();
+                  if (optVal && (optVal.includes(cleanState) || cleanState.includes(optVal))) {
+                    stateSelect.selectedIndex = i;
+                    stateSelect.dispatchEvent(new Event('change'));
+                    break;
+                  }
+                }
+              }
+            }
+          }
+        });
+      }
+
+      const nameInput = document.getElementById('cFullName');
+      if (nameInput) {
+        nameInput.addEventListener('input', () => {
+          if (nameInput.value.trim().length >= 2) {
+            nameInput.classList.remove('input-error');
+            const err = document.getElementById('cFullNameError');
+            if (err) err.style.display = 'none';
+          }
+        });
+      }
+
+      const cityInput = document.getElementById('cCity');
+      if (cityInput) {
+        cityInput.addEventListener('input', () => {
+          if (cityInput.value.trim().length >= 2) {
+            cityInput.classList.remove('input-error');
+            const err = document.getElementById('cCityError');
+            if (err) err.style.display = 'none';
+          }
+          const cityVal = cityInput.value.trim();
+          const stateVal = document.getElementById('cState')?.value || 'Lagos';
+          const confFulfill = document.getElementById('confirmFulfillmentMethod');
+          if (confFulfill && currentFulfillment === 'delivery') {
+            confFulfill.textContent = `Doorstep Delivery (${cityVal ? `${cityVal}, ` : ''}${stateVal})`;
+          }
+        });
+      }
+
       const stateSelect = document.getElementById('cState');
       if (stateSelect) {
         stateSelect.addEventListener('change', () => {
@@ -586,18 +778,6 @@
           }
           const cityVal = document.getElementById('cCity')?.value.trim();
           const stateVal = stateSelect.value || 'Lagos';
-          const confFulfill = document.getElementById('confirmFulfillmentMethod');
-          if (confFulfill && currentFulfillment === 'delivery') {
-            confFulfill.textContent = `Doorstep Delivery (${cityVal ? `${cityVal}, ` : ''}${stateVal})`;
-          }
-        });
-      }
-
-      const cityInput = document.getElementById('cCity');
-      if (cityInput) {
-        cityInput.addEventListener('input', () => {
-          const cityVal = cityInput.value.trim();
-          const stateVal = document.getElementById('cState')?.value || 'Lagos';
           const confFulfill = document.getElementById('confirmFulfillmentMethod');
           if (confFulfill && currentFulfillment === 'delivery') {
             confFulfill.textContent = `Doorstep Delivery (${cityVal ? `${cityVal}, ` : ''}${stateVal})`;

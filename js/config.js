@@ -405,6 +405,7 @@
     env: activeEnv,
     config: activeConfig,
     paystackPublicKey: activeConfig.paystackPublicKey,
+    googlePlacesApiKey: 'AIzaSyBt7qCQCtm6ce8AEnJ-55BSpem0RFbEGXU',
     getClient: () => client || initClient(),
     get client() {
       return client || initClient();
