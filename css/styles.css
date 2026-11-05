@@ -3962,7 +3962,7 @@ ul {
 
 .checkout-layout {
   display: grid;
-  grid-template-columns: 1.25fr 0.85fr;
+  grid-template-columns: 0.85fr 1.25fr;
   gap: 48px;
   padding: 40px 0 80px;
   align-items: start;

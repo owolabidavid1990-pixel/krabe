@@ -44,7 +44,39 @@
   <div class="container" id="checkoutFlowContainer">
     <div class="checkout-layout">
 
-      <!-- LEFT: CHECKOUT FORM STEPS -->
+      <!-- LEFT (DESKTOP) / TOP (MOBILE): STICKY ORDER SUMMARY -->
+      <aside class="checkout-sidebar">
+        <div class="checkout-summary-box">
+          <h2 class="summary-title h5">Order Summary</h2>
+
+          <!-- Dynamic Line Items Container -->
+          <div id="checkoutItemsList">
+            <!-- Rendered dynamically from localStorage ('krabe_cart') -->
+          </div>
+
+          <!-- Calculations -->
+          <div class="summary-row body-14">
+            <span>Subtotal</span>
+            <span id="summarySubtotal">₦0</span>
+          </div>
+          <div class="summary-row body-14">
+            <span>Shipping</span>
+            <span id="summaryShipping" style="color: var(--color-text-muted); font-size: 13px;">Pay to rider upon delivery</span>
+          </div>
+          <div class="summary-row body-14">
+            <span>VAT / Taxes</span>
+            <span>Included</span>
+          </div>
+
+          <div class="summary-row total body-18">
+            <span>Total to Pay</span>
+            <span id="summaryTotal" style="color: var(--color-primary);">₦0</span>
+          </div>
+
+        </div>
+      </aside>
+
+      <!-- RIGHT (DESKTOP) / BOTTOM (MOBILE): CHECKOUT FORM STEPS -->
       <main class="checkout-main">
         <form id="checkoutForm" onsubmit="processCheckout(event)">
 
@@ -106,7 +138,12 @@
               </div>
 
               <div class="form-group">
-                <label for="cAddress" class="body-12">Street Address &amp; House / Apartment Number</label>
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                  <label for="cAddress" class="body-12" style="margin: 0;">Street Address &amp; House / Apartment Number</label>
+                  <button type="button" id="btnChooseSavedAddr" class="body-12" style="display: none; background: none; border: none; color: var(--color-primary); font-weight: 600; cursor: pointer; padding: 0; text-decoration: underline;" onclick="openSavedAddressesModal()">
+                    📍 Choose from saved addresses (<span id="savedAddrCount">0</span>)
+                  </button>
+                </div>
                 <input type="text" id="cAddress" class="form-input body-14" placeholder="e.g. Plot 14, Block 2, Admiralty Way" value="" required>
               </div>
 
@@ -229,38 +266,6 @@
         </form>
       </main>
 
-      <!-- RIGHT: STICKY ORDER SUMMARY -->
-      <aside class="checkout-sidebar">
-        <div class="checkout-summary-box">
-          <h2 class="summary-title h5">Order Summary</h2>
-
-          <!-- Dynamic Line Items Container -->
-          <div id="checkoutItemsList">
-            <!-- Rendered dynamically from localStorage ('krabe_cart') -->
-          </div>
-
-          <!-- Calculations -->
-          <div class="summary-row body-14">
-            <span>Subtotal</span>
-            <span id="summarySubtotal">₦0</span>
-          </div>
-          <div class="summary-row body-14">
-            <span>Shipping</span>
-            <span id="summaryShipping" style="color: var(--color-text-muted); font-size: 13px;">Pay to rider upon delivery</span>
-          </div>
-          <div class="summary-row body-14">
-            <span>VAT / Taxes</span>
-            <span>Included</span>
-          </div>
-
-          <div class="summary-row total body-18">
-            <span>Total to Pay</span>
-            <span id="summaryTotal" style="color: var(--color-primary);">₦0</span>
-          </div>
-
-        </div>
-      </aside>
-
     </div>
   </div>
 
@@ -339,6 +344,19 @@
     </div>
   </div>
 
+  <!-- Saved Addresses Selection Modal -->
+  <div class="cart-drawer-overlay" id="savedAddressesModal" style="display: none; z-index: 1060; align-items: center; justify-content: center; padding: 20px;" onclick="closeSavedAddressesModal(event)">
+    <div style="background: #FFFFFF; width: 100%; max-width: 460px; border-radius: var(--radius-sm); box-shadow: 0 20px 40px rgba(0,0,0,0.25); padding: 24px; position: relative;" onclick="event.stopPropagation()">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; border-bottom: 1px solid var(--color-border); padding-bottom: 12px;">
+        <h3 class="h5" style="margin: 0; color: var(--color-obsidian);">Select a Saved Address</h3>
+        <button type="button" class="cart-close-btn" onclick="toggleSavedAddressesModal(false)" aria-label="Close" style="background: none; border: none; font-size: 22px; cursor: pointer; color: var(--color-obsidian); line-height: 1;">&times;</button>
+      </div>
+      <div id="savedAddressesList" style="display: flex; flex-direction: column; gap: 10px; max-height: 380px; overflow-y: auto;">
+        <!-- Dynamically populated -->
+      </div>
+    </div>
+  </div>
+
   <!-- Supabase SDK, Paystack Inline & Krabe Stack -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="https://js.paystack.co/v1/inline.js"></script>
@@ -353,6 +371,113 @@
   <script>
     let currentFulfillment = 'delivery';
     let addressSearchBox = null;
+    let userSavedAddresses = [];
+
+    function toggleSavedAddressesModal(show) {
+      const modal = document.getElementById('savedAddressesModal');
+      if (!modal) return;
+      modal.style.display = show ? 'flex' : 'none';
+      document.body.style.overflow = show ? 'hidden' : '';
+    }
+
+    function openSavedAddressesModal() {
+      const listEl = document.getElementById('savedAddressesList');
+      if (!listEl) return;
+      listEl.innerHTML = '';
+
+      if (!userSavedAddresses || userSavedAddresses.length === 0) {
+        listEl.innerHTML = '<p class="body-14" style="color: var(--color-text-muted); text-align: center; margin: 20px 0;">No saved addresses found.</p>';
+        toggleSavedAddressesModal(true);
+        return;
+      }
+
+      userSavedAddresses.forEach((addr, idx) => {
+        const card = document.createElement('div');
+        card.style.cssText = 'border: 1px solid var(--color-border); border-radius: var(--radius-sm); padding: 14px 16px; cursor: pointer; background: var(--color-bone); transition: border-color 0.2s, background-color 0.2s;';
+        card.onmouseover = () => { card.style.borderColor = 'var(--color-primary)'; card.style.backgroundColor = '#FFFFFF'; };
+        card.onmouseout = () => { card.style.borderColor = 'var(--color-border)'; card.style.backgroundColor = 'var(--color-bone)'; };
+        card.onclick = () => applySelectedAddress(addr);
+
+        card.innerHTML = `
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+            <strong class="body-14" style="color: var(--color-obsidian);">${addr.label || (addr.full_name ? `${addr.full_name}'s Address` : `Address #${idx + 1}`)}</strong>
+            ${addr.is_default ? '<span class="body-10" style="background: rgba(197, 138, 85, 0.15); color: var(--color-gold); font-weight: 700; padding: 2px 6px; border-radius: 3px;">Default</span>' : ''}
+          </div>
+          <p class="body-12" style="margin: 0; color: var(--color-text-muted); line-height: 1.5;">
+            ${addr.street || ''}<br>
+            ${addr.city ? `${addr.city}, ` : ''}${addr.state || 'Lagos'}
+            ${addr.landmark ? `<br><span style="font-size: 11px; color: var(--color-obsidian);">Landmark: ${addr.landmark}</span>` : ''}
+          </p>
+        `;
+        listEl.appendChild(card);
+      });
+
+      toggleSavedAddressesModal(true);
+    }
+
+    function closeSavedAddressesModal(e) {
+      if (e.target.id === 'savedAddressesModal') {
+        toggleSavedAddressesModal(false);
+      }
+    }
+
+    function applySelectedAddress(addr) {
+      if (!addr) return;
+
+      if (addr.street) {
+        if (addressSearchBox) {
+          addressSearchBox.setValue(addr.street, true);
+        } else {
+          const addrInput = document.getElementById('cAddress');
+          if (addrInput) addrInput.value = addr.street;
+        }
+      }
+
+      const cityInput = document.getElementById('cCity');
+      if (cityInput && addr.city) {
+        cityInput.value = addr.city;
+        cityInput.classList.remove('input-error');
+        const cityErr = document.getElementById('cCityError');
+        if (cityErr) cityErr.style.display = 'none';
+        cityInput.dispatchEvent(new Event('input'));
+      }
+
+      if (addr.state) {
+        const stateSelect = document.getElementById('cState');
+        if (stateSelect) {
+          const stateVal = addr.state.toLowerCase();
+          for (let i = 0; i < stateSelect.options.length; i++) {
+            if (stateSelect.options[i].value.toLowerCase().includes(stateVal)) {
+              stateSelect.selectedIndex = i;
+              stateSelect.dispatchEvent(new Event('change'));
+              break;
+            }
+          }
+        }
+      }
+
+      const landmarkInput = document.getElementById('cLandmark');
+      if (landmarkInput) {
+        landmarkInput.value = addr.landmark || '';
+      }
+
+      if (addr.full_name) {
+        const nameInput = document.getElementById('cFullName');
+        if (nameInput) {
+          nameInput.value = addr.full_name;
+          nameInput.classList.remove('input-error');
+          const nameErr = document.getElementById('cFullNameError');
+          if (nameErr) nameErr.style.display = 'none';
+        }
+      }
+
+      if (addr.phone) {
+        const phoneInput = document.getElementById('cPhone');
+        if (phoneInput) phoneInput.value = addr.phone;
+      }
+
+      toggleSavedAddressesModal(false);
+    }
 
     function formatNaira(num) {
       return '₦' + Number(num || 0).toLocaleString('en-NG');
