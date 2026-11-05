@@ -48,6 +48,7 @@
     hostname === '127.0.0.1' ||
     hostname === '[::1]' ||
     hostname.endsWith('.local') ||
+    hostname.endsWith('.vercel.app') ||
     window.location.protocol === 'file:'
   );
 
