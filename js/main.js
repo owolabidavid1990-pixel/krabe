@@ -169,7 +169,10 @@ document.addEventListener('DOMContentLoaded', () => {
               <div class="cart-item-meta body-12" style="display: flex; align-items: center; flex-wrap: wrap; gap: 6px;">
                 <span>${item.color || 'Standard'} &bull; Size: <strong>${item.custom_measurement_label ? `Custom (${item.custom_measurement_label})` : (item.size || 'M')}</strong></span>
                 ${item.product_id ? `
-                  <a href="product.html?id=${encodeURIComponent(item.product_id)}${item.variant_id ? `&variant_id=${encodeURIComponent(item.variant_id)}` : ''}&size=${encodeURIComponent(item.size || 'M')}" class="js-cart-edit-link body-10" style="color: var(--color-primary); font-weight: 600; text-decoration: underline;">
+                  <a href="${typeof window.getProductUrl === 'function' ? (function() {
+                    const base = window.getProductUrl({ id: item.product_id, slug: item.slug }, item.variant_id);
+                    return base + (item.size ? (base.includes('?') ? `&size=${encodeURIComponent(item.size)}` : `?size=${encodeURIComponent(item.size)}`) : '');
+                  })() : `product.html?id=${encodeURIComponent(item.product_id)}&size=${encodeURIComponent(item.size || 'M')}`}" class="js-cart-edit-link body-10" style="color: var(--color-primary); font-weight: 600; text-decoration: underline;">
                     Edit
                   </a>
                 ` : ''}
@@ -408,7 +411,8 @@ document.addEventListener('DOMContentLoaded', () => {
               product (
                 id,
                 title,
-                type
+                type,
+                slug
               )
             )
           `)
@@ -436,7 +440,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 product (
                   id,
                   title,
-                  type
+                  type,
+                  slug
                 )
               )
             `)
@@ -513,7 +518,8 @@ document.addEventListener('DOMContentLoaded', () => {
               qty: currentQty,
               image: pv.main_image || 'assets/brand/krabe main logo.svg',
               stock_quantity: stockQty,
-              product_type: prod.type || null
+              product_type: prod.type || null,
+              slug: prod.slug || row.slug || null
             };
           });
 

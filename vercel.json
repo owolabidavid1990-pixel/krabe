@@ -1,5 +1,11 @@
 {
   "cleanUrls": true,
-  "trailingSlash": false
+  "trailingSlash": false,
+  "rewrites": [
+    {
+      "source": "/product/:slug",
+      "destination": "/product.html?slug=:slug"
+    }
+  ]
 }
 

@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <base href="/">
   <title>Signature 3-Piece Agbada Set — Krabe Kollection</title>
   <meta name="description" content="Shop the Signature 3-Piece Agbada Set by Krabe Kollection. Ceremonial Nigerian craftsmanship, hand-embroidered, available in standard sizing or custom bespoke tailoring.">
 
@@ -1140,7 +1141,8 @@
       // 9. Sync URL address bar without reloading page
       try {
         const currentUrl = new URL(window.location.href);
-        currentUrl.searchParams.set('variant_id', target.id);
+        currentUrl.searchParams.set('variant', target.id);
+        currentUrl.searchParams.delete('variant_id');
         window.history.replaceState(null, '', currentUrl.toString());
       } catch (e) {}
     }
@@ -1354,7 +1356,12 @@
       }
 
       const urlParams = new URLSearchParams(window.location.search);
-      const targetSlug = urlParams.get('slug');
+      // Support path-based URLs: /product/some-slug
+      const pathParts = window.location.pathname.split('/').filter(Boolean);
+      const isPathProduct = pathParts.length >= 2 && pathParts[pathParts.length - 2].toLowerCase() === 'product';
+      const pathSlug = isPathProduct ? decodeURIComponent(pathParts[pathParts.length - 1]) : null;
+
+      const targetSlug = pathSlug || urlParams.get('slug');
       const targetId = urlParams.get('id');
 
       try {
@@ -1710,8 +1717,9 @@
                 ? window.getProductBadgesHTML(rp)
                 : '';
 
-              const productParam = rp.slug ? `slug=${encodeURIComponent(rp.slug)}` : `id=${encodeURIComponent(rp.id)}`;
-              const productUrl = `product.html?${productParam}${rDef.id ? '&variant_id=' + encodeURIComponent(rDef.id) : ''}`;
+              const productUrl = typeof window.getProductUrl === 'function'
+                ? window.getProductUrl(rp, rDef.id)
+                : (rp.slug ? `/product/${encodeURIComponent(rp.slug)}${rDef.id ? `?variant=${rDef.id}` : ''}` : `product.html?id=${rp.id}`);
 
               const totalStock = isRTW ? rVars.reduce((sum, v) => sum + (Number(v.quantity) || 0), 0) : null;
               const isSoldOut = isRTW && (rVars.length === 0 || totalStock <= 0 || (rDef.quantity != null && Number(rDef.quantity) <= 0));

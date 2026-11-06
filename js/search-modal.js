@@ -151,8 +151,12 @@
         const price = Number(topVar.price) || 0;
         const mainImage = topVar.main_image || 'assets/brand/krabe main logo.svg';
 
+        const targetUrl = typeof window.getProductUrl === 'function'
+          ? window.getProductUrl(prod, topVar.id)
+          : (prod.slug ? `/product/${encodeURIComponent(prod.slug)}${topVar.id ? `?variant=${topVar.id}` : ''}` : `product.html?id=${encodeURIComponent(prod.id)}`);
+
         return `
-          <a href="product.html?id=${encodeURIComponent(prod.id)}" class="search-result-item">
+          <a href="${targetUrl}" class="search-result-item">
             <img src="${escapeHtml(mainImage)}" alt="${escapeHtml(prod.title)}" loading="lazy">
             <div class="search-result-info">
               <div class="search-result-title body-14" style="font-weight: 700; color: var(--color-obsidian);">${escapeHtml(prod.title)}</div>

@@ -437,6 +437,30 @@
     refresh: fetchAppVariableContact
   };
 
+  // Universal Product URL generator (clean /product/:slug?variant=... on hosted, fallback on local)
+  window.getProductUrl = function(prod, variantId) {
+    if (!prod) return 'product.html';
+    const isLocalServer = Boolean(
+      window.location.hostname === 'localhost' ||
+      window.location.hostname === '127.0.0.1' ||
+      window.location.protocol === 'file:'
+    );
+
+    const slug = typeof prod === 'string' ? prod : (prod.slug || null);
+    const id = typeof prod === 'object' && prod ? (prod.id || null) : null;
+    const vParam = variantId ? `variant=${encodeURIComponent(variantId)}` : '';
+
+    if (isLocalServer) {
+      const mainParam = slug ? `slug=${encodeURIComponent(slug)}` : (id ? `id=${encodeURIComponent(id)}` : '');
+      return `product.html${mainParam ? `?${mainParam}` : ''}${vParam ? `${mainParam ? '&' : '?'}${vParam}` : ''}`;
+    } else {
+      if (slug) {
+        return `/product/${encodeURIComponent(slug)}${vParam ? `?${vParam}` : ''}`;
+      }
+      return `/product.html?id=${encodeURIComponent(id || '')}${vParam ? `&${vParam}` : ''}`;
+    }
+  };
+
   // Convenient app-wide getter so window.krabeClient is always up to date
   try {
     Object.defineProperty(window, 'krabeClient', {

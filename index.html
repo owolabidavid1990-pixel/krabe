@@ -455,8 +455,9 @@
               ? window.getProductBadgesHTML(prod)
               : '';
 
-            const productParam = prod.slug ? `slug=${encodeURIComponent(prod.slug)}` : `id=${prod.id}`;
-            const productLink = `product.html?${productParam}${variantId ? '&variant_id=' + variantId : ''}`;
+            const productLink = typeof window.getProductUrl === 'function'
+              ? window.getProductUrl(prod, variantId)
+              : (prod.slug ? `/product/${encodeURIComponent(prod.slug)}${variantId ? `?variant=${variantId}` : ''}` : `product.html?id=${prod.id}`);
 
             const totalStock = isRTW ? variations.reduce((sum, v) => sum + (Number(v.quantity) || 0), 0) : null;
             const isSoldOut = isRTW && (variations.length === 0 || totalStock <= 0 || (defaultVar.quantity != null && Number(defaultVar.quantity) <= 0));
@@ -600,7 +601,9 @@
         // 3. Update "View Drop" button link with product id and selected variant id
         const viewDropLink = heroBadge.querySelector('a');
         if (viewDropLink) {
-          viewDropLink.href = `product.html?id=${prod.id}&variant=${topVariant.id}`;
+          viewDropLink.href = typeof window.getProductUrl === 'function'
+            ? window.getProductUrl(prod, topVariant.id)
+            : (prod.slug ? `/product/${encodeURIComponent(prod.slug)}?variant=${topVariant.id}` : `product.html?id=${prod.id}&variant=${topVariant.id}`);
         }
 
         // 4. Reveal hero badge once loaded from database
