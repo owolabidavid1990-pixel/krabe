@@ -754,7 +754,6 @@
       if (sizeText.toLowerCase() === 'custom') {
         const user = getActiveUser();
         if (!user || !user.id) {
-          alert('Please sign in or create an account to select or create a custom measurement.');
           if (window.KrabeAuthModal && typeof window.KrabeAuthModal.open === 'function') {
             window.KrabeAuthModal.open('signup');
           }
