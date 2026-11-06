@@ -868,7 +868,6 @@
           window.krabeSession = currentSession;
           window.krabeIsLoggedIn = true;
           updateAuthUI(currentUser);
-          await syncGuestCartToDatabase(currentUser);
 
           if (window.KrabeAuthModal) {
             const firstName = (user.user_metadata?.full_name || user.email || 'Client').split(' ')[0];
