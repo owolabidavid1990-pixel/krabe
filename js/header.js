@@ -35,7 +35,7 @@
 
           <!-- Primary Navigation Links -->
           <nav class="nav-links" id="krabeDesktopNav" aria-label="Main Navigation">
-            <a href="shop.html" class="nav-link nav-link-always body-14" data-link="shop">The Collection</a>
+            <a href="shop.html" class="nav-link nav-link-always body-14" data-link="shop">Shop</a>
             <a href="bespoke.html" class="nav-link nav-link-always body-14" data-link="bespoke">Bespoke</a>
             <a href="shop.html?category=native" class="nav-link nav-link-extra body-14" data-link="native">Native Wear</a>
             <a href="shop.html?category=streetwear" class="nav-link nav-link-extra body-14" data-link="streetwear">Streetwear</a>
@@ -102,7 +102,7 @@
         </div>
 
         <nav class="mobile-links" id="krabeMobileNav">
-          <a href="shop.html" class="body-16" data-link="shop">Shop Collection</a>
+          <a href="shop.html" class="body-16" data-link="shop">Shop</a>
           <a href="bespoke.html" class="body-16" data-link="bespoke">Bespoke</a>
           <a href="shop.html?category=native" class="body-16" data-link="native">Native &amp; Agbada</a>
           <a href="shop.html?category=formal" class="body-16" data-link="formal">English &amp; Suiting</a>

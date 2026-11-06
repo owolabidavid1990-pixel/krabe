@@ -5559,3 +5559,12 @@ ul {
   }
 }
 
+/* Prevent auto-zoom on mobile/touch devices while keeping desktop typography untouched */
+@media (pointer: coarse) {
+  input,
+  textarea,
+  select {
+    font-size: max(16px, 1rem);
+  }
+}
+

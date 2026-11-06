@@ -852,6 +852,20 @@
 
       let authCompleted = false;
 
+      const finishError = (errMsg) => {
+        if (authCompleted) return;
+        authCompleted = true;
+        if (popup && !popup.closed) {
+          try { popup.close(); } catch (_) {}
+        }
+        cleanup();
+        if (window.KrabeAuthModal) {
+          window.KrabeAuthModal.setLoading('krabeSignInForm', false);
+          window.KrabeAuthModal.setLoading('krabeSignUpForm', false);
+          window.KrabeAuthModal.showAlert(errMsg || 'Google authentication was not completed.', 'error');
+        }
+      };
+
       const finishSuccess = async (session) => {
         if (authCompleted) return;
         authCompleted = true;
@@ -880,6 +894,8 @@
               }
             }, 600);
           }
+        } else {
+          finishError('No authenticated user found.');
         }
       };
 
@@ -893,7 +909,13 @@
       const onMessage = (event) => {
         if (event.origin !== window.location.origin) return;
         if (event.data && event.data.type === 'KRABE_AUTH_SUCCESS') {
-          finishSuccess(event.data.session);
+          if (event.data.session) {
+            finishSuccess(event.data.session);
+          } else {
+            finishError('Authentication was cancelled or failed.');
+          }
+        } else if (event.data && event.data.type === 'KRABE_AUTH_ERROR') {
+          finishError(event.data.error || 'Authentication was cancelled or failed.');
         }
       };
       window.addEventListener('message', onMessage);
@@ -998,7 +1020,11 @@
       // Check if this page was loaded inside a Google OAuth popup window
       if (window.opener && window.opener !== window && (window.location.hash.includes('access_token') || window.location.search.includes('code='))) {
         try {
-          window.opener.postMessage({ type: 'KRABE_AUTH_SUCCESS', session: currentSession }, window.location.origin);
+          if (currentSession && currentSession.user) {
+            window.opener.postMessage({ type: 'KRABE_AUTH_SUCCESS', session: currentSession }, window.location.origin);
+          } else {
+            window.opener.postMessage({ type: 'KRABE_AUTH_ERROR', error: 'Authentication was cancelled or failed.' }, window.location.origin);
+          }
         } catch (_) {}
         setTimeout(() => window.close(), 150);
         return;

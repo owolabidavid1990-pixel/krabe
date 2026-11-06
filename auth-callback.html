@@ -41,33 +41,57 @@
 </head>
 <body>
   <div class="spinner"></div>
-  <p>Authenticating your account...</p>
+  <p id="authStatusText">Authenticating your account...</p>
 
   <script>
     (async function () {
       const client = window.KRABE_CONFIG ? window.KRABE_CONFIG.client : null;
       let session = null;
+      let authError = null;
+
       if (client) {
         try {
-          // getSession triggers detectSessionInUrl and stores tokens in localStorage
-          const { data } = await client.auth.getSession();
-          session = data ? data.session : null;
+          // getSession triggers detectSessionInUrl and parses tokens/code from URL
+          const { data, error } = await client.auth.getSession();
+          if (error) {
+            authError = error.message;
+          } else {
+            session = data?.session || null;
+          }
         } catch (e) {
           console.error('[Auth Callback] Error establishing session:', e);
+          authError = e?.message || 'Authentication failed.';
         }
+      } else {
+        authError = 'Supabase client not available.';
       }
 
-      // If opened inside a popup window, message the parent and close
+      // Check if authentication genuinely succeeded
+      const isSuccess = Boolean(session && session.user);
+
+      // If opened inside a popup window, message parent window and close
       if (window.opener && window.opener !== window) {
         try {
-          window.opener.postMessage({ type: 'KRABE_AUTH_SUCCESS', session: session }, window.location.origin);
+          if (isSuccess) {
+            window.opener.postMessage({ type: 'KRABE_AUTH_SUCCESS', session: session }, window.location.origin);
+          } else {
+            window.opener.postMessage({ type: 'KRABE_AUTH_ERROR', error: authError || 'Authentication was cancelled or failed.' }, window.location.origin);
+          }
         } catch (_) {}
         setTimeout(() => {
           window.close();
         }, 150);
       } else {
         // Fallback for full-page redirect
-        window.location.href = 'account.html';
+        if (isSuccess) {
+          window.location.href = 'account.html';
+        } else {
+          const statusText = document.getElementById('authStatusText');
+          if (statusText) statusText.textContent = 'Authentication failed. Redirecting...';
+          setTimeout(() => {
+            window.location.href = 'index.html';
+          }, 1200);
+        }
       }
     })();
   </script>
