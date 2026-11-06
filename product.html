@@ -1128,6 +1128,7 @@
         addBtn.dataset.variationId = target.id;
         addBtn.dataset.price = displayPrice;
         addBtn.dataset.title = currentProduct.title;
+        addBtn.dataset.slug = currentProduct.slug || '';
         addBtn.dataset.image = target.main_image;
         addBtn.dataset.productType = currentProduct.type || '';
         addBtn.dataset.stockQuantity = target.quantity != null ? target.quantity : '';
@@ -1737,6 +1738,7 @@
                           data-variant-id="${rDef.id || ''}"
                           data-variation-id="${rDef.id || ''}"
                           data-title="${rp.title}" 
+                          data-slug="${rp.slug || ''}" 
                           data-price="${rPrice}" 
                           data-size="${rDefSize}"
                           data-color="${rDef.color || 'Standard'}"

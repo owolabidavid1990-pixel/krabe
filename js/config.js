@@ -438,7 +438,7 @@
   };
 
   // Universal Product URL generator (clean /product/:slug?variant=... on hosted, fallback on local)
-  window.getProductUrl = function(prod, variantId) {
+  window.getProductUrl = function(prod, variantId, size) {
     if (!prod) return 'product.html';
     const isLocalServer = Boolean(
       window.location.hostname === 'localhost' ||
@@ -448,16 +448,23 @@
 
     const slug = typeof prod === 'string' ? prod : (prod.slug || null);
     const id = typeof prod === 'object' && prod ? (prod.id || null) : null;
-    const vParam = variantId ? `variant=${encodeURIComponent(variantId)}` : '';
+    const v = variantId || (typeof prod === 'object' && prod ? (prod.variant_id || prod.product_variation_id) : null);
+    const s = size || (typeof prod === 'object' && prod ? prod.size : null);
+
+    const queryParts = [];
+    if (v) queryParts.push(`variant=${encodeURIComponent(v)}`);
+    if (s) queryParts.push(`size=${encodeURIComponent(s)}`);
+    const queryString = queryParts.length > 0 ? queryParts.join('&') : '';
 
     if (isLocalServer) {
       const mainParam = slug ? `slug=${encodeURIComponent(slug)}` : (id ? `id=${encodeURIComponent(id)}` : '');
-      return `product.html${mainParam ? `?${mainParam}` : ''}${vParam ? `${mainParam ? '&' : '?'}${vParam}` : ''}`;
+      const allParts = [mainParam, queryString].filter(Boolean).join('&');
+      return `product.html${allParts ? `?${allParts}` : ''}`;
     } else {
       if (slug) {
-        return `/product/${encodeURIComponent(slug)}${vParam ? `?${vParam}` : ''}`;
+        return `/product/${encodeURIComponent(slug)}${queryString ? `?${queryString}` : ''}`;
       }
-      return `/product.html?id=${encodeURIComponent(id || '')}${vParam ? `&${vParam}` : ''}`;
+      return `/product.html?id=${encodeURIComponent(id || '')}${queryString ? `&${queryString}` : ''}`;
     }
   };
 

@@ -169,10 +169,7 @@ document.addEventListener('DOMContentLoaded', () => {
               <div class="cart-item-meta body-12" style="display: flex; align-items: center; flex-wrap: wrap; gap: 6px;">
                 <span>${item.color || 'Standard'} &bull; Size: <strong>${item.custom_measurement_label ? `Custom (${item.custom_measurement_label})` : (item.size || 'M')}</strong></span>
                 ${item.product_id ? `
-                  <a href="${typeof window.getProductUrl === 'function' ? (function() {
-                    const base = window.getProductUrl({ id: item.product_id, slug: item.slug }, item.variant_id);
-                    return base + (item.size ? (base.includes('?') ? `&size=${encodeURIComponent(item.size)}` : `?size=${encodeURIComponent(item.size)}`) : '');
-                  })() : `product.html?id=${encodeURIComponent(item.product_id)}&size=${encodeURIComponent(item.size || 'M')}`}" class="js-cart-edit-link body-10" style="color: var(--color-primary); font-weight: 600; text-decoration: underline;">
+                  <a href="${typeof window.getProductUrl === 'function' ? window.getProductUrl({ id: item.product_id, slug: item.slug || (item.title ? item.title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') : null) }, item.variant_id, item.size) : `product.html?id=${encodeURIComponent(item.product_id)}&size=${encodeURIComponent(item.size || 'M')}`}" class="js-cart-edit-link body-10" style="color: var(--color-primary); font-weight: 600; text-decoration: underline;">
                     Edit
                   </a>
                 ` : ''}
