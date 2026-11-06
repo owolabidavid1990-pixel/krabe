@@ -359,7 +359,7 @@
 
   <!-- Supabase SDK, Paystack Inline & Krabe Stack -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="https://js.paystack.co/v1/inline.js"></script>
+  <script src="https://js.paystack.co/v2/inline.js"></script>
   <script src="js/config.js"></script>
   <script src="js/header.js"></script>
   <script src="js/auth-modal.js"></script>
@@ -713,7 +713,7 @@
       const items = cart.map(item => ({
         variant_id: item.variant_id || item.product_variation_id || item.id,
         size: item.selected_size || item.size || 'M',
-        quantity: item.quantity || 1,
+        quantity: item.qty || item.quantity || 1,
         custom_measurement_id: item.custom_measurement_id || null
       }));
 
@@ -729,7 +729,7 @@
           throw new Error('Supabase client is not available. Please refresh the page.');
         }
 
-        const { data, error } = await client.functions.invoke('create-order', {
+        const { data, error } = await client.functions.invoke('Create-order', {
           body: {
             email,
             phone,
@@ -807,13 +807,12 @@
           window.scrollTo({ top: 0, behavior: 'smooth' });
         };
 
-        const handler = window.PaystackPop.setup({
-          key: paystackKey,
-          access_code: data.access_code,
-          callback: handlePaymentSuccess,
-          onSuccess: handlePaymentSuccess,
-          onClose: function () {
-            // Restore button so customer can retry or change bag items
+        const popup = new window.PaystackPop();
+        popup.resumeTransaction(data.access_code, {
+          onSuccess: function (transaction) {
+            handlePaymentSuccess(transaction);
+          },
+          onCancel: function () {
             if (btn) {
               btn.innerHTML = originalBtnHTML;
               btn.style.opacity = '1';
@@ -821,8 +820,6 @@
             }
           }
         });
-
-        handler.openIframe();
       } catch (err) {
         console.error('[Checkout Error]:', err);
         alert(err.message || 'An error occurred while creating your order. Please try again.');

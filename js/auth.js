@@ -317,6 +317,49 @@
     if (window.KrabeCart && typeof window.KrabeCart.refreshUserCart === 'function') {
       window.KrabeCart.refreshUserCart();
     }
+
+    // Also sync and clear any pending guest order from localStorage
+    await syncGuestPendingOrderToUser(user);
+  }
+
+  /**
+   * Binds any guest pending order in localStorage to this authenticated user,
+   * then completely removes the pending order ID from localStorage.
+   */
+  async function syncGuestPendingOrderToUser(user) {
+    if (!user || !user.id) return;
+    const client = getClient();
+    if (!client) return;
+
+    let pendingOrderId = null;
+    try {
+      pendingOrderId = localStorage.getItem('krabe_pending_order_id');
+    } catch (_) {}
+
+    if (!pendingOrderId || typeof pendingOrderId !== 'string' || !pendingOrderId.trim()) {
+      return;
+    }
+
+    pendingOrderId = pendingOrderId.trim();
+
+    try {
+      const { error } = await client
+        .from('ready_to_wear_order')
+        .update({ user_id: user.id })
+        .eq('id', pendingOrderId);
+
+      if (error) {
+        console.warn('[Krabe Order Sync] Could not bind pending order to user:', error);
+      } else {
+        console.log(`[Krabe Order Sync] Assigned pending order ${pendingOrderId} to user ${user.id}.`);
+      }
+    } catch (err) {
+      console.warn('[Krabe Order Sync] Error updating pending order:', err);
+    } finally {
+      try {
+        localStorage.removeItem('krabe_pending_order_id');
+      } catch (_) {}
+    }
   }
 
   // =========================================================================
@@ -1031,7 +1074,8 @@
     resetPassword,
     verifyResetOtpAndSetPassword,
     updateAuthUI,
-    syncGuestCart: syncGuestCartToDatabase
+    syncGuestCart: syncGuestCartToDatabase,
+    syncPendingOrder: syncGuestPendingOrderToUser
   };
 
   // Convenient shortcuts
