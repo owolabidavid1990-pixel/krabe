@@ -17,6 +17,13 @@
 
   <!-- Core Stylesheet -->
   <link rel="stylesheet" href="css/styles.css">
+  <style>
+    @media (max-width: 992px) {
+      #categoryFilterStrip {
+        padding: 10px 36px;
+      }
+    }
+  </style>
 </head>
 <body>
 
@@ -40,12 +47,32 @@
         <button type="button" class="gender-btn body-12" onclick="setGenderFilter(this, 'unisex')">Unisex</button>
       </div>
 
-      <!-- Row 2: CATEGORY (Always visible horizontal pills) -->
-      <div class="category-filter-strip">
-        <button type="button" class="category-pill body-12 active" data-category="all" onclick="setCategoryFilter(this, 'all')">All Categories</button>
-        <button type="button" class="category-pill body-12" data-category="native" onclick="setCategoryFilter(this, 'native')">Native Wear</button>
-        <button type="button" class="category-pill body-12" data-category="formal" onclick="setCategoryFilter(this, 'formal')">English &amp; Suiting</button>
-        <button type="button" class="category-pill body-12" data-category="streetwear" onclick="setCategoryFilter(this, 'streetwear')">Streetwear Drops</button>
+      <!-- Row 2: CATEGORY (Always visible horizontal pills with animated scroll cues) -->
+      <div class="account-tabs-wrap" style="border-bottom: 1px solid var(--color-border); background: var(--color-white);">
+        <!-- Subtle Animated Scroll Cue (Left) -->
+        <div class="account-tabs-cue account-tabs-cue-left" id="categoryTabsCueLeft" aria-hidden="true">
+          <div class="chevron-stream">
+            <svg class="ch-1" width="9" height="14" viewBox="0 0 9 14" fill="none"><path d="M7.5 1.5L2 7L7.5 12.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            <svg class="ch-2" width="9" height="14" viewBox="0 0 9 14" fill="none"><path d="M7.5 1.5L2 7L7.5 12.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            <svg class="ch-3" width="9" height="14" viewBox="0 0 9 14" fill="none"><path d="M7.5 1.5L2 7L7.5 12.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+        </div>
+
+        <div class="category-filter-strip account-tabs-list" id="categoryFilterStrip" style="border-bottom: none; width: 100%;">
+          <button type="button" class="category-pill body-12 active" data-category="all" onclick="setCategoryFilter(this, 'all')">All Categories</button>
+          <button type="button" class="category-pill body-12" data-category="native" onclick="setCategoryFilter(this, 'native')">Native Wear</button>
+          <button type="button" class="category-pill body-12" data-category="formal" onclick="setCategoryFilter(this, 'formal')">English &amp; Suiting</button>
+          <button type="button" class="category-pill body-12" data-category="streetwear" onclick="setCategoryFilter(this, 'streetwear')">Streetwear Drops</button>
+        </div>
+
+        <!-- Subtle Animated Scroll Cue (Right) -->
+        <div class="account-tabs-cue account-tabs-cue-right" id="categoryTabsCueRight" aria-hidden="true">
+          <div class="chevron-stream">
+            <svg class="ch-1" width="9" height="14" viewBox="0 0 9 14" fill="none"><path d="M1.5 1.5L7 7L1.5 12.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            <svg class="ch-2" width="9" height="14" viewBox="0 0 9 14" fill="none"><path d="M1.5 1.5L7 7L1.5 12.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            <svg class="ch-3" width="9" height="14" viewBox="0 0 9 14" fill="none"><path d="M1.5 1.5L7 7L1.5 12.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+        </div>
       </div>
 
       <!-- Row 3: STATUS & SORT -->
@@ -474,6 +501,7 @@
       } catch (e) {}
 
       fetchCatalogFromDatabase();
+      setTimeout(updateCategoryScrollIndicators, 50);
     }
 
     function setCategoryFilter(btn, cat) {
@@ -502,6 +530,7 @@
       } catch (e) {}
 
       fetchCatalogFromDatabase();
+      setTimeout(updateCategoryScrollIndicators, 50);
     }
 
     function clearSearchFilter() {
@@ -515,6 +544,7 @@
         window.history.replaceState({}, '', url);
       } catch (e) {}
       fetchCatalogFromDatabase();
+      setTimeout(updateCategoryScrollIndicators, 50);
     }
 
     function resetAllFilters() {
@@ -537,6 +567,42 @@
       } catch (e) {}
 
       fetchCatalogFromDatabase();
+      setTimeout(updateCategoryScrollIndicators, 50);
+    }
+
+    // Update visibility of category scroll cues based on scroll position under 992px
+    function updateCategoryScrollIndicators() {
+      const list = document.getElementById('categoryFilterStrip');
+      const leftCue = document.getElementById('categoryTabsCueLeft');
+      const rightCue = document.getElementById('categoryTabsCueRight');
+      if (!list || !leftCue || !rightCue) return;
+
+      const maxScroll = list.scrollWidth - list.clientWidth;
+      if (maxScroll <= 4) {
+        leftCue.style.opacity = '0';
+        rightCue.style.opacity = '0';
+        return;
+      }
+
+      // Left cue (hidden if at start)
+      if (list.scrollLeft <= 10) {
+        leftCue.style.opacity = '0';
+      } else {
+        leftCue.style.opacity = '1';
+      }
+
+      // Right cue (hidden if at end)
+      if (list.scrollLeft >= maxScroll - 10) {
+        rightCue.style.opacity = '0';
+      } else {
+        rightCue.style.opacity = '1';
+      }
+    }
+
+    const catStripList = document.getElementById('categoryFilterStrip');
+    if (catStripList) {
+      catStripList.addEventListener('scroll', updateCategoryScrollIndicators, { passive: true });
+      window.addEventListener('resize', updateCategoryScrollIndicators, { passive: true });
     }
 
     // Auto-filter based on URL Query Parameters (?search=, ?category=, ?gender=, ?page=)
@@ -594,6 +660,7 @@
       }
 
       fetchCatalogFromDatabase();
+      setTimeout(updateCategoryScrollIndicators, 50);
     });
   </script>
 </body>

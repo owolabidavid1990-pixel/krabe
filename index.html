@@ -584,6 +584,16 @@
           heroImg.src = topVariant.main_image;
           heroImg.alt = `${prod.title} - ${topVariant.color || ''}`;
           heroImg.style.display = 'block';
+
+          // Trigger slow zoom animation ONLY when the product has been searched & image is available
+          const startZoom = () => {
+            heroImg.classList.add('hero-zoom-active');
+          };
+          if (heroImg.complete && heroImg.naturalWidth > 0) {
+            startZoom();
+          } else {
+            heroImg.onload = startZoom;
+          }
         }
 
         // 2. Update Badge Text
