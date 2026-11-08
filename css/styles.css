@@ -406,7 +406,7 @@ ul {
   position: relative;
   background: linear-gradient(135deg, #0F171E 0%, #1B2936 50%, #121A22 100%);
   color: var(--color-white);
-  padding: 0 0 54px;
+  padding: 0;
   overflow: hidden;
 }
 
@@ -452,8 +452,8 @@ ul {
   background: #19232D;
   width: 100%;
   max-width: 100%;
-  height: 500px;
-  max-height: 500px;
+  height: 700px;
+  max-height: 700px;
 }
 
 @keyframes heroSlowZoom {
@@ -468,7 +468,7 @@ ul {
 .hero-image-card img {
   width: 100%;
   height: 100%;
-  max-height: 500px;
+  max-height: 700px;
   object-fit: cover;
   display: block;
   animation: heroSlowZoom 7s cubic-bezier(0.25, 1, 0.5, 1) forwards;
@@ -505,30 +505,12 @@ ul {
   text-transform: uppercase;
 }
 
-.hero-content {
-  order: 2;
-  width: 100%;
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 32px 24px 0;
-  display: flex;
-  justify-content: center;
-}
-
+.hero-content,
+.hero-actions,
 .hero-pill,
 .hero-title,
 .hero-subtitle {
   display: none !important;
-}
-
-.hero-actions {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 16px;
-  flex-wrap: wrap;
-  width: 100%;
-  margin: 0;
 }
 
 .btn {
@@ -1680,12 +1662,6 @@ ul {
    RESPONSIVE QUERIES (<= 1024px)
    ========================================================================== */
 @media (max-width: 1024px) {
-  .hero-section {
-    padding: 0 0 44px;
-  }
-  .hero-content {
-    padding: 24px 20px 0;
-  }
   .section-title {
     font-size: 30px;
   }
@@ -1783,19 +1759,8 @@ ul {
 @media (max-width: 600px) {
   .hero-image-card,
   .hero-image-card img {
-    height: clamp(340px, 60vh, 500px);
-    max-height: 500px;
-  }
-  .hero-actions {
-    flex-direction: column;
-    gap: 12px;
-    width: 100%;
-  }
-  .hero-actions .btn {
-    width: 100%;
-    text-align: center;
-    justify-content: center;
-    padding: 14px 20px;
+    height: clamp(380px, 75vh, 700px);
+    max-height: 700px;
   }
   .hero-floating-badge {
     left: 16px;
