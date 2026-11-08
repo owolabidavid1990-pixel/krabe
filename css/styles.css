@@ -1414,7 +1414,7 @@ ul {
   background-color: rgba(0, 0, 0, 0.6);
   backdrop-filter: blur(4px);
   -webkit-backdrop-filter: blur(4px);
-  z-index: 200;
+  z-index: 1000;
   opacity: 0;
   visibility: hidden;
   transition: opacity var(--transition-smooth), visibility var(--transition-smooth);
@@ -1433,7 +1433,7 @@ ul {
   width: 100%;
   max-width: 440px;
   background-color: var(--color-bone);
-  z-index: 201;
+  z-index: 1001;
   transform: translateX(100%);
   transition: transform var(--transition-smooth);
   display: flex;

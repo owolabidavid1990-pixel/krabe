@@ -14,6 +14,12 @@ DO $$ BEGIN
 EXCEPTION WHEN duplicate_object THEN null; END $$;
 
 DO $$ BEGIN
+  CREATE TYPE appointment_type AS ENUM (
+    'measure', 'fitting', 'pickup'
+  );
+EXCEPTION WHEN duplicate_object THEN null; END $$;
+
+DO $$ BEGIN
   CREATE TYPE clothing_category AS ENUM (
     'native', 'formal', 'streetwear'
   );
@@ -111,12 +117,18 @@ CREATE TABLE IF NOT EXISTS public.appointment (
   updated_at timestamp with time zone DEFAULT now(),
   user_id uuid NOT NULL DEFAULT auth.uid(),
   requested_date timestamp with time zone NOT NULL,
+  appointment_types appointment_type[] DEFAULT '{measure}'::appointment_type[],
   notes text,
   slug text,
   status appointment_status DEFAULT 'requested'::appointment_status,
   CONSTRAINT appointment_pkey PRIMARY KEY (id),
   CONSTRAINT appointments_user_id_fkey FOREIGN KEY (user_id) REFERENCES auth.users(id) ON DELETE CASCADE
 );
+
+-- Enforces one active booking per studio slot (prevents double bookings)
+CREATE UNIQUE INDEX IF NOT EXISTS unique_active_appointment_slot 
+ON public.appointment (requested_date) 
+WHERE status IN ('requested', 'confirmed', 'inprogress');
 
 -- Table 3: Collections (Clothing collections, e.g. "Harmattan Royalty", "Summer Native")
 CREATE TABLE IF NOT EXISTS public.collection (
@@ -929,6 +941,25 @@ CREATE TRIGGER tr_validate_product_type_switch_to_rtw
 BEFORE UPDATE OF type ON public.product
 FOR EACH ROW
 EXECUTE FUNCTION public.validate_product_type_switch_to_rtw();
+
+-- =========================================================================
+-- APPOINTMENT AVAILABILITY CHECK FUNCTION
+-- =========================================================================
+
+-- Returns booked time slots (e.g. '10:00', '14:00') for a given date in West Africa Time (WAT)
+CREATE OR REPLACE FUNCTION public.get_booked_slots(booking_date date)
+RETURNS TABLE (booked_time text)
+LANGUAGE sql
+SECURITY DEFINER
+SET search_path = public
+AS $$
+  SELECT to_char(requested_date AT TIME ZONE 'Africa/Lagos', 'HH24:MI')
+  FROM public.appointment
+  WHERE (requested_date AT TIME ZONE 'Africa/Lagos')::date = booking_date
+    AND status IN ('requested', 'confirmed', 'inprogress');
+$$;
+
+GRANT EXECUTE ON FUNCTION public.get_booked_slots(date) TO anon, authenticated;
 
 
 

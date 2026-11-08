@@ -93,9 +93,9 @@
         <div style="background: rgba(255,255,255,0.06); padding: 32px; border-radius: var(--radius-sm); border: 1px solid rgba(255,255,255,0.12);">
           <h3 class="h3" style="margin-bottom: 14px; color: var(--color-gold-light);">The Krabe Guarantee</h3>
           <ul class="body-14" style="display: flex; flex-direction: column; gap: 12px; color: #CBD5E1;">
-            <li>✓ Individual paper pattern drafted exclusively for you.</li>
-            <li>✓ Premium African cashmere, loom Aso-Oke, and Irish linen.</li>
-            <li>✓ Direct video sizing &amp; instant photo consult via WhatsApp.</li>
+            <li>✓ Individual pattern drafted exclusively for you.</li>
+            <li>✓ Premium and quality fabrics.</li>
+            <li>✓ Direct sizing &amp; instant photo consult via WhatsApp.</li>
             <li>✓ Complimentary post-production fit adjustments in Lagos.</li>
           </ul>
         </div>
@@ -163,37 +163,53 @@
           </p>
 
           <!-- Simple Appointment Form -->
-          <form onsubmit="handleAppointmentSubmit(event)" style="display: flex; flex-direction: column; gap: 14px; margin-top: auto;">
-            <div>
-              <input type="text" required placeholder="Your Full Name" class="form-input body-14" style="padding: 10px 14px;">
-            </div>
-            <div>
-              <input type="tel" required placeholder="Phone / WhatsApp Number" class="form-input body-14" style="padding: 10px 14px;">
-            </div>
+          <form id="studioAppointmentForm" onsubmit="handleAppointmentSubmit(event)" style="display: flex; flex-direction: column; gap: 14px; margin-top: auto;">
             <div class="form-row-compact" style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
-              <input type="date" required class="form-input body-14" style="padding: 10px 14px;">
-              <select class="form-select body-14" required style="padding: 10px 14px;">
-                <option value="10">10:00 AM</option>
-                <option value="12">12:00 PM</option>
-                <option value="14">2:00 PM</option>
-                <option value="16">4:00 PM</option>
-              </select>
-            </div>
-            <div>
-              <select class="form-select body-14" style="padding: 10px 14px;">
-                <option value="measure">New Measurement &amp; Fabric Consultation</option>
-                <option value="fitting">Mid-Production Fitting</option>
-                <option value="pickup">Final Collection &amp; Inspection</option>
-              </select>
+              <div>
+                <label for="appDate" class="body-12" style="display: block; margin-bottom: 4px; color: var(--color-obsidian); font-weight: 600;">Date</label>
+                <input type="date" id="appDate" required class="form-input body-14" style="padding: 10px 14px; width: 100%;">
+              </div>
+              <div>
+                <label for="appTime" class="body-12" style="display: block; margin-bottom: 4px; color: var(--color-obsidian); font-weight: 600;">Time Slot (WAT)</label>
+                <select id="appTime" class="form-select body-14" required style="padding: 10px 14px; width: 100%;">
+                  <option value="10:00">10:00 AM (WAT)</option>
+                  <option value="12:00">12:00 PM (WAT)</option>
+                  <option value="14:00">2:00 PM (WAT)</option>
+                  <option value="16:00">4:00 PM (WAT)</option>
+                </select>
+              </div>
             </div>
 
-            <button type="submit" class="btn btn-primary body-14" style="width: 100%; background: var(--color-obsidian); color: white; padding: 14px;">
-              Request Studio Slot &rarr;
+            <!-- Purpose Multi-Select Checkboxes -->
+            <div style="display: flex; flex-direction: column; gap: 6px;">
+              <span class="body-12" style="color: var(--color-obsidian); font-weight: 600;">
+                Purpose of Visit (Select all that apply)
+              </span>
+              <div style="display: flex; flex-direction: column; gap: 6px;">
+                <label style="display: flex; align-items: center; gap: 10px; cursor: pointer; padding: 8px 12px; background: var(--color-sand); border-radius: var(--radius-sm);">
+                  <input type="checkbox" name="app_purpose" value="measure" checked style="accent-color: var(--color-primary); width: 16px; height: 16px;">
+                  <span class="body-14" style="color: var(--color-obsidian);">New Measurement &amp; Fabric Consultation</span>
+                </label>
+                <label style="display: flex; align-items: center; gap: 10px; cursor: pointer; padding: 8px 12px; background: var(--color-sand); border-radius: var(--radius-sm);">
+                  <input type="checkbox" name="app_purpose" value="fitting" style="accent-color: var(--color-primary); width: 16px; height: 16px;">
+                  <span class="body-14" style="color: var(--color-obsidian);">Mid-Production Fitting</span>
+                </label>
+                <label style="display: flex; align-items: center; gap: 10px; cursor: pointer; padding: 8px 12px; background: var(--color-sand); border-radius: var(--radius-sm);">
+                  <input type="checkbox" name="app_purpose" value="pickup" style="accent-color: var(--color-primary); width: 16px; height: 16px;">
+                  <span class="body-14" style="color: var(--color-obsidian);">Final Collection &amp; Inspection</span>
+                </label>
+              </div>
+            </div>
+
+            <button type="submit" id="appSubmitBtn" class="btn btn-primary body-14" style="width: 100%; background: var(--color-obsidian); color: white; padding: 14px; margin-top: 4px;">
+              Sign in to Request Studio Slot &rarr;
             </button>
           </form>
 
           <div id="appSuccessMsg" class="body-12" style="display: none; background: #DEF7EC; color: #0E9F6E; padding: 12px; border-radius: var(--radius-sm); text-align: center; margin-top: 12px; font-weight: 600;">
-            ✓ Appointment request received! Our team will confirm within 2 hours.
+            ✓ Appointment request received! Our team will confirm your slot within 2 hours.
+          </div>
+          <div id="appErrorMsg" class="body-12" style="display: none; background: #FDE8E8; color: #9B1C1C; padding: 12px; border-radius: var(--radius-sm); text-align: center; margin-top: 12px; font-weight: 500;">
           </div>
         </div>
 
@@ -288,11 +304,233 @@
   <script src="js/auth.js"></script>
   <script src="js/main.js"></script>
   <script>
-    function handleAppointmentSubmit(e) {
-      e.preventDefault();
-      document.getElementById('appSuccessMsg').style.display = 'block';
-      e.target.reset();
-    }
+    (function () {
+      const dateInput = document.getElementById('appDate');
+      const timeSelect = document.getElementById('appTime');
+      const submitBtn = document.getElementById('appSubmitBtn');
+      const successMsg = document.getElementById('appSuccessMsg');
+      const errorMsg = document.getElementById('appErrorMsg');
+
+      const TIME_SLOTS = [
+        { value: '10:00', label: '10:00 AM (WAT)' },
+        { value: '12:00', label: '12:00 PM (WAT)' },
+        { value: '14:00', label: '2:00 PM (WAT)' },
+        { value: '16:00', label: '4:00 PM (WAT)' }
+      ];
+
+      // Set min date to today
+      if (dateInput) {
+        const todayStr = new Date().toISOString().split('T')[0];
+        dateInput.min = todayStr;
+        dateInput.value = todayStr;
+      }
+
+      function updateSubmitButton(user) {
+        if (!submitBtn) return;
+        if (user) {
+          submitBtn.innerHTML = 'Reserve Fitting Time &rarr;';
+        } else {
+          submitBtn.innerHTML = 'Sign in to Request Studio Slot &rarr;';
+        }
+      }
+
+      async function updateAvailableSlots(selectedDate) {
+        if (!selectedDate || !timeSelect) return;
+
+        const client = window.krabeClient || (window.KRABE_CONFIG && window.KRABE_CONFIG.getClient());
+        if (!client) return;
+
+        let bookedTimes = [];
+
+        try {
+          // 1. Check via secure RPC function
+          const { data, error } = await client.rpc('get_booked_slots', { booking_date: selectedDate });
+          if (!error && Array.isArray(data)) {
+            bookedTimes = data.map(item => (typeof item === 'string' ? item : (item.booked_time || '')));
+          } else {
+            // 2. Fallback direct table query
+            const startOfDay = `${selectedDate}T00:00:00+01:00`;
+            const endOfDay = `${selectedDate}T23:59:59+01:00`;
+            const { data: rows } = await client
+              .from('appointment')
+              .select('requested_date')
+              .gte('requested_date', startOfDay)
+              .lte('requested_date', endOfDay)
+              .in('status', ['requested', 'confirmed', 'inprogress']);
+
+            if (rows && rows.length > 0) {
+              bookedTimes = rows.map(r => {
+                const d = new Date(r.requested_date);
+                // Compute hours in UTC+1 (WAT)
+                const watHours = (d.getUTCHours() + 1) % 24;
+                const hh = String(watHours).padStart(2, '0');
+                const mm = String(d.getUTCMinutes()).padStart(2, '0');
+                return `${hh}:${mm}`;
+              });
+            }
+          }
+        } catch (err) {
+          console.warn('[Appointment] Slot availability warning:', err);
+        }
+
+        timeSelect.innerHTML = '';
+        let availableCount = 0;
+
+        TIME_SLOTS.forEach(slot => {
+          const isBooked = bookedTimes.includes(slot.value);
+          const opt = document.createElement('option');
+          opt.value = slot.value;
+          if (isBooked) {
+            opt.disabled = true;
+            opt.textContent = `${slot.label} — Booked`;
+            opt.style.color = '#94A3B8';
+          } else {
+            opt.textContent = slot.label;
+            availableCount++;
+          }
+          timeSelect.appendChild(opt);
+        });
+
+        const firstAvailable = Array.from(timeSelect.options).find(o => !o.disabled);
+        if (firstAvailable) {
+          timeSelect.value = firstAvailable.value;
+          if (errorMsg && errorMsg.textContent.includes('fully booked')) {
+            errorMsg.style.display = 'none';
+          }
+          if (submitBtn && window.krabeUser) {
+            submitBtn.disabled = false;
+          }
+        } else {
+          // All 4 slots on this date are taken
+          const fullyBookedOpt = document.createElement('option');
+          fullyBookedOpt.value = '';
+          fullyBookedOpt.disabled = true;
+          fullyBookedOpt.selected = true;
+          fullyBookedOpt.textContent = 'All slots booked for this date';
+          timeSelect.appendChild(fullyBookedOpt);
+
+          if (errorMsg) {
+            errorMsg.textContent = 'All studio fitting slots for this date are fully booked. Please select another date or message us on WhatsApp for concierge assistance.';
+            errorMsg.style.display = 'block';
+          }
+          if (submitBtn && window.krabeUser) {
+            submitBtn.disabled = true;
+          }
+        }
+      }
+
+      // Initial check & reactive auth state listener
+      updateSubmitButton(window.krabeUser);
+      window.addEventListener('krabe:session:changed', (e) => {
+        updateSubmitButton(e.detail && e.detail.user);
+        if (dateInput && dateInput.value) {
+          updateAvailableSlots(dateInput.value);
+        }
+      });
+
+      // Listen for date changes to check slot availability
+      if (dateInput) {
+        dateInput.addEventListener('change', () => {
+          updateAvailableSlots(dateInput.value);
+        });
+        // Initial run for today
+        setTimeout(() => updateAvailableSlots(dateInput.value), 300);
+      }
+
+      window.handleAppointmentSubmit = async function (e) {
+        e.preventDefault();
+        if (successMsg) successMsg.style.display = 'none';
+        if (errorMsg) errorMsg.style.display = 'none';
+
+        const currentUser = window.krabeUser;
+        if (!currentUser) {
+          if (window.KrabeAuthModal && typeof window.KrabeAuthModal.open === 'function') {
+            window.KrabeAuthModal.open('signin');
+          } else {
+            alert('Please sign in to reserve a studio fitting.');
+          }
+          return;
+        }
+
+        const dateVal = document.getElementById('appDate').value;
+        const timeVal = document.getElementById('appTime').value;
+        const checkedPurposes = Array.from(document.querySelectorAll('input[name="app_purpose"]:checked')).map(cb => cb.value);
+
+        if (!dateVal || !timeVal) {
+          if (errorMsg) {
+            errorMsg.textContent = 'Please choose an available date and time slot.';
+            errorMsg.style.display = 'block';
+          }
+          return;
+        }
+
+        if (checkedPurposes.length === 0) {
+          if (errorMsg) {
+            errorMsg.textContent = 'Please select at least one purpose for your visit.';
+            errorMsg.style.display = 'block';
+          }
+          return;
+        }
+
+        const client = window.krabeClient || (window.KRABE_CONFIG && window.KRABE_CONFIG.getClient());
+        if (!client) {
+          if (errorMsg) {
+            errorMsg.textContent = 'Database connection is temporarily unavailable. Please try again.';
+            errorMsg.style.display = 'block';
+          }
+          return;
+        }
+
+        submitBtn.disabled = true;
+        const originalText = submitBtn.innerHTML;
+        submitBtn.innerHTML = 'Reserving Studio Slot...';
+
+        try {
+          // Explicitly lock to West Africa Time (WAT / UTC+1)
+          const requestedDate = `${dateVal}T${timeVal}:00+01:00`;
+
+          const { data, error } = await client
+            .from('appointment')
+            .insert([{
+              user_id: currentUser.id,
+              requested_date: requestedDate,
+              appointment_types: checkedPurposes,
+              status: 'requested'
+            }]);
+
+          if (error) {
+            if (error.code === '23505') {
+              throw new Error('This time slot was just booked by another client. Please choose another available slot.');
+            }
+            throw error;
+          }
+
+          if (successMsg) {
+            successMsg.style.display = 'block';
+          }
+          e.target.reset();
+          if (dateInput) {
+            dateInput.value = new Date().toISOString().split('T')[0];
+          }
+          // Reset default checkbox
+          const measureCheckbox = document.querySelector('input[name="app_purpose"][value="measure"]');
+          if (measureCheckbox) measureCheckbox.checked = true;
+
+          // Refresh slot availability for the newly booked date
+          updateAvailableSlots(dateVal);
+        } catch (err) {
+          console.error('[Appointment Submit Error]:', err);
+          if (errorMsg) {
+            errorMsg.textContent = err.message || 'Could not reserve your appointment. Please contact our atelier via WhatsApp.';
+            errorMsg.style.display = 'block';
+          }
+          updateAvailableSlots(dateVal);
+        } finally {
+          submitBtn.disabled = false;
+          submitBtn.innerHTML = originalText;
+        }
+      };
+    })();
   </script>
 </body>
 </html>

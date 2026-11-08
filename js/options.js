@@ -10,6 +10,11 @@ const KRABE_OPTIONS = {
     { value: 'inprogress', label: 'In Progress' },
     { value: 'done', label: 'Done' }
   ],
+  appointment_type: [
+    { value: 'measure', label: 'New Measurement & Fabric Consultation' },
+    { value: 'fitting', label: 'Mid-Production Fitting' },
+    { value: 'pickup', label: 'Final Collection & Inspection' }
+  ],
   clothing_category: [
     { value: 'native', label: 'Native' },
     { value: 'formal', label: 'Formal' },
