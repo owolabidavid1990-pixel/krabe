@@ -83,22 +83,42 @@
        ========================================================================= -->
   <nav class="account-nav-bar" aria-label="Account Tabs">
     <div class="container">
-      <div class="account-tabs-list" role="tablist">
-        <button type="button" class="account-tab-btn body-14 active" role="tab" aria-selected="true" data-tab="orders" onclick="switchAccountTab('orders', this)">
-          Orders <span class="account-tab-badge body-10">2</span>
-        </button>
-        <button type="button" class="account-tab-btn body-14" role="tab" aria-selected="false" data-tab="fittings" onclick="switchAccountTab('fittings', this)">
-          Studio Fittings &amp; Bespoke <span class="account-tab-badge body-10">1</span>
-        </button>
-        <button type="button" class="account-tab-btn body-14" role="tab" aria-selected="false" data-tab="measurements" onclick="switchAccountTab('measurements', this)">
-          Tailoring Measurements <span class="account-tab-badge body-10">2</span>
-        </button>
-        <button type="button" class="account-tab-btn body-14" role="tab" aria-selected="false" data-tab="addresses" onclick="switchAccountTab('addresses', this)">
-          Saved Addresses <span class="account-tab-badge body-10">2</span>
-        </button>
-        <button type="button" class="account-tab-btn body-14" role="tab" aria-selected="false" data-tab="settings" onclick="switchAccountTab('settings', this)">
-          Account Settings
-        </button>
+      <div class="account-tabs-wrap">
+        <!-- Subtle Animated Scroll Cue (Left) -->
+        <div class="account-tabs-cue account-tabs-cue-left" id="accountTabsCueLeft" aria-hidden="true">
+          <div class="chevron-stream">
+            <svg class="ch-1" width="9" height="14" viewBox="0 0 9 14" fill="none"><path d="M7.5 1.5L2 7L7.5 12.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            <svg class="ch-2" width="9" height="14" viewBox="0 0 9 14" fill="none"><path d="M7.5 1.5L2 7L7.5 12.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            <svg class="ch-3" width="9" height="14" viewBox="0 0 9 14" fill="none"><path d="M7.5 1.5L2 7L7.5 12.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+        </div>
+
+        <div class="account-tabs-list" id="accountTabsList" role="tablist">
+          <button type="button" class="account-tab-btn body-14 active" role="tab" aria-selected="true" data-tab="orders" onclick="switchAccountTab('orders', this)">
+            Orders <span class="account-tab-badge body-10">2</span>
+          </button>
+          <button type="button" class="account-tab-btn body-14" role="tab" aria-selected="false" data-tab="fittings" onclick="switchAccountTab('fittings', this)">
+            Studio Fittings &amp; Bespoke <span class="account-tab-badge body-10">1</span>
+          </button>
+          <button type="button" class="account-tab-btn body-14" role="tab" aria-selected="false" data-tab="measurements" onclick="switchAccountTab('measurements', this)">
+            Tailoring Measurements <span class="account-tab-badge body-10">2</span>
+          </button>
+          <button type="button" class="account-tab-btn body-14" role="tab" aria-selected="false" data-tab="addresses" onclick="switchAccountTab('addresses', this)">
+            Saved Addresses <span class="account-tab-badge body-10">2</span>
+          </button>
+          <button type="button" class="account-tab-btn body-14" role="tab" aria-selected="false" data-tab="settings" onclick="switchAccountTab('settings', this)">
+            Account Settings
+          </button>
+        </div>
+
+        <!-- Subtle Animated Scroll Cue (Right) -->
+        <div class="account-tabs-cue account-tabs-cue-right" id="accountTabsCueRight" aria-hidden="true">
+          <div class="chevron-stream">
+            <svg class="ch-1" width="9" height="14" viewBox="0 0 9 14" fill="none"><path d="M1.5 1.5L7 7L1.5 12.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            <svg class="ch-2" width="9" height="14" viewBox="0 0 9 14" fill="none"><path d="M1.5 1.5L7 7L1.5 12.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            <svg class="ch-3" width="9" height="14" viewBox="0 0 9 14" fill="none"><path d="M1.5 1.5L7 7L1.5 12.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+        </div>
       </div>
     </div>
   </nav>
@@ -722,10 +742,49 @@
       btn.classList.add('active');
       btn.setAttribute('aria-selected', 'true');
 
+      // Smoothly scroll active tab into view on mobile
+      btn.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+
       const targetPanel = document.getElementById('panel-' + tabKey);
       if (targetPanel) {
         targetPanel.classList.add('active');
       }
+    }
+
+    // Update visibility of scroll cues based on scroll position under 992px
+    function updateTabScrollIndicators() {
+      const list = document.getElementById('accountTabsList');
+      const leftCue = document.getElementById('accountTabsCueLeft');
+      const rightCue = document.getElementById('accountTabsCueRight');
+      if (!list || !leftCue || !rightCue) return;
+
+      const maxScroll = list.scrollWidth - list.clientWidth;
+      if (maxScroll <= 4) {
+        leftCue.style.opacity = '0';
+        rightCue.style.opacity = '0';
+        return;
+      }
+
+      // Left cue (hidden if at start)
+      if (list.scrollLeft <= 10) {
+        leftCue.style.opacity = '0';
+      } else {
+        leftCue.style.opacity = '1';
+      }
+
+      // Right cue (hidden if at end)
+      if (list.scrollLeft >= maxScroll - 10) {
+        rightCue.style.opacity = '0';
+      } else {
+        rightCue.style.opacity = '1';
+      }
+    }
+
+    const tabsList = document.getElementById('accountTabsList');
+    if (tabsList) {
+      tabsList.addEventListener('scroll', updateTabScrollIndicators, { passive: true });
+      window.addEventListener('resize', updateTabScrollIndicators, { passive: true });
+      setTimeout(updateTabScrollIndicators, 150);
     }
 
     // Modal Utilities
