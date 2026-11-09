@@ -240,6 +240,7 @@
             type,
             is_featured,
             is_new_arrival,
+            sold_out,
             created_at,
             search_text,
             product_variation (
@@ -252,7 +253,10 @@
             )
           `, { count: 'exact' });
 
-        // 1. Gender Constraint
+        // 0. Sold Out Constraint (Validated directly in database query)
+        query = query.or('sold_out.is.null,sold_out.eq.false');
+
+        // 1. Gender Constraint (Database level)
         if (currentGender === 'men' || currentGender === 'male') {
           query = query.in('gender', ['male', 'unisex']);
         } else if (currentGender === 'women' || currentGender === 'female') {

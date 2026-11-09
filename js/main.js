@@ -46,7 +46,7 @@ function setStoredCart(cartItems) {
 /**
  * Global Product Badge Generator
  * - 'Featured' badge on top-left (when is_featured is true)
- * - 'New Drop' badge on top-right (when created_at is within the last 30 days)
+ * - 'New Drop' badge on top-right (when is_new_arrival is true)
  * Both badges can display simultaneously on the same product card.
  */
 function getProductBadgesHTML(prod) {
@@ -58,17 +58,9 @@ function getProductBadgesHTML(prod) {
     badges += `<span class="product-badge badge-featured body-10">Featured</span>`;
   }
 
-  // 2. New Drop badge (Right) — when created_at is within the last 30 days
-  if (prod.created_at) {
-    const createdMs = new Date(prod.created_at).getTime();
-    if (!isNaN(createdMs)) {
-      const thirtyDaysMs = 30 * 24 * 60 * 60 * 1000;
-      const diffMs = Date.now() - createdMs;
-      // Allow 60 seconds clock skew, and strictly cap at 30 days
-      if (diffMs >= -60000 && diffMs <= thirtyDaysMs) {
-        badges += `<span class="product-badge badge-new body-10">New Drop</span>`;
-      }
-    }
+  // 2. New Drop badge (Right) — when is_new_arrival is true
+  if (prod.is_new_arrival === true || prod.is_new_arrival === 'true' || prod.is_new_arrival === 1) {
+    badges += `<span class="product-badge badge-new body-10">New Drop</span>`;
   }
 
   return badges;
@@ -1049,7 +1041,11 @@ document.addEventListener('DOMContentLoaded', () => {
     chip.addEventListener('click', () => {
       filterChips.forEach(c => c.classList.remove('active'));
       chip.classList.add('active');
-      filterHomeCategoryCards(chip.dataset.filter);
+      if (typeof window.loadHomeFeaturedFromDatabase === 'function') {
+        window.loadHomeFeaturedFromDatabase(chip.dataset.filter);
+      } else {
+        filterHomeCategoryCards(chip.dataset.filter);
+      }
     });
   });
 

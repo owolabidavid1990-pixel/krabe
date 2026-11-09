@@ -177,18 +177,15 @@
           <div class="step-item">
             <div class="step-num body-18" style="font-weight: 700;">3</div>
             <div class="step-text">
-              <h4 class="h5" style="color: var(--color-obsidian); font-weight: 700;">Quote Approval &amp; Real-Time Tracking</h4>
-              <p class="body-14" style="color: var(--color-text-muted);">Receive an itemized digital quotation. Once approved, follow the 16-stage production pipeline from cutting to final pressing.</p>
+              <h4 class="h5" style="color: var(--color-obsidian); font-weight: 700;">Request Studio Fitting Time</h4>
+              <p class="body-14" style="color: var(--color-text-muted);">Reserve an exclusive private slot at our Lagos atelier for master measurements, tactile fabric consultations, or progress fittings tailored to your calendar.</p>
             </div>
           </div>
         </div>
 
-        <div style="display: flex; gap: 16px; flex-wrap: wrap;">
-          <a href="bespoke.html" class="btn btn-primary body-14" style="background-color: var(--color-primary); color: var(--color-white);">
+        <div style="display: flex; justify-content: center; margin-top: 32px;">
+          <a href="bespoke.html" class="btn btn-primary body-14" style="background-color: var(--color-primary); color: var(--color-white); min-width: 240px; text-align: center; justify-content: center;">
             Start Bespoke Request
-          </a>
-          <a href="help.html#contact" class="btn btn-outline body-14" style="background-color: transparent; border: 1.5px solid var(--color-primary); color: var(--color-primary);">
-            Book Studio Appointment
           </a>
         </div>
       </div>
@@ -396,20 +393,23 @@
   <script src="js/main.js"></script>
   <script>
     let homeFeaturedRetries = 0;
-    async function loadHomeFeaturedFromDatabase() {
+    async function loadHomeFeaturedFromDatabase(selectedCategory) {
       const grid = document.getElementById('homeFeaturedGrid');
       if (!grid) return;
+
+      const activeChip = document.querySelector('.filter-chip.active');
+      const category = selectedCategory || (activeChip ? activeChip.dataset.filter : 'all');
 
       const client = window.krabeClient || (window.KRABE_CONFIG && typeof window.KRABE_CONFIG.getClient === 'function' ? window.KRABE_CONFIG.getClient() : null);
       if (!client) {
         if (++homeFeaturedRetries <= 30) {
-          setTimeout(loadHomeFeaturedFromDatabase, 150);
+          setTimeout(() => loadHomeFeaturedFromDatabase(category), 150);
         }
         return;
       }
 
       try {
-        const { data: products, error } = await client
+        let query = client
           .from('product')
           .select(`
             id,
@@ -420,6 +420,7 @@
             type,
             is_featured,
             is_new_arrival,
+            sold_out,
             created_at,
             product_variation (
               id,
@@ -431,8 +432,18 @@
               size
             )
           `)
+          .or('sold_out.is.null,sold_out.eq.false');
+
+        // Database-level category filter (zero browser filtering)
+        if (category && category !== 'all') {
+          query = query.eq('category', category.toLowerCase());
+        }
+
+        query = query
           .order('created_at', { ascending: false })
           .limit(10);
+
+        const { data: products, error } = await query;
 
         if (!error && products && products.length > 0) {
           grid.innerHTML = products.map(prod => {
@@ -460,7 +471,7 @@
               : (prod.slug ? `/product/${encodeURIComponent(prod.slug)}${variantId ? `?variant=${variantId}` : ''}` : `product.html?id=${prod.id}`);
 
             const totalStock = isRTW ? variations.reduce((sum, v) => sum + (Number(v.quantity) || 0), 0) : null;
-            const isSoldOut = isRTW && (variations.length === 0 || totalStock <= 0 || (defaultVar.quantity != null && Number(defaultVar.quantity) <= 0));
+            const isSoldOut = prod.sold_out === true || (isRTW && (variations.length === 0 || totalStock <= 0 || (defaultVar.quantity != null && Number(defaultVar.quantity) <= 0)));
             const stockQty = (isRTW && defaultVar.quantity != null) ? Number(defaultVar.quantity) : null;
 
             const quickAddButtonHTML = isSoldOut
@@ -506,16 +517,10 @@
               </div>
             `;
           }).join('');
-
-          // Re-apply currently active category filter to newly rendered cards
-          const activeChip = document.querySelector('.filter-chip.active');
-          if (typeof window.filterHomeCategoryCards === 'function' && activeChip) {
-            window.filterHomeCategoryCards(activeChip.dataset.filter);
-          }
         } else {
           grid.innerHTML = `
             <div style="grid-column: 1 / -1; text-align: center; padding: 48px 16px; color: var(--color-text-muted);">
-              <p class="body-16" style="font-weight: 700; color: var(--color-obsidian); margin-bottom: 8px;">No garments currently listed in atelier.</p>
+              <p class="body-16" style="font-weight: 700; color: var(--color-obsidian); margin-bottom: 8px;">No garments currently listed in this category.</p>
               <p class="body-14">Check back soon for our next seasonal collection drop.</p>
             </div>
           `;
@@ -524,6 +529,7 @@
         console.warn('[Home] Could not load featured products from DB:', e);
       }
     }
+    window.loadHomeFeaturedFromDatabase = loadHomeFeaturedFromDatabase;
 
     let heroProductRetries = 0;
     async function loadHeroProductFromDatabase() {
@@ -559,6 +565,7 @@
               created_at
             )
           `)
+          .or('sold_out.is.null,sold_out.eq.false')
           .order('sales_count', { ascending: false })
           .order('created_at', { ascending: false })
           .limit(1)
