@@ -795,8 +795,18 @@
           }
 
           if (errPayload && errPayload.error === 'PRICE_CHANGED') {
-            // Update localStorage guest cart if new prices are returned
-            if (Array.isArray(errPayload.changed_items)) {
+            const currentUser = (typeof getSupabaseUser === 'function' ? getSupabaseUser() : null) || window.krabeUser;
+
+            if (currentUser && currentUser.id) {
+              // Authenticated user: Supabase database (cart_item) is the source of truth.
+              // The Edge function already updated their DB unit_price directly.
+              // We remove any stale guest cart from localStorage so auth.js doesn't
+              // trigger a false guest cart re-sync (1 + 1 quantity doubling) upon reload.
+              try {
+                localStorage.removeItem('krabe_cart');
+              } catch (_) {}
+            } else if (Array.isArray(errPayload.changed_items)) {
+              // Guest user: Persist updated prices directly into localStorage
               try {
                 const storedCart = (window.KrabeCart && typeof window.KrabeCart.getCart === 'function')
                   ? window.KrabeCart.getCart()
