@@ -12,6 +12,7 @@ interface CartItemInput {
   variant_id: string;
   size: string;
   quantity: number;
+  price?: number;
   custom_measurement_id?: string | null;
 }
 
@@ -98,6 +99,109 @@ serve(async (req) => {
     }
 
     const variantMap = new Map<string, any>(variants.map((v) => [v.id, v]));
+
+    // 2b. Price Discrepancy Verification: Compare variant live prices with cart item prices
+    const userCartMap = new Map<string, { id: string; unit_price: number }>();
+    if (authenticatedUserId) {
+      const { data: dbCartRows } = await supabaseAdmin
+        .from("cart_item")
+        .select("id, product_variation_id, selected_size, custom_measurement_id, unit_price")
+        .eq("user_id", authenticatedUserId);
+
+      if (dbCartRows && dbCartRows.length > 0) {
+        for (const row of dbCartRows) {
+          const cmId = row.custom_measurement_id ? String(row.custom_measurement_id).trim() : "";
+          const size = String(row.selected_size || "M").toLowerCase().trim();
+          const keyExact = `${row.product_variation_id}__${size}__${cmId}`;
+          userCartMap.set(keyExact, {
+            id: row.id,
+            unit_price: Number(row.unit_price) || 0,
+          });
+          const keyWithSize = `${row.product_variation_id}__${size}`;
+          if (!userCartMap.has(keyWithSize)) {
+            userCartMap.set(keyWithSize, {
+              id: row.id,
+              unit_price: Number(row.unit_price) || 0,
+            });
+          }
+        }
+      }
+    }
+
+    const priceChangedItems: Array<{
+      variant_id: string;
+      title: string;
+      old_price: number;
+      new_price: number;
+    }> = [];
+
+    for (const item of items) {
+      const variant = variantMap.get(item.variant_id);
+      if (!variant) continue;
+
+      const livePrice = parseFloat(variant.price);
+      const livePriceKobo = Math.round(livePrice * 100);
+
+      const itemCm = item.custom_measurement_id ? String(item.custom_measurement_id).trim() : "";
+      const itemSize = String(item.size || "M").toLowerCase().trim();
+      const itemKeyExact = `${item.variant_id}__${itemSize}__${itemCm}`;
+      const itemKeySize = `${item.variant_id}__${itemSize}`;
+
+      let cartPrice: number | null = null;
+      let matchingDbEntry: { id: string; unit_price: number } | null = null;
+
+      if (authenticatedUserId) {
+        // Authenticated users strictly use their database cart_item row
+        matchingDbEntry = userCartMap.get(itemKeyExact) || userCartMap.get(itemKeySize) || null;
+        if (matchingDbEntry) {
+          cartPrice = matchingDbEntry.unit_price;
+        }
+      } else {
+        // Guest users use the price submitted from their browser storage
+        if (item.price !== undefined && item.price !== null) {
+          cartPrice = Number(item.price);
+        }
+      }
+
+      if (cartPrice !== null) {
+        const cartPriceKobo = Math.round(cartPrice * 100);
+        if (cartPriceKobo !== livePriceKobo) {
+          priceChangedItems.push({
+            variant_id: item.variant_id,
+            title: variant.product?.title || "Garment",
+            old_price: cartPrice,
+            new_price: livePrice,
+          });
+
+          // Update the cart item in the database with the equivalent new price
+          if (matchingDbEntry) {
+            await supabaseAdmin
+              .from("cart_item")
+              .update({ unit_price: livePrice, updated_at: new Date().toISOString() })
+              .eq("id", matchingDbEntry.id);
+          }
+        }
+      }
+    }
+
+    if (priceChangedItems.length > 0) {
+      console.warn(
+        `[create-order] Price discrepancy detected for ${priceChangedItems.length} item(s). Aborting order creation.`
+      );
+      return new Response(
+        JSON.stringify({
+          success: false,
+          error: "PRICE_CHANGED",
+          message:
+            "Some item prices in your shopping bag have changed. Please refresh your bag to review the updated total.",
+          changed_items: priceChangedItems,
+        }),
+        {
+          status: 200,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        }
+      );
+    }
 
     // Batch-fetch any custom measurement profiles in ONE query (Avoids N+1 sequential database calls)
     const measurementIds = Array.from(

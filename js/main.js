@@ -667,23 +667,18 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     }
 
-    // 2. Guest user: Persist to localStorage with deduplication strictly by id / variant_id / title AND chosen size
+    // 2. Guest user: Persist to localStorage with strict deduplication by (variant_id, size, custom_measurement_id)
     const existingIndex = cart.findIndex(item => {
-      if (id && String(item.id) === String(id)) return true;
-      const matchSize = String(item.size || 'M').toLowerCase() === String(chosenSize).toLowerCase();
-      if (!matchSize) return false;
-      if (isCustom && custom_measurement_id && String(item.custom_measurement_id) !== String(custom_measurement_id)) {
+      const itemVariantId = item.variant_id || item.product_variation_id;
+      if (!targetVariantId || String(itemVariantId) !== String(targetVariantId)) {
         return false;
       }
-      if (targetVariantId && (String(item.variant_id) === String(targetVariantId) || String(item.product_variation_id) === String(targetVariantId) || String(item.id) === String(targetVariantId))) {
-        return true;
+      const matchSize = String(item.size || 'M').toLowerCase() === String(chosenSize).toLowerCase();
+      if (!matchSize) return false;
+      if (isCustom) {
+        return String(item.custom_measurement_id || '') === String(custom_measurement_id || '');
       }
-      if (title && item.title && String(item.title).toLowerCase() === String(title).toLowerCase()) {
-        if (!chosenColor || !item.color || String(item.color).toLowerCase() === String(chosenColor).toLowerCase()) {
-          return true;
-        }
-      }
-      return false;
+      return !item.custom_measurement_id;
     });
 
     if (existingIndex > -1) {
@@ -743,18 +738,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
     cart = cart.filter(item => {
       if (id && String(item.id) === String(id)) return false;
-      const matchSize = String(item.size || 'M').toLowerCase() === String(targetSize).toLowerCase();
-      if (!matchSize) return true;
-      if (custom_measurement_id && String(item.custom_measurement_id) !== String(custom_measurement_id)) {
-        return true;
-      }
-      if (targetVariantId && (String(item.variant_id) === String(targetVariantId) || String(item.product_variation_id) === String(targetVariantId))) {
-        return false;
-      }
-      if (title && item.title && String(item.title).toLowerCase() === String(title).toLowerCase()) {
-        if (!color || !item.color || String(item.color).toLowerCase() === String(color).toLowerCase()) {
-          return false;
-        }
+      const itemVariantId = item.variant_id || item.product_variation_id;
+      if (targetVariantId && String(itemVariantId) === String(targetVariantId)) {
+        const matchSize = String(item.size || 'M').toLowerCase() === String(targetSize).toLowerCase();
+        if (!matchSize) return true;
+        const itemCm = item.custom_measurement_id ? String(item.custom_measurement_id) : null;
+        const targetCm = custom_measurement_id ? String(custom_measurement_id) : null;
+        if (itemCm === targetCm) return false;
       }
       return true;
     });
@@ -782,20 +772,15 @@ document.addEventListener('DOMContentLoaded', () => {
   window.KrabeCart = {
     getCart: () => cart,
     getItem: (variantId, size, title, color, custom_measurement_id) => cart.find(i => {
-      const matchSize = String(i.size || 'M').toLowerCase() === String(size || 'M').toLowerCase();
-      if (!matchSize) return false;
-      if (custom_measurement_id && String(i.custom_measurement_id) !== String(custom_measurement_id)) {
+      const itemVariantId = i.variant_id || i.product_variation_id;
+      if (!variantId || String(itemVariantId) !== String(variantId)) {
         return false;
       }
-      if (variantId && (String(i.variant_id) === String(variantId) || String(i.product_variation_id) === String(variantId) || String(i.id) === String(variantId))) {
-        return true;
-      }
-      if (title && i.title && String(i.title).toLowerCase() === String(title).toLowerCase()) {
-        if (!color || !i.color || String(i.color).toLowerCase() === String(color).toLowerCase()) {
-          return true;
-        }
-      }
-      return false;
+      const matchSize = String(i.size || 'M').toLowerCase() === String(size || 'M').toLowerCase();
+      if (!matchSize) return false;
+      const itemCm = i.custom_measurement_id ? String(i.custom_measurement_id) : null;
+      const targetCm = custom_measurement_id ? String(custom_measurement_id) : null;
+      return itemCm === targetCm;
     }),
     setQuantity: (params) => addToCart({ ...params, setExact: true, skipOpen: true }),
     addToCart: (params) => addToCart(params),
@@ -910,20 +895,15 @@ document.addEventListener('DOMContentLoaded', () => {
       }
 
       const existingCartItem = cart.find(i => {
-        const matchSize = String(i.size || 'M').toLowerCase() === String(size).toLowerCase();
-        if (!matchSize) return false;
-        if (isCustom && custom_measurement_id && String(i.custom_measurement_id) !== String(custom_measurement_id)) {
+        const itemVariantId = i.variant_id || i.product_variation_id;
+        if (!variant_id || String(itemVariantId) !== String(variant_id)) {
           return false;
         }
-        if (variant_id && (String(i.variant_id) === String(variant_id) || String(i.product_variation_id) === String(variant_id) || String(i.id) === String(variant_id))) {
-          return true;
-        }
-        if (title && i.title && String(i.title).toLowerCase() === String(title).toLowerCase()) {
-          if (!color || !i.color || String(i.color).toLowerCase() === String(color).toLowerCase()) {
-            return true;
-          }
-        }
-        return false;
+        const matchSize = String(i.size || 'M').toLowerCase() === String(size).toLowerCase();
+        if (!matchSize) return false;
+        const itemCm = i.custom_measurement_id ? String(i.custom_measurement_id) : null;
+        const targetCm = custom_measurement_id ? String(custom_measurement_id) : null;
+        return itemCm === targetCm;
       });
 
       if (existingCartItem) {

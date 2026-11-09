@@ -262,6 +262,153 @@ serve(async (req) => {
       `(${updatedOrder.payment_reference}) -> payment_status: success, status: payment confirmed`
     );
 
+    // =========================================================================
+    // 12b. Update Sales Count & RTW Inventory Deductions (Auto Sold-Out Check)
+    // =========================================================================
+    try {
+      // 1. Fetch line items for this confirmed order with parent product and variant details
+      const { data: orderItems, error: itemsError } = await supabaseAdmin
+        .from("rtw_order_item")
+        .select(`
+          quantity,
+          product_variant_id,
+          product_variation (
+            id,
+            product_id,
+            sales_count,
+            quantity,
+            product (
+              id,
+              type,
+              sold_out
+            )
+          )
+        `)
+        .eq("parent_order_id", updatedOrder.id);
+
+      if (itemsError) {
+        console.error(`[paystack-webhook] Error fetching order items for Order ${updatedOrder.id}:`, itemsError);
+      } else if (orderItems && orderItems.length > 0) {
+        // 2. Aggregate quantities per variant and per product
+        const variantMap = new Map<string, {
+          qty: number;
+          currentSales: number;
+          currentQuantity: number | null;
+          productId: string;
+          isRtw: boolean;
+        }>();
+        const productSalesDelta = new Map<string, number>();
+        const rtwProductIdsToCheck = new Set<string>();
+
+        for (const item of orderItems) {
+          const orderQty = Number(item.quantity) || 1;
+          const variant = item.product_variation as any;
+          if (!variant) continue;
+
+          const prodRaw = variant.product;
+          const productObj = Array.isArray(prodRaw) ? prodRaw[0] : prodRaw;
+          const isRtw = String(productObj?.type || "").trim().toLowerCase() === "ready to wear";
+
+          if (isRtw && variant.product_id) {
+            rtwProductIdsToCheck.add(variant.product_id);
+          }
+
+          // Aggregate per variant
+          const existingVariant = variantMap.get(variant.id);
+          if (existingVariant) {
+            existingVariant.qty += orderQty;
+          } else {
+            variantMap.set(variant.id, {
+              qty: orderQty,
+              currentSales: Number(variant.sales_count) || 0,
+              currentQuantity: variant.quantity !== null && variant.quantity !== undefined ? Number(variant.quantity) : null,
+              productId: variant.product_id,
+              isRtw,
+            });
+          }
+
+          // Aggregate total qty per product
+          const currentProdDelta = productSalesDelta.get(variant.product_id) || 0;
+          productSalesDelta.set(variant.product_id, currentProdDelta + orderQty);
+        }
+
+        // 3. Update each variant's sales_count (and deduct stock if Ready to Wear)
+        for (const [variantId, vData] of variantMap.entries()) {
+          const updatePayload: { sales_count: number; quantity?: number } = {
+            sales_count: vData.currentSales + vData.qty,
+          };
+
+          if (vData.isRtw) {
+            const currentStock = vData.currentQuantity !== null ? vData.currentQuantity : 0;
+            updatePayload.quantity = Math.max(0, currentStock - vData.qty);
+          }
+
+          const { error: vUpdateErr } = await supabaseAdmin
+            .from("product_variation")
+            .update(updatePayload)
+            .eq("id", variantId);
+
+          if (vUpdateErr) {
+            console.error(`[paystack-webhook] Failed updating variant ${variantId}:`, vUpdateErr);
+          }
+        }
+
+        // 4. Update each product's sales_count
+        for (const [productId, deltaQty] of productSalesDelta.entries()) {
+          const { data: prodData } = await supabaseAdmin
+            .from("product")
+            .select("sales_count")
+            .eq("id", productId)
+            .maybeSingle();
+
+          const currentProdSales = Number(prodData?.sales_count) || 0;
+          const { error: pUpdateErr } = await supabaseAdmin
+            .from("product")
+            .update({ sales_count: currentProdSales + deltaQty })
+            .eq("id", productId);
+
+          if (pUpdateErr) {
+            console.error(`[paystack-webhook] Failed updating sales_count for product ${productId}:`, pUpdateErr);
+          }
+        }
+
+        // 5. Check if all variations of affected Ready to Wear product(s) are 0; if so, set sold_out = true
+        for (const productId of rtwProductIdsToCheck) {
+          const { data: allVariants, error: varFetchErr } = await supabaseAdmin
+            .from("product_variation")
+            .select("quantity")
+            .eq("product_id", productId);
+
+          if (varFetchErr) {
+            console.error(`[paystack-webhook] Error checking variations stock for product ${productId}:`, varFetchErr);
+            continue;
+          }
+
+          const totalRemainingStock = (allVariants || []).reduce((sum, v) => {
+            const q = Number(v.quantity);
+            return sum + (Number.isFinite(q) && q > 0 ? q : 0);
+          }, 0);
+
+          if (totalRemainingStock <= 0) {
+            const { error: soldOutErr } = await supabaseAdmin
+              .from("product")
+              .update({ sold_out: true })
+              .eq("id", productId);
+
+            if (soldOutErr) {
+              console.error(`[paystack-webhook] Failed setting sold_out for product ${productId}:`, soldOutErr);
+            } else {
+              console.log(`[paystack-webhook] Product ${productId} is now SOLD OUT (total remaining stock = 0). Updated sold_out = true.`);
+            }
+          }
+        }
+
+        console.log(`[paystack-webhook] Sales count & inventory deductions completed for Order ${updatedOrder.id}`);
+      }
+    } catch (inventoryErr) {
+      console.error(`[paystack-webhook] Error updating inventory/sales count for Order ${updatedOrder.id}:`, inventoryErr);
+    }
+
     // 13. Return 200 OK to Paystack
     return new Response(
       JSON.stringify({

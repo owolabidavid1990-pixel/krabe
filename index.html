@@ -17,8 +17,78 @@
 
   <!-- Core Stylesheet -->
   <link rel="stylesheet" href="css/styles.css">
+
+  <style>
+    /* Full-Screen Splash Screen Overlay */
+    .krabe-splash-overlay {
+      position: fixed;
+      inset: 0;
+      width: 100vw;
+      height: 100vh;
+      background-color: #44637B; /* Krabe Signature Slate Denim Blue */
+      z-index: 999999;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 1;
+      visibility: visible;
+      transition: opacity 0.5s cubic-bezier(0.4, 0, 0.2, 1), visibility 0.5s ease;
+      pointer-events: all;
+    }
+    .krabe-splash-overlay.is-hidden {
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+    }
+    .krabe-splash-content {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 24px;
+      animation: krabeSplashPulse 2s ease-in-out infinite;
+    }
+    .krabe-splash-logo {
+      width: 220px;
+      max-width: 75vw;
+      height: auto;
+      display: block;
+      margin-bottom: 18px;
+      filter: drop-shadow(0 4px 16px rgba(0, 0, 0, 0.15));
+    }
+    .krabe-splash-tagline {
+      font-family: var(--font-accent, 'Cinzel', serif);
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 3.5px;
+      text-transform: uppercase;
+      color: rgba(255, 255, 255, 0.9);
+      margin: 0;
+    }
+    @keyframes krabeSplashPulse {
+      0%, 100% {
+        transform: scale(1);
+        opacity: 0.95;
+      }
+      50% {
+        transform: scale(1.02);
+        opacity: 1;
+      }
+    }
+  </style>
 </head>
 <body>
+
+  <!-- =========================================================================
+       INITIAL LOADING SPLASH SCREEN (Active until top 5 products query resolves)
+       ========================================================================= -->
+  <div id="krabeSplashOverlay" class="krabe-splash-overlay">
+    <div class="krabe-splash-content">
+      <img src="assets/brand/krabe dark mode logo.svg" alt="Krabe Kollection" class="krabe-splash-logo">
+      <p class="krabe-splash-tagline">modern african elegance</p>
+    </div>
+  </div>
 
   <!-- =========================================================================
        REUSABLE SITE HEADER & NAVIGATION COMPONENT
@@ -49,7 +119,8 @@
 
       <div class="hero-visual">
         <div class="hero-image-card" id="hero-pic">
-          <img id="heroImg" alt="Krabe Signature Apparel" style="display: none;">
+          <img id="heroImgA" class="hero-slide-img" alt="Krabe Signature Apparel" style="opacity: 0;">
+          <img id="heroImgB" class="hero-slide-img" alt="Krabe Signature Apparel" style="opacity: 0;">
           <div class="hero-floating-badge" id="hero-badge" style="display: none;">
             <div>
               <p class="body-14" style="font-weight: 700; color: var(--color-white); margin-bottom: 2px;"></p>
@@ -532,22 +603,122 @@
     window.loadHomeFeaturedFromDatabase = loadHomeFeaturedFromDatabase;
 
     let heroProductRetries = 0;
+    let heroSlides = [];
+    let currentHeroSlideIndex = 0;
+    let activeHeroImgKey = 'A';
+    let heroSlideTimer = null;
+
+    function renderActiveHeroSlide(index, isInitial = false) {
+      if (!heroSlides || heroSlides.length === 0) return;
+      const slide = heroSlides[index];
+      if (!slide) return;
+
+      const imgA = document.getElementById('heroImgA');
+      const imgB = document.getElementById('heroImgB');
+      const heroBadge = document.getElementById('hero-badge');
+      if (!imgA || !imgB || !heroBadge) return;
+
+      const currentImg = activeHeroImgKey === 'A' ? imgA : imgB;
+      const nextImg = activeHeroImgKey === 'A' ? imgB : imgA;
+      const targetImg = isInitial ? imgA : nextImg;
+      const retiringImg = isInitial ? null : currentImg;
+
+      // 1. Update Badge Text & Link with smooth opacity transition
+      const titleP = heroBadge.querySelector('p');
+      const subSpan = heroBadge.querySelector('span');
+      const viewDropLink = heroBadge.querySelector('a');
+
+      if (isInitial) {
+        if (titleP) titleP.textContent = slide.title;
+        if (subSpan) subSpan.innerHTML = slide.category;
+        if (viewDropLink) viewDropLink.href = slide.url;
+        heroBadge.style.display = 'flex';
+        heroBadge.style.opacity = '1';
+      } else {
+        heroBadge.style.opacity = '0.35';
+        setTimeout(() => {
+          if (titleP) titleP.textContent = slide.title;
+          if (subSpan) subSpan.innerHTML = slide.category;
+          if (viewDropLink) viewDropLink.href = slide.url;
+          heroBadge.style.opacity = '1';
+        }, 250);
+      }
+
+      // 2. Load target image and trigger smooth zoom
+      targetImg.src = slide.image;
+      targetImg.alt = slide.title;
+
+      const triggerZoom = () => {
+        targetImg.classList.remove('hero-zoom-active');
+        void targetImg.offsetWidth; // Force reflow to restart CSS keyframe cleanly
+        targetImg.classList.add('hero-zoom-active');
+        targetImg.style.opacity = '1';
+
+        if (retiringImg) {
+          retiringImg.style.opacity = '0';
+          setTimeout(() => {
+            retiringImg.classList.remove('hero-zoom-active');
+          }, 800);
+        }
+
+        if (!isInitial) {
+          activeHeroImgKey = activeHeroImgKey === 'A' ? 'B' : 'A';
+        }
+
+        // Advance to next product after 7s zoom completes
+        if (heroSlides.length > 1) {
+          clearTimeout(heroSlideTimer);
+          heroSlideTimer = setTimeout(() => {
+            currentHeroSlideIndex = (currentHeroSlideIndex + 1) % heroSlides.length;
+            renderActiveHeroSlide(currentHeroSlideIndex, false);
+          }, 7000);
+        }
+      };
+
+      if (targetImg.complete && targetImg.naturalWidth > 0) {
+        triggerZoom();
+      } else {
+        targetImg.onload = triggerZoom;
+      }
+
+      // Preload next product image in background
+      if (heroSlides.length > 1) {
+        const nextIdx = (index + 1) % heroSlides.length;
+        const preloader = new Image();
+        preloader.src = heroSlides[nextIdx].image;
+      }
+    }
+
+    function dismissKrabeSplash() {
+      const splash = document.getElementById('krabeSplashOverlay');
+      if (!splash || splash.classList.contains('is-hidden')) return;
+      splash.classList.add('is-hidden');
+      setTimeout(() => {
+        splash.style.display = 'none';
+      }, 550);
+    }
+
     async function loadHeroProductFromDatabase() {
       const heroCard = document.getElementById('hero-pic');
       const heroBadge = document.getElementById('hero-badge');
-      if (!heroCard || !heroBadge) return;
+      if (!heroCard || !heroBadge) {
+        dismissKrabeSplash();
+        return;
+      }
 
       const client = window.krabeClient || (window.KRABE_CONFIG && typeof window.KRABE_CONFIG.getClient === 'function' ? window.KRABE_CONFIG.getClient() : null);
       if (!client) {
         if (++heroProductRetries <= 30) {
           setTimeout(loadHeroProductFromDatabase, 150);
+        } else {
+          dismissKrabeSplash();
         }
         return;
       }
 
       try {
-        // Query product sorted by most sales, then latest created_at
-        const { data: prod, error } = await client
+        // Query top 5 products sorted by most sales, then latest created_at
+        const { data: products, error } = await client
           .from('product')
           .select(`
             id,
@@ -568,72 +739,58 @@
           .or('sold_out.is.null,sold_out.eq.false')
           .order('sales_count', { ascending: false })
           .order('created_at', { ascending: false })
-          .limit(1)
-          .maybeSingle();
+          .limit(5);
 
         if (error) throw error;
-        if (!prod) return;
+        if (!products || products.length === 0) return;
 
-        const variations = prod.product_variation || [];
-        if (variations.length === 0) return;
+        heroSlides = [];
+        products.forEach(prod => {
+          const variations = prod.product_variation || [];
+          if (variations.length === 0) return;
 
-        // Pick top variant for this product by sales_count, then created_at
-        const sortedVars = [...variations].sort((a, b) => {
-          const sDiff = (b.sales_count || 0) - (a.sales_count || 0);
-          if (sDiff !== 0) return sDiff;
-          return new Date(b.created_at || 0) - new Date(a.created_at || 0);
-        });
-        const topVariant = sortedVars[0];
+          const sortedVars = [...variations].sort((a, b) => {
+            const sDiff = (b.sales_count || 0) - (a.sales_count || 0);
+            if (sDiff !== 0) return sDiff;
+            return new Date(b.created_at || 0) - new Date(a.created_at || 0);
+          });
+          const topVariant = sortedVars[0];
+          if (!topVariant || !topVariant.main_image) return;
 
-        // 1. Update Hero Image
-        const heroImg = heroCard.querySelector('img');
-        if (heroImg && topVariant.main_image) {
-          heroImg.src = topVariant.main_image;
-          heroImg.alt = `${prod.title} - ${topVariant.color || ''}`;
-          heroImg.style.display = 'block';
-
-          // Trigger slow zoom animation ONLY when the product has been searched & image is available
-          const startZoom = () => {
-            heroImg.classList.add('hero-zoom-active');
-          };
-          if (heroImg.complete && heroImg.naturalWidth > 0) {
-            startZoom();
-          } else {
-            heroImg.onload = startZoom;
-          }
-        }
-
-        // 2. Update Badge Text
-        const titleP = heroBadge.querySelector('p');
-        if (titleP && prod.title) {
-          titleP.textContent = prod.title;
-        }
-
-        const subSpan = heroBadge.querySelector('span');
-        if (subSpan) {
           const categoryName = (prod.category || 'Collection').replace(/_/g, ' ');
           const formattedCategory = categoryName.charAt(0).toUpperCase() + categoryName.slice(1);
-          subSpan.innerHTML = `${formattedCategory} &bull; Crafted On Demand`;
-        }
 
-        // 3. Update "View Drop" button link with product id and selected variant id
-        const viewDropLink = heroBadge.querySelector('a');
-        if (viewDropLink) {
-          viewDropLink.href = typeof window.getProductUrl === 'function'
+          const productLink = typeof window.getProductUrl === 'function'
             ? window.getProductUrl(prod, topVariant.id)
             : (prod.slug ? `/product/${encodeURIComponent(prod.slug)}?variant=${topVariant.id}` : `product.html?id=${prod.id}&variant=${topVariant.id}`);
-        }
 
-        // 4. Reveal hero badge once loaded from database
-        heroBadge.style.display = 'flex';
+          heroSlides.push({
+            id: prod.id,
+            title: prod.title,
+            category: `${formattedCategory} &bull; Crafted On Demand`,
+            image: topVariant.main_image,
+            url: productLink
+          });
+        });
+
+        if (heroSlides.length === 0) return;
+
+        currentHeroSlideIndex = 0;
+        activeHeroImgKey = 'A';
+        renderActiveHeroSlide(0, true);
+
       } catch (e) {
-        console.warn('[Home] Could not load hero drop product:', e);
+        console.warn('[Home] Could not load hero drop products:', e);
+      } finally {
+        dismissKrabeSplash();
       }
     }
 
     document.addEventListener('DOMContentLoaded', () => {
       loadHeroProductFromDatabase();
       loadHomeFeaturedFromDatabase();
+      // Failsafe timeout: ensure splash overlay is never stuck on slow/interrupted networks
+      setTimeout(dismissKrabeSplash, 4500);
     });
   </script>
 </body>
