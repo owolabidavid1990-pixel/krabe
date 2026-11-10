@@ -1,51 +1,54 @@
 -- ============================================================================
--- Function: claim_guest_orders
--- Purpose: Finds all ready_to_wear_order records where user_id IS NULL and email
---          matches the authenticated user's email, and assigns their user_id.
--- Security: SECURITY DEFINER with fixed search_path to securely update orders
---           without being restricted by standard UPDATE RLS policies.
+-- Automated Database Trigger: Claim Guest Orders on Auth (Sign-Up & Login)
+-- ============================================================================
+-- Purpose: Automatically binds any ready_to_wear_order where user_id IS NULL 
+--          to the user's UUID whenever they sign up or log in.
+-- Security: SECURITY DEFINER with fixed search_path.
+-- Permissions: REVOKED from anon and authenticated so it can ONLY be fired by 
+--              PostgreSQL internal database triggers.
 -- ============================================================================
 
-CREATE OR REPLACE FUNCTION public.claim_guest_orders()
-RETURNS integer
+-- 1. Create or replace the trigger function
+CREATE OR REPLACE FUNCTION public.fn_claim_guest_orders_on_auth()
+RETURNS trigger
 LANGUAGE plpgsql
 SECURITY DEFINER
 SET search_path = public
 AS $$
-DECLARE
-  v_user_id uuid;
-  v_email text;
-  v_count integer := 0;
 BEGIN
-  -- 1. Verify caller is authenticated
-  v_user_id := auth.uid();
-  IF v_user_id IS NULL THEN
-    RAISE EXCEPTION 'Not authenticated';
+  -- Verify email exists on the user record
+  IF NEW.email IS NOT NULL AND TRIM(NEW.email) <> '' THEN
+    UPDATE public.ready_to_wear_order
+    SET 
+      user_id = NEW.id,
+      updated_at = NOW()
+    WHERE user_id IS NULL
+      AND LOWER(TRIM(email)) = LOWER(TRIM(NEW.email));
   END IF;
 
-  -- 2. Lookup authenticated user's email from auth.users
-  SELECT email INTO v_email
-  FROM auth.users
-  WHERE id = v_user_id;
-
-  IF v_email IS NULL OR TRIM(v_email) = '' THEN
-    RETURN 0;
-  END IF;
-
-  -- 3. Update orders that have no user_id but match this user's email
-  UPDATE public.ready_to_wear_order
-  SET 
-    user_id = v_user_id,
-    updated_at = NOW()
-  WHERE user_id IS NULL
-    AND LOWER(TRIM(email)) = LOWER(TRIM(v_email));
-
-  GET DIAGNOSTICS v_count = ROW_COUNT;
-  RETURN v_count;
+  RETURN NEW;
 END;
 $$;
 
--- Grant execution permission specifically to authenticated users
-REVOKE ALL ON FUNCTION public.claim_guest_orders() FROM PUBLIC;
-GRANT EXECUTE ON FUNCTION public.claim_guest_orders() TO authenticated;
+-- 2. Strict Security: Revoke all execution rights from API roles
+REVOKE ALL ON FUNCTION public.fn_claim_guest_orders_on_auth() FROM PUBLIC;
+REVOKE ALL ON FUNCTION public.fn_claim_guest_orders_on_auth() FROM anon;
+REVOKE ALL ON FUNCTION public.fn_claim_guest_orders_on_auth() FROM authenticated;
 
+-- 3. Trigger 1: Automatically fire when a new user signs up
+DROP TRIGGER IF EXISTS tr_claim_orders_on_signup ON auth.users;
+CREATE TRIGGER tr_claim_orders_on_signup
+AFTER INSERT ON auth.users
+FOR EACH ROW
+EXECUTE FUNCTION public.fn_claim_guest_orders_on_auth();
+
+-- 4. Trigger 2: Automatically fire when an existing user logs in
+DROP TRIGGER IF EXISTS tr_claim_orders_on_login ON auth.users;
+CREATE TRIGGER tr_claim_orders_on_login
+AFTER UPDATE OF last_sign_in_at ON auth.users
+FOR EACH ROW
+WHEN (OLD.last_sign_in_at IS DISTINCT FROM NEW.last_sign_in_at)
+EXECUTE FUNCTION public.fn_claim_guest_orders_on_auth();
+
+-- 5. Drop deprecated RPC function if previously created
+DROP FUNCTION IF EXISTS public.claim_guest_orders();

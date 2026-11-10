@@ -320,30 +320,30 @@
     if (window.KrabeCart && typeof window.KrabeCart.refreshUserCart === 'function') {
       window.KrabeCart.refreshUserCart();
     }
-
-    // Also sync and clear any pending guest order from localStorage
-    await syncGuestPendingOrderToUser(user);
-    await claimGuestOrdersByEmail(user);
   }
 
   /**
-   * Calls the claim_guest_orders RPC to link all unlinked guest orders matching
-   * the authenticated user's email to their user ID.
+   * Comprehensive post-authentication controller:
+   * Runs reliably on sign-in, sign-up, OTP verification, and OAuth.
+   * 1. Migrates guest localStorage cart to database
+   * 2. Binds any pending localStorage checkout order to user
+   * (Guest orders matching the user's email are automatically claimed by database triggers on auth.users)
    */
-  async function claimGuestOrdersByEmail(user) {
+  async function handleUserAuthenticated(user) {
     if (!user || !user.id) return;
-    const client = getClient();
-    if (!client) return;
 
+    // 1. Sync guest cart
     try {
-      const { data: count, error } = await client.rpc('claim_guest_orders');
-      if (error) {
-        console.warn('[Krabe Order Claim] Error claiming guest orders:', error);
-      } else if (count > 0) {
-        console.log(`[Krabe Order Claim] Linked ${count} guest order(s) to user ${user.id}.`);
-      }
-    } catch (err) {
-      console.warn('[Krabe Order Claim] Unexpected error calling claim_guest_orders:', err);
+      await syncGuestCartToDatabase(user);
+    } catch (e) {
+      console.warn('[Krabe Auth] Cart sync error:', e);
+    }
+
+    // 2. Sync pending order in localStorage
+    try {
+      await syncGuestPendingOrderToUser(user);
+    } catch (e) {
+      console.warn('[Krabe Auth] Pending order sync error:', e);
     }
   }
 
@@ -421,8 +421,8 @@
         window.krabeIsLoggedIn = true;
         updateAuthUI(currentUser);
 
-        // Sync guest local cart to Supabase database & clear localStorage
-        await syncGuestCartToDatabase(currentUser);
+        // Run post-auth sync (cart, pending orders, and guest order claims)
+        await handleUserAuthenticated(currentUser);
       }
 
       if (window.KrabeAuthModal) {
@@ -521,6 +521,14 @@
         window.KrabeAuthModal.setLoading('krabeRegisterForm', false);
 
         if (data.session) {
+          currentUser = data.user;
+          currentSession = data.session;
+          window.krabeUser = currentUser;
+          window.krabeSession = currentSession;
+          window.krabeIsLoggedIn = true;
+          updateAuthUI(currentUser);
+          await handleUserAuthenticated(currentUser);
+
           // If project auto-confirms email, log them in immediately
           window.KrabeAuthModal.showAlert('Welcome to Krabe Kollection.', 'success');
           setTimeout(() => {
@@ -639,8 +647,8 @@
 
       updateAuthUI(currentUser);
 
-      // Sync guest local cart to Supabase database & clear localStorage
-      await syncGuestCartToDatabase(currentUser);
+      // Run post-auth sync (cart, pending orders, and guest order claims)
+      await handleUserAuthenticated(currentUser);
 
       if (window.KrabeAuthModal) {
         window.KrabeAuthModal.setLoading('krabeOtpForm', false);
@@ -902,6 +910,7 @@
           window.krabeSession = currentSession;
           window.krabeIsLoggedIn = true;
           updateAuthUI(currentUser);
+          await handleUserAuthenticated(currentUser);
 
           if (window.KrabeAuthModal) {
             const firstName = (user.user_metadata?.full_name || user.email || 'Client').split(' ')[0];
@@ -1056,7 +1065,7 @@
       updateAuthUI(currentUser);
 
       if (currentUser) {
-        await syncGuestCartToDatabase(currentUser);
+        await handleUserAuthenticated(currentUser);
         if (window.KrabeCart && typeof window.KrabeCart.refreshUserCart === 'function') {
           window.KrabeCart.refreshUserCart();
         }
@@ -1077,8 +1086,8 @@
 
         updateAuthUI(currentUser);
 
-        if ((event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') && currentUser) {
-          await syncGuestCartToDatabase(currentUser);
+        if (event === 'SIGNED_IN' && currentUser) {
+          await handleUserAuthenticated(currentUser);
         }
 
         window.dispatchEvent(new CustomEvent('krabe:session:changed', {
@@ -1118,8 +1127,7 @@
     verifyResetOtpAndSetPassword,
     updateAuthUI,
     syncGuestCart: syncGuestCartToDatabase,
-    syncPendingOrder: syncGuestPendingOrderToUser,
-    claimGuestOrders: claimGuestOrdersByEmail
+    syncPendingOrder: syncGuestPendingOrderToUser
   };
 
   // Convenient shortcuts
