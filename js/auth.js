@@ -20,6 +20,12 @@
     return null;
   }
 
+  // Robust check for account page supporting both local (/account.html) and clean URLs (/account)
+  function isAccountPage() {
+    const clean = (window.location.pathname || '').replace(/\/+$/, '').split('/').pop() || '';
+    return clean === 'account' || clean === 'account.html';
+  }
+
   // =========================================================================
   // 1. UI SYNCHRONIZATION (Header & Navigation)
   // =========================================================================
@@ -128,8 +134,7 @@
   }
 
   async function syncAccountPage(user) {
-    const isAccountPage = (window.location.pathname.split('/').pop() || '') === 'account.html';
-    if (!isAccountPage) return;
+    if (!isAccountPage()) return;
 
     if (!user) {
       // Unauthenticated user on account page: redirect to home
@@ -318,6 +323,28 @@
 
     // Also sync and clear any pending guest order from localStorage
     await syncGuestPendingOrderToUser(user);
+    await claimGuestOrdersByEmail(user);
+  }
+
+  /**
+   * Calls the claim_guest_orders RPC to link all unlinked guest orders matching
+   * the authenticated user's email to their user ID.
+   */
+  async function claimGuestOrdersByEmail(user) {
+    if (!user || !user.id) return;
+    const client = getClient();
+    if (!client) return;
+
+    try {
+      const { data: count, error } = await client.rpc('claim_guest_orders');
+      if (error) {
+        console.warn('[Krabe Order Claim] Error claiming guest orders:', error);
+      } else if (count > 0) {
+        console.log(`[Krabe Order Claim] Linked ${count} guest order(s) to user ${user.id}.`);
+      }
+    } catch (err) {
+      console.warn('[Krabe Order Claim] Unexpected error calling claim_guest_orders:', err);
+    }
   }
 
   /**
@@ -403,8 +430,7 @@
         window.KrabeAuthModal.showAlert('Welcome back to Krabe Kollection.', 'success');
         setTimeout(() => {
           window.KrabeAuthModal.close();
-          const currentPath = window.location.pathname.split('/').pop() || 'index.html';
-          if (currentPath === 'account.html') {
+          if (isAccountPage()) {
             window.location.reload();
           }
         }, 600);
@@ -499,8 +525,7 @@
           window.KrabeAuthModal.showAlert('Welcome to Krabe Kollection.', 'success');
           setTimeout(() => {
             window.KrabeAuthModal.close();
-            const currentPath = window.location.pathname.split('/').pop() || 'index.html';
-            if (currentPath === 'account.html') {
+            if (isAccountPage()) {
               window.location.reload();
             }
           }, 700);
@@ -622,8 +647,7 @@
         window.KrabeAuthModal.showAlert('Welcome to Krabe Kollection.', 'success');
         setTimeout(() => {
           window.KrabeAuthModal.close();
-          const currentPath = window.location.pathname.split('/').pop() || 'index.html';
-          if (currentPath === 'account.html') {
+          if (isAccountPage()) {
             window.location.reload();
           }
         }, 700);
@@ -742,8 +766,7 @@
         window.KrabeAuthModal.showAlert('Password updated successfully! Welcome back.', 'success');
         setTimeout(() => {
           window.KrabeAuthModal.close();
-          const currentPath = window.location.pathname.split('/').pop() || 'index.html';
-          if (currentPath === 'account.html') {
+          if (isAccountPage()) {
             window.location.reload();
           }
         }, 800);
@@ -772,9 +795,8 @@
       window.krabeIsLoggedIn = false;
       updateAuthUI(null);
 
-      const currentPath = window.location.pathname.split('/').pop() || 'index.html';
-      if (currentPath === 'account.html') {
-        window.location.reload();
+      if (isAccountPage()) {
+        window.location.replace('index.html');
       }
     } catch (err) {
       console.error('[Krabe Auth] Sign out error:', err);
@@ -886,8 +908,7 @@
             window.KrabeAuthModal.showAlert(`Welcome, ${firstName}!`, 'success');
             setTimeout(() => {
               window.KrabeAuthModal.close();
-              const currentPath = window.location.pathname.split('/').pop() || 'index.html';
-              if (currentPath === 'account.html') {
+              if (isAccountPage()) {
                 window.location.reload();
               }
             }, 600);
@@ -1067,8 +1088,7 @@
 
     } catch (err) {
       console.error('[Krabe Auth] Init error:', err);
-      const isAccountPage = (window.location.pathname.split('/').pop() || '') === 'account.html';
-      if (isAccountPage) {
+      if (isAccountPage()) {
         window.location.replace('index.html');
       }
     }
@@ -1098,7 +1118,8 @@
     verifyResetOtpAndSetPassword,
     updateAuthUI,
     syncGuestCart: syncGuestCartToDatabase,
-    syncPendingOrder: syncGuestPendingOrderToUser
+    syncPendingOrder: syncGuestPendingOrderToUser,
+    claimGuestOrders: claimGuestOrdersByEmail
   };
 
   // Convenient shortcuts

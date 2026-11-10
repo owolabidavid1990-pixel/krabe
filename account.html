@@ -1244,7 +1244,10 @@
           if (user) window.krabeUser = user;
         } catch (_) {}
       }
-      if (!user) return;
+      if (!user) {
+        window.location.replace('index.html');
+        return;
+      }
 
       const meta = user.user_metadata || {};
       let fullName = meta.full_name || meta.name || '';
@@ -1978,13 +1981,8 @@
             `, { count: 'exact' })
             .order('created_at', { ascending: false });
 
-          if (user.id && user.email) {
-            query = query.or(`user_id.eq.${user.id},email.eq.${user.email}`);
-          } else if (user.id) {
-            query = query.eq('user_id', user.id);
-          } else if (user.email) {
-            query = query.eq('email', user.email);
-          }
+          // Query strictly by authenticated user_id
+          query = query.eq('user_id', user.id);
 
           query = query.range(from, to);
 
