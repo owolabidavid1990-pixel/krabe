@@ -15,7 +15,7 @@ EXCEPTION WHEN duplicate_object THEN null; END $$;
 
 DO $$ BEGIN
   CREATE TYPE appointment_type AS ENUM (
-    'measure', 'fitting', 'pickup'
+    'measure', 'fitting', 'alterations', 'pickup'
   );
 EXCEPTION WHEN duplicate_object THEN null; END $$;
 

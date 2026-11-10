@@ -476,6 +476,96 @@
         font-size: 13px !important;
       }
     }
+
+    /* ========================================================
+       ALTERATION & BESPOKE ACTION CARDS (MATCHING BESPOKE PAGE)
+       ======================================================== */
+    .alteration-action-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 24px;
+      margin-bottom: 32px;
+    }
+    .alteration-card {
+      background: #FFFFFF;
+      border: 1.5px solid #CBD5E1;
+      border-radius: 12px;
+      padding: 34px 28px;
+      box-shadow: 0 6px 20px rgba(15, 23, 42, 0.05);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      position: relative;
+      transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+    }
+    .alteration-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 14px 32px rgba(15, 23, 42, 0.1);
+      border-color: #94A3B8;
+    }
+    .alteration-card.whatsapp-highlight {
+      border: 2px solid var(--color-whatsapp, #25D366);
+    }
+    .alteration-badge {
+      position: absolute;
+      top: -11px;
+      right: 20px;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.8px;
+      text-transform: uppercase;
+      padding: 4px 12px;
+      border-radius: 9999px;
+      color: #FFFFFF;
+    }
+    .alteration-badge.badge-green {
+      background: var(--color-whatsapp, #25D366);
+      box-shadow: 0 2px 8px rgba(37, 211, 102, 0.4);
+    }
+    .alteration-badge.badge-gold {
+      background: var(--color-gold, #C58A55);
+      box-shadow: 0 2px 8px rgba(197, 138, 85, 0.4);
+    }
+    
+    /* Prominent, high-contrast action buttons referencing bespoke.html */
+    .btn-alteration-action {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      width: 100%;
+      padding: 15px 22px;
+      font-size: 13.5px;
+      font-weight: 700;
+      letter-spacing: 0.8px;
+      text-transform: uppercase;
+      border-radius: 8px;
+      text-decoration: none;
+      cursor: pointer;
+      box-sizing: border-box;
+      transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+    }
+    .btn-alteration-action:hover {
+      transform: translateY(-2px);
+    }
+    .btn-alteration-obsidian {
+      background: var(--color-obsidian, #0F172A) !important;
+      color: #FFFFFF !important;
+      box-shadow: 0 6px 18px rgba(15, 23, 42, 0.25);
+    }
+    .btn-alteration-obsidian:hover {
+      background: #1E293B !important;
+      box-shadow: 0 8px 24px rgba(15, 23, 42, 0.35);
+    }
+    .btn-alteration-whatsapp {
+      background: var(--color-whatsapp, #25D366) !important;
+      color: #FFFFFF !important;
+      box-shadow: 0 6px 20px rgba(37, 211, 102, 0.4);
+    }
+    .btn-alteration-whatsapp:hover {
+      background: #20BA5A !important;
+      box-shadow: 0 8px 26px rgba(37, 211, 102, 0.55);
+    }
   </style>
 
   <!-- Immediate Client Auth Guard -->
@@ -543,7 +633,7 @@
             Orders <span class="account-tab-badge body-10" id="ordersTabCount">...</span>
           </button>
           <button type="button" class="account-tab-btn body-14" role="tab" aria-selected="false" data-tab="fittings" onclick="switchAccountTab('fittings', this)">
-            Studio Fittings &amp; Bespoke <span class="account-tab-badge body-10">1</span>
+            Fittings &amp; Alterations
           </button>
           <button type="button" class="account-tab-btn body-14" role="tab" aria-selected="false" data-tab="measurements" onclick="switchAccountTab('measurements', this)">
             Tailoring Measurements <span class="account-tab-badge body-10">2</span>
@@ -597,91 +687,55 @@
     </div>
 
     <!-- ==========================================
-         PANEL 2: STUDIO FITTINGS & BESPOKE
+         PANEL 2: FITTINGS, ALTERATIONS & BESPOKE
          ========================================== -->
     <div class="account-panel" id="panel-fittings" role="tabpanel">
-      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; flex-wrap: wrap; gap: 14px;">
-        <div>
-          <h2 class="h2" style="color: var(--color-obsidian);">Studio Appointments &amp; Bespoke</h2>
-          <p class="body-14" style="color: var(--color-text-muted);">Manage in-person studio fittings and active bespoke tailoring orders.</p>
-        </div>
-        <a href="bespoke.html#appointment-section" class="btn btn-primary body-12" style="padding: 10px 20px;">+ Book New Studio Fitting</a>
+      <div style="margin-bottom: 24px;">
+        <h2 class="h2" style="color: var(--color-obsidian); margin-bottom: 6px;">Garment Alterations &amp; Studio Fittings</h2>
+        <p class="body-14" style="color: var(--color-text-muted); max-width: 680px; line-height: 1.6;">
+          Every Krabe piece is crafted to sit impeccably. If your delivered garment requires tailoring adjustments or you would like to book a private bespoke fitting session in Lagos, choose one of the options below.
+        </p>
       </div>
 
-      <!-- Active Fitting Card -->
-      <article class="order-card">
-        <div class="order-card-header">
-          <div class="order-meta-group">
-            <div class="order-meta-item body-12">
-              <span style="color: var(--color-text-muted);">Appointment Type</span>
-              <strong class="body-14" style="color: var(--color-gold);">In-Person Fitting &amp; Consultation</strong>
+      <div class="alteration-action-grid">
+        <!-- Card 1: Complimentary Alterations -->
+        <div class="alteration-card">
+          <span class="alteration-badge badge-gold">14-Day Guarantee</span>
+          <div>
+            <div style="width: 48px; height: 48px; border-radius: 50%; background: #EFF6FF; color: var(--color-primary); display: flex; align-items: center; justify-content: center; font-size: 22px; margin-bottom: 18px;">
+              ✂
             </div>
-            <div class="order-meta-item body-12">
-              <span style="color: var(--color-text-muted);">Confirmed Date &amp; Time</span>
-              <strong class="body-14" style="color: var(--color-obsidian);">Saturday, 17 Oct 2026 &bull; 2:00 PM (Lagos Time)</strong>
-            </div>
-            <div class="order-meta-item body-12">
-              <span style="color: var(--color-text-muted);">Location</span>
-              <strong class="body-14" style="color: var(--color-obsidian);">Krabe Studio &bull; <span data-store-area>Lagos Flagship</span></strong>
-            </div>
-          </div>
-          <span class="order-status-badge body-12" style="background: rgba(197, 138, 85, 0.15); color: var(--color-gold); border: 1px solid var(--color-gold);">
-            Fitting Confirmed
-          </span>
-        </div>
-
-        <div class="order-card-body" style="background: var(--color-white);">
-          <div style="display: flex; gap: 20px; align-items: center; flex-wrap: wrap;">
-            <div style="width: 50px; height: 50px; border-radius: 50%; background: var(--color-primary-light); color: var(--color-primary); display: flex; align-items: center; justify-content: center; font-weight: 700;">
-              📍
-            </div>
-            <div style="flex: 1;">
-              <h3 class="h4" style="color: var(--color-obsidian); margin-bottom: 4px;">Private Fitting Suite 01 &bull; Master Tailor Adeyemi</h3>
-              <p class="body-14" style="color: var(--color-text-muted); line-height: 1.5;">
-                Please arrive 10 minutes prior to your allocated slot. Refreshments and garment samples will be prepared in your private consultation lounge.
-              </p>
-            </div>
-          </div>
-        </div>
-
-        <div class="order-card-footer">
-          <span class="body-12" style="color: var(--color-text-muted);">Appointment Reference: <strong>#APP-LAG-2026-081</strong></span>
-          <div style="display: flex; gap: 10px;">
-            <a href="https://wa.me/2348000000000?text=Hello%20Krabe,%20I'd%20like%20to%20reschedule%20or%20confirm%20my%20appointment%20APP-LAG-2026-081" target="_blank" rel="noopener" class="btn-whatsapp body-12" style="padding: 8px 14px;">
-              WhatsApp Studio Concierge
-            </a>
-            <button type="button" class="btn btn-outline body-12" style="padding: 8px 14px;" onclick="alert('Calendar invite (.ics) downloaded.');">
-              Add to Calendar
-            </button>
-          </div>
-        </div>
-      </article>
-
-      <!-- Active Bespoke Pipeline -->
-      <div style="margin-top: 36px;">
-        <h3 class="h3" style="color: var(--color-obsidian); margin-bottom: 16px;">Active Bespoke Commissions</h3>
-        <div class="order-card">
-          <div class="order-card-header">
-            <div class="order-meta-group">
-              <div class="order-meta-item body-12">
-                <span style="color: var(--color-text-muted);">Commission Title</span>
-                <strong class="body-14" style="color: var(--color-obsidian);">Royal Sovereign 3-Piece Agbada in Ivory Damask</strong>
-              </div>
-              <div class="order-meta-item body-12">
-                <span style="color: var(--color-text-muted);">Agreed Price</span>
-                <strong class="body-18" style="color: var(--color-primary);">₦210,000</strong>
-              </div>
-              <div class="order-meta-item body-12">
-                <span style="color: var(--color-text-muted);">Stage</span>
-                <strong class="body-14" style="color: var(--color-gold);">Hand Embroidery &amp; Finishing</strong>
-              </div>
-            </div>
-            <span class="order-status-badge processing body-12">In Tailoring Pipeline</span>
-          </div>
-          <div class="order-card-body">
-            <p class="body-14" style="color: var(--color-text-muted); line-height: 1.6;">
-              Fabric cut from hand-loomed Nigerian damask. Outer embroidery verified against your saved <strong>"Agbada Ceremonial Cut"</strong> measurement profile. Estimated ready date: <strong>24 Oct 2026</strong>.
+            <h3 class="h3" style="color: var(--color-obsidian); margin-bottom: 8px;">Complimentary Alterations</h3>
+            <p class="body-14" style="color: var(--color-text-main); line-height: 1.6; margin-bottom: 24px;">
+              All orders include complimentary tailoring adjustments (trouser hem, waist tapering, sleeve length) within 14 days of delivery. Book an in-person slot with our master tailors.
             </p>
+          </div>
+          <div>
+            <a href="bespoke.html#appointment-section" class="btn-alteration-action btn-alteration-obsidian">
+              <span>Book Studio Alteration</span>
+              <span style="font-size: 16px;">&rarr;</span>
+            </a>
+          </div>
+        </div>
+
+        <!-- Card 3: WhatsApp Concierge -->
+        <div class="alteration-card whatsapp-highlight">
+          <span class="alteration-badge badge-green">Fastest Response</span>
+          <div>
+            <div style="width: 48px; height: 48px; border-radius: 50%; background: #E8F8EE; color: var(--color-whatsapp); display: flex; align-items: center; justify-content: center; margin-bottom: 18px;">
+              <svg style="width: 26px; height: 26px; fill: currentColor;" viewBox="0 0 24 24"><path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.582 2.128 2.182-.573c.978.58 1.911.928 3.145.929 3.178 0 5.767-2.587 5.768-5.766.001-3.187-2.575-5.771-5.764-5.771zm3.392 8.244c-.144.405-.837.774-1.17.824-.312.045-.694.078-1.921-.432-.988-.41-1.637-1.397-1.688-1.464-.049-.067-.406-.541-.406-1.034 0-.493.255-.733.348-.834.093-.1.203-.125.27-.125.068 0 .135.001.194.004.062.003.146-.023.228.174.084.202.29.708.315.76.026.052.043.112.008.178-.035.067-.053.109-.106.171-.053.063-.111.14-.159.188-.052.052-.107.108-.046.213.061.104.272.449.584.726.402.358.741.469.845.521.105.052.167.045.228-.025.062-.07.269-.313.342-.42.072-.107.144-.089.243-.053.099.035.626.295.733.349.108.053.18.08.207.125.027.045.027.261-.117.666z"/></svg>
+            </div>
+            <h3 class="h3" style="color: var(--color-obsidian); margin-bottom: 8px;">Direct WhatsApp Concierge</h3>
+            <p class="body-14" style="color: var(--color-text-main); line-height: 1.6; margin-bottom: 24px;">
+              Need immediate advice on garment fit, measurements, or want to arrange a direct courier pickup for alterations? Chat live with our master tailor.
+            </p>
+          </div>
+          <div>
+            <a href="https://wa.me/2349162166470?text=Hello%20Krabe%20Atelier,%20I%20would%20like%20to%20request%20a%20fitting%20alteration%20or%20studio%20consultation." target="_blank" rel="noopener" class="btn-alteration-action btn-alteration-whatsapp">
+              <svg style="width: 20px; height: 20px; fill: currentColor;" viewBox="0 0 24 24"><path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.582 2.128 2.182-.573c.978.58 1.911.928 3.145.929 3.178 0 5.767-2.587 5.768-5.766.001-3.187-2.575-5.771-5.764-5.771zm3.392 8.244c-.144.405-.837.774-1.17.824-.312.045-.694.078-1.921-.432-.988-.41-1.637-1.397-1.688-1.464-.049-.067-.406-.541-.406-1.034 0-.493.255-.733.348-.834.093-.1.203-.125.27-.125.068 0 .135.001.194.004.062.003.146-.023.228.174.084.202.29.708.315.76.026.052.043.112.008.178-.035.067-.053.109-.106.171-.053.063-.111.14-.159.188-.052.052-.107.108-.046.213.061.104.272.449.584.726.402.358.741.469.845.521.105.052.167.045.228-.025.062-.07.269-.313.342-.42.072-.107.144-.089.243-.053.099.035.626.295.733.349.108.053.18.08.207.125.027.045.027.261-.117.666z"/></svg>
+              <span>Chat on WhatsApp</span>
+              <span style="font-size: 16px;">&rarr;</span>
+            </a>
           </div>
         </div>
       </div>
