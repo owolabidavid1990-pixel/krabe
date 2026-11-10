@@ -3561,15 +3561,19 @@ ul {
 }
 
 /* Scroll Cues for Mobile / Tablet under 992px */
+/* Reusable Scroll Cues for Tabs & Horizontal Scrolling Lists */
+.tabs-cue,
 .account-tabs-cue {
   display: none;
 }
 
 @media (max-width: 992px) {
+  .tabs-cue-wrap > [class*="-tabs-list"],
   .account-tabs-list {
     padding: 0 36px; /* Generous padding so text is never covered by cues */
   }
 
+  .tabs-cue,
   .account-tabs-cue {
     display: flex;
     align-items: center;
@@ -3581,6 +3585,7 @@ ul {
     transition: opacity 0.3s ease;
   }
 
+  .tabs-cue-left,
   .account-tabs-cue-left {
     left: 0;
     padding-left: 6px;
@@ -3588,6 +3593,7 @@ ul {
     background: linear-gradient(to right, rgba(255, 255, 255, 0.96) 35%, rgba(255, 255, 255, 0) 100%);
   }
 
+  .tabs-cue-right,
   .account-tabs-cue-right {
     right: 0;
     padding-right: 6px;
@@ -3609,28 +3615,34 @@ ul {
   }
 
   /* Moving wave transition for right >>> */
+  .tabs-cue-right .ch-1,
   .account-tabs-cue-right .ch-1 {
     animation: chevronWaveRight 1.5s cubic-bezier(0.4, 0, 0.2, 1) infinite;
     animation-delay: 0s;
   }
+  .tabs-cue-right .ch-2,
   .account-tabs-cue-right .ch-2 {
     animation: chevronWaveRight 1.5s cubic-bezier(0.4, 0, 0.2, 1) infinite;
     animation-delay: 0.2s;
   }
+  .tabs-cue-right .ch-3,
   .account-tabs-cue-right .ch-3 {
     animation: chevronWaveRight 1.5s cubic-bezier(0.4, 0, 0.2, 1) infinite;
     animation-delay: 0.4s;
   }
 
   /* Moving wave transition for left <<< */
+  .tabs-cue-left .ch-1,
   .account-tabs-cue-left .ch-1 {
     animation: chevronWaveLeft 1.5s cubic-bezier(0.4, 0, 0.2, 1) infinite;
     animation-delay: 0.4s;
   }
+  .tabs-cue-left .ch-2,
   .account-tabs-cue-left .ch-2 {
     animation: chevronWaveLeft 1.5s cubic-bezier(0.4, 0, 0.2, 1) infinite;
     animation-delay: 0.2s;
   }
+  .tabs-cue-left .ch-3,
   .account-tabs-cue-left .ch-3 {
     animation: chevronWaveLeft 1.5s cubic-bezier(0.4, 0, 0.2, 1) infinite;
     animation-delay: 0s;

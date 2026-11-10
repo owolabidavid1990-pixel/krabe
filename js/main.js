@@ -1303,3 +1303,78 @@ document.addEventListener('DOMContentLoaded', () => {
   // Initial newsletter sync on page mount
   syncNewsletterForms();
 });
+
+// =========================================================================
+// REUSABLE TAB & HORIZONTAL STRIP SCROLL CUES COMPONENT
+// =========================================================================
+window.KrabeScrollCues = {
+  init(selector = '[data-scroll-cues], .account-tabs-list') {
+    const lists = document.querySelectorAll(selector);
+    lists.forEach(el => this.attach(el));
+  },
+
+  attach(listEl) {
+    if (!listEl || listEl._hasScrollCues) return;
+    listEl._hasScrollCues = true;
+
+    const parent = listEl.parentElement;
+    if (!parent) return;
+
+    if (window.getComputedStyle(parent).position === 'static') {
+      parent.style.position = 'relative';
+    }
+
+    // 1. Create or bind Left Cue
+    let leftCue = parent.querySelector('.tabs-cue-left, .account-tabs-cue-left');
+    if (!leftCue) {
+      leftCue = document.createElement('div');
+      leftCue.className = 'tabs-cue tabs-cue-left';
+      leftCue.setAttribute('aria-hidden', 'true');
+      leftCue.innerHTML = `
+        <div class="chevron-stream">
+          <svg class="ch-1" width="9" height="14" viewBox="0 0 9 14" fill="none"><path d="M7.5 1.5L2 7L7.5 12.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <svg class="ch-2" width="9" height="14" viewBox="0 0 9 14" fill="none"><path d="M7.5 1.5L2 7L7.5 12.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <svg class="ch-3" width="9" height="14" viewBox="0 0 9 14" fill="none"><path d="M7.5 1.5L2 7L7.5 12.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+      `;
+      parent.insertBefore(leftCue, listEl);
+    }
+
+    // 2. Create or bind Right Cue
+    let rightCue = parent.querySelector('.tabs-cue-right, .account-tabs-cue-right');
+    if (!rightCue) {
+      rightCue = document.createElement('div');
+      rightCue.className = 'tabs-cue tabs-cue-right';
+      rightCue.setAttribute('aria-hidden', 'true');
+      rightCue.innerHTML = `
+        <div class="chevron-stream">
+          <svg class="ch-1" width="9" height="14" viewBox="0 0 9 14" fill="none"><path d="M1.5 1.5L7 7L1.5 12.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <svg class="ch-2" width="9" height="14" viewBox="0 0 9 14" fill="none"><path d="M1.5 1.5L7 7L1.5 12.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <svg class="ch-3" width="9" height="14" viewBox="0 0 9 14" fill="none"><path d="M1.5 1.5L7 7L1.5 12.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+      `;
+      parent.appendChild(rightCue);
+    }
+
+    function updateCues() {
+      const maxScroll = listEl.scrollWidth - listEl.clientWidth;
+      if (maxScroll <= 4) {
+        leftCue.style.opacity = '0';
+        rightCue.style.opacity = '0';
+        return;
+      }
+      leftCue.style.opacity = listEl.scrollLeft <= 8 ? '0' : '1';
+      rightCue.style.opacity = listEl.scrollLeft >= maxScroll - 8 ? '0' : '1';
+    }
+
+    listEl.addEventListener('scroll', updateCues, { passive: true });
+    window.addEventListener('resize', updateCues, { passive: true });
+    setTimeout(updateCues, 150);
+  }
+};
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', () => window.KrabeScrollCues.init());
+} else {
+  window.KrabeScrollCues.init();
+}

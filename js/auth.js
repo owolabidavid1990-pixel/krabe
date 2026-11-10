@@ -142,9 +142,9 @@
     const metaLine = document.querySelector('.account-meta-line');
 
     const meta = user.user_metadata || {};
-    const fullName = meta.full_name || user.email.split('@')[0];
+    const fullName = meta.full_name || meta.name || user.email.split('@')[0];
     const email = user.email || '';
-    const phone = meta.phone || '';
+    const phone = meta.phone || meta.phone_number || '';
 
     const initials = fullName
       .split(' ')
@@ -167,8 +167,6 @@
       metaLine.innerHTML = `
         <span>${email}</span>
         ${phone ? `<span>&bull;</span><span>${phone}</span>` : ''}
-        <span>&bull;</span>
-        <span class="account-tier-tag">Client Member</span>
       `;
     }
 
@@ -187,14 +185,14 @@
               avatarEl.innerHTML = `<img src="${profile.avatar_url}" alt="${fullName}" referrerpolicy="no-referrer" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover; display: block;">`;
             }
           }
-          if (profile.full_name && nameEl) nameEl.textContent = profile.full_name;
-          if (profile.phone && metaLine) {
+          const finalName = profile.name || profile.full_name;
+          if (finalName && nameEl) nameEl.textContent = finalName;
+          const finalPhone = profile.phone || profile.phone_number;
+          if (finalPhone && metaLine) {
             metaLine.innerHTML = `
               <span>${email}</span>
               <span>&bull;</span>
-              <span>${profile.phone}</span>
-              <span>&bull;</span>
-              <span class="account-tier-tag">${profile.role === 'admin' ? 'Atelier Admin' : 'Client Member'}</span>
+              <span>${finalPhone}</span>
             `;
           }
         }

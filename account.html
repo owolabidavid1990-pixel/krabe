@@ -18,6 +18,466 @@
   <!-- Core Stylesheet -->
   <link rel="stylesheet" href="css/styles.css">
 
+  <!-- Orders Tab Dynamic Styles (In-page only) -->
+  <style>
+    .orders-loading-skeleton {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+    .skeleton-order-card {
+      background: var(--color-white);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-sm);
+      padding: 24px;
+      box-shadow: var(--shadow-sm);
+      animation: krabeSkeletonPulse 1.5s ease-in-out infinite;
+    }
+    .skeleton-bar {
+      background: #E2E8F0;
+      border-radius: 4px;
+    }
+    @keyframes krabeSkeletonPulse {
+      0%, 100% { opacity: 0.6; }
+      50% { opacity: 1; }
+    }
+
+    .orders-empty-state {
+      background: var(--color-white);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-sm);
+      padding: 56px 24px;
+      text-align: center;
+      box-shadow: var(--shadow-sm);
+      margin-bottom: 24px;
+    }
+    .orders-empty-icon {
+      width: 72px;
+      height: 72px;
+      margin: 0 auto 20px;
+      border-radius: 50%;
+      background: #FAF8F5;
+      border: 1px solid var(--color-border);
+      color: var(--color-primary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* Status badge color variants */
+    .order-status-badge.status-placed {
+      background: #FFFBEB;
+      color: #B45309;
+      border: 1px solid #FDE68A;
+    }
+    .order-status-badge.status-payment-confirmed,
+    .order-status-badge.status-order-confirmed {
+      background: #EFF6FF;
+      color: #1D4ED8;
+      border: 1px solid #BFDBFE;
+    }
+    .order-status-badge.status-processing {
+      background: #FEF3C7;
+      color: #92400E;
+      border: 1px solid #FCD34D;
+    }
+    .order-status-badge.status-ready {
+      background: #F5F3FF;
+      color: #6D28D9;
+      border: 1px solid #DDD6FE;
+    }
+    .order-status-badge.status-dispatched {
+      background: #F0F9FF;
+      color: #0369A1;
+      border: 1px solid #BAE6FD;
+    }
+    .order-status-badge.status-delivered {
+      background: #F0FDF4;
+      color: #15803D;
+      border: 1px solid #BBF7D0;
+    }
+    .order-status-badge.status-cancelled {
+      background: #FEF2F2;
+      color: #B91C1C;
+      border: 1px solid #FECACA;
+    }
+
+    .order-cancelled-notice {
+      padding: 14px 22px;
+      background: #FEF2F2;
+      border-bottom: 1px solid #FCA5A5;
+      color: #991B1B;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .tracking-step.active .tracking-dot {
+      background: var(--color-primary);
+      border-color: var(--color-primary);
+      color: #ffffff;
+      box-shadow: 0 0 0 4px rgba(47, 71, 90, 0.2);
+    }
+    .tracking-step.active {
+      color: var(--color-obsidian);
+      font-weight: 700;
+    }
+
+    /* Completed checkmark green styling */
+    .tracking-step.done .tracking-dot {
+      background: #16A34A !important;
+      border-color: #16A34A !important;
+      color: #FFFFFF !important;
+      font-weight: 700;
+    }
+    .tracking-line.done {
+      background: #16A34A !important;
+    }
+    .tracking-step.done {
+      color: var(--color-obsidian);
+      font-weight: 700;
+    }
+
+    /* ========================================================
+       DISTINGUISHED, HIGH-CONTRAST ORDER BLOCK CARDS
+       ======================================================== */
+    .order-card {
+      background: #FFFFFF !important;
+      border: 1.5px solid #CBD5E1 !important;
+      border-radius: 12px !important;
+      margin-bottom: 32px !important;
+      box-shadow: 0 8px 24px rgba(15, 23, 42, 0.05), 0 2px 6px rgba(15, 23, 42, 0.02) !important;
+      overflow: hidden !important;
+      transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+      position: relative;
+    }
+    .order-card:hover {
+      box-shadow: 0 14px 36px rgba(15, 23, 42, 0.09) !important;
+      border-color: #94A3B8 !important;
+      transform: translateY(-2px);
+    }
+    .order-card-header {
+      padding: 18px 24px !important;
+      background: #F8FAFC !important;
+      border-bottom: 1.5px solid #E2E8F0 !important;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 14px;
+    }
+    .order-meta-group {
+      display: flex;
+      gap: 24px;
+      flex-wrap: wrap;
+    }
+    .order-tracking-strip {
+      padding: 18px 24px !important;
+      background: #FFFFFF !important;
+      border-bottom: 1.5px solid #E2E8F0 !important;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+    .order-card-body {
+      padding: 24px !important;
+      background: #FFFFFF !important;
+    }
+    .order-item-row {
+      display: flex;
+      gap: 18px;
+      align-items: center;
+      padding: 16px 0;
+      border-bottom: 1px solid #F1F5F9;
+    }
+    .order-item-row:last-child {
+      border-bottom: none;
+      padding-bottom: 0;
+    }
+    .order-item-row:first-child {
+      padding-top: 0;
+    }
+    .order-item-row img {
+      width: 64px;
+      height: 80px;
+      object-fit: cover;
+      border-radius: 6px;
+      border: 1px solid #E2E8F0;
+      background: #1A1F26;
+      flex-shrink: 0;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+    }
+    .order-card-footer {
+      padding: 16px 24px !important;
+      background: #F8FAFC !important;
+      border-top: 1.5px solid #E2E8F0 !important;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    /* ========================================================
+       HERO PROFILE & AVATAR EDIT CONTROLS
+       ======================================================== */
+    .account-avatar-wrapper {
+      position: relative;
+      flex-shrink: 0;
+    }
+    .avatar-edit-badge {
+      position: absolute;
+      bottom: -2px;
+      right: -2px;
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: var(--color-gold, #C58A55);
+      color: #FFFFFF;
+      border: 2px solid #0F171E;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: transform 0.2s ease, background 0.2s ease;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+      padding: 0;
+    }
+    .avatar-edit-badge:hover {
+      background: #D99B66;
+      transform: scale(1.1);
+    }
+    .profile-name-edit-btn {
+      background: rgba(255, 255, 255, 0.12);
+      border: 1px solid rgba(255, 255, 255, 0.22);
+      color: #FFFFFF;
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      padding: 0;
+    }
+    .profile-name-edit-btn:hover {
+      background: rgba(197, 138, 85, 0.3);
+      border-color: var(--color-gold, #C58A55);
+      color: var(--color-gold-light, #E5B888);
+      transform: translateY(-1px);
+    }
+
+    /* ========================================================
+       ORDERS PAGINATION CONTROLS
+       ======================================================== */
+    .orders-pagination {
+      margin-top: 36px;
+      margin-bottom: 24px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .orders-pagination .page-btn {
+      min-width: 40px;
+      height: 40px;
+      padding: 0 12px;
+      border-radius: var(--radius-sm, 4px);
+      border: 1px solid var(--color-border, #CBD5E1);
+      background: #FFFFFF;
+      color: var(--color-text-main, #0F172A);
+      font-weight: 700;
+      font-size: 13.5px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      user-select: none;
+    }
+    .orders-pagination .page-btn:hover:not(:disabled) {
+      background: var(--color-sand, #F1F5F9);
+      border-color: #94A3B8;
+    }
+    .orders-pagination .page-btn.active {
+      background: var(--color-primary, #0F172A);
+      color: #FFFFFF;
+      border-color: var(--color-primary, #0F172A);
+      cursor: default;
+    }
+    .orders-pagination .page-btn:disabled {
+      opacity: 0.35;
+      cursor: not-allowed;
+      pointer-events: none;
+    }
+    .orders-pagination .page-ellipsis {
+      width: 32px;
+      height: 40px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--color-text-muted, #64748B);
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    /* ========================================================
+       COMPREHENSIVE MOBILE RESPONSIVE ADAPTATIONS
+       ======================================================== */
+    @media (max-width: 768px) {
+      .account-main-content {
+        padding: 24px 0 60px !important;
+      }
+      .panel-header-wrap {
+        flex-direction: column;
+        align-items: stretch !important;
+        gap: 14px !important;
+      }
+      .panel-header-cta {
+        width: 100%;
+        text-align: center;
+        justify-content: center;
+      }
+      .order-card {
+        margin-bottom: 24px !important;
+        border-radius: 10px !important;
+        border-width: 1.5px !important;
+      }
+      .order-card-header {
+        padding: 16px !important;
+        flex-direction: column !important;
+        align-items: stretch !important;
+        gap: 14px !important;
+      }
+      .order-meta-group {
+        display: grid !important;
+        grid-template-columns: 1fr 1fr !important;
+        gap: 12px 14px !important;
+        width: 100% !important;
+      }
+      .order-meta-item {
+        min-width: 0;
+      }
+      .order-meta-item strong {
+        font-size: 13px !important;
+        word-break: break-word;
+      }
+      .order-status-badge {
+        align-self: flex-start;
+      }
+
+      /* Mobile Tracking Strip: responsive vertical step stacked layout with zero horizontal overflow */
+      .order-tracking-strip {
+        padding: 14px 10px !important;
+        display: flex !important;
+        align-items: flex-start !important;
+        justify-content: space-between !important;
+        gap: 0 !important;
+        overflow-x: visible !important;
+      }
+      .tracking-step {
+        flex-direction: column !important;
+        align-items: center !important;
+        text-align: center !important;
+        flex: 1 1 0 !important;
+        min-width: 0 !important;
+        white-space: normal !important;
+        gap: 6px !important;
+      }
+      .tracking-step span:not(.tracking-dot) {
+        font-size: 10px !important;
+        line-height: 1.25 !important;
+        padding: 0 2px;
+        word-break: break-word;
+      }
+      .tracking-dot {
+        width: 22px !important;
+        height: 22px !important;
+        font-size: 11px !important;
+        flex-shrink: 0 !important;
+      }
+      .tracking-line {
+        min-width: 8px !important;
+        flex: 1 1 auto !important;
+        margin-top: 10px !important;
+        height: 2px !important;
+      }
+
+      /* Mobile Order Items */
+      .order-card-body {
+        padding: 16px !important;
+      }
+      .order-item-row {
+        flex-wrap: wrap !important;
+        gap: 12px !important;
+        padding: 14px 0 !important;
+      }
+      .order-item-row img {
+        width: 60px !important;
+        height: 76px !important;
+      }
+      .order-item-info {
+        flex: 1 1 calc(100% - 76px) !important;
+        min-width: 0 !important;
+      }
+      .order-item-title {
+        font-size: 13.5px !important;
+      }
+      .order-item-meta {
+        font-size: 11.5px !important;
+      }
+      .order-item-price {
+        font-size: 15px !important;
+      }
+      .order-item-row a.btn {
+        width: 100% !important;
+        text-align: center !important;
+        justify-content: center !important;
+        margin-top: 6px !important;
+      }
+
+      /* Mobile Footer */
+      .order-card-footer {
+        padding: 14px 16px !important;
+        flex-direction: column !important;
+        align-items: stretch !important;
+        gap: 12px !important;
+      }
+      .order-card-footer span {
+        font-size: 12px !important;
+        line-height: 1.5 !important;
+      }
+      .order-card-footer > div {
+        width: 100% !important;
+      }
+      .order-card-footer .btn {
+        width: 100% !important;
+        text-align: center !important;
+        justify-content: center !important;
+      }
+
+      /* Mobile Orders Pagination */
+      .orders-pagination {
+        margin-top: 24px !important;
+        gap: 6px !important;
+      }
+      .orders-pagination .page-btn {
+        min-width: 36px !important;
+        height: 36px !important;
+        padding: 0 8px !important;
+        font-size: 12.5px !important;
+      }
+      .orders-pagination .page-ellipsis {
+        width: 24px !important;
+        height: 36px !important;
+        font-size: 13px !important;
+      }
+    }
+  </style>
+
   <!-- Immediate Client Auth Guard -->
   <script>
     (function () {
@@ -33,17 +493,6 @@
 <body>
 
   <!-- =========================================================================
-       1. DEMO AUTH STATE TOGGLE BANNER (For Bubble Prototyping Review)
-       ========================================================================= -->
-  <div class="auth-demo-banner body-12">
-    <span>💡 <strong>Bubble Prototype Mode:</strong> Currently viewing <strong>Authenticated Client Portal</strong></span>
-    <div style="display: flex; gap: 8px; flex-wrap: wrap; justify-content: center;">
-      <button type="button" class="btn-auth-switch body-12" onclick="openAuthModal()">Preview Sign In / Register &rarr;</button>
-      <a href="admin.html" class="btn-auth-switch body-12" style="text-decoration: none; background: rgba(0,0,0,0.4);">Atelier Admin Portal &rarr;</a>
-    </div>
-  </div>
-
-  <!-- =========================================================================
        REUSABLE SITE HEADER & NAVIGATION COMPONENT
        ========================================================================= -->
   <div id="krabeHeader"></div>
@@ -54,15 +503,20 @@
   <section class="account-hero">
     <div class="container account-hero-inner">
       <div class="account-user-badge">
-        <div class="account-avatar body-20">DA</div>
+        <div class="account-avatar body-20" id="accountAvatar" style="overflow: hidden; flex-shrink: 0;">
+          <span id="accountAvatarText">...</span>
+        </div>
         <div>
-          <h1 class="account-greeting-name h1">David Adeleke</h1>
-          <div class="account-meta-line body-14">
-            <span>david.adeleke@example.com</span>
-            <span>&bull;</span>
-            <span>+234 803 123 4567</span>
-            <span>&bull;</span>
-            <span class="account-tier-tag body-10">Sovereign Tier &bull; VIP</span>
+          <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+            <h1 class="account-greeting-name h1" id="accountGreetingName" style="margin: 0;">Loading...</h1>
+            <button type="button" class="profile-name-edit-btn" onclick="openEditProfileModal()" title="Edit Name" aria-label="Edit Name">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+            </button>
+          </div>
+          <div class="account-meta-line body-14" id="accountMetaLine">
+            <span id="accountEmail">...</span>
+            <span id="accountPhoneSep" style="display: none;">&bull;</span>
+            <span id="accountPhone" style="display: none;"></span>
           </div>
         </div>
       </div>
@@ -83,19 +537,10 @@
        ========================================================================= -->
   <nav class="account-nav-bar" aria-label="Account Tabs">
     <div class="container">
-      <div class="account-tabs-wrap">
-        <!-- Subtle Animated Scroll Cue (Left) -->
-        <div class="account-tabs-cue account-tabs-cue-left" id="accountTabsCueLeft" aria-hidden="true">
-          <div class="chevron-stream">
-            <svg class="ch-1" width="9" height="14" viewBox="0 0 9 14" fill="none"><path d="M7.5 1.5L2 7L7.5 12.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-            <svg class="ch-2" width="9" height="14" viewBox="0 0 9 14" fill="none"><path d="M7.5 1.5L2 7L7.5 12.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-            <svg class="ch-3" width="9" height="14" viewBox="0 0 9 14" fill="none"><path d="M7.5 1.5L2 7L7.5 12.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          </div>
-        </div>
-
-        <div class="account-tabs-list" id="accountTabsList" role="tablist">
+      <div class="account-tabs-wrap tabs-cue-wrap">
+        <div class="account-tabs-list" id="accountTabsList" data-scroll-cues role="tablist">
           <button type="button" class="account-tab-btn body-14 active" role="tab" aria-selected="true" data-tab="orders" onclick="switchAccountTab('orders', this)">
-            Orders <span class="account-tab-badge body-10">2</span>
+            Orders <span class="account-tab-badge body-10" id="ordersTabCount">...</span>
           </button>
           <button type="button" class="account-tab-btn body-14" role="tab" aria-selected="false" data-tab="fittings" onclick="switchAccountTab('fittings', this)">
             Studio Fittings &amp; Bespoke <span class="account-tab-badge body-10">1</span>
@@ -109,15 +554,6 @@
           <button type="button" class="account-tab-btn body-14" role="tab" aria-selected="false" data-tab="settings" onclick="switchAccountTab('settings', this)">
             Account Settings
           </button>
-        </div>
-
-        <!-- Subtle Animated Scroll Cue (Right) -->
-        <div class="account-tabs-cue account-tabs-cue-right" id="accountTabsCueRight" aria-hidden="true">
-          <div class="chevron-stream">
-            <svg class="ch-1" width="9" height="14" viewBox="0 0 9 14" fill="none"><path d="M1.5 1.5L7 7L1.5 12.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-            <svg class="ch-2" width="9" height="14" viewBox="0 0 9 14" fill="none"><path d="M1.5 1.5L7 7L1.5 12.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-            <svg class="ch-3" width="9" height="14" viewBox="0 0 9 14" fill="none"><path d="M1.5 1.5L7 7L1.5 12.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          </div>
         </div>
       </div>
     </div>
@@ -135,139 +571,29 @@
       <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; flex-wrap: wrap; gap: 14px;">
         <div>
           <h2 class="h2" style="color: var(--color-obsidian);">Your Order History</h2>
-          <p class="body-14" style="color: var(--color-text-muted);">Track current deliveries, view invoices, or request alterations.</p>
+          <p class="body-14" style="color: var(--color-text-muted);">Track current deliveries, view details, or request alterations.</p>
         </div>
         <a href="shop.html" class="btn btn-primary body-12" style="padding: 10px 20px;">Shop New Releases &rarr;</a>
       </div>
 
-      <!-- Order 1: In Transit -->
-      <article class="order-card">
-        <div class="order-card-header">
-          <div class="order-meta-group">
-            <div class="order-meta-item body-12">
-              <span style="color: var(--color-text-muted);">Order Number</span>
-              <strong class="body-14" style="color: var(--color-obsidian);">#KB-2026-9411</strong>
-            </div>
-            <div class="order-meta-item body-12">
-              <span style="color: var(--color-text-muted);">Date Placed</span>
-              <strong class="body-14" style="color: var(--color-obsidian);">04 Oct 2026</strong>
-            </div>
-            <div class="order-meta-item body-12">
-              <span style="color: var(--color-text-muted);">Total Paid</span>
-              <strong class="body-14" style="color: var(--color-primary);">₦185,000</strong>
-            </div>
-            <div class="order-meta-item body-12">
-              <span style="color: var(--color-text-muted);">Delivery Method</span>
-              <strong class="body-14" style="color: var(--color-obsidian);">Doorstep Delivery (Lagos)</strong>
-            </div>
+      <!-- Dynamic Orders Container (Populated via Supabase DB) -->
+      <div id="ordersContainer">
+        <div class="orders-loading-skeleton" aria-live="polite" aria-busy="true">
+          <div class="skeleton-order-card">
+            <div class="skeleton-bar" style="width: 32%; height: 16px; margin-bottom: 12px;"></div>
+            <div class="skeleton-bar" style="width: 65%; height: 12px; margin-bottom: 20px;"></div>
+            <div class="skeleton-bar" style="width: 100%; height: 50px;"></div>
           </div>
-          <span class="order-status-badge in-transit body-12">
-            <span style="width: 8px; height: 8px; border-radius: 50%; background: #3182CE; display: inline-block;"></span>
-            In Transit (GIG Logistics)
-          </span>
+          <div class="skeleton-order-card">
+            <div class="skeleton-bar" style="width: 28%; height: 16px; margin-bottom: 12px;"></div>
+            <div class="skeleton-bar" style="width: 55%; height: 12px; margin-bottom: 20px;"></div>
+            <div class="skeleton-bar" style="width: 100%; height: 50px;"></div>
+          </div>
         </div>
+      </div>
 
-        <!-- Tracking Timeline -->
-        <div class="order-tracking-strip">
-          <div class="tracking-step done body-12">
-            <span class="tracking-dot">✓</span>
-            <span>Order Confirmed</span>
-          </div>
-          <div class="tracking-line done"></div>
-          <div class="tracking-step done body-12">
-            <span class="tracking-dot">✓</span>
-            <span>Inspected at Lagos Studio</span>
-          </div>
-          <div class="tracking-line done"></div>
-          <div class="tracking-step done body-12">
-            <span class="tracking-dot">🚚</span>
-            <span>With Courier</span>
-          </div>
-          <div class="tracking-line"></div>
-          <div class="tracking-step body-12">
-            <span class="tracking-dot">4</span>
-            <span>Delivered</span>
-          </div>
-        </div>
-
-        <div class="order-card-body">
-          <div class="order-item-row">
-            <img src="Krabe Cloth Concepts_230226_205405_1.jpg" alt="Signature 3-Piece Agbada Set">
-            <div class="order-item-info">
-              <h3 class="order-item-title body-14" style="font-weight: 700; color: var(--color-obsidian);">Signature 3-Piece Agbada Set</h3>
-              <div class="order-item-meta body-12" style="color: var(--color-text-muted);">Color: Midnight Blue &bull; Size: XL &bull; Qty: 1</div>
-              <div class="order-item-price body-18" style="font-weight: 700; color: var(--color-primary);">₦185,000</div>
-            </div>
-            <a href="product.html" class="btn btn-outline body-12" style="padding: 8px 14px;">View Item</a>
-          </div>
-        </div>
-
-        <div class="order-card-footer">
-          <span class="body-12" style="color: var(--color-text-muted);">Tracking ID: <strong>GIG-LOS-88294102</strong> &bull; Estimated Arrival: <strong>Tomorrow, by 4:00 PM</strong></span>
-          <div style="display: flex; gap: 10px;">
-            <button type="button" class="btn btn-outline body-12" style="padding: 8px 14px;" onclick="alert('Digital PDF invoice downloaded for #KB-2026-9411.');">
-              Download Invoice
-            </button>
-            <a href="https://wa.me/2348000000000?text=Hello%20Krabe,%20tracking%20update%20for%20order%20KB-2026-9411" target="_blank" rel="noopener" class="btn-whatsapp body-12" style="padding: 8px 14px;">
-              WhatsApp Dispatch Desk
-            </a>
-          </div>
-        </div>
-      </article>
-
-      <!-- Order 2: Delivered -->
-      <article class="order-card">
-        <div class="order-card-header">
-          <div class="order-meta-group">
-            <div class="order-meta-item body-12">
-              <span style="color: var(--color-text-muted);">Order Number</span>
-              <strong class="body-14" style="color: var(--color-obsidian);">#KB-2026-8802</strong>
-            </div>
-            <div class="order-meta-item body-12">
-              <span style="color: var(--color-text-muted);">Date Placed</span>
-              <strong class="body-14" style="color: var(--color-obsidian);">18 Sep 2026</strong>
-            </div>
-            <div class="order-meta-item body-12">
-              <span style="color: var(--color-text-muted);">Total Paid</span>
-              <strong class="body-14" style="color: var(--color-primary);">₦120,000</strong>
-            </div>
-            <div class="order-meta-item body-12">
-              <span style="color: var(--color-text-muted);">Destination</span>
-              <strong class="body-14" style="color: var(--color-obsidian);">Lekki Phase 1, Lagos</strong>
-            </div>
-          </div>
-          <span class="order-status-badge delivered body-12">
-            <span style="width: 8px; height: 8px; border-radius: 50%; background: #38A169; display: inline-block;"></span>
-            Delivered
-          </span>
-        </div>
-
-        <div class="order-card-body">
-          <div class="order-item-row">
-            <img src="Krabe Cloth Concepts_230226_205405_6.jpg" alt="Krabe Structured Modern Kaftan">
-            <div class="order-item-info">
-              <h3 class="order-item-title body-14" style="font-weight: 700; color: var(--color-obsidian);">Krabe Structured Modern Kaftan</h3>
-              <div class="order-item-meta body-12" style="color: var(--color-text-muted);">Color: Emerald Slate &bull; Size: L &bull; Qty: 1</div>
-              <div class="order-item-price body-18" style="font-weight: 700; color: var(--color-primary);">₦120,000</div>
-            </div>
-            <button type="button" class="btn btn-outline js-quick-add body-12" data-title="Krabe Structured Modern Kaftan" data-price="120000" data-image="Krabe Cloth Concepts_230226_205405_6.jpg" style="padding: 8px 14px;">
-              Reorder Look
-            </button>
-          </div>
-        </div>
-
-        <div class="order-card-footer">
-          <span class="body-12" style="color: #48BB78;">✓ Delivered on 21 Sep 2026 &bull; Signed by David Adeleke</span>
-          <div style="display: flex; gap: 10px;">
-            <button type="button" class="btn btn-outline body-12" style="padding: 8px 14px;" onclick="openAlterationModal('#KB-2026-8802', 'Krabe Structured Modern Kaftan')">
-              Request Alteration
-            </button>
-            <button type="button" class="btn btn-outline body-12" style="padding: 8px 14px;" onclick="alert('Digital receipt sent to your email.');">
-              Receipt
-            </button>
-          </div>
-        </div>
-      </article>
+      <!-- Orders Pagination Controls -->
+      <div class="orders-pagination" id="ordersPagination" style="display: none;" aria-label="Orders Pagination Navigation"></div>
     </div>
 
     <!-- ==========================================
@@ -596,6 +922,53 @@
        7. INTERACTIVE POPUP MODALS
        ========================================================================= -->
 
+  <!-- Modal: Edit Profile (Name & Photo) -->
+  <div class="modal-overlay" id="editProfileModal" aria-hidden="true" onclick="closeModalOnBackdrop(event, 'editProfileModal')">
+    <div class="modal-card" style="max-width: 480px;">
+      <button type="button" class="modal-close body-18" onclick="closeModal('editProfileModal')" aria-label="Close">✕</button>
+      <span class="body-12" style="color: var(--color-gold, #C58A55); font-weight: 700; letter-spacing: 1px; text-transform: uppercase;">Atelier Profile</span>
+      <h3 class="h3" style="color: var(--color-obsidian); margin: 4px 0 8px;">Edit Client Profile</h3>
+      <p class="body-14" style="color: var(--color-text-muted); margin-bottom: 20px;">
+        Update your personal identity, contact details, and bespoke monogram.
+      </p>
+
+      <form id="editProfileForm" onsubmit="window.krabeSaveProfile(event)">
+        <!-- Photo preview & picker in modal -->
+        <div style="display: flex; align-items: center; gap: 16px; margin-bottom: 20px; padding: 14px; background: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 8px;">
+          <div id="modalAvatarPreview" style="width: 54px; height: 54px; border-radius: 50%; background: var(--color-primary); color: #FFF; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 18px; border: 2px solid var(--color-gold); overflow: hidden; flex-shrink: 0;">
+            K
+          </div>
+          <div style="flex: 1;">
+            <div class="body-14" style="font-weight: 700; color: var(--color-obsidian); margin-bottom: 2px;">Profile Photo</div>
+            <p class="body-12" style="color: var(--color-text-muted); margin-bottom: 8px;">PNG, JPG, or WebP</p>
+            <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+              <button type="button" class="btn btn-outline body-12" style="padding: 6px 12px;" onclick="document.getElementById('modalAvatarFileInput').click()">Change Photo</button>
+              <button type="button" class="btn btn-outline body-12" id="modalRemovePhotoBtn" style="padding: 6px 12px; color: #DC2626; border-color: #FECACA; display: none;" onclick="window.krabeRemoveAvatar()">Remove</button>
+            </div>
+            <input type="file" id="modalAvatarFileInput" accept="image/png, image/jpeg, image/webp" style="display: none;" onchange="window.krabeHandleAvatarUpload(event)">
+          </div>
+        </div>
+
+        <div class="form-group" style="margin-bottom: 16px;">
+          <label for="editFullName" class="body-12" style="display: block; font-weight: 700; margin-bottom: 6px; color: var(--color-obsidian);">Full Name <span style="color: #DC2626;">*</span></label>
+          <input type="text" id="editFullName" class="form-input body-14" required placeholder="e.g. David Adeleke" style="width: 100%; box-sizing: border-box;">
+        </div>
+
+        <div class="form-group" style="margin-bottom: 20px;">
+          <label for="editPhoneNumber" class="body-12" style="display: block; font-weight: 700; margin-bottom: 6px; color: var(--color-obsidian);">Phone / WhatsApp Number</label>
+          <input type="tel" id="editPhoneNumber" class="form-input body-14" placeholder="e.g. +234 803 123 4567" style="width: 100%; box-sizing: border-box;">
+        </div>
+
+        <div id="editProfileAlert" style="display: none; padding: 10px 14px; border-radius: 6px; font-size: 13px; margin-bottom: 16px;"></div>
+
+        <div style="display: flex; gap: 12px;">
+          <button type="submit" class="btn btn-primary body-14" id="saveProfileBtn" style="flex: 1;">Save Changes</button>
+          <button type="button" class="btn btn-outline body-14" onclick="closeModal('editProfileModal')">Cancel</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
   <!-- Modal A: Add / Edit Measurement Profile -->
   <div class="modal-overlay" id="measurementModal" aria-hidden="true" onclick="closeModalOnBackdrop(event, 'measurementModal')">
     <div class="modal-card" style="max-width: 600px;">
@@ -729,6 +1102,7 @@
   <script src="js/auth-modal.js"></script>
   <script src="js/search-modal.js"></script>
   <script src="js/auth.js"></script>
+  <script src="js/measurement-modal.js"></script>
   <script src="js/main.js"></script>
   <script>
     // Tab Switching Logic
@@ -751,51 +1125,448 @@
       }
     }
 
-    // Update visibility of scroll cues based on scroll position under 992px
-    function updateTabScrollIndicators() {
-      const list = document.getElementById('accountTabsList');
-      const leftCue = document.getElementById('accountTabsCueLeft');
-      const rightCue = document.getElementById('accountTabsCueRight');
-      if (!list || !leftCue || !rightCue) return;
+    // Modal Utilities
+    function openMeasurementModal(profileData) {
+      if (window.KrabeMeasurementForm && typeof window.KrabeMeasurementForm.openModal === 'function') {
+        const initialData = typeof profileData === 'string' ? { label: profileData } : (profileData || {});
+        window.KrabeMeasurementForm.openModal(initialData, {
+          onSuccess: function (saved) {
+            console.log('[Krabe] Measurement saved to vault:', saved);
+          }
+        });
+      } else if (window.KrabeMeasurementModal && typeof window.KrabeMeasurementModal.openModal === 'function') {
+        const initialData = typeof profileData === 'string' ? { label: profileData } : (profileData || {});
+        window.KrabeMeasurementModal.openModal(initialData);
+      } else {
+        if (profileData && typeof profileData === 'string') {
+          const el = document.getElementById('measProfileName');
+          if (el) el.value = profileData + ' Cut (Updated)';
+        }
+        const m = document.getElementById('measurementModal');
+        if (m) {
+          m.classList.add('active');
+          document.body.style.overflow = 'hidden';
+        }
+      }
+    }
 
-      const maxScroll = list.scrollWidth - list.clientWidth;
-      if (maxScroll <= 4) {
-        leftCue.style.opacity = '0';
-        rightCue.style.opacity = '0';
+    function openEditProfileModal() {
+      const modal = document.getElementById('editProfileModal');
+      if (!modal) return;
+      const currentName = document.getElementById('accountGreetingName')?.textContent || '';
+      const currentPhone = document.getElementById('accountPhone')?.textContent || '';
+      const nameInput = document.getElementById('editFullName');
+      const phoneInput = document.getElementById('editPhoneNumber');
+      const alertEl = document.getElementById('editProfileAlert');
+      if (alertEl) alertEl.style.display = 'none';
+
+      if (nameInput && currentName && currentName !== 'Loading...') {
+        nameInput.value = currentName;
+      }
+      if (phoneInput && currentPhone) {
+        phoneInput.value = currentPhone;
+      }
+
+      // Sync avatar preview in modal
+      const avatarEl = document.getElementById('accountAvatar');
+      const modalPreview = document.getElementById('modalAvatarPreview');
+      const removeBtn = document.getElementById('modalRemovePhotoBtn');
+      if (avatarEl && modalPreview) {
+        modalPreview.innerHTML = avatarEl.innerHTML;
+      }
+      if (removeBtn) {
+        removeBtn.style.display = window.krabeAvatarUrl ? 'inline-block' : 'none';
+      }
+
+      modal.classList.add('active');
+      document.body.style.overflow = 'hidden';
+      if (nameInput) setTimeout(() => nameInput.focus(), 50);
+    }
+
+    function renderAvatar(avatarUrl, fullName) {
+      const avatarEl = document.getElementById('accountAvatar');
+      const modalPreview = document.getElementById('modalAvatarPreview');
+      const removeBtn = document.getElementById('modalRemovePhotoBtn');
+
+      const initials = (fullName || 'K')
+        .trim()
+        .split(/\s+/)
+        .map(p => p[0])
+        .slice(0, 2)
+        .join('')
+        .toUpperCase() || 'K';
+
+      if (avatarUrl) {
+        const imgHtml = `<img src="${avatarUrl}" alt="${fullName || 'User'}" referrerpolicy="no-referrer" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%; display: block;">`;
+        if (avatarEl) avatarEl.innerHTML = imgHtml;
+        if (modalPreview) modalPreview.innerHTML = imgHtml;
+        if (removeBtn) removeBtn.style.display = 'inline-block';
+      } else {
+        if (avatarEl) avatarEl.textContent = initials;
+        if (modalPreview) modalPreview.textContent = initials;
+        if (removeBtn) removeBtn.style.display = 'none';
+      }
+    }
+
+    function updateHeroDOM(fullName, email, phone, avatarUrl) {
+      const nameEl = document.getElementById('accountGreetingName');
+      const emailEl = document.getElementById('accountEmail');
+      const phoneSep = document.getElementById('accountPhoneSep');
+      const phoneEl = document.getElementById('accountPhone');
+
+      if (nameEl) nameEl.textContent = fullName;
+      if (emailEl) emailEl.textContent = email || '';
+
+      if (phone && phoneEl && phoneSep) {
+        phoneEl.textContent = phone;
+        phoneEl.style.display = 'inline';
+        phoneSep.style.display = 'inline';
+      } else if (phoneEl && phoneSep) {
+        phoneEl.style.display = 'none';
+        phoneSep.style.display = 'none';
+      }
+
+      renderAvatar(avatarUrl, fullName);
+    }
+
+    async function syncHeroProfile() {
+      const client = window.krabeClient || (window.KRABE_CONFIG && typeof window.KRABE_CONFIG.getClient === 'function' ? window.KRABE_CONFIG.getClient() : null);
+      if (!client) {
+        setTimeout(syncHeroProfile, 250);
         return;
       }
 
-      // Left cue (hidden if at start)
-      if (list.scrollLeft <= 10) {
-        leftCue.style.opacity = '0';
+      let user = window.krabeUser;
+      if (!user) {
+        try {
+          const { data: authData } = await client.auth.getUser();
+          user = authData?.user;
+          if (user) window.krabeUser = user;
+        } catch (_) {}
+      }
+      if (!user) return;
+
+      const meta = user.user_metadata || {};
+      let fullName = meta.full_name || meta.name || '';
+      let phone = meta.phone || meta.phone_number || '';
+      let avatarUrl = meta.avatar_url || meta.picture || null;
+
+      // Query database table public.profile
+      try {
+        const { data: profile } = await client
+          .from('profile')
+          .select('*')
+          .eq('id', user.id)
+          .maybeSingle();
+
+        if (profile) {
+          if (profile.name) fullName = profile.name;
+          if (profile.phone_number) phone = profile.phone_number;
+          else if (profile.whatsapp_number) phone = profile.whatsapp_number;
+          if (profile.avatar_url) avatarUrl = profile.avatar_url;
+        }
+      } catch (err) {
+        console.warn('[Krabe Account] Error fetching profile:', err);
+      }
+
+      if (!fullName) {
+        fullName = user.email ? user.email.split('@')[0] : 'Client Member';
+      }
+
+      window.krabeAvatarUrl = avatarUrl;
+      updateHeroDOM(fullName, user.email, phone, avatarUrl);
+
+      // Prepopulate modal inputs
+      const editFullName = document.getElementById('editFullName');
+      const editPhoneNumber = document.getElementById('editPhoneNumber');
+      if (editFullName) editFullName.value = fullName;
+      if (editPhoneNumber) editPhoneNumber.value = phone || '';
+
+      // Prepopulate Settings panel inputs if they exist
+      const accFirstName = document.getElementById('accFirstName');
+      const accLastName = document.getElementById('accLastName');
+      const accEmail = document.getElementById('accEmail');
+      const accPhone = document.getElementById('accPhone');
+      if (accFirstName || accLastName) {
+        const parts = fullName.split(' ');
+        if (accFirstName) accFirstName.value = parts[0] || '';
+        if (accLastName) accLastName.value = parts.slice(1).join(' ') || '';
+      }
+      if (accEmail && user.email) accEmail.value = user.email;
+      if (accPhone && phone) accPhone.value = phone;
+    }
+
+    function showProfileAlert(message, type = 'error') {
+      const alertEl = document.getElementById('editProfileAlert');
+      if (!alertEl) return;
+      alertEl.style.display = 'block';
+      if (type === 'success') {
+        alertEl.style.background = '#F0FDF4';
+        alertEl.style.color = '#15803D';
+        alertEl.style.border = '1px solid #BBF7D0';
       } else {
-        leftCue.style.opacity = '1';
+        alertEl.style.background = '#FEF2F2';
+        alertEl.style.color = '#B91C1C';
+        alertEl.style.border = '1px solid #FECACA';
       }
-
-      // Right cue (hidden if at end)
-      if (list.scrollLeft >= maxScroll - 10) {
-        rightCue.style.opacity = '0';
-      } else {
-        rightCue.style.opacity = '1';
-      }
+      alertEl.textContent = message;
     }
 
-    const tabsList = document.getElementById('accountTabsList');
-    if (tabsList) {
-      tabsList.addEventListener('scroll', updateTabScrollIndicators, { passive: true });
-      window.addEventListener('resize', updateTabScrollIndicators, { passive: true });
-      setTimeout(updateTabScrollIndicators, 150);
+    function extractStoragePathFromUrl(url, bucketName = 'avatars') {
+      if (!url || typeof url !== 'string') return null;
+      const marker = `/storage/v1/object/public/${bucketName}/`;
+      const idx = url.indexOf(marker);
+      if (idx !== -1) {
+        return decodeURIComponent(url.substring(idx + marker.length).split('?')[0]);
+      }
+      return null;
     }
 
-    // Modal Utilities
-    function openMeasurementModal(profileName) {
-      if (profileName) {
-        document.getElementById('measProfileName').value = profileName + ' Cut (Updated)';
+    window.krabeSaveProfile = async function (e) {
+      if (e) e.preventDefault();
+      const btn = document.getElementById('saveProfileBtn');
+      const newName = (document.getElementById('editFullName')?.value || '').trim();
+      const newPhone = (document.getElementById('editPhoneNumber')?.value || '').trim();
+
+      if (!newName) {
+        showProfileAlert('Please enter your full name.');
+        return;
       }
-      const m = document.getElementById('measurementModal');
-      m.classList.add('active');
-      document.body.style.overflow = 'hidden';
-    }
+
+      if (btn) {
+        btn.disabled = true;
+        btn.textContent = 'Saving...';
+      }
+      const alertEl = document.getElementById('editProfileAlert');
+      if (alertEl) alertEl.style.display = 'none';
+
+      try {
+        const client = window.krabeClient || (window.KRABE_CONFIG && typeof window.KRABE_CONFIG.getClient === 'function' ? window.KRABE_CONFIG.getClient() : null);
+        if (!client) throw new Error('Database client not initialized');
+
+        let user = window.krabeUser;
+        if (!user) {
+          const { data: authData } = await client.auth.getUser();
+          user = authData?.user;
+        }
+        if (!user) throw new Error('User session not found');
+
+        // 1. Update Auth user metadata
+        const { data: updatedAuth, error: authError } = await client.auth.updateUser({
+          data: {
+            full_name: newName,
+            name: newName,
+            phone: newPhone,
+            phone_number: newPhone
+          }
+        });
+        if (authError) throw authError;
+        if (updatedAuth?.user) window.krabeUser = updatedAuth.user;
+
+        // 2. Update public.profile table
+        try {
+          await client
+            .from('profile')
+            .update({
+              name: newName,
+              phone_number: newPhone,
+              updated_at: new Date().toISOString()
+            })
+            .eq('id', user.id);
+        } catch (profileErr) {
+          console.warn('[Krabe Account] Profile table update warning:', profileErr);
+        }
+
+        // 3. Update Hero and settings DOM
+        updateHeroDOM(newName, user.email, newPhone, window.krabeAvatarUrl || user.user_metadata?.avatar_url);
+
+        const accFirstName = document.getElementById('accFirstName');
+        const accLastName = document.getElementById('accLastName');
+        const accPhone = document.getElementById('accPhone');
+        if (accFirstName || accLastName) {
+          const parts = newName.split(' ');
+          if (accFirstName) accFirstName.value = parts[0] || '';
+          if (accLastName) accLastName.value = parts.slice(1).join(' ') || '';
+        }
+        if (accPhone) accPhone.value = newPhone;
+
+        // Dispatch profile updated event so header syncs
+        window.dispatchEvent(new CustomEvent('krabe:profile:updated', {
+          detail: { name: newName, phone: newPhone }
+        }));
+
+        showProfileAlert('Profile updated successfully!', 'success');
+
+        setTimeout(() => {
+          closeModal('editProfileModal');
+        }, 600);
+      } catch (err) {
+        console.error('[Krabe Account] Save profile error:', err);
+        showProfileAlert(err.message || 'Failed to update profile. Please try again.');
+      } finally {
+        if (btn) {
+          btn.disabled = false;
+          btn.textContent = 'Save Changes';
+        }
+      }
+    };
+
+    window.krabeHandleAvatarUpload = async function (e) {
+      const file = e.target?.files?.[0];
+      if (!file) return;
+
+      const ext = (file.name.split('.').pop() || 'jpg').toLowerCase();
+      const mimeFromExt = ext === 'png' ? 'image/png' : (ext === 'webp' ? 'image/webp' : 'image/jpeg');
+      const mimeType = file.type || mimeFromExt;
+
+      if (ext === 'svg' || mimeType === 'image/svg+xml') {
+        showProfileAlert('SVG images are not permitted for avatars. Please upload a JPG, PNG, or WebP photo.');
+        return;
+      }
+      if (file.size > 5 * 1024 * 1024) {
+        showProfileAlert('Selected photo is too large. Maximum allowed size is 5MB.');
+        return;
+      }
+
+      const client = window.krabeClient || (window.KRABE_CONFIG && typeof window.KRABE_CONFIG.getClient === 'function' ? window.KRABE_CONFIG.getClient() : null);
+      if (!client) {
+        showProfileAlert('Atelier service is initializing. Please try again in a moment.');
+        return;
+      }
+
+      let user = window.krabeUser;
+      if (!user) {
+        const { data: authData } = await client.auth.getUser();
+        user = authData?.user;
+      }
+      if (!user) {
+        showProfileAlert('Please sign in to update your profile photo.');
+        return;
+      }
+
+      const avatarEl = document.getElementById('accountAvatar');
+      const prevContent = avatarEl ? avatarEl.innerHTML : '';
+      if (avatarEl) {
+        avatarEl.innerHTML = `<span style="font-size: 11px; font-weight: 600;">...</span>`;
+      }
+
+      const alertEl = document.getElementById('editProfileAlert');
+      if (alertEl) alertEl.style.display = 'none';
+
+      // Capture previous avatar URL before uploading new asset
+      const oldAvatarUrl = window.krabeAvatarUrl || user.user_metadata?.avatar_url;
+
+      try {
+        // Place file inside a user folder (${user.id}/...) so both folder-based and bucket-wide policies match
+        const fileExt = ext === 'jpeg' ? 'jpg' : ext;
+        const fileName = `${user.id}/${Date.now()}.${fileExt}`;
+        const { data: uploadData, error: uploadErr } = await client.storage
+          .from('avatars')
+          .upload(fileName, file, {
+            contentType: mimeType,
+            cacheControl: '3600'
+          });
+
+        if (uploadErr) {
+          throw uploadErr;
+        }
+
+        const { data: publicUrlData } = client.storage.from('avatars').getPublicUrl(fileName);
+        const finalAvatarUrl = publicUrlData?.publicUrl;
+
+        if (!finalAvatarUrl) {
+          throw new Error('Could not retrieve public URL from avatars storage');
+        }
+
+        // Update user auth metadata with verified storage URL
+        const { error: authErr } = await client.auth.updateUser({
+          data: { avatar_url: finalAvatarUrl, picture: finalAvatarUrl }
+        });
+        if (authErr) throw authErr;
+
+        // Update profile table
+        try {
+          await client.from('profile').update({ avatar_url: finalAvatarUrl }).eq('id', user.id);
+        } catch (_) {}
+
+        window.krabeAvatarUrl = finalAvatarUrl;
+
+        // Update Hero and Modals
+        const userName = document.getElementById('accountGreetingName')?.textContent || user.email;
+        renderAvatar(finalAvatarUrl, userName);
+
+        // Update header avatar if present
+        const headerAvatar = document.querySelector('.user-avatar-badge img');
+        if (headerAvatar) headerAvatar.src = finalAvatarUrl;
+
+        // Delete previous avatar file from storage after new one is successfully stored
+        if (oldAvatarUrl) {
+          const oldStoragePath = extractStoragePathFromUrl(oldAvatarUrl, 'avatars');
+          if (oldStoragePath && oldStoragePath !== fileName) {
+            try {
+              await client.storage.from('avatars').remove([oldStoragePath]);
+              console.log('[Krabe Account] Deleted previous avatar from storage:', oldStoragePath);
+            } catch (delErr) {
+              console.warn('[Krabe Account] Could not delete old avatar:', delErr);
+            }
+          }
+        }
+
+        showProfileAlert('Profile photo updated successfully!', 'success');
+        window.dispatchEvent(new CustomEvent('krabe:avatar:updated', { detail: { avatarUrl: finalAvatarUrl } }));
+      } catch (err) {
+        console.error('[Krabe Account] Avatar upload error:', err);
+        const errMsg = err?.message || err?.error_description || (typeof err === 'string' ? err : 'Upload failed');
+        showProfileAlert('Upload error: ' + errMsg);
+        if (avatarEl) avatarEl.innerHTML = prevContent;
+      }
+    };
+
+    window.krabeRemoveAvatar = async function () {
+      const client = window.krabeClient || (window.KRABE_CONFIG && typeof window.KRABE_CONFIG.getClient === 'function' ? window.KRABE_CONFIG.getClient() : null);
+      if (!client) return;
+      let user = window.krabeUser;
+      if (!user) return;
+
+      const oldAvatarUrl = window.krabeAvatarUrl || user.user_metadata?.avatar_url;
+
+      try {
+        await client.auth.updateUser({ data: { avatar_url: null, picture: null } });
+        try {
+          await client.from('profile').update({ avatar_url: null }).eq('id', user.id);
+        } catch (_) {}
+        window.krabeAvatarUrl = null;
+        const userName = document.getElementById('accountGreetingName')?.textContent || user.email;
+        renderAvatar(null, userName);
+        const removeBtn = document.getElementById('modalRemovePhotoBtn');
+        if (removeBtn) removeBtn.style.display = 'none';
+
+        // Revert header badge if present
+        const headerBadge = document.querySelector('.user-avatar-badge');
+        if (headerBadge) {
+          const initials = (userName || 'K').trim().split(/\s+/).map(p => p[0]).slice(0, 2).join('').toUpperCase();
+          headerBadge.innerHTML = `<span style="font-weight: 700; font-size: 11px;">${initials}</span>`;
+        }
+
+        // Delete from storage bucket if present
+        if (oldAvatarUrl) {
+          const oldStoragePath = extractStoragePathFromUrl(oldAvatarUrl, 'avatars');
+          if (oldStoragePath) {
+            try {
+              await client.storage.from('avatars').remove([oldStoragePath]);
+              console.log('[Krabe Account] Cleaned up avatar from storage on remove:', oldStoragePath);
+            } catch (delErr) {
+              console.warn('[Krabe Account] Could not delete avatar file on remove:', delErr);
+            }
+          }
+        }
+
+        showProfileAlert('Profile photo removed.', 'success');
+      } catch (err) {
+        console.error('[Krabe Account] Error removing avatar:', err);
+        showProfileAlert('Could not remove photo. Please try again.');
+      }
+    };
 
     function openAlterationModal(orderId, itemTitle) {
       document.getElementById('alterationOrderDesc').textContent = `Requesting alteration for ${itemTitle} on Order ${orderId}.`;
@@ -827,11 +1598,590 @@
     // Keyboard Esc Modal close
     document.addEventListener('keydown', (e) => {
       if (e.key === 'Escape') {
+        closeModal('editProfileModal');
         closeModal('measurementModal');
         closeModal('alterationModal');
+        if (window.KrabeMeasurementForm && typeof window.KrabeMeasurementForm.closeModal === 'function') {
+          window.KrabeMeasurementForm.closeModal();
+        }
         if (window.KrabeAuthModal) window.KrabeAuthModal.close();
       }
     });
+
+    // Initialize Hero Profile on page load & session change
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', syncHeroProfile);
+    } else {
+      syncHeroProfile();
+    }
+
+    window.addEventListener('krabe:session:changed', () => {
+      syncHeroProfile();
+    });
+
+    // =========================================================================
+    // DYNAMIC DATABASE DATA FETCHING: ORDERS TAB
+    // =========================================================================
+    (function () {
+      'use strict';
+
+      function escapeHtml(str) {
+        if (str == null) return '';
+        return String(str)
+          .replace(/&/g, '&amp;')
+          .replace(/</g, '&lt;')
+          .replace(/>/g, '&gt;')
+          .replace(/"/g, '&quot;')
+          .replace(/'/g, '&#39;');
+      }
+
+      function formatOrderDate(dateStr) {
+        if (!dateStr) return 'Recent';
+        try {
+          const d = new Date(dateStr);
+          return d.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
+        } catch (_) {
+          return dateStr;
+        }
+      }
+
+      function formatAddress(order) {
+        if (!order) return 'Studio Atelier Pickup';
+        let addr = null;
+        if (typeof order.delivery_address === 'object' && order.delivery_address !== null) {
+          addr = order.delivery_address;
+        } else if (typeof order.delivery_address === 'string') {
+          try {
+            addr = JSON.parse(order.delivery_address);
+          } catch (_) {}
+        }
+
+        if (addr) {
+          const parts = [addr.street, addr.city, addr.state].filter(p => p && String(p).trim().length > 0);
+          if (parts.length > 0) return parts.join(', ');
+        }
+
+        const opt = String(order.delivery_option_chosen || '').toLowerCase();
+        if (opt.includes('pickup') || opt.includes('studio')) {
+          return 'Studio Atelier Collection (Lagos)';
+        }
+        return 'Lagos Atelier Direct Dispatch';
+      }
+
+      function getStatusBadge(status) {
+        const s = String(status || 'placed').toLowerCase().trim();
+        let label = 'Order Placed';
+        let badgeClass = 'status-placed';
+        let dotColor = '#D97706';
+
+        switch (s) {
+          case 'payment confirmed':
+            label = 'Payment Confirmed';
+            badgeClass = 'status-payment-confirmed';
+            dotColor = '#0D9488';
+            break;
+          case 'order confirmed':
+            label = 'Order Confirmed';
+            badgeClass = 'status-order-confirmed';
+            dotColor = '#2563EB';
+            break;
+          case 'processing order':
+            label = 'Atelier Production';
+            badgeClass = 'status-processing';
+            dotColor = '#D97706';
+            break;
+          case 'order ready':
+            label = 'Ready for Dispatch';
+            badgeClass = 'status-ready';
+            dotColor = '#7C3AED';
+            break;
+          case 'dispatched':
+            label = 'In Transit';
+            badgeClass = 'status-dispatched';
+            dotColor = '#0284C7';
+            break;
+          case 'delivered':
+            label = 'Delivered';
+            badgeClass = 'status-delivered';
+            dotColor = '#16A34A';
+            break;
+          case 'cancelled':
+            label = 'Cancelled';
+            badgeClass = 'status-cancelled';
+            dotColor = '#DC2626';
+            break;
+          default:
+            label = s.charAt(0).toUpperCase() + s.slice(1);
+            break;
+        }
+
+        return `
+          <span class="order-status-badge ${badgeClass} body-12">
+            <span style="width: 8px; height: 8px; border-radius: 50%; background: ${dotColor}; display: inline-block;"></span>
+            ${escapeHtml(label)}
+          </span>
+        `;
+      }
+
+      function getTrackingTimelineHTML(status) {
+        const norm = String(status || '').toLowerCase().trim();
+
+        if (norm === 'cancelled') {
+          return `
+            <div class="order-cancelled-notice body-12">
+              <span style="font-weight: 700; font-size: 15px;">✕</span>
+              <span>This commission was cancelled. For any questions regarding your refund or atelier adjustments, please contact our Lagos concierge desk.</span>
+            </div>
+          `;
+        }
+
+        let step1 = '', line1 = '', step2 = '', line2 = '', step3 = '', line3 = '', step4 = '';
+        let step1Label = 'Order Confirmed';
+
+        if (norm === 'placed') {
+          step1 = 'active';
+          step1Label = 'Order Placed';
+        } else if (norm === 'payment confirmed') {
+          // When payment confirmed: No checkmark yet, Step 1 is active and displays "Payment Confirmed"
+          step1 = 'active';
+          step1Label = 'Payment Confirmed';
+        } else if (norm === 'order confirmed') {
+          // When order confirmed: Step 1 gets green checkmark ✓, Step 2 becomes active
+          step1 = 'done';
+          line1 = 'done';
+          step2 = 'active';
+          step1Label = 'Order Confirmed';
+        } else if (norm === 'processing order') {
+          // When processing order: Step 1 done (green ✓), Step 2 active (scissors ✂)
+          step1 = 'done';
+          line1 = 'done';
+          step2 = 'active';
+          step1Label = 'Order Confirmed';
+        } else if (norm === 'order ready') {
+          // When order ready: Step 2 checked (green ✓), Step 3 becomes active (truck 🚚)
+          step1 = 'done';
+          line1 = 'done';
+          step2 = 'done';
+          line2 = 'done';
+          step3 = 'active';
+          step1Label = 'Order Confirmed';
+        } else if (norm === 'dispatched') {
+          // When dispatched: Step 3 checked (green ✓), Step 4 becomes active
+          step1 = 'done';
+          line1 = 'done';
+          step2 = 'done';
+          line2 = 'done';
+          step3 = 'done';
+          line3 = 'done';
+          step4 = 'active';
+          step1Label = 'Order Confirmed';
+        } else if (norm === 'delivered') {
+          // When delivered: all steps checked (green ✓)
+          step1 = 'done';
+          line1 = 'done';
+          step2 = 'done';
+          line2 = 'done';
+          step3 = 'done';
+          line3 = 'done';
+          step4 = 'done';
+          step1Label = 'Order Confirmed';
+        } else {
+          step1 = 'done';
+          step1Label = 'Order Confirmed';
+        }
+
+        const icon1 = step1 === 'done' ? '✓' : '1';
+        const icon2 = step2 === 'done' ? '✓' : (step2 === 'active' ? '✂' : '2');
+        const icon3 = step3 === 'done' ? '✓' : (step3 === 'active' ? '🚚' : '3');
+        const icon4 = step4 === 'done' ? '✓' : '4';
+
+        return `
+          <div class="order-tracking-strip">
+            <div class="tracking-step ${step1} body-12">
+              <span class="tracking-dot">${icon1}</span>
+              <span>${step1Label}</span>
+            </div>
+            <div class="tracking-line ${line1}"></div>
+            <div class="tracking-step ${step2} body-12">
+              <span class="tracking-dot">${icon2}</span>
+              <span>Atelier Tailoring</span>
+            </div>
+            <div class="tracking-line ${line2}"></div>
+            <div class="tracking-step ${step3} body-12">
+              <span class="tracking-dot">${icon3}</span>
+              <span>Dispatched</span>
+            </div>
+            <div class="tracking-line ${line3}"></div>
+            <div class="tracking-step ${step4} body-12">
+              <span class="tracking-dot">${icon4}</span>
+              <span>Delivered</span>
+            </div>
+          </div>
+        `;
+      }
+
+      let currentOrdersPage = 1;
+      const ORDERS_PER_PAGE = 5;
+
+      function renderOrdersPagination(totalCount, page) {
+        const paginationEl = document.getElementById('ordersPagination');
+        if (!paginationEl) return;
+
+        const totalPages = Math.ceil(totalCount / ORDERS_PER_PAGE) || 0;
+        if (totalPages <= 1) {
+          paginationEl.style.display = 'none';
+          paginationEl.innerHTML = '';
+          return;
+        }
+
+        paginationEl.style.display = 'flex';
+
+        // Calculate visible pages with ellipsis
+        let pages = [];
+        if (totalPages <= 7) {
+          for (let i = 1; i <= totalPages; i++) pages.push(i);
+        } else if (page <= 4) {
+          pages = [1, 2, 3, 4, 5, '...', totalPages];
+        } else if (page >= totalPages - 3) {
+          pages = [1, '...', totalPages - 4, totalPages - 3, totalPages - 2, totalPages - 1, totalPages];
+        } else {
+          pages = [1, '...', page - 1, page, page + 1, '...', totalPages];
+        }
+
+        let html = `
+          <button type="button" class="page-btn page-btn-prev body-14" ${page === 1 ? 'disabled' : ''} onclick="window.krabeGoToOrdersPage(${page - 1})" aria-label="Previous Orders Page">&larr; Prev</button>
+        `;
+
+        pages.forEach((p) => {
+          if (p === '...') {
+            html += `<span class="page-ellipsis">&hellip;</span>`;
+          } else {
+            html += `
+              <button type="button" class="page-btn body-14 ${p === page ? 'active' : ''}" onclick="window.krabeGoToOrdersPage(${p})" aria-label="Page ${p}" ${p === page ? 'aria-current="page"' : ''}>${p}</button>
+            `;
+          }
+        });
+
+        html += `
+          <button type="button" class="page-btn page-btn-next body-14" ${page === totalPages ? 'disabled' : ''} onclick="window.krabeGoToOrdersPage(${page + 1})" aria-label="Next Orders Page">Next &rarr;</button>
+        `;
+
+        paginationEl.innerHTML = html;
+      }
+
+      window.krabeGoToOrdersPage = function (targetPage) {
+        const page = parseInt(targetPage, 10);
+        if (isNaN(page) || page < 1 || page === currentOrdersPage) return;
+        currentOrdersPage = page;
+        loadUserOrders(currentOrdersPage);
+
+        const panel = document.getElementById('panel-orders');
+        if (panel) {
+          panel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      };
+
+      async function loadUserOrders(page = 1) {
+        currentOrdersPage = typeof page === 'number' && page > 0 ? page : 1;
+        const container = document.getElementById('ordersContainer');
+        const badge = document.getElementById('ordersTabCount');
+        const paginationEl = document.getElementById('ordersPagination');
+        if (!container) return;
+
+        // Show loading skeleton during page transition if not already displayed
+        if (container.children.length === 0 || !container.querySelector('.orders-loading-skeleton')) {
+          container.innerHTML = `
+            <div class="orders-loading-skeleton" aria-live="polite" aria-busy="true">
+              <div class="skeleton-order-card">
+                <div class="skeleton-bar" style="width: 32%; height: 16px; margin-bottom: 12px;"></div>
+                <div class="skeleton-bar" style="width: 65%; height: 12px; margin-bottom: 20px;"></div>
+                <div class="skeleton-bar" style="width: 100%; height: 50px;"></div>
+              </div>
+              <div class="skeleton-order-card">
+                <div class="skeleton-bar" style="width: 28%; height: 16px; margin-bottom: 12px;"></div>
+                <div class="skeleton-bar" style="width: 55%; height: 12px; margin-bottom: 20px;"></div>
+                <div class="skeleton-bar" style="width: 100%; height: 50px;"></div>
+              </div>
+            </div>
+          `;
+        }
+
+        const client = window.krabeClient || (window.KRABE_CONFIG && typeof window.KRABE_CONFIG.getClient === 'function' ? window.KRABE_CONFIG.getClient() : null);
+        if (!client) {
+          setTimeout(() => loadUserOrders(currentOrdersPage), 300);
+          return;
+        }
+
+        // Retrieve current authenticated user
+        let user = window.krabeUser;
+        if (!user) {
+          try {
+            const { data: authData } = await client.auth.getUser();
+            user = authData?.user || null;
+          } catch (_) {}
+        }
+
+        if (!user) {
+          // If auth guard hasn't redirected yet
+          if (badge) badge.textContent = '0';
+          if (paginationEl) {
+            paginationEl.style.display = 'none';
+            paginationEl.innerHTML = '';
+          }
+          container.innerHTML = `
+            <div class="orders-empty-state">
+              <p class="body-14" style="color: var(--color-text-muted); margin-bottom: 16px;">Please sign in to view your tailoring commissions and orders.</p>
+              <button type="button" class="btn btn-primary body-12" onclick="openAuthModal('signin')">Sign In &rarr;</button>
+            </div>
+          `;
+          return;
+        }
+
+        try {
+          const from = (currentOrdersPage - 1) * ORDERS_PER_PAGE;
+          const to = from + ORDERS_PER_PAGE - 1;
+
+          let query = client
+            .from('ready_to_wear_order')
+            .select(`
+              id,
+              created_at,
+              total_amount,
+              subtotal,
+              delivery_fee,
+              delivery_option_chosen,
+              delivery_address,
+              recipient_number,
+              payment_reference,
+              payment_status,
+              status,
+              rtw_order_item (
+                id,
+                selected_size,
+                price,
+                quantity,
+                product_variant_id,
+                product_variation (
+                  id,
+                  color,
+                  color_code,
+                  fabric,
+                  price,
+                  main_image,
+                  product (
+                    id,
+                    title,
+                    slug
+                  )
+                )
+              )
+            `, { count: 'exact' })
+            .order('created_at', { ascending: false });
+
+          if (user.id && user.email) {
+            query = query.or(`user_id.eq.${user.id},email.eq.${user.email}`);
+          } else if (user.id) {
+            query = query.eq('user_id', user.id);
+          } else if (user.email) {
+            query = query.eq('email', user.email);
+          }
+
+          query = query.range(from, to);
+
+          const { data: orders, count, error } = await query;
+
+          if (error) {
+            console.error('[Krabe Account] Error fetching orders:', error);
+            if (badge) badge.textContent = '0';
+            if (paginationEl) {
+              paginationEl.style.display = 'none';
+              paginationEl.innerHTML = '';
+            }
+            container.innerHTML = `
+              <div class="orders-empty-state">
+                <p class="body-14" style="color: #DC2626; margin-bottom: 16px;">We were unable to load your orders right now.</p>
+                <button type="button" class="btn btn-outline body-12" onclick="window.krabeLoadOrders(1)">Retry</button>
+              </div>
+            `;
+            return;
+          }
+
+          const totalOrdersCount = typeof count === 'number' ? count : (Array.isArray(orders) ? orders.length : 0);
+          if (badge) badge.textContent = String(totalOrdersCount);
+
+          const orderList = Array.isArray(orders) ? orders : [];
+
+          if (totalOrdersCount === 0 || orderList.length === 0) {
+            if (paginationEl) {
+              paginationEl.style.display = 'none';
+              paginationEl.innerHTML = '';
+            }
+            container.innerHTML = `
+              <div class="orders-empty-state">
+                <div class="orders-empty-icon">
+                  <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+                  </svg>
+                </div>
+                <h3 class="h3" style="color: var(--color-obsidian); margin-bottom: 8px;">No Orders Recorded Yet</h3>
+                <p class="body-14" style="color: var(--color-text-muted); max-width: 440px; margin: 0 auto 24px; line-height: 1.6;">
+                  When you purchase from our Ready-to-Wear drops or commission bespoke pieces, your order progress, dispatch tracking, and invoices will appear here.
+                </p>
+                <a href="shop.html" class="btn btn-primary body-14" style="padding: 12px 24px; text-decoration: none;">Explore Ready-to-Wear Releases &rarr;</a>
+              </div>
+            `;
+            return;
+          }
+
+          // Build dynamic order cards
+          let html = '';
+          orderList.forEach((order) => {
+            const orderRef = order.payment_reference || ('KB-' + String(order.id || '').slice(0, 8).toUpperCase());
+            const dateStr = formatOrderDate(order.created_at);
+            const totalFormatted = '₦' + Number(order.total_amount || 0).toLocaleString();
+            const deliveryMethod = order.delivery_option_chosen 
+              ? String(order.delivery_option_chosen).replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase())
+              : 'Standard Delivery';
+            const destination = formatAddress(order);
+            const statusBadgeHTML = getStatusBadge(order.status);
+            const trackingStripHTML = getTrackingTimelineHTML(order.status);
+
+            const items = Array.isArray(order.rtw_order_item) && order.rtw_order_item.length > 0 
+              ? order.rtw_order_item 
+              : [];
+
+            let firstItemTitle = 'Krabe Piece';
+            let itemsHTML = '';
+
+            if (items.length === 0) {
+              itemsHTML = `
+                <div class="order-item-row">
+                  <div class="order-item-info">
+                    <h3 class="order-item-title body-14">Tailored Garment Order</h3>
+                    <div class="order-item-meta body-12">Atelier Order Confirmed</div>
+                    <div class="order-item-price body-18">${totalFormatted}</div>
+                  </div>
+                </div>
+              `;
+            } else {
+              items.forEach((item, idx) => {
+                const pv = item.product_variation || {};
+                const prod = pv.product || {};
+                const title = prod.title || 'Signature Krabe Garment';
+                if (idx === 0) firstItemTitle = title;
+                const color = pv.color || 'Standard';
+                const size = item.selected_size || 'M';
+                const qty = item.quantity || 1;
+                const itemPrice = item.price ? ('₦' + Number(item.price * qty).toLocaleString()) : totalFormatted;
+                const imgUrl = pv.main_image || 'assets/brand/krabe main logo.svg';
+                const linkUrl = prod.slug ? `product.html?product=${encodeURIComponent(prod.slug)}` : 'shop.html';
+
+                itemsHTML += `
+                  <div class="order-item-row">
+                    <img src="${escapeHtml(imgUrl)}" alt="${escapeHtml(title)}" onerror="this.src='assets/brand/krabe main logo.svg'">
+                    <div class="order-item-info">
+                      <h3 class="order-item-title body-14" style="font-weight: 700; color: var(--color-obsidian);">${escapeHtml(title)}</h3>
+                      <div class="order-item-meta body-12" style="color: var(--color-text-muted);">
+                        Color: ${escapeHtml(color)} &bull; Size: ${escapeHtml(size)} &bull; Qty: ${qty}
+                      </div>
+                      <div class="order-item-price body-18" style="font-weight: 700; color: var(--color-primary);">${itemPrice}</div>
+                    </div>
+                    <a href="${escapeHtml(linkUrl)}" class="btn btn-outline body-12" style="padding: 8px 14px; text-decoration: none;">View Item</a>
+                  </div>
+                `;
+              });
+            }
+
+            // Footer buttons (Option 2: Direct WhatsApp Concierge for delivered order alterations)
+            const isDelivered = String(order.status || '').toLowerCase() === 'delivered';
+            let footerActionsHTML = '';
+            if (isDelivered) {
+              const waText = encodeURIComponent(`Hello Krabe Atelier, I would like to request a complimentary fitting alteration for my delivered order #${orderRef} (${firstItemTitle}).`);
+              const waUrl = `https://wa.me/2349162166470?text=${waText}`;
+
+              footerActionsHTML = `
+                <a href="${waUrl}" target="_blank" rel="noopener" class="btn btn-outline body-12" style="padding: 8px 16px; text-decoration: none; display: inline-flex; align-items: center; gap: 6px;">
+                  <span>✂ Request Fitting Alteration</span>
+                </a>
+              `;
+            }
+
+            html += `
+              <article class="order-card">
+                <div class="order-card-header">
+                  <div class="order-meta-group">
+                    <div class="order-meta-item body-12">
+                      <span style="color: var(--color-text-muted);">Order Number</span>
+                      <strong class="body-14" style="color: var(--color-obsidian);">#${escapeHtml(orderRef)}</strong>
+                    </div>
+                    <div class="order-meta-item body-12">
+                      <span style="color: var(--color-text-muted);">Date Placed</span>
+                      <strong class="body-14" style="color: var(--color-obsidian);">${escapeHtml(dateStr)}</strong>
+                    </div>
+                    <div class="order-meta-item body-12">
+                      <span style="color: var(--color-text-muted);">Total Paid</span>
+                      <strong class="body-14" style="color: var(--color-primary);">${escapeHtml(totalFormatted)}</strong>
+                    </div>
+                    <div class="order-meta-item body-12">
+                      <span style="color: var(--color-text-muted);">Delivery</span>
+                      <strong class="body-14" style="color: var(--color-obsidian);">${escapeHtml(deliveryMethod)}</strong>
+                    </div>
+                  </div>
+                  ${statusBadgeHTML}
+                </div>
+
+                ${trackingStripHTML}
+
+                <div class="order-card-body">
+                  ${itemsHTML}
+                </div>
+
+                <div class="order-card-footer">
+                  <span class="body-12" style="color: var(--color-text-muted);">
+                    Destination: <strong>${escapeHtml(destination)}</strong>
+                  </span>
+                  <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                    ${footerActionsHTML}
+                  </div>
+                </div>
+              </article>
+            `;
+          });
+
+          container.innerHTML = html;
+
+          // Render pagination controls
+          renderOrdersPagination(totalOrdersCount, currentOrdersPage);
+        } catch (err) {
+          console.error('[Krabe Account] Unexpected error in loadUserOrders:', err);
+          if (badge) badge.textContent = '0';
+          if (paginationEl) {
+            paginationEl.style.display = 'none';
+            paginationEl.innerHTML = '';
+          }
+          container.innerHTML = `
+            <div class="orders-empty-state">
+              <p class="body-14" style="color: #DC2626; margin-bottom: 16px;">An unexpected error occurred while loading your orders.</p>
+              <button type="button" class="btn btn-outline body-12" onclick="window.krabeLoadOrders(1)">Retry</button>
+            </div>
+          `;
+        }
+      }
+
+      window.krabeLoadOrders = (page) => loadUserOrders(page || currentOrdersPage);
+
+      // Initialize when DOM is ready and listen for auth state events
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', () => loadUserOrders(1));
+      } else {
+        loadUserOrders(1);
+      }
+
+      window.addEventListener('krabe:session:changed', () => {
+        currentOrdersPage = 1;
+        loadUserOrders(1);
+      });
+    })();
   </script>
 </body>
 </html>
