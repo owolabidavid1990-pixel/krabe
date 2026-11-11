@@ -392,7 +392,7 @@
         gap: 6px !important;
       }
       .tracking-step span:not(.tracking-dot) {
-        font-size: 10px !important;
+        font-size: 8px !important;
         line-height: 1.25 !important;
         padding: 0 2px;
         word-break: break-word;
@@ -1310,21 +1310,21 @@
       const meta = user.user_metadata || {};
       let fullName = meta.full_name || meta.name || '';
       let phone = meta.phone || meta.phone_number || '';
-      let avatarUrl = meta.avatar_url || meta.picture || null;
+      let avatarUrl = null;
 
-      // Query database table public.profile
+      // Query database table public.profile FIRST (protects custom avatar from Google OAuth overrides)
       try {
-        const { data: profile } = await client
+        const { data: profile, error: profErr } = await client
           .from('profile')
-          .select('*')
+          .select('avatar_url, name, phone_number, whatsapp_number')
           .eq('id', user.id)
           .maybeSingle();
 
-        if (profile) {
+        if (!profErr && profile) {
+          if (profile.avatar_url) avatarUrl = profile.avatar_url;
           if (profile.name) fullName = profile.name;
           if (profile.phone_number) phone = profile.phone_number;
           else if (profile.whatsapp_number) phone = profile.whatsapp_number;
-          if (profile.avatar_url) avatarUrl = profile.avatar_url;
         }
       } catch (err) {
         console.warn('[Krabe Account] Error fetching profile:', err);
@@ -1439,7 +1439,7 @@
         }
 
         // 3. Update Hero and settings DOM
-        updateHeroDOM(newName, user.email, newPhone, window.krabeAvatarUrl || user.user_metadata?.avatar_url);
+        updateHeroDOM(newName, user.email, newPhone, window.krabeAvatarUrl || null);
 
         const accFirstName = document.getElementById('accFirstName');
         const accLastName = document.getElementById('accLastName');
@@ -1515,7 +1515,7 @@
       if (alertEl) alertEl.style.display = 'none';
 
       // Capture previous avatar URL before uploading new asset
-      const oldAvatarUrl = window.krabeAvatarUrl || user.user_metadata?.avatar_url;
+      const oldAvatarUrl = window.krabeAvatarUrl || null;
 
       try {
         // Place file inside a user folder (${user.id}/...) so both folder-based and bucket-wide policies match
@@ -1539,16 +1539,14 @@
           throw new Error('Could not retrieve public URL from avatars storage');
         }
 
-        // Update user auth metadata with verified storage URL
-        const { error: authErr } = await client.auth.updateUser({
-          data: { avatar_url: finalAvatarUrl, picture: finalAvatarUrl }
-        });
-        if (authErr) throw authErr;
-
-        // Update profile table
-        try {
-          await client.from('profile').update({ avatar_url: finalAvatarUrl }).eq('id', user.id);
-        } catch (_) {}
+        // 1. Update public.profile table ONLY (persists custom avatar, leaves user_metadata untouched)
+        const { error: profileErr } = await client
+          .from('profile')
+          .update({ avatar_url: finalAvatarUrl })
+          .eq('id', user.id);
+        if (profileErr) {
+          console.warn('[Krabe Account] Warning updating profile.avatar_url:', profileErr);
+        }
 
         window.krabeAvatarUrl = finalAvatarUrl;
 
@@ -1589,13 +1587,15 @@
       let user = window.krabeUser;
       if (!user) return;
 
-      const oldAvatarUrl = window.krabeAvatarUrl || user.user_metadata?.avatar_url;
+      const oldAvatarUrl = window.krabeAvatarUrl || null;
 
       try {
-        await client.auth.updateUser({ data: { avatar_url: null, picture: null } });
+        // Clear profile table avatar_url (leaves user_metadata untouched)
         try {
           await client.from('profile').update({ avatar_url: null }).eq('id', user.id);
-        } catch (_) {}
+        } catch (pe) {
+          console.warn('[Krabe Account] Warning clearing profile avatar:', pe);
+        }
         window.krabeAvatarUrl = null;
         const userName = document.getElementById('accountGreetingName')?.textContent || user.email;
         renderAvatar(null, userName);

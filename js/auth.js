@@ -26,6 +26,44 @@
     return clean === 'account' || clean === 'account.html';
   }
 
+  // Helper to render circular account avatar or initials badge in header
+  function renderHeaderAccountBtn(btn, avatarUrl, fullName, initials) {
+    btn.setAttribute('title', `Logged in as ${fullName} — Go to Account Portal`);
+    btn.setAttribute('aria-label', `Logged in as ${fullName}`);
+    
+    if (avatarUrl) {
+      // Render user avatar photo in circular badge
+      btn.innerHTML = `
+        <img src="${avatarUrl}" alt="${fullName}" referrerpolicy="no-referrer" style="
+          width: 28px;
+          height: 28px;
+          border-radius: 50%;
+          object-fit: cover;
+          display: block;
+          border: 1px solid var(--color-gold-light, #D4AF37);
+        " onerror="this.onerror=null; this.parentElement.innerHTML='<span style=\\'display: inline-flex; align-items: center; justify-content: center; width: 28px; height: 28px; border-radius: 50%; background: var(--color-primary, #44637B); color: #ffffff; font-size: 11px; font-weight: 700; letter-spacing: 0.5px; border: 1px solid var(--color-gold-light, #D4AF37);\\'>${initials}</span>';">
+      `;
+    } else {
+      // Fallback: Render luxury initials badge in header
+      btn.innerHTML = `
+        <span style="
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          width: 28px;
+          height: 28px;
+          border-radius: 50%;
+          background: var(--color-primary, #44637B);
+          color: #ffffff;
+          font-size: 11px;
+          font-weight: 700;
+          letter-spacing: 0.5px;
+          border: 1px solid var(--color-gold-light, #D4AF37);
+        ">${initials}</span>
+      `;
+    }
+  }
+
   // =========================================================================
   // 1. UI SYNCHRONIZATION (Header & Navigation)
   // =========================================================================
@@ -43,44 +81,26 @@
         .join('')
         .toUpperCase();
 
-      const avatarUrl = meta.avatar_url || meta.picture || null;
-
+      // Render initials badge first (zero image requests upfront)
       accountBtns.forEach(btn => {
-        btn.setAttribute('title', `Logged in as ${fullName} — Go to Account Portal`);
-        btn.setAttribute('aria-label', `Logged in as ${fullName}`);
-        
-        if (avatarUrl) {
-          // Render user avatar photo in circular badge
-          btn.innerHTML = `
-            <img src="${avatarUrl}" alt="${fullName}" referrerpolicy="no-referrer" style="
-              width: 28px;
-              height: 28px;
-              border-radius: 50%;
-              object-fit: cover;
-              display: block;
-              border: 1px solid var(--color-gold-light, #D4AF37);
-            " onerror="this.onerror=null; this.parentElement.innerHTML='<span style=\\'display: inline-flex; align-items: center; justify-content: center; width: 28px; height: 28px; border-radius: 50%; background: var(--color-primary, #44637B); color: #ffffff; font-size: 11px; font-weight: 700; letter-spacing: 0.5px; border: 1px solid var(--color-gold-light, #D4AF37);\\'>${initials}</span>';">
-          `;
-        } else {
-          // Fallback: Render luxury initials badge in header
-          btn.innerHTML = `
-            <span style="
-              display: inline-flex;
-              align-items: center;
-              justify-content: center;
-              width: 28px;
-              height: 28px;
-              border-radius: 50%;
-              background: var(--color-primary, #44637B);
-              color: #ffffff;
-              font-size: 11px;
-              font-weight: 700;
-              letter-spacing: 0.5px;
-              border: 1px solid var(--color-gold-light, #D4AF37);
-            ">${initials}</span>
-          `;
-        }
+        renderHeaderAccountBtn(btn, null, fullName, initials);
       });
+
+      // Load avatar strictly from public.profile (no fallback to user_metadata)
+      const client = getClient();
+      if (client) {
+        client.from('profile').select('avatar_url, name').eq('id', user.id).maybeSingle()
+          .then(({ data: profile }) => {
+            const profileAvatar = profile?.avatar_url || null;
+            const priorityName = profile?.name || fullName;
+            if (profileAvatar) {
+              accountBtns.forEach(btn => {
+                renderHeaderAccountBtn(btn, profileAvatar, priorityName, initials);
+              });
+            }
+          })
+          .catch(() => {});
+      }
 
       mobileAccountLinks.forEach(link => {
         link.textContent = 'My Account';
@@ -147,9 +167,10 @@
     const metaLine = document.querySelector('.account-meta-line');
 
     const meta = user.user_metadata || {};
-    const fullName = meta.full_name || meta.name || user.email.split('@')[0];
+    let fullName = meta.full_name || meta.name || user.email.split('@')[0];
     const email = user.email || '';
-    const phone = meta.phone || meta.phone_number || '';
+    let phone = meta.phone || meta.phone_number || '';
+    let avatarUrl = null;
 
     const initials = fullName
       .split(' ')
@@ -158,8 +179,28 @@
       .join('')
       .toUpperCase();
 
-    const avatarUrl = meta.avatar_url || meta.picture || null;
+    const client = getClient();
+    if (client) {
+      try {
+        const { data: profile } = await client
+          .from('profile')
+          .select('*')
+          .eq('id', user.id)
+          .maybeSingle();
 
+        if (profile) {
+          if (profile.avatar_url) avatarUrl = profile.avatar_url;
+          const finalName = profile.name || profile.full_name;
+          if (finalName) fullName = finalName;
+          const finalPhone = profile.phone || profile.phone_number;
+          if (finalPhone) phone = finalPhone;
+        }
+      } catch (e) {
+        // Fallback to auth metadata
+      }
+    }
+
+    // Strictly use profile.avatar_url only (no fallback to user_metadata)
     if (avatarEl) {
       if (avatarUrl) {
         avatarEl.innerHTML = `<img src="${avatarUrl}" alt="${fullName}" referrerpolicy="no-referrer" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover; display: block;">`;
@@ -173,37 +214,6 @@
         <span>${email}</span>
         ${phone ? `<span>&bull;</span><span>${phone}</span>` : ''}
       `;
-    }
-
-    const client = getClient();
-    if (client) {
-      try {
-        const { data: profile } = await client
-          .from('profile')
-          .select('*')
-          .eq('id', user.id)
-          .single();
-
-        if (profile) {
-          if (profile.avatar_url) {
-            if (avatarEl) {
-              avatarEl.innerHTML = `<img src="${profile.avatar_url}" alt="${fullName}" referrerpolicy="no-referrer" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover; display: block;">`;
-            }
-          }
-          const finalName = profile.name || profile.full_name;
-          if (finalName && nameEl) nameEl.textContent = finalName;
-          const finalPhone = profile.phone || profile.phone_number;
-          if (finalPhone && metaLine) {
-            metaLine.innerHTML = `
-              <span>${email}</span>
-              <span>&bull;</span>
-              <span>${finalPhone}</span>
-            `;
-          }
-        }
-      } catch (e) {
-        // Fallback to auth metadata
-      }
     }
   }
 

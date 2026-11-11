@@ -323,6 +323,7 @@ CREATE TABLE IF NOT EXISTS public.profile (
   created_at timestamp with time zone DEFAULT now(),
   updated_at timestamp with time zone DEFAULT now(),
   name text,
+  avatar_url text,
   phone_number text,
   whatsapp_number text,
   has_card boolean DEFAULT false,
