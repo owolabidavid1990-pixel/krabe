@@ -38,7 +38,7 @@
         box-shadow: 0 12px 30px rgba(0, 0, 0, 0.12) !important;
         border: 1px solid #E2E8F0 !important;
         background-color: #FFFFFF !important;
-        z-index: 1050 !important;
+        z-index: 10000 !important;
         margin-top: 4px !important;
       }
       .pac-item {
@@ -220,9 +220,11 @@
     }
 
     _setupDOM() {
-      // Set default value (defaults to empty string)
+      // Set default value only if explicitly provided (preserve existing input value)
       if (this.input) {
-        this.input.value = this.options.defaultValue || '';
+        if (this.options.defaultValue !== undefined && this.options.defaultValue !== null && this.options.defaultValue !== '') {
+          this.input.value = this.options.defaultValue;
+        }
         this.input.autocomplete = 'off';
       }
 

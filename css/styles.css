@@ -3736,7 +3736,7 @@ ul {
 /* Order Cards */
 .order-card {
   background: var(--color-white);
-  border: 1px solid var(--color-border);
+  border: 1px solid #D5CBBF;
   border-radius: var(--radius-sm);
   margin-bottom: 24px;
   box-shadow: var(--shadow-sm);
@@ -3745,8 +3745,8 @@ ul {
 
 .order-card-header {
   padding: 16px 22px;
-  background: var(--color-bone);
-  border-bottom: 1px solid var(--color-border);
+  background: var(--color-sand);
+  border-bottom: 1px solid #D5CBBF;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -3884,8 +3884,8 @@ ul {
 
 .order-card-footer {
   padding: 16px 22px;
-  background: var(--color-bone);
-  border-top: 1px solid var(--color-border);
+  background: var(--color-sand);
+  border-top: 1px solid #D5CBBF;
   display: flex;
   justify-content: space-between;
   align-items: center;

@@ -130,7 +130,6 @@
               <div class="delivery-opt-card active" id="optDelivery" onclick="selectFulfillment('delivery')">
                 <div class="delivery-opt-title body-14">
                   <span>Doorstep Delivery</span>
-                  <span class="body-12" style="color: var(--color-text-muted);" id="deliveryOptionPriceTag">Pay to rider</span>
                 </div>
                 <div class="delivery-opt-desc body-12">Dispatched to your address &bull; Rider delivery fee paid separately</div>
               </div>
@@ -138,7 +137,6 @@
               <div class="delivery-opt-card" id="optPickup" onclick="selectFulfillment('pickup')">
                 <div class="delivery-opt-title body-14">
                   <span>Lagos Studio Pickup</span>
-                  <span class="body-12" style="color: var(--color-gold);">Free</span>
                 </div>
                 <div class="delivery-opt-desc body-12">Collect at <span data-store-area>our</span> flagship studio</div>
               </div>
@@ -153,11 +151,16 @@
               </div>
 
               <div class="form-group">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; flex-wrap: wrap; gap: 8px;">
                   <label for="cAddress" class="body-12" style="margin: 0;">Street Address &amp; House / Apartment Number</label>
-                  <button type="button" id="btnChooseSavedAddr" class="body-12" style="display: none; background: none; border: none; color: var(--color-primary); font-weight: 600; cursor: pointer; padding: 0; text-decoration: underline;" onclick="openSavedAddressesModal()">
-                    📍 Choose from saved addresses (<span id="savedAddrCount">0</span>)
-                  </button>
+                  <div id="checkoutSavedAddrActions" style="display: none; align-items: center; gap: 12px;">
+                    <button type="button" id="btnChooseSavedAddr" class="body-12" style="display: none; background: none; border: none; color: var(--color-primary); font-weight: 600; cursor: pointer; padding: 0; text-decoration: underline;" onclick="openSavedAddressesModal()">
+                      📍 Saved Addresses (<span id="savedAddrCount">0</span>)
+                    </button>
+                    <button type="button" id="btnAddSavedAddr" class="body-12" style="background: none; border: none; color: var(--color-gold); font-weight: 600; cursor: pointer; padding: 0; display: inline-flex; align-items: center; gap: 3px;" onclick="openCheckoutNewAddressModal()">
+                      <span>+</span> Add New Address
+                    </button>
+                  </div>
                 </div>
                 <input type="text" id="cAddress" class="form-input body-14" placeholder="e.g. Plot 14, Block 2, Admiralty Way" value="" required>
               </div>
@@ -359,14 +362,23 @@
   </div>
 
   <!-- Saved Addresses Selection Modal -->
-  <div class="cart-drawer-overlay" id="savedAddressesModal" style="display: none; z-index: 1060; align-items: center; justify-content: center; padding: 20px;" onclick="closeSavedAddressesModal(event)">
-    <div style="background: #FFFFFF; width: 100%; max-width: 460px; border-radius: var(--radius-sm); box-shadow: 0 20px 40px rgba(0,0,0,0.25); padding: 24px; position: relative;" onclick="event.stopPropagation()">
+  <div class="modal-overlay" id="savedAddressesModal" style="display: none; z-index: 1060; align-items: center; justify-content: center; padding: 20px;" onclick="closeSavedAddressesModal(event)">
+    <div style="background: #FFFFFF; width: 100%; max-width: 480px; border-radius: var(--radius-sm); box-shadow: 0 20px 40px rgba(0,0,0,0.25); padding: 24px; position: relative;" onclick="event.stopPropagation()">
       <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; border-bottom: 1px solid var(--color-border); padding-bottom: 12px;">
-        <h3 class="h5" style="margin: 0; color: var(--color-obsidian);">Select a Saved Address</h3>
+        <div>
+          <h3 class="h5" style="margin: 0 0 2px 0; color: var(--color-obsidian);">Select a Saved Address</h3>
+          <p class="body-12" style="margin: 0; color: var(--color-text-muted);">Choose a delivery destination from your Krabe vault</p>
+        </div>
         <button type="button" class="cart-close-btn" onclick="toggleSavedAddressesModal(false)" aria-label="Close" style="background: none; border: none; font-size: 22px; cursor: pointer; color: var(--color-obsidian); line-height: 1;">&times;</button>
       </div>
-      <div id="savedAddressesList" style="display: flex; flex-direction: column; gap: 10px; max-height: 380px; overflow-y: auto;">
+      <div id="savedAddressesList" style="display: flex; flex-direction: column; gap: 10px; max-height: 380px; overflow-y: auto; padding-right: 2px;">
         <!-- Dynamically populated -->
+      </div>
+      <div style="margin-top: 16px; border-top: 1px solid var(--color-border); padding-top: 14px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+        <span class="body-12" style="color: var(--color-text-muted);">Delivering elsewhere?</span>
+        <button type="button" class="body-12" style="background: none; border: none; color: var(--color-primary); font-weight: 700; cursor: pointer; padding: 4px 6px; text-decoration: underline;" onclick="openCheckoutNewAddressModal()">
+          + Add New Address
+        </button>
       </div>
     </div>
   </div>
@@ -397,6 +409,7 @@
   <script src="js/auth-modal.js"></script>
   <script src="js/search-modal.js"></script>
   <script src="js/places-searchbox.js"></script>
+  <script src="js/address-modal.js"></script>
   <script src="js/auth.js"></script>
   <script src="js/main.js"></script>
 
@@ -408,8 +421,36 @@
     function toggleSavedAddressesModal(show) {
       const modal = document.getElementById('savedAddressesModal');
       if (!modal) return;
-      modal.style.display = show ? 'flex' : 'none';
+      if (show) {
+        modal.style.display = 'flex';
+        modal.classList.add('active');
+      } else {
+        modal.classList.remove('active');
+        modal.style.display = 'none';
+      }
       document.body.style.overflow = show ? 'hidden' : '';
+    }
+
+    function updateSavedAddressesButtons(addresses) {
+      const actionsWrap = document.getElementById('checkoutSavedAddrActions');
+      const btnChoose = document.getElementById('btnChooseSavedAddr');
+      const btnAdd = document.getElementById('btnAddSavedAddr');
+      const countEl = document.getElementById('savedAddrCount');
+      const user = window.krabeUser || (window.KrabeAuth && typeof window.KrabeAuth.getUser === 'function' ? window.KrabeAuth.getUser() : null);
+
+      if (user) {
+        if (actionsWrap) actionsWrap.style.display = 'inline-flex';
+        if (btnAdd) btnAdd.style.display = 'inline-flex';
+        const count = Array.isArray(addresses) ? addresses.length : 0;
+        if (countEl) countEl.textContent = count;
+        if (btnChoose) {
+          btnChoose.style.display = count > 0 ? 'inline-block' : 'none';
+        }
+      } else {
+        if (actionsWrap) actionsWrap.style.display = 'none';
+        if (btnChoose) btnChoose.style.display = 'none';
+        if (btnAdd) btnAdd.style.display = 'none';
+      }
     }
 
     function openSavedAddressesModal() {
@@ -418,33 +459,104 @@
       listEl.innerHTML = '';
 
       if (!userSavedAddresses || userSavedAddresses.length === 0) {
-        listEl.innerHTML = '<p class="body-14" style="color: var(--color-text-muted); text-align: center; margin: 20px 0;">No saved addresses found.</p>';
+        listEl.innerHTML = `
+          <div style="text-align: center; padding: 24px 12px;">
+            <p class="body-14" style="color: var(--color-text-muted); margin: 0 0 16px;">You don't have any saved addresses in your vault yet.</p>
+            <button type="button" class="btn btn-primary body-12" style="padding: 10px 18px; font-weight: 600; cursor: pointer;" onclick="openCheckoutNewAddressModal()">
+              + Add Delivery Address
+            </button>
+          </div>
+        `;
         toggleSavedAddressesModal(true);
         return;
       }
 
       userSavedAddresses.forEach((addr, idx) => {
         const card = document.createElement('div');
-        card.style.cssText = 'border: 1px solid var(--color-border); border-radius: var(--radius-sm); padding: 14px 16px; cursor: pointer; background: var(--color-bone); transition: border-color 0.2s, background-color 0.2s;';
+        card.style.cssText = 'border: 1px solid var(--color-border); border-radius: var(--radius-sm); padding: 14px 16px; cursor: pointer; background: var(--color-bone); transition: border-color 0.2s, background-color 0.2s; position: relative;';
         card.onmouseover = () => { card.style.borderColor = 'var(--color-primary)'; card.style.backgroundColor = '#FFFFFF'; };
         card.onmouseout = () => { card.style.borderColor = 'var(--color-border)'; card.style.backgroundColor = 'var(--color-bone)'; };
         card.onclick = () => applySelectedAddress(addr);
 
+        const labelText = escapeCheckoutHtml(addr.label || (addr.full_name ? `${addr.full_name}'s Address` : `Address #${idx + 1}`));
+        const isDef = !!addr.is_default;
+
         card.innerHTML = `
           <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
-            <strong class="body-14" style="color: var(--color-obsidian);">${addr.label || (addr.full_name ? `${addr.full_name}'s Address` : `Address #${idx + 1}`)}</strong>
-            ${addr.is_default ? '<span class="body-10" style="background: rgba(197, 138, 85, 0.15); color: var(--color-gold); font-weight: 700; padding: 2px 6px; border-radius: 3px;">Default</span>' : ''}
+            <div style="display: flex; align-items: center; gap: 8px;">
+              <strong class="body-14" style="color: var(--color-obsidian);">${labelText}</strong>
+              ${isDef ? '<span class="body-10" style="background: rgba(197, 138, 85, 0.15); color: var(--color-gold); font-weight: 700; padding: 2px 6px; border-radius: 3px;">Default</span>' : ''}
+            </div>
+            <div style="display: flex; align-items: center; gap: 10px;" onclick="event.stopPropagation()">
+              <button type="button" class="body-12" style="background: none; border: none; color: var(--color-primary); font-weight: 600; cursor: pointer; padding: 0; text-decoration: underline;" onclick="editSavedAddressAtCheckout('${addr.id}')">
+                Edit
+              </button>
+            </div>
           </div>
           <p class="body-12" style="margin: 0; color: var(--color-text-muted); line-height: 1.5;">
-            ${addr.street || ''}<br>
-            ${addr.city ? `${addr.city}, ` : ''}${addr.state || 'Lagos'}
-            ${addr.landmark ? `<br><span style="font-size: 11px; color: var(--color-obsidian);">Landmark: ${addr.landmark}</span>` : ''}
+            ${escapeCheckoutHtml(addr.street || '')}<br>
+            ${addr.city ? `${escapeCheckoutHtml(addr.city)}, ` : ''}${escapeCheckoutHtml(addr.state || 'Lagos')}
+            ${addr.landmark ? `<br><span style="font-size: 11px; color: var(--color-obsidian);">Landmark: ${escapeCheckoutHtml(addr.landmark)}</span>` : ''}
+            ${addr.full_name || addr.phone ? `<br><span style="font-size: 11px; color: var(--color-text-muted);">${escapeCheckoutHtml(addr.full_name || '')}${addr.full_name && addr.phone ? ' &bull; ' : ''}${escapeCheckoutHtml(addr.phone || '')}</span>` : ''}
           </p>
         `;
         listEl.appendChild(card);
       });
 
       toggleSavedAddressesModal(true);
+    }
+
+    function openCheckoutNewAddressModal() {
+      const user = window.krabeUser || (window.KrabeAuth && typeof window.KrabeAuth.getUser === 'function' ? window.KrabeAuth.getUser() : null);
+      if (!user) {
+        if (window.KrabeAuthModal && typeof window.KrabeAuthModal.open === 'function') {
+          window.KrabeAuthModal.open('signin');
+        } else {
+          window.location.href = 'account.html';
+        }
+        return;
+      }
+
+      toggleSavedAddressesModal(false);
+
+      if (window.KrabeAddressForm && typeof window.KrabeAddressForm.openModal === 'function') {
+        window.KrabeAddressForm.openModal(null, {
+          title: 'Add New Delivery Address',
+          submitLabel: 'Save & Deliver Here &rarr;',
+          onSuccess: function(savedAddr, allAddresses) {
+            if (Array.isArray(allAddresses)) {
+              userSavedAddresses = allAddresses;
+              updateSavedAddressesButtons(allAddresses);
+            }
+            if (savedAddr) {
+              applySelectedAddress(savedAddr);
+            }
+          }
+        });
+      }
+    }
+
+    function editSavedAddressAtCheckout(addressId) {
+      const addr = (userSavedAddresses || []).find(a => String(a.id) === String(addressId));
+      if (!addr) return;
+
+      toggleSavedAddressesModal(false);
+
+      if (window.KrabeAddressForm && typeof window.KrabeAddressForm.openModal === 'function') {
+        window.KrabeAddressForm.openModal(addr, {
+          title: 'Edit Delivery Address',
+          submitLabel: 'Update & Deliver Here &rarr;',
+          onSuccess: function(savedAddr, allAddresses) {
+            if (Array.isArray(allAddresses)) {
+              userSavedAddresses = allAddresses;
+              updateSavedAddressesButtons(allAddresses);
+            }
+            if (savedAddr) {
+              applySelectedAddress(savedAddr);
+            }
+          }
+        });
+      }
     }
 
     function closeSavedAddressesModal(e) {
@@ -633,6 +745,8 @@
             <a href="javascript:void(0)" onclick="openCheckoutSignIn(event)" class="body-12" style="color: var(--color-primary); font-weight: 700; cursor: pointer; text-decoration: none;">Sign in to autofill details &rarr;</a>
           `;
         }
+        userSavedAddresses = [];
+        updateSavedAddressesButtons([]);
         return;
       }
 
@@ -642,19 +756,10 @@
         emailInput.value = user.email;
       }
 
-      // 3. Fallback Name & Phone from user auth metadata
-      const meta = user.user_metadata || {};
       const fullNameInput = document.getElementById('cFullName');
-      if (fullNameInput && !fullNameInput.value && (meta.full_name || meta.name)) {
-        fullNameInput.value = (meta.full_name || meta.name).trim();
-      }
-
       const phoneInput = document.getElementById('cPhone');
-      if (phoneInput && !phoneInput.value && (meta.phone || meta.phone_number)) {
-        phoneInput.value = meta.phone || meta.phone_number;
-      }
 
-      // 4. Fetch database profile for custom details & saved address
+      // 3. Fetch database profile table strictly (protects bespoke data from Google OAuth overrides)
       try {
         const { data: profile } = await client
           .from('profile')
@@ -665,41 +770,28 @@
         if (profile) {
           if (fullNameInput && profile.name) {
             fullNameInput.value = profile.name.trim();
+            const authPromptUserSpan = authPrompt?.querySelector('strong');
+            if (authPromptUserSpan) authPromptUserSpan.textContent = profile.name.trim();
           }
 
           const phoneVal = profile.whatsapp_number || profile.phone_number;
           if (phoneInput && phoneVal) {
-            phoneInput.value = phoneVal;
+            phoneInput.value = phoneVal.trim();
           }
 
-          if (Array.isArray(profile.addresses) && profile.addresses.length > 0) {
-            const defaultAddr = profile.addresses.find(a => a.is_default) || profile.addresses[0];
-            if (defaultAddr) {
-              if (defaultAddr.street) {
-                if (addressSearchBox) {
-                  addressSearchBox.setValue(defaultAddr.street);
-                } else {
-                  const addrInput = document.getElementById('cAddress');
-                  if (addrInput) addrInput.value = defaultAddr.street;
-                }
-              }
-              const cityInput = document.getElementById('cCity');
-              if (cityInput && !cityInput.value && defaultAddr.city) cityInput.value = defaultAddr.city;
-              const landmarkInput = document.getElementById('cLandmark');
-              if (landmarkInput && !landmarkInput.value && defaultAddr.landmark) landmarkInput.value = defaultAddr.landmark;
+          const addrList = Array.isArray(profile.addresses) ? profile.addresses : [];
+          userSavedAddresses = addrList;
+          updateSavedAddressesButtons(addrList);
 
-              const stateSelect = document.getElementById('cState');
-              if (stateSelect && defaultAddr.state) {
-                const stateVal = defaultAddr.state.toLowerCase();
-                for (let i = 0; i < stateSelect.options.length; i++) {
-                  if (stateSelect.options[i].value.toLowerCase().includes(stateVal)) {
-                    stateSelect.selectedIndex = i;
-                    break;
-                  }
-                }
-              }
+          if (addrList.length > 0) {
+            const defaultAddr = addrList.find(a => a.is_default) || addrList[0];
+            if (defaultAddr) {
+              applySelectedAddress(defaultAddr);
             }
           }
+        } else {
+          userSavedAddresses = [];
+          updateSavedAddressesButtons([]);
         }
       } catch (err) {
         console.warn('[Checkout] Autofill profile error:', err);
@@ -1057,6 +1149,28 @@
       populateUserProfile();
       if (window.KrabeCart && typeof window.KrabeCart.updateCartUI === 'function') {
         window.KrabeCart.updateCartUI();
+      }
+    });
+
+    window.addEventListener('krabe:address:saved', (e) => {
+      if (e.detail && Array.isArray(e.detail.addresses)) {
+        userSavedAddresses = e.detail.addresses;
+        updateSavedAddressesButtons(userSavedAddresses);
+        const modal = document.getElementById('savedAddressesModal');
+        if (modal && modal.style.display !== 'none') {
+          openSavedAddressesModal();
+        }
+      }
+    });
+
+    window.addEventListener('krabe:address:deleted', (e) => {
+      if (e.detail && Array.isArray(e.detail.addresses)) {
+        userSavedAddresses = e.detail.addresses;
+        updateSavedAddressesButtons(userSavedAddresses);
+        const modal = document.getElementById('savedAddressesModal');
+        if (modal && modal.style.display !== 'none') {
+          openSavedAddressesModal();
+        }
       }
     });
   </script>

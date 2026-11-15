@@ -31,8 +31,26 @@
   'use strict';
 
   const MODAL_ID = 'krabeMeasurementModal';
+  const DELETE_MODAL_ID = 'krabeMeasurementDeleteModal';
   let activeProfileId = null;
+  let currentEditingProfile = null;
   let activeOptions = {};
+  let pendingDeleteProfile = null;
+  let deleteOptions = {};
+
+  function escapeHtml(str) {
+    if (str == null) return '';
+    return String(str)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#39;');
+  }
+
+  function getClient() {
+    return window.krabeClient || (window.KRABE_CONFIG && typeof window.KRABE_CONFIG.getClient === 'function' ? window.KRABE_CONFIG.getClient() : null);
+  }
 
   // Complete field map matching public.custom_measurement schema
   const NUMERIC_FIELDS = [
@@ -239,19 +257,22 @@
           </div>
 
           <!-- Bottom Action Buttons -->
-          <div style="display: flex; gap: 12px; justify-content: flex-end; align-items: center; border-top: 1px solid var(--color-border, #E2E8F0); padding-top: 20px;">
-            ${showBack ? `
-              <button type="button" class="btn body-14" onclick="window.KrabeMeasurementForm.handleBack()" style="padding: 10px 22px; cursor: pointer; background: transparent; border: 1px solid var(--color-border, #CBD5E1); color: var(--color-obsidian, #121920); border-radius: 4px;">
-                Cancel
+          <div style="display: flex; gap: 12px; justify-content: space-between; align-items: center; border-top: 1px solid var(--color-border, #E2E8F0); padding-top: 20px; flex-wrap: wrap;">
+            <div id="kmmFormDeleteSlot"></div>
+            <div style="display: flex; gap: 12px; align-items: center; margin-left: auto;">
+              ${showBack ? `
+                <button type="button" class="btn body-14" onclick="window.KrabeMeasurementForm.handleBack()" style="padding: 10px 22px; cursor: pointer; background: transparent; border: 1px solid var(--color-border, #CBD5E1); color: var(--color-obsidian, #121920); border-radius: 4px;">
+                  Cancel
+                </button>
+              ` : `
+                <button type="button" class="btn btn-outline body-14" onclick="window.KrabeMeasurementForm.closeModal()" style="padding: 10px 22px; cursor: pointer; background: transparent; border: 1px solid var(--color-border, #CBD5E1); color: var(--color-obsidian, #121920); border-radius: 4px;">
+                  Cancel
+                </button>
+              `}
+              <button type="submit" id="kmmSubmitBtn" class="btn btn-primary body-14" style="padding: 11px 28px; background: var(--color-obsidian, #121920); color: #FFFFFF; font-weight: 600; cursor: pointer; border: none; border-radius: 4px;">
+                ${submitLabel}
               </button>
-            ` : `
-              <button type="button" class="btn btn-outline body-14" onclick="window.KrabeMeasurementForm.closeModal()" style="padding: 10px 22px; cursor: pointer; background: transparent; border: 1px solid var(--color-border, #CBD5E1); color: var(--color-obsidian, #121920); border-radius: 4px;">
-                Cancel
-              </button>
-            `}
-            <button type="submit" id="kmmSubmitBtn" class="btn btn-primary body-14" style="padding: 11px 28px; background: var(--color-obsidian, #121920); color: #FFFFFF; font-weight: 600; cursor: pointer; border: none; border-radius: 4px;">
-              ${submitLabel}
-            </button>
+            </div>
           </div>
         </form>
       </div>
@@ -284,9 +305,13 @@
 
   function reset() {
     activeProfileId = null;
+    currentEditingProfile = null;
     clearAlert();
     const form = document.getElementById('kmmForm');
     if (form) form.reset();
+
+    const deleteSlot = document.getElementById('kmmFormDeleteSlot');
+    if (deleteSlot) deleteSlot.innerHTML = '';
 
     const title = document.getElementById('kmmTitle');
     if (title) title.textContent = 'New Custom Measurement';
@@ -300,6 +325,7 @@
   function populate(profileData) {
     if (!profileData || typeof profileData !== 'object') return;
     activeProfileId = profileData.id || null;
+    currentEditingProfile = profileData;
 
     const title = document.getElementById('kmmTitle');
     if (title) title.textContent = 'Edit Custom Measurement';
@@ -319,6 +345,16 @@
         input.value = profileData[field];
       }
     });
+
+    const deleteSlot = document.getElementById('kmmFormDeleteSlot');
+    if (deleteSlot && activeProfileId) {
+      deleteSlot.innerHTML = `
+        <button type="button" class="btn body-13" onclick="window.KrabeMeasurementForm.promptDelete('${activeProfileId}')" style="background: transparent; border: 1px solid #FECACA; color: #DC2626; padding: 8px 16px; border-radius: 4px; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 6px;">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg>
+          Delete Profile
+        </button>
+      `;
+    }
   }
 
   /**
@@ -446,7 +482,16 @@
         if (error) throw error;
         resultData = data;
       } else {
-        // INSERT new custom measurement
+        // INSERT new custom measurement (Enforce 20 profiles per user maximum)
+        const { count, error: countErr } = await client
+          .from('custom_measurement')
+          .select('id', { count: 'exact', head: true })
+          .eq('user_id', userId);
+
+        if (!countErr && typeof count === 'number' && count >= 20) {
+          throw new Error('You have reached the maximum vault limit of 20 custom measurement profiles. Please edit or delete an existing profile to add a new one.');
+        }
+
         const { data, error } = await client
           .from('custom_measurement')
           .insert([payload])
@@ -532,9 +577,169 @@
     reset();
   }
 
+  /**
+   * Custom luxury delete confirmation popup modal.
+   * Can be called directly by ID or with a profile object.
+   */
+  function promptDelete(profileOrId, options = {}) {
+    deleteOptions = options || {};
+    let profile = null;
+
+    if (profileOrId && typeof profileOrId === 'object') {
+      profile = profileOrId;
+    } else if (typeof profileOrId === 'string') {
+      if (currentEditingProfile && String(currentEditingProfile.id) === String(profileOrId)) {
+        profile = currentEditingProfile;
+      } else {
+        profile = { id: profileOrId, label: options.label || '' };
+      }
+    }
+
+    if (!profile || !profile.id) {
+      console.warn('[KrabeMeasurementForm] No profile provided to promptDelete');
+      return;
+    }
+
+    pendingDeleteProfile = profile;
+
+    let modal = document.getElementById(DELETE_MODAL_ID);
+    if (!modal) {
+      modal = document.createElement('div');
+      modal.id = DELETE_MODAL_ID;
+      modal.className = 'modal-overlay';
+      modal.setAttribute('aria-hidden', 'true');
+      modal.onclick = (e) => { if (e.target === modal) closeDeleteModal(); };
+      modal.innerHTML = `
+        <div class="modal-card" style="background: var(--color-bone, #FAF8F5); border: 1px solid var(--color-border, #E2E8F0); border-radius: 12px; width: 100%; max-width: 440px; padding: 28px 24px; position: relative; box-shadow: 0 20px 40px rgba(0,0,0,0.25); text-align: center;">
+          <button type="button" class="modal-close" onclick="window.KrabeMeasurementForm.closeDeleteModal()" aria-label="Close" style="position: absolute; top: 16px; right: 16px; background: none; border: none; font-size: 18px; cursor: pointer; color: var(--color-obsidian, #121920); padding: 4px; line-height: 1;">✕</button>
+          
+          <div style="width: 52px; height: 52px; border-radius: 50%; background: #FEE2E2; color: #DC2626; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px auto;">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+              <line x1="10" y1="11" x2="10" y2="17"/>
+              <line x1="14" y1="11" x2="14" y2="17"/>
+            </svg>
+          </div>
+
+          <h3 class="h4" style="color: var(--color-obsidian, #121920); font-weight: 700; margin: 0 0 8px 0; font-size: 19px;">Delete Tailoring Profile?</h3>
+          <p class="body-14" id="kmmDeleteModalText" style="color: var(--color-text-muted, #64748B); margin: 0 0 22px 0; font-size: 13.5px; line-height: 1.5;">
+            Are you sure you want to permanently delete this measurement profile from your private tailoring vault? This action cannot be undone.
+          </p>
+
+          <div id="kmmDeleteAlert" style="display: none; padding: 10px 14px; background: #FEF2F2; color: #DC2626; border: 1px solid #FCA5A5; border-radius: 4px; font-size: 12px; margin-bottom: 16px; text-align: left;"></div>
+
+          <div style="display: flex; gap: 10px;">
+            <button type="button" class="btn body-13" onclick="window.KrabeMeasurementForm.closeDeleteModal()" style="flex: 1; padding: 11px 18px; background: #FFFFFF; border: 1px solid var(--color-border, #CBD5E1); color: var(--color-obsidian, #121920); border-radius: 6px; font-weight: 600; cursor: pointer;">
+              Cancel
+            </button>
+            <button type="button" id="kmmConfirmDeleteBtn" class="btn body-13" onclick="window.KrabeMeasurementForm.executeDelete()" style="flex: 1; padding: 11px 18px; background: #DC2626; color: #FFFFFF; border: none; border-radius: 6px; font-weight: 600; cursor: pointer;">
+              Delete Profile
+            </button>
+          </div>
+        </div>
+      `;
+      document.body.appendChild(modal);
+    }
+
+    const textEl = document.getElementById('kmmDeleteModalText');
+    const label = profile.label ? `"${profile.label}"` : 'this measurement profile';
+    if (textEl) {
+      textEl.innerHTML = `Are you sure you want to permanently delete <strong>${escapeHtml(label)}</strong> from your private tailoring vault? This action cannot be undone.`;
+    }
+
+    const alertEl = document.getElementById('kmmDeleteAlert');
+    if (alertEl) {
+      alertEl.style.display = 'none';
+      alertEl.textContent = '';
+    }
+
+    const delBtn = document.getElementById('kmmConfirmDeleteBtn');
+    if (delBtn) {
+      delBtn.disabled = false;
+      delBtn.textContent = 'Delete Profile';
+    }
+
+    modal.style.display = 'flex';
+    modal.classList.add('active');
+    modal.setAttribute('aria-hidden', 'false');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeDeleteModal() {
+    const modal = document.getElementById(DELETE_MODAL_ID);
+    if (modal) {
+      modal.style.display = 'none';
+      modal.classList.remove('active');
+      modal.setAttribute('aria-hidden', 'true');
+      const mainModal = document.getElementById(MODAL_ID);
+      if (!mainModal || !mainModal.classList.contains('active')) {
+        document.body.style.overflow = '';
+      }
+    }
+    pendingDeleteProfile = null;
+  }
+
+  async function executeDelete() {
+    if (!pendingDeleteProfile || !pendingDeleteProfile.id) return;
+
+    const delBtn = document.getElementById('kmmConfirmDeleteBtn');
+    if (delBtn) {
+      delBtn.disabled = true;
+      delBtn.textContent = 'Deleting...';
+    }
+
+    try {
+      const client = getClient();
+      if (!client) throw new Error('Database client unavailable');
+
+      const { error } = await client
+        .from('custom_measurement')
+        .delete()
+        .eq('id', pendingDeleteProfile.id);
+
+      if (error) throw error;
+
+      const deletedId = pendingDeleteProfile.id;
+      const deletedProfile = pendingDeleteProfile;
+
+      closeDeleteModal();
+
+      if (activeProfileId === deletedId) {
+        closeModal();
+      }
+
+      window.dispatchEvent(new CustomEvent('krabe:measurement:deleted', {
+        detail: { id: deletedId, measurement: deletedProfile }
+      }));
+      window.dispatchEvent(new CustomEvent('krabe:measurement:saved', {
+        detail: { deletedId }
+      }));
+
+      if (typeof deleteOptions.onSuccess === 'function') {
+        deleteOptions.onSuccess(deletedProfile);
+      }
+    } catch (err) {
+      console.error('[KrabeMeasurementForm Delete Error]:', err);
+      const alertEl = document.getElementById('kmmDeleteAlert');
+      if (alertEl) {
+        alertEl.textContent = err.message || 'Could not delete measurement profile. Please try again.';
+        alertEl.style.display = 'block';
+      }
+      if (delBtn) {
+        delBtn.disabled = false;
+        delBtn.textContent = 'Delete Profile';
+      }
+    }
+  }
+
   // Keyboard accessibility
   window.addEventListener('keydown', (e) => {
     if (e.key === 'Escape') {
+      const delModal = document.getElementById(DELETE_MODAL_ID);
+      if (delModal && delModal.classList.contains('active')) {
+        closeDeleteModal();
+        return;
+      }
       const modal = document.getElementById(MODAL_ID);
       if (modal && modal.classList.contains('active')) {
         closeModal();
@@ -552,7 +757,11 @@
     showAlert,
     clearAlert,
     openModal,
-    closeModal
+    closeModal,
+    promptDelete,
+    closeDeleteModal,
+    executeDelete,
+    deleteMeasurement: promptDelete
   };
 
   // Backwards-compatibility alias
@@ -561,7 +770,9 @@
     open: openModal,
     close: closeModal,
     reset,
-    handleSubmit
+    handleSubmit,
+    promptDelete,
+    closeDeleteModal
   };
 
 })();
