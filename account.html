@@ -827,21 +827,13 @@
       <div class="settings-box" style="margin-bottom: 24px;">
         <div style="margin-bottom: 20px; border-bottom: 1px solid var(--color-border); padding-bottom: 12px;">
           <h3 class="h3" style="color: var(--color-obsidian); margin: 0 0 4px 0;">Personal Information</h3>
-          <p class="body-12" style="color: var(--color-text-muted); margin: 0;">Update your name, contact phone number, and account email.</p>
+          <p class="body-12" style="color: var(--color-text-muted); margin: 0;">Update your bespoke name and contact phone number.</p>
         </div>
 
         <form id="accProfileForm" onsubmit="window.krabeUpdateSettingsProfile(event)">
           <div class="form-group">
             <label for="accFullName" class="body-12">Full Name</label>
             <input type="text" id="accFullName" class="form-input body-14" placeholder="e.g. David Adeleke" required>
-          </div>
-
-          <div class="form-group">
-            <label for="accEmail" class="body-12">Email Address</label>
-            <input type="email" id="accEmail" class="form-input body-14" placeholder="name@example.com" required>
-            <small class="body-11" style="color: var(--color-text-muted); display: block; margin-top: 4px;">
-              Changing email sends a confirmation link to your new address.
-            </small>
           </div>
 
           <div class="form-group">
@@ -858,7 +850,37 @@
         </form>
       </div>
 
-      <!-- Card 2: Security & Password -->
+      <!-- Card 2: Email Address -->
+      <div class="settings-box" style="margin-bottom: 24px;">
+        <div style="margin-bottom: 20px; border-bottom: 1px solid var(--color-border); padding-bottom: 12px;">
+          <h3 class="h3" style="color: var(--color-obsidian); margin: 0 0 4px 0;">Email Address</h3>
+          <p class="body-12" style="color: var(--color-text-muted); margin: 0;">Manage your primary email for sign-in, order receipts, and notifications.</p>
+        </div>
+
+        <form id="accEmailForm" onsubmit="window.krabeUpdateSettingsEmail(event)">
+          <div class="form-group">
+            <label class="body-12" style="margin-bottom: 6px; display: block;">Current Email</label>
+            <div style="display: flex; align-items: center; justify-content: space-between; background: #F8FAFC; border: 1px solid var(--color-border); border-radius: 6px; padding: 10px 14px;">
+              <span id="accCurrentEmailDisplay" class="body-14" style="color: var(--color-obsidian); font-weight: 500;">Loading...</span>
+              <span class="badge" style="background: #E0F2FE; color: #0369A1; font-size: 11px; padding: 2px 8px; border-radius: 4px; font-weight: 600;">Active</span>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="accNewEmail" class="body-12">New Email Address</label>
+            <input type="email" id="accNewEmail" class="form-input body-14" placeholder="Enter new email address" required autocomplete="email">
+            <small class="body-11" style="color: var(--color-text-muted); display: block; margin-top: 6px; line-height: 1.5;">
+              Confirmation links will be sent to both your current and new email addresses to verify this change.
+            </small>
+          </div>
+
+          <div id="accEmailAlert" style="display: none; padding: 12px 14px; border-radius: 6px; font-size: 13px; margin-bottom: 18px;"></div>
+
+          <button type="submit" id="accEmailSaveBtn" class="btn btn-primary body-14">Update Email Address</button>
+        </form>
+      </div>
+
+      <!-- Card 3: Security & Password -->
       <div class="settings-box">
         <div style="margin-bottom: 20px; border-bottom: 1px solid var(--color-border); padding-bottom: 12px;">
           <h3 class="h3" style="color: var(--color-obsidian); margin: 0 0 4px 0;">Security &amp; Password</h3>
@@ -867,8 +889,16 @@
 
         <form id="accPasswordForm" onsubmit="window.krabeUpdateSettingsPassword(event)">
           <div class="form-group">
-            <label for="accCurrPass" class="body-12">Current Password</label>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; flex-wrap: wrap; gap: 6px;">
+              <label for="accCurrPass" class="body-12" style="margin: 0;">Current Password</label>
+              <button type="button" class="body-11" style="background: none; border: none; color: var(--color-primary); font-weight: 600; cursor: pointer; padding: 0; text-decoration: underline;" onclick="window.krabeSendPasswordResetLink(event)">
+                Forgot current password?
+              </button>
+            </div>
             <input type="password" id="accCurrPass" class="form-input body-14" placeholder="Enter current password" required autocomplete="current-password">
+            <small class="body-11" style="color: var(--color-text-muted); display: block; margin-top: 6px;">
+              Signed in with Google or never set a password? <a href="javascript:void(0)" onclick="window.krabeSendPasswordResetLink(event)" style="color: var(--color-gold); font-weight: 600; text-decoration: underline;">Send code &amp; set password &rarr;</a>
+            </small>
           </div>
 
           <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
@@ -900,10 +930,7 @@
     <div class="modal-card" style="max-width: 480px;">
       <button type="button" class="modal-close body-18" onclick="closeModal('editProfileModal')" aria-label="Close">✕</button>
       <span class="body-12" style="color: var(--color-gold, #C58A55); font-weight: 700; letter-spacing: 1px; text-transform: uppercase;">Atelier Profile</span>
-      <h3 class="h3" style="color: var(--color-obsidian); margin: 4px 0 8px;">Edit Client Profile</h3>
-      <p class="body-14" style="color: var(--color-text-muted); margin-bottom: 20px;">
-        Update your personal identity, contact details, and bespoke monogram.
-      </p>
+      <h3 class="h3" style="color: var(--color-obsidian); margin: 4px 0 20px;">Edit Client Profile</h3>
 
       <form id="editProfileForm" onsubmit="window.krabeSaveProfile(event)">
         <!-- Photo preview & picker in modal -->
@@ -1229,12 +1256,14 @@
 
       // Prepopulate Settings panel inputs if they exist
       const accFullName = document.getElementById('accFullName');
-      const accEmail = document.getElementById('accEmail');
+      const accCurrentEmailDisplay = document.getElementById('accCurrentEmailDisplay');
       const accPhone = document.getElementById('accPhone');
       if (accFullName && fullName && fullName !== 'Client Member') {
         accFullName.value = fullName;
       }
-      if (accEmail && user.email) accEmail.value = user.email;
+      if (accCurrentEmailDisplay && user.email) {
+        accCurrentEmailDisplay.textContent = user.email;
+      }
       if (accPhone && phone) accPhone.value = phone;
     }
 
@@ -1512,7 +1541,6 @@
       if (e) e.preventDefault();
       const btn = document.getElementById('accProfileSaveBtn');
       const fullName = (document.getElementById('accFullName')?.value || '').trim();
-      const email = (document.getElementById('accEmail')?.value || '').trim();
       const phone = (document.getElementById('accPhone')?.value || '').trim();
 
       const alertEl = document.getElementById('accProfileAlert');
@@ -1520,10 +1548,6 @@
 
       if (!fullName) {
         showSettingsAlert('accProfileAlert', 'Please enter your full name.', 'error');
-        return;
-      }
-      if (!email) {
-        showSettingsAlert('accProfileAlert', 'Please enter your email address.', 'error');
         return;
       }
 
@@ -1543,15 +1567,7 @@
         }
         if (!user) throw new Error('User session not found');
 
-        let emailNotice = '';
-        // 1. Check if email was modified in Auth
-        if (user.email && email.toLowerCase() !== user.email.toLowerCase()) {
-          const { error: emailErr } = await client.auth.updateUser({ email });
-          if (emailErr) throw emailErr;
-          emailNotice = ' A confirmation link has been sent to your new email address.';
-        }
-
-        // 2. Update public.profile table directly (preserves client data against Google OAuth overrides)
+        // Update public.profile table directly (preserves client data against Google OAuth overrides)
         const { error: profileErr } = await client
           .from('profile')
           .update({
@@ -1564,19 +1580,19 @@
 
         if (profileErr) throw profileErr;
 
-        // 4. Update Hero DOM & modal inputs
-        updateHeroDOM(fullName, email, phone, window.krabeAvatarUrl || null);
+        // Update Hero DOM & modal inputs
+        updateHeroDOM(fullName, user.email, phone, window.krabeAvatarUrl || null);
         const editFullName = document.getElementById('editFullName');
         const editPhoneNumber = document.getElementById('editPhoneNumber');
         if (editFullName) editFullName.value = fullName;
         if (editPhoneNumber) editPhoneNumber.value = phone;
 
-        // 5. Dispatch global event so header and other tabs stay synced
+        // Dispatch global event so header and other tabs stay synced
         window.dispatchEvent(new CustomEvent('krabe:profile:updated', {
-          detail: { name: fullName, phone, email }
+          detail: { name: fullName, phone, email: user.email }
         }));
 
-        showSettingsAlert('accProfileAlert', `✓ Profile details updated successfully!${emailNotice}`, 'success');
+        showSettingsAlert('accProfileAlert', '✓ Profile details updated successfully!', 'success');
       } catch (err) {
         console.error('[Krabe Account] Settings profile update error:', err);
         showSettingsAlert('accProfileAlert', err.message || 'Could not update profile details.', 'error');
@@ -1584,6 +1600,73 @@
         if (btn) {
           btn.disabled = false;
           btn.textContent = 'Save Profile Details';
+        }
+      }
+    };
+
+    window.krabeUpdateSettingsEmail = async function (e) {
+      if (e) e.preventDefault();
+      const btn = document.getElementById('accEmailSaveBtn');
+      const newEmail = (document.getElementById('accNewEmail')?.value || '').trim();
+
+      const alertEl = document.getElementById('accEmailAlert');
+      if (alertEl) alertEl.style.display = 'none';
+
+      if (!newEmail) {
+        showSettingsAlert('accEmailAlert', 'Please enter your new email address.', 'error');
+        return;
+      }
+
+      const client = window.krabeClient || (window.KRABE_CONFIG && typeof window.KRABE_CONFIG.getClient === 'function' ? window.KRABE_CONFIG.getClient() : null);
+      if (!client) {
+        showSettingsAlert('accEmailAlert', 'Database client not initialized.', 'error');
+        return;
+      }
+
+      let user = window.krabeUser;
+      if (!user) {
+        const { data: authData } = await client.auth.getUser();
+        user = authData?.user;
+      }
+      if (!user || !user.email) {
+        showSettingsAlert('accEmailAlert', 'User session not found. Please log in again.', 'error');
+        return;
+      }
+
+      if (newEmail.toLowerCase() === user.email.toLowerCase()) {
+        showSettingsAlert('accEmailAlert', 'New email address cannot be the same as your current address.', 'error');
+        return;
+      }
+
+      if (btn) {
+        btn.disabled = true;
+        btn.textContent = 'Sending Confirmation...';
+      }
+
+      try {
+        const redirectTo = window.location.origin + window.location.pathname;
+        const { data, error } = await client.auth.updateUser(
+          { email: newEmail },
+          { emailRedirectTo: redirectTo }
+        );
+
+        if (error) throw error;
+
+        const newEmailInput = document.getElementById('accNewEmail');
+        if (newEmailInput) newEmailInput.value = '';
+
+        showSettingsAlert(
+          'accEmailAlert',
+          `✓ Confirmation links sent! Please check both your current email (${user.email}) and new email (${newEmail}) and click the verification links to finalize the change.`,
+          'success'
+        );
+      } catch (err) {
+        console.error('[Krabe Account] Email change error:', err);
+        showSettingsAlert('accEmailAlert', err.message || 'Could not initiate email change. Please try again.', 'error');
+      } finally {
+        if (btn) {
+          btn.disabled = false;
+          btn.textContent = 'Update Email Address';
         }
       }
     };
@@ -1668,6 +1751,51 @@
       }
     };
 
+    window.krabeSendPasswordResetLink = async function (e) {
+      if (e) e.preventDefault();
+      const alertEl = document.getElementById('accPasswordAlert');
+      if (alertEl) alertEl.style.display = 'none';
+
+      try {
+        const client = window.krabeClient || (window.KRABE_CONFIG && typeof window.KRABE_CONFIG.getClient === 'function' ? window.KRABE_CONFIG.getClient() : null);
+        if (!client) throw new Error('Database client not initialized');
+
+        let user = window.krabeUser;
+        if (!user) {
+          const { data: authData } = await client.auth.getUser();
+          user = authData?.user;
+        }
+        if (!user || !user.email) throw new Error('User session email not found');
+
+        const email = user.email.trim();
+
+        // 1. Request password reset code via Supabase
+        const { error: resetError } = await client.auth.resetPasswordForEmail(email);
+        if (resetError) throw resetError;
+
+        showSettingsAlert(
+          'accPasswordAlert',
+          `✓ A 6-digit password setup code has been sent to ${email}! Enter it in the dialog to set your password.`,
+          'success'
+        );
+
+        // 2. Open auth modal directly to the reset OTP view
+        if (window.KrabeAuthModal && typeof window.KrabeAuthModal.promptResetOtp === 'function') {
+          window.KrabeAuthModal.promptResetOtp(email);
+          if (typeof window.KrabeAuthModal.showAlert === 'function') {
+            window.KrabeAuthModal.showAlert(`6-digit code sent to ${email}. Enter it below to set your password.`, 'success');
+          }
+        }
+      } catch (err) {
+        console.error('[Krabe Account] Password reset link error:', err);
+        showSettingsAlert(
+          'accPasswordAlert',
+          err.message || 'Could not send password setup code. Please try again.',
+          'error'
+        );
+      }
+    };
+
     function openAlterationModal(orderId, itemTitle) {
       document.getElementById('alterationOrderDesc').textContent = `Requesting alteration for ${itemTitle} on Order ${orderId}.`;
       const m = document.getElementById('alterationModal');
@@ -1708,15 +1836,36 @@
       }
     });
 
+    function checkEmailChangeHash() {
+      const hash = window.location.hash;
+      if (!hash) return;
+      if (hash.includes('type=email_change')) {
+        showSettingsAlert('accEmailAlert', '✓ Email address verified and updated successfully!', 'success');
+        try {
+          history.replaceState(null, '', window.location.pathname + window.location.search);
+        } catch (_) {}
+      } else if (hash.includes('error_description')) {
+        const match = hash.match(/error_description=([^&]+)/);
+        if (match) {
+          showSettingsAlert('accEmailAlert', decodeURIComponent(match[1].replace(/\+/g, ' ')), 'error');
+        }
+      }
+    }
+
     // Initialize Hero Profile on page load & session change
     if (document.readyState === 'loading') {
-      document.addEventListener('DOMContentLoaded', syncHeroProfile);
+      document.addEventListener('DOMContentLoaded', () => {
+        syncHeroProfile();
+        checkEmailChangeHash();
+      });
     } else {
       syncHeroProfile();
+      checkEmailChangeHash();
     }
 
     window.addEventListener('krabe:session:changed', () => {
       syncHeroProfile();
+      checkEmailChangeHash();
     });
 
     // =========================================================================

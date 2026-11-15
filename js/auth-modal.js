@@ -379,7 +379,7 @@
     if (emailDisplay && pendingEmail) emailDisplay.textContent = pendingEmail;
     const otpInput = document.getElementById('krabeOtpCode');
     if (otpInput) otpInput.value = '';
-    switchView('otp');
+    open('otp');
   }
 
   function promptResetOtp(email) {
@@ -393,7 +393,7 @@
     if (newPass) newPass.value = '';
     const confirmPass = document.getElementById('krabeResetConfirmPassword');
     if (confirmPass) confirmPass.value = '';
-    switchView('reset-otp');
+    open('reset-otp');
   }
 
   function open(view = 'signin') {
