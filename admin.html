@@ -168,6 +168,151 @@
         grid-template-columns: 1fr;
       }
     }
+
+    /* Interactive Order Garment Cards */
+    .admin-order-item-card {
+      display: flex;
+      gap: 14px;
+      align-items: center;
+      padding: 12px 14px;
+      border: 1px solid var(--color-border);
+      border-radius: 8px;
+      background: var(--color-white);
+      margin-bottom: 10px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .admin-order-item-card:hover {
+      border-color: var(--color-primary);
+      box-shadow: 0 4px 14px rgba(68, 99, 123, 0.12);
+      transform: translateY(-1px);
+    }
+    .admin-item-inspect-pill {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--color-primary);
+      background: #EBF1F5;
+      padding: 3px 8px;
+      border-radius: 12px;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      transition: background 0.2s, color 0.2s;
+    }
+    .admin-order-item-card:hover .admin-item-inspect-pill {
+      background: var(--color-primary);
+      color: #FFFFFF;
+    }
+
+    /* Garment Spec Inspection Modal Layout */
+    .garment-spec-container {
+      display: grid;
+      grid-template-columns: 300px 1fr;
+      gap: 24px;
+    }
+    @media (max-width: 768px) {
+      .garment-spec-container {
+        grid-template-columns: 1fr;
+      }
+    }
+    .garment-gallery-main {
+      width: 100%;
+      height: 340px;
+      object-fit: cover;
+      border-radius: 8px;
+      background: #F3EEE7;
+      border: 1px solid var(--color-border);
+    }
+    .garment-thumbnails-row {
+      display: flex;
+      gap: 8px;
+      margin-top: 10px;
+      overflow-x: auto;
+      padding-bottom: 4px;
+    }
+    .garment-thumb {
+      width: 54px;
+      height: 54px;
+      object-fit: cover;
+      border-radius: 6px;
+      border: 2px solid transparent;
+      cursor: pointer;
+      opacity: 0.65;
+      transition: all 0.2s;
+      flex-shrink: 0;
+    }
+    .garment-thumb.active, .garment-thumb:hover {
+      opacity: 1;
+      border-color: var(--color-primary);
+    }
+    .spec-badge-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+      gap: 10px;
+      margin-top: 12px;
+    }
+    .spec-badge-box {
+      background: #FAF8F5;
+      border: 1px solid var(--color-border);
+      border-radius: 6px;
+      padding: 10px 12px;
+    }
+    .spec-badge-label {
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: var(--color-text-muted);
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+    .spec-badge-val {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--color-obsidian);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .swatch-circle {
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      border: 1px solid rgba(0,0,0,0.15);
+      display: inline-block;
+    }
+    .sizing-card-sheet {
+      margin-top: 16px;
+      background: #FFFFFF;
+      border: 1px solid var(--color-border);
+      border-radius: 8px;
+      padding: 14px 16px;
+    }
+    .measure-chips-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+      gap: 8px;
+      margin-top: 10px;
+    }
+    .measure-chip {
+      background: #F8FAFC;
+      border: 1px solid #E2E8F0;
+      border-radius: 6px;
+      padding: 8px 10px;
+      text-align: center;
+    }
+    .measure-chip-name {
+      font-size: 10px;
+      text-transform: uppercase;
+      color: #64748B;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+    }
+    .measure-chip-val {
+      font-size: 15px;
+      font-weight: 800;
+      color: #162029;
+      margin-top: 2px;
+    }
   </style>
 </head>
 <body class="admin-body">
@@ -230,14 +375,14 @@
         <button type="button" class="admin-nav-item body-14" data-tab="rtw" onclick="switchAdminTab('rtw', this)">
           <div class="admin-nav-item-content">
             <span class="admin-nav-icon">🛍️</span>
-            <span>Made-to-Order</span>
+            <span>Collection Orders</span>
           </div>
           <span class="admin-nav-pill body-10" id="rtwNavCount">0</span>
         </button>
         <button type="button" class="admin-nav-item body-14" data-tab="bespoke" onclick="switchAdminTab('bespoke', this)">
           <div class="admin-nav-item-content">
             <span class="admin-nav-icon">🪡</span>
-            <span>Bespoke (WhatsApp)</span>
+            <span>Custom Orders</span>
           </div>
           <span class="admin-nav-pill gold body-10" id="bespokeNavCount">0</span>
         </button>
@@ -316,7 +461,7 @@
 
           <div class="admin-stat-card gold">
             <div class="admin-stat-header">
-              <span class="admin-stat-label body-12">Active Made-to-Order</span>
+              <span class="admin-stat-label body-12">Collection Orders</span>
               <span class="admin-stat-icon body-18">📦</span>
             </div>
             <div class="admin-stat-value body-20" id="kpiRtwCount" style="font-weight: 700;">Loading...</div>
@@ -325,7 +470,7 @@
 
           <div class="admin-stat-card indigo">
             <div class="admin-stat-header">
-              <span class="admin-stat-label body-12">Bespoke Commissions</span>
+              <span class="admin-stat-label body-12">Custom Orders</span>
               <span class="admin-stat-icon body-18">🪡</span>
             </div>
             <div class="admin-stat-value body-20" id="kpiBespokeCount" style="font-weight: 700;">Loading...</div>
@@ -374,14 +519,14 @@
       </section>
 
       <!-- =====================================================================
-           VIEW 2: MADE-TO-ORDER ORDERS
+           VIEW 2: COLLECTION ORDERS
            ===================================================================== -->
       <section class="admin-tab-view" id="view-rtw" style="display: none;">
         <div class="admin-page-header">
           <div>
-            <h1 class="admin-header-title h1">Made-to-Order Store Orders</h1>
+            <h1 class="admin-header-title h1">Collection Orders</h1>
             <p class="admin-header-sub body-14">
-              Real customer orders placed on the storefront. Track payments, tailor on-demand, and advance fulfillment statuses.
+              Garment orders placed from the online collections. Track payments, tailor on-demand, and advance fulfillment statuses.
             </p>
           </div>
           <div class="admin-header-actions">
@@ -428,7 +573,7 @@
               </thead>
               <tbody id="rtwTableBody">
                 <tr>
-                  <td colspan="7" class="admin-loading-row">Loading Made-to-Order orders...</td>
+                  <td colspan="7" class="admin-loading-row">Loading orders...</td>
                 </tr>
               </tbody>
             </table>
@@ -437,19 +582,19 @@
       </section>
 
       <!-- =====================================================================
-           VIEW 3: BESPOKE COMMISSIONS (WHATSAPP / STUDIO)
+           VIEW 3: CUSTOM ORDERS (ATELIER & BESPOKE COMMISSIONS)
            ===================================================================== -->
       <section class="admin-tab-view" id="view-bespoke" style="display: none;">
         <div class="admin-page-header">
           <div>
-            <h1 class="admin-header-title h1">Bespoke Commissions &amp; Private Orders</h1>
+            <h1 class="admin-header-title h1">Custom Orders &amp; Bespoke Commissions</h1>
             <p class="admin-header-sub body-14">
-              Custom commissions negotiated via WhatsApp or private atelier consultations. Log agreed quotes, deposits, and workshop milestones.
+              Private custom commissions negotiated with clients. Log agreed quotes, deposits, and workshop tailoring milestones.
             </p>
           </div>
           <div class="admin-header-actions">
             <button type="button" class="btn btn-primary body-14" onclick="openBespokeModal()" style="padding: 10px 18px;">
-              + Log Bespoke Commission
+              + Log Custom Order
             </button>
             <button type="button" class="btn btn-outline body-12" onclick="exportBespokeCsv()" style="padding: 9px 16px;">
               Export CSV
@@ -460,7 +605,7 @@
         <div class="admin-card">
           <div class="admin-card-header">
             <div class="admin-card-title h3">
-              <span>Active Atelier Commissions</span>
+              <span>Active Custom Orders</span>
               <span class="admin-nav-pill gold body-10" id="bespokeTableCount">0 Active</span>
             </div>
             <div class="admin-table-controls">
@@ -720,11 +865,11 @@
        5. MODALS & WORKFLOW DIALOGS
        ========================================================================= -->
 
-  <!-- MODAL: LOG BESPOKE COMMISSION -->
+  <!-- MODAL: LOG CUSTOM ORDER -->
   <div class="admin-modal-overlay" id="bespokeModal" role="dialog" aria-modal="true" aria-labelledby="bespokeModalTitle">
     <div class="admin-modal-card large">
       <div class="admin-modal-header">
-        <h3 class="admin-modal-title h3" id="bespokeModalTitle">Log Bespoke Commission (WhatsApp / Studio)</h3>
+        <h3 class="admin-modal-title h3" id="bespokeModalTitle">Log Custom Order (Private Commission)</h3>
         <button type="button" class="admin-modal-close body-18" onclick="closeBespokeModal()" aria-label="Close dialog">&times;</button>
       </div>
       <form id="bespokeOrderForm" onsubmit="handleCreateBespoke(event)">
@@ -800,7 +945,7 @@
 
         <div class="admin-modal-footer">
           <button type="button" class="btn btn-outline body-14" onclick="closeBespokeModal()">Cancel</button>
-          <button type="submit" class="btn btn-primary body-14" id="bSubmitBtn">Create Commission &amp; Log to Workshop</button>
+          <button type="submit" class="btn btn-primary body-14" id="bSubmitBtn">Log Custom Order to Workshop</button>
         </div>
       </form>
     </div>
@@ -818,6 +963,28 @@
       </div>
       <div class="admin-modal-footer">
         <button type="button" class="btn btn-primary body-14" onclick="closeOrderDetailModal()">Done</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: GARMENT SPECIFICATION INSPECTION (ATELIER PRODUCTION VIEW) -->
+  <div class="admin-modal-overlay" id="garmentSpecModal" role="dialog" aria-modal="true" aria-labelledby="garmentSpecTitle">
+    <div class="admin-modal-card large">
+      <div class="admin-modal-header">
+        <div>
+          <span class="body-10" style="text-transform: uppercase; letter-spacing: 1px; color: var(--color-primary); font-weight: 700;">Atelier Garment Specification</span>
+          <h3 class="admin-modal-title h3" id="garmentSpecTitle" style="margin-top: 2px;">Garment Inspection</h3>
+        </div>
+        <button type="button" class="admin-modal-close body-18" onclick="closeGarmentSpecModal()" aria-label="Close dialog">&times;</button>
+      </div>
+      <div class="admin-modal-body" id="garmentSpecContent">
+        <!-- Injected dynamically -->
+      </div>
+      <div class="admin-modal-footer" style="display: flex; justify-content: space-between; align-items: center;">
+        <button type="button" class="btn btn-outline body-14" id="garmentSpecBackBtn" onclick="backToOrderDetailModal()">
+          &larr; Back to Order Details
+        </button>
+        <button type="button" class="btn btn-primary body-14" onclick="closeGarmentSpecModal()">Done</button>
       </div>
     </div>
   </div>
@@ -927,8 +1094,8 @@
       if (indicator) {
         const titles = {
           dashboard: 'Dashboard Overview',
-          rtw: 'Made-to-Order Orders',
-          bespoke: 'Bespoke Commissions',
+          rtw: 'Collection Orders',
+          bespoke: 'Custom Orders',
           fittings: 'Studio Fittings',
           catalog: 'Product Catalog & Inventory',
           vault: 'Client Vault & Measurements',
@@ -1078,13 +1245,25 @@
               price,
               custom_measurement_id,
               measurement_snapshot,
+              custom_measurement (*),
               product_variation (
+                id,
                 color,
+                color_code,
                 fabric,
+                price,
                 main_image,
+                gallery_images,
+                quantity,
+                available,
                 product (
+                  id,
                   title,
-                  category
+                  category,
+                  gender,
+                  description,
+                  slug,
+                  type
                 )
               )
             )
@@ -1140,7 +1319,7 @@
           <tr>
             <td colspan="7" class="admin-empty-state">
               <span class="admin-empty-icon">🛍️</span>
-              <strong>No Made-to-Order orders found</strong>
+              <strong>No collection orders found</strong>
               <div class="body-12" style="margin-top: 4px;">Orders placed online appear here in real-time.</div>
             </td>
           </tr>
@@ -1182,26 +1361,34 @@
         const payClass = payStatus === 'success' ? 'payment-pill-success' : (payStatus === 'failed' ? 'payment-pill-failed' : 'payment-pill-pending');
 
         // Order status selector
+        const isSuperAdmin = adminState.activeRole === 'super_admin';
         const statuses = ['placed', 'payment confirmed', 'order confirmed', 'processing order', 'order ready', 'dispatched', 'delivered', 'cancelled'];
-        const selectOptions = statuses.map(s => `
-          <option value="${s}" ${o.status === s ? 'selected' : ''}>${s.charAt(0).toUpperCase() + s.slice(1)}</option>
-        `).join('');
+        const selectOptions = statuses.map(s => {
+          // Regular admin cannot confirm payment on 'placed' orders (Super Admin only)
+          const isPaymentConfRestricted = !isSuperAdmin && o.status === 'placed' && s === 'payment confirmed';
+          // Regular admin cannot reset an active order back to 'placed'
+          const isPlacedRestricted = !isSuperAdmin && o.status !== 'placed' && s === 'placed';
+          const disabledAttr = (isPaymentConfRestricted || isPlacedRestricted) ? 'disabled' : '';
+          const label = s.charAt(0).toUpperCase() + s.slice(1);
+          const note = isPaymentConfRestricted ? ' (Super Admin Only)' : '';
+          return `<option value="${s}" ${o.status === s ? 'selected' : ''} ${disabledAttr}>${label}${note}</option>`;
+        }).join('');
 
         const cleanPhone = String(clientPhone).replace(/\D/g, '');
         const waLink = cleanPhone ? `https://wa.me/${cleanPhone.startsWith('0') ? '234' + cleanPhone.slice(1) : cleanPhone}` : null;
 
         return `
           <tr data-order-id="${o.id}">
-            <td>
+            <td onclick="viewRtwOrderDetails('${o.id}')" style="cursor: pointer;" title="Click to view full order details">
               <strong>#${shortId}</strong>
               <div class="body-10" style="color: var(--color-text-muted);">${dateStr}</div>
             </td>
-            <td>
+            <td onclick="viewRtwOrderDetails('${o.id}')" style="cursor: pointer;" title="Click to view full order details">
               <strong>${clientName}</strong>
               <div class="body-12" style="color: var(--color-text-muted);">${clientPhone}</div>
               <div class="body-10" style="color: var(--color-text-muted);">${clientCity}</div>
             </td>
-            <td>${itemsHtml}</td>
+            <td onclick="viewRtwOrderDetails('${o.id}')" style="cursor: pointer;" title="Click to inspect garments in this order">${itemsHtml}</td>
             <td>
               <strong class="body-14" style="color: var(--color-obsidian);">${formatNaira(o.total_amount)}</strong>
               <div><span class="${payClass}">${payStatus.toUpperCase()}</span></div>
@@ -1210,7 +1397,7 @@
               <span class="body-12">${o.delivery_option_chosen || 'Doorstep Delivery'}</span>
             </td>
             <td>
-              <select class="admin-status-select body-12" onchange="handleRtwStatusChange('${o.id}', this.value)" aria-label="Order Status">
+              <select class="admin-status-select body-12" onchange="handleRtwStatusChange('${o.id}', this.value, this)" aria-label="Order Status">
                 ${selectOptions}
               </select>
             </td>
@@ -1231,32 +1418,44 @@
       renderRtwTable();
     }
 
-    async function handleRtwStatusChange(orderId, newStatus) {
+    async function handleRtwStatusChange(orderId, newStatus, selectEl) {
       const client = getSupabase();
       if (!client) return;
 
+      const previousOrder = adminState.rtwOrders.find(o => o.id === orderId);
+      const previousStatus = previousOrder ? previousOrder.status : 'placed';
+
       try {
-        const { error } = await client
-          .from('ready_to_wear_order')
-          .update({ status: newStatus, updated_at: new Date().toISOString() })
-          .eq('id', orderId);
+        // Database RPC call with role and state-transition enforcement
+        const { data, error } = await client.rpc('update_order_status', {
+          p_order_id: orderId,
+          p_new_status: newStatus
+        });
 
         if (error) throw error;
 
         showToast(`Order status updated to: ${newStatus}`);
-        const found = adminState.rtwOrders.find(o => o.id === orderId);
-        if (found) found.status = newStatus;
+        if (previousOrder) previousOrder.status = newStatus;
         updateDashboardStats();
+        renderRtwTable();
       } catch (err) {
-        console.error('[Admin] Error updating status:', err);
+        console.error('[Admin] Error updating status via RPC:', err);
         showToast(`Failed to update status: ${err.message}`);
-        await loadRtwOrders();
+        if (selectEl) {
+          selectEl.value = previousStatus;
+        } else {
+          await loadRtwOrders();
+        }
       }
     }
+
+    let currentInspectedOrderId = null;
 
     function viewRtwOrderDetails(orderId) {
       const order = adminState.rtwOrders.find(o => o.id === orderId);
       if (!order) return;
+
+      currentInspectedOrderId = orderId;
 
       const modal = document.getElementById('orderDetailModal');
       const title = document.getElementById('orderDetailTitle');
@@ -1268,30 +1467,37 @@
       const items = order.rtw_order_item || [];
 
       const itemsRows = items.map(item => {
-        const p = item.product_variation?.product?.title || 'Garment Item';
-        const color = item.product_variation?.color || '';
-        const fabric = item.product_variation?.fabric || '';
-        const img = item.product_variation?.main_image || 'assets/lookbook/lookbook_1_kaftan.jpg';
+        const pv = item.product_variation || {};
+        const p = pv.product?.title || 'Garment Item';
+        const color = pv.color || '';
+        const fabric = pv.fabric || '';
+        const img = pv.main_image || 'assets/lookbook/lookbook_1_kaftan.jpg';
         const snapshot = item.measurement_snapshot;
-        let snapHtml = '';
-        if (snapshot && typeof snapshot === 'object') {
-          const keys = Object.keys(snapshot).filter(k => snapshot[k]);
-          if (keys.length > 0) {
-            snapHtml = `<div class="body-10" style="margin-top: 4px; color: #44637B;">Custom sizing snapshot: ${keys.map(k => `${k}: ${snapshot[k]}"`).join(', ')}</div>`;
-          }
-        }
+        const isCustom = item.selected_size === 'custom' || item.selected_size === 'Custom' || item.custom_measurement_id || (snapshot && Object.keys(snapshot).length > 0);
 
         return `
-          <div style="display: flex; gap: 12px; align-items: center; padding: 8px 0; border-bottom: 1px solid var(--color-border);">
-            <img src="${img}" alt="${p}" class="admin-item-preview-img">
+          <div class="admin-order-item-card" onclick="inspectOrderGarment('${order.id}', '${item.id}')" title="Click to inspect garment atelier specifications">
+            <img src="${img}" alt="${p}" class="admin-item-preview-img" onerror="this.onerror=null; this.src='assets/lookbook/lookbook_1_kaftan.jpg';">
             <div style="flex: 1;">
-              <strong class="body-14">${p}</strong>
-              <div class="body-12" style="color: var(--color-text-muted);">
-                ${color ? color + ' &bull; ' : ''}${fabric ? fabric + ' &bull; ' : ''}Size: ${item.selected_size} &bull; Qty: ${item.quantity}
+              <div style="display: flex; align-items: center; justify-content: space-between; gap: 8px;">
+                <strong class="body-14" style="color: var(--color-obsidian);">${p}</strong>
+                <span class="admin-item-inspect-pill">Inspect Specs &rarr;</span>
               </div>
-              ${snapHtml}
+              <div class="body-12" style="color: var(--color-text-muted); margin-top: 3px;">
+                ${color ? `${color} &bull; ` : ''}${fabric ? `${fabric} &bull; ` : ''}Size: <strong style="color: var(--color-obsidian);">${item.selected_size}</strong> &bull; Qty: ${item.quantity}
+              </div>
+              ${isCustom ? `
+                <div style="margin-top: 5px;">
+                  <span class="body-10" style="background: #EBF1F5; color: #2C4355; padding: 2px 7px; border-radius: 4px; font-weight: 700; display: inline-flex; align-items: center; gap: 4px;">
+                    ✂️ Custom Tailoring Measurements Attached
+                  </span>
+                </div>
+              ` : ''}
             </div>
-            <strong class="body-14">${formatNaira(item.price * item.quantity)}</strong>
+            <div style="text-align: right; min-width: 90px;">
+              <strong class="body-14" style="color: var(--color-obsidian);">${formatNaira(item.price * item.quantity)}</strong>
+              <div class="body-10" style="color: var(--color-text-muted);">${formatNaira(item.price)} each</div>
+            </div>
           </div>
         `;
       }).join('');
@@ -1312,13 +1518,33 @@
         </div>
 
         <div style="margin-top: 16px;">
-          <span class="body-10" style="text-transform: uppercase; letter-spacing: 1px; color: var(--color-primary); font-weight: 700;">Purchased Garments (${items.length})</span>
-          <div style="margin-top: 8px;">${itemsRows}</div>
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+            <span class="body-10" style="text-transform: uppercase; letter-spacing: 1px; color: var(--color-primary); font-weight: 700;">Purchased Garments (${items.length})</span>
+            <span class="body-10" style="color: var(--color-text-muted);">Click any garment to inspect full atelier specs</span>
+          </div>
+          <div>${itemsRows}</div>
         </div>
 
-        <div style="margin-top: 20px; padding: 12px 16px; background: #FAF8F5; border-radius: 6px; display: flex; justify-content: space-between; align-items: center;">
-          <span class="body-14" style="font-weight: 700;">Grand Total Amount:</span>
-          <span class="body-18" style="font-weight: 800; color: var(--color-obsidian);">${formatNaira(order.total_amount)}</span>
+        <div style="margin-top: 20px; padding: 12px 16px; background: #FAF8F5; border-radius: 6px; display: flex; justify-content: space-between; align-items: center; border: 1px solid var(--color-border);">
+          <div>
+            <span class="body-10" style="text-transform: uppercase; color: var(--color-text-muted); font-weight: 700;">Order Status</span>
+            <div style="margin-top: 4px;">
+              <select class="admin-status-select body-12" onchange="handleRtwStatusChange('${order.id}', this.value, this)" aria-label="Update Order Status">
+                ${statuses.map(s => {
+                  const isPaymentConfRestricted = !isSuperAdmin && order.status === 'placed' && s === 'payment confirmed';
+                  const isPlacedRestricted = !isSuperAdmin && order.status !== 'placed' && s === 'placed';
+                  const disabledAttr = (isPaymentConfRestricted || isPlacedRestricted) ? 'disabled' : '';
+                  const label = s.charAt(0).toUpperCase() + s.slice(1);
+                  const note = isPaymentConfRestricted ? ' (Super Admin Only)' : '';
+                  return `<option value="${s}" ${order.status === s ? 'selected' : ''} ${disabledAttr}>${label}${note}</option>`;
+                }).join('')}
+              </select>
+            </div>
+          </div>
+          <div style="text-align: right;">
+            <span class="body-10" style="text-transform: uppercase; color: var(--color-text-muted); font-weight: 700;">Grand Total Amount</span>
+            <div class="body-18" style="font-weight: 800; color: var(--color-obsidian);">${formatNaira(order.total_amount)}</div>
+          </div>
         </div>
       `;
 
@@ -1328,6 +1554,221 @@
     function closeOrderDetailModal() {
       const modal = document.getElementById('orderDetailModal');
       if (modal) modal.classList.remove('open');
+    }
+
+    function inspectOrderGarment(orderId, itemId) {
+      const order = adminState.rtwOrders.find(o => o.id === orderId);
+      if (!order) return;
+      const item = (order.rtw_order_item || []).find(i => i.id === itemId);
+      if (!item) return;
+
+      currentInspectedOrderId = orderId;
+
+      const modal = document.getElementById('garmentSpecModal');
+      const title = document.getElementById('garmentSpecTitle');
+      const content = document.getElementById('garmentSpecContent');
+
+      const pv = item.product_variation || {};
+      const prod = pv.product || {};
+      const prodTitle = prod.title || 'Signature Garment';
+      const mainImg = pv.main_image || 'assets/lookbook/lookbook_1_kaftan.jpg';
+      const gallery = Array.isArray(pv.gallery_images) ? pv.gallery_images : [];
+      const allImages = [mainImg, ...gallery.filter(g => g && g !== mainImg)];
+
+      if (title) title.innerText = prodTitle;
+
+      // Gallery thumbnails HTML
+      let thumbsHtml = '';
+      if (allImages.length > 1) {
+        thumbsHtml = `
+          <div class="garment-thumbnails-row">
+            ${allImages.map((img, idx) => `
+              <img src="${img}" alt="${prodTitle} ${idx + 1}" class="garment-thumb ${idx === 0 ? 'active' : ''}" onclick="switchGarmentModalImage(this, '${img}')" onerror="this.style.display='none';">
+            `).join('')}
+          </div>
+        `;
+      }
+
+      // Measurement resolution (snapshot or linked profile)
+      const snap = item.measurement_snapshot || {};
+      const linked = item.custom_measurement || {};
+      const mData = Object.keys(snap).length > 0 ? snap : linked;
+      const isCustom = item.selected_size === 'custom' || item.selected_size === 'Custom' || item.custom_measurement_id || Object.keys(snap).length > 0;
+
+      // Build measurement chips if custom
+      let measurementsHtml = '';
+      if (isCustom) {
+        const fields = [
+          { key: 'round_chest', altKey: 'chest', label: 'Chest' },
+          { key: 'shoulder', label: 'Shoulder' },
+          { key: 'sleeve_length_long', altKey: 'sleeve_length', label: 'Sleeve Length' },
+          { key: 'half_length', altKey: 'top_length', label: 'Top Length' },
+          { key: 'neck', label: 'Neck' },
+          { key: 'waist', label: 'Waist' },
+          { key: 'hip', label: 'Hip' },
+          { key: 'thigh_lap', altKey: 'thigh', label: 'Thigh' },
+          { key: 'trouser_length_long', altKey: 'trouser_length', label: 'Trouser Length' },
+          { key: 'knee_round', altKey: 'round_knee', label: 'Knee' },
+          { key: 'calf', label: 'Calf' },
+          { key: 'ankle_round', altKey: 'ankle', label: 'Ankle' },
+          { key: 'flap', altKey: 'crotch', label: 'Crotch / Flap' },
+          { key: 'agbada_length', label: 'Agbada Length' },
+          { key: 'head_cap', label: 'Cap Size' },
+        ];
+
+        const chips = fields
+          .map(f => {
+            const val = mData[f.key] ?? (f.altKey ? mData[f.altKey] : undefined);
+            if (val !== undefined && val !== null && String(val).trim() !== '') {
+              return `
+                <div class="measure-chip">
+                  <div class="measure-chip-name">${f.label}</div>
+                  <div class="measure-chip-val">${val}"</div>
+                </div>
+              `;
+            }
+            return '';
+          })
+          .filter(Boolean)
+          .join('');
+
+        const notes = mData.notes || '';
+
+        measurementsHtml = `
+          <div class="sizing-card-sheet">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+              <span class="body-10" style="text-transform: uppercase; letter-spacing: 0.5px; color: var(--color-primary); font-weight: 700;">
+                ✂️ Bespoke Tailoring Measurements
+              </span>
+              <span class="body-10" style="color: var(--color-text-muted);">Cut to individual patron posture</span>
+            </div>
+            ${chips ? `<div class="measure-chips-grid">${chips}</div>` : '<div class="body-12" style="color: var(--color-text-muted); margin-top: 8px;">Customer requested bespoke sizing. Waiting on studio fitting session.</div>'}
+            ${notes ? `<div class="body-12" style="margin-top: 10px; padding: 8px 12px; background: #FAF8F5; border-radius: 4px; border-left: 3px solid var(--color-primary);"><strong>Tailor Notes:</strong> ${notes}</div>` : ''}
+          </div>
+        `;
+      } else {
+        measurementsHtml = `
+          <div class="sizing-card-sheet">
+            <span class="body-10" style="text-transform: uppercase; letter-spacing: 0.5px; color: var(--color-text-muted); font-weight: 700;">
+              Standard Sizing Pattern
+            </span>
+            <div class="body-14" style="margin-top: 6px; font-weight: 700; color: var(--color-obsidian);">
+              Standard Size ${item.selected_size}
+            </div>
+            <div class="body-12" style="color: var(--color-text-muted); margin-top: 2px;">
+              Crafted in accordance with Krabe standard sizing guidelines for Size ${item.selected_size}.
+            </div>
+          </div>
+        `;
+      }
+
+      // Stock remaining & active status
+      const stockQty = pv.quantity !== null && pv.quantity !== undefined ? `${pv.quantity} units` : 'Made-to-Order';
+      const isAvailable = pv.available !== false;
+      const liveLink = prod.slug ? `product.html?slug=${encodeURIComponent(prod.slug)}` : `product.html?id=${prod.id || ''}`;
+
+      content.innerHTML = `
+        <div class="garment-spec-container">
+          <!-- Column 1: Image Gallery -->
+          <div>
+            <img src="${mainImg}" alt="${prodTitle}" id="garmentSpecMainImg" class="garment-gallery-main" onerror="this.onerror=null; this.src='assets/lookbook/lookbook_1_kaftan.jpg';">
+            ${thumbsHtml}
+            <div style="margin-top: 14px;">
+              <a href="${liveLink}" target="_blank" class="btn btn-outline body-12" style="width: 100%; display: flex; align-items: center; justify-content: center; gap: 6px;">
+                <span>View on Storefront</span>
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6M15 3h6v6M10 14L21 3"/></svg>
+              </a>
+            </div>
+          </div>
+
+          <!-- Column 2: Atelier Specifications -->
+          <div>
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 12px;">
+              <div>
+                <span class="body-10" style="text-transform: uppercase; letter-spacing: 1px; color: var(--color-gold); font-weight: 700;">
+                  ${prod.type || 'Ready to Wear'} &bull; ${prod.category || 'Atelier Garment'}
+                </span>
+                <h4 class="h3" style="margin-top: 2px; color: var(--color-obsidian);">${prodTitle}</h4>
+                <div class="body-12" style="color: var(--color-text-muted);">${prod.gender ? `${prod.gender.toUpperCase()} COLLECTION` : ''}</div>
+              </div>
+              <div style="text-align: right;">
+                <div class="body-18" style="font-weight: 800; color: var(--color-obsidian);">${formatNaira(item.price * item.quantity)}</div>
+                <div class="body-10" style="color: var(--color-text-muted);">${formatNaira(item.price)} &times; ${item.quantity} unit${item.quantity > 1 ? 's' : ''}</div>
+              </div>
+            </div>
+
+            <!-- Atelier Spec Badges -->
+            <div class="spec-badge-grid">
+              <div class="spec-badge-box">
+                <div class="spec-badge-label">Color</div>
+                <div class="spec-badge-val">
+                  ${pv.color_code ? `<span class="swatch-circle" style="background: ${pv.color_code};"></span>` : ''}
+                  <span>${pv.color || 'Standard'}</span>
+                </div>
+              </div>
+              <div class="spec-badge-box">
+                <div class="spec-badge-label">Fabric</div>
+                <div class="spec-badge-val">${pv.fabric || 'Premium Textile'}</div>
+              </div>
+              <div class="spec-badge-box">
+                <div class="spec-badge-label">Selected Size</div>
+                <div class="spec-badge-val" style="color: ${isCustom ? '#44637B' : 'var(--color-obsidian)'};">
+                  ${item.selected_size} ${isCustom ? '(Custom)' : ''}
+                </div>
+              </div>
+              <div class="spec-badge-box">
+                <div class="spec-badge-label">Qty Ordered</div>
+                <div class="spec-badge-val">${item.quantity} unit${item.quantity > 1 ? 's' : ''}</div>
+              </div>
+              <div class="spec-badge-box">
+                <div class="spec-badge-label">Atelier Stock</div>
+                <div class="spec-badge-val">${stockQty}</div>
+              </div>
+              <div class="spec-badge-box">
+                <div class="spec-badge-label">Catalog Status</div>
+                <div class="spec-badge-val" style="color: ${isAvailable ? '#03543F' : '#991B1B'};">
+                  ${isAvailable ? '✓ Active' : '✕ Inactive'}
+                </div>
+              </div>
+            </div>
+
+            <!-- Tailoring Measurements -->
+            ${measurementsHtml}
+
+            <!-- Parent Order Context -->
+            <div style="margin-top: 14px; padding: 10px 14px; background: #FAF8F5; border-radius: 6px; border: 1px solid var(--color-border); display: flex; justify-content: space-between; align-items: center;">
+              <div>
+                <span class="body-10" style="color: var(--color-text-muted); text-transform: uppercase;">Belongs to Order:</span>
+                <span class="body-12" style="font-weight: 700; margin-left: 6px;">#${(order.slug || order.id.slice(0, 8)).toUpperCase()}</span>
+                <span class="body-12" style="color: var(--color-text-muted); margin-left: 8px;">(${order.email})</span>
+              </div>
+              <span class="body-10 admin-nav-pill" style="text-transform: capitalize;">${order.status}</span>
+            </div>
+          </div>
+        </div>
+      `;
+
+      closeOrderDetailModal();
+      if (modal) modal.classList.add('open');
+    }
+
+    function switchGarmentModalImage(thumbEl, imgUrl) {
+      const main = document.getElementById('garmentSpecMainImg');
+      if (main) main.src = imgUrl;
+      document.querySelectorAll('.garment-thumb').forEach(t => t.classList.remove('active'));
+      if (thumbEl) thumbEl.classList.add('active');
+    }
+
+    function closeGarmentSpecModal() {
+      const modal = document.getElementById('garmentSpecModal');
+      if (modal) modal.classList.remove('open');
+    }
+
+    function backToOrderDetailModal() {
+      closeGarmentSpecModal();
+      if (currentInspectedOrderId) {
+        viewRtwOrderDetails(currentInspectedOrderId);
+      }
     }
 
     function exportOrdersCsv() {
@@ -2311,16 +2752,16 @@
 
       const priorityItems = [];
 
-      // Add pending RTW orders
+      // Add pending Collection orders
       adminState.rtwOrders
         .filter(o => o.status === 'placed' || o.status === 'payment confirmed' || o.status === 'processing order')
         .slice(0, 5)
         .forEach(o => {
           priorityItems.push({
-            type: 'RTW Order',
+            type: 'Collection Order',
             ref: '#' + (o.slug || o.id.slice(0, 8)).toUpperCase(),
             client: o.delivery_address?.name || o.email.split('@')[0],
-            category: 'Made-to-Order',
+            category: 'Collection',
             amount: formatNaira(o.total_amount),
             status: o.status,
             date: formatDate(o.created_at),
@@ -2328,13 +2769,13 @@
           });
         });
 
-      // Add urgent bespoke jobs
+      // Add urgent custom orders
       adminState.bespokeOrders
         .filter(b => b.status === 'placed' || b.status === 'processing order')
         .slice(0, 4)
         .forEach(b => {
           priorityItems.push({
-            type: 'Bespoke',
+            type: 'Custom Order',
             ref: b.request_id || ('#BES-' + b.id.slice(0, 6)),
             client: b.customer_name || 'Bespoke Client',
             category: 'Custom Tailoring',
@@ -2345,16 +2786,22 @@
           });
         });
 
-      // Add pending appointments
+      // Add pending appointments with real client names
       adminState.fittings
         .filter(f => f.status === 'requested' || f.status === 'confirmed')
         .slice(0, 3)
         .forEach(f => {
+          const profile = (adminState.vaultProfiles || []).find(p => p.id === f.user_id);
+          const clientName = profile?.name || 'Studio Client';
+          const types = (f.appointment_types || ['measure'])
+            .map(t => t.charAt(0).toUpperCase() + t.slice(1))
+            .join(', ');
+
           priorityItems.push({
             type: 'Studio Fitting',
-            ref: '#APPT-' + f.id.slice(0, 6),
-            client: 'VIP Fitting',
-            category: 'Private Studio Session',
+            ref: '#APPT-' + f.id.slice(0, 6).toUpperCase(),
+            client: clientName,
+            category: types || 'Fitting Session',
             amount: 'Consultation',
             status: f.status,
             date: formatDate(f.requested_date),
@@ -2405,6 +2852,7 @@
       if (e.key === 'Escape') {
         closeBespokeModal();
         closeOrderDetailModal();
+        closeGarmentSpecModal();
         closeMeasureModal();
       }
     });
