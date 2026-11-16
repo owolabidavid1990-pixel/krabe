@@ -1228,6 +1228,7 @@
           .select(`
             id,
             slug,
+            user_id,
             email,
             recipient_number,
             subtotal,
@@ -1810,6 +1811,7 @@
           .from('custom_order')
           .select(`
             id,
+            user_id,
             request_id,
             customer_name,
             customer_email,
@@ -2427,39 +2429,31 @@
       if (!client) return;
 
       try {
-        const { data, error } = await client
+        const { data: profiles, error: profileErr } = await client
           .from('profile')
-          .select(`
-            id,
-            name,
-            avatar_url,
-            phone_number,
-            whatsapp_number,
-            role,
-            created_at,
-            custom_measurement (
-              id,
-              label,
-              gender,
-              neck,
-              shoulder,
-              round_chest,
-              round_bust,
-              waist,
-              hip,
-              armhole,
-              round_bicep,
-              sleeve_length_long,
-              trouser_length_long,
-              trouser_length_ankle,
-              agbada_length,
-              agbada_sleeves
-            )
-          `)
+          .select('id, name, avatar_url, phone_number, whatsapp_number, role, created_at')
           .order('created_at', { ascending: false });
 
-        if (error) throw error;
-        adminState.vaultProfiles = data || [];
+        if (profileErr) throw profileErr;
+
+        let measurements = [];
+        try {
+          const { data: mData } = await client.from('custom_measurement').select('*');
+          if (mData) measurements = mData;
+        } catch (_) {}
+
+        const measurementMap = new Map();
+        measurements.forEach(m => {
+          if (!m.user_id) return;
+          if (!measurementMap.has(m.user_id)) measurementMap.set(m.user_id, []);
+          measurementMap.get(m.user_id).push(m);
+        });
+
+        (profiles || []).forEach(p => {
+          p.custom_measurement = measurementMap.get(p.id) || [];
+        });
+
+        adminState.vaultProfiles = profiles || [];
         renderVaultTable();
 
         const badge = document.getElementById('vaultNavCount');
@@ -2760,7 +2754,7 @@
           priorityItems.push({
             type: 'Collection Order',
             ref: '#' + (o.slug || o.id.slice(0, 8)).toUpperCase(),
-            client: o.delivery_address?.name || o.email.split('@')[0],
+            client: o.email || o.delivery_address?.name || 'Customer',
             category: 'Collection',
             amount: formatNaira(o.total_amount),
             status: o.status,
@@ -2777,7 +2771,7 @@
           priorityItems.push({
             type: 'Custom Order',
             ref: b.request_id || ('#BES-' + b.id.slice(0, 6)),
-            client: b.customer_name || 'Bespoke Client',
+            client: b.customer_email || b.customer_name || 'Bespoke Client',
             category: 'Custom Tailoring',
             amount: formatNaira(b.total_charge),
             status: b.status,
@@ -2786,13 +2780,16 @@
           });
         });
 
-      // Add pending appointments with real client names
+      // Add pending appointments with email in client field
       adminState.fittings
         .filter(f => f.status === 'requested' || f.status === 'confirmed')
         .slice(0, 3)
         .forEach(f => {
           const profile = (adminState.vaultProfiles || []).find(p => p.id === f.user_id);
-          const clientName = profile?.name || 'Studio Client';
+          const emailMatch = (adminState.rtwOrders || []).find(o => o.user_id === f.user_id && o.email)?.email
+            || (adminState.bespokeOrders || []).find(b => b.user_id === f.user_id && b.customer_email)?.customer_email
+            || (f.notes ? f.notes.match(/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/)?.[0] : null);
+          const clientDisplay = emailMatch || profile?.name || 'Studio Client';
           const types = (f.appointment_types || ['measure'])
             .map(t => t.charAt(0).toUpperCase() + t.slice(1))
             .join(', ');
@@ -2800,7 +2797,7 @@
           priorityItems.push({
             type: 'Studio Fitting',
             ref: '#APPT-' + f.id.slice(0, 6).toUpperCase(),
-            client: clientName,
+            client: clientDisplay,
             category: types || 'Fitting Session',
             amount: 'Consultation',
             status: f.status,
