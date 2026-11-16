@@ -38,7 +38,7 @@
           
           <!-- Brand Header -->
           <div class="krabe-auth-header">
-            <img src="assets/brand/krabe main logo.svg" alt="Krabe Logo" class="krabe-auth-logo">
+            <img src="assets/brand/krabe final logo image.png" alt="Krabe Logo" class="krabe-auth-logo">
             <h2 class="krabe-auth-title" id="krabeAuthTitle">Client Access</h2>
             <p class="krabe-auth-subtitle" id="krabeAuthSubtitle">Sign in to manage tailored measurements, active commissions, and order history.</p>
           </div>

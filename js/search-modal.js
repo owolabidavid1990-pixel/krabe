@@ -149,7 +149,7 @@
         const sortedVars = [...variations].sort((a, b) => (b.sales_count || 0) - (a.sales_count || 0));
         const topVar = sortedVars[0] || {};
         const price = Number(topVar.price) || 0;
-        const mainImage = topVar.main_image || 'assets/brand/krabe main logo.svg';
+        const mainImage = topVar.main_image || 'assets/brand/krabe final logo image.png';
 
         const targetUrl = typeof window.getProductUrl === 'function'
           ? window.getProductUrl(prod, topVar.id)

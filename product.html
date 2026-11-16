@@ -8,7 +8,7 @@
   <meta name="description" content="Shop the Signature 3-Piece Agbada Set by Krabe Kollection. Ceremonial Nigerian craftsmanship, hand-embroidered, available in standard sizing or custom bespoke tailoring.">
 
   <!-- Favicon -->
-  <link rel="icon" type="image/svg+xml" href="assets/brand/krabe main logo.svg">
+  <link rel="icon" type="image/png" href="assets/brand/krabe final logo image.png">
   <link rel="alternate icon" type="image/png" href="assets/brand/kraberefined-logo-blue.png">
 
   <!-- Google Web Fonts -->
@@ -1599,7 +1599,7 @@
                         data-variant-id="${v.id}"
                         title="${escapeHtml(v.color || 'Variant')}"
                         onclick="selectRtwColor('${escapeHtml(v.color || 'Standard')}')">
-                  <img src="${v.main_image || 'assets/brand/krabe main logo.svg'}" alt="${escapeHtml(v.color || 'Variant')}">
+                  <img src="${v.main_image || 'assets/brand/krabe final logo image.png'}" alt="${escapeHtml(v.color || 'Variant')}">
                 </button>
               `).join('');
             }
@@ -1648,7 +1648,7 @@
                         data-variant-id="${v.id}"
                         title="${v.color || 'Variant'}"
                         onclick="selectVariant('${v.id}')">
-                  <img src="${v.main_image || 'assets/brand/krabe main logo.svg'}" alt="${v.color || 'Variant'}">
+                  <img src="${v.main_image || 'assets/brand/krabe final logo image.png'}" alt="${v.color || 'Variant'}">
                 </button>
               `).join('');
             }
@@ -1803,7 +1803,7 @@
               }
 
               const rPrice = Number(rDef.price) || 0;
-              const rImg = rDef.main_image || 'assets/brand/krabe main logo.svg';
+              const rImg = rDef.main_image || 'assets/brand/krabe final logo image.png';
               const rDefSize = rDef.size || 'M';
               const catClean = (rp.category || 'native').toLowerCase();
               const badgeHTML = typeof window.getProductBadgesHTML === 'function'

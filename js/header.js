@@ -29,7 +29,7 @@
           <!-- Official Brand Wordmark Logo (Left Positioned) -->
           <div class="brand-logo-wrap">
             <a href="index.html" aria-label="Krabe Kollection Home">
-              <img src="assets/brand/krabe main logo.svg" alt="Krabe Kollection" class="brand-logo-img">
+              <img src="assets/brand/krabe final logo image.png" alt="Krabe Kollection" class="brand-logo-img">
             </a>
           </div>
 
@@ -40,6 +40,7 @@
             <a href="shop.html?category=native" class="nav-link nav-link-extra body-14" data-link="native">Native Wear</a>
             <a href="shop.html?category=streetwear" class="nav-link nav-link-extra body-14" data-link="streetwear">Streetwear</a>
             <a href="about.html" class="nav-link nav-link-extra body-14" data-link="about">Our Story</a>
+            <a href="admin.html" class="nav-link nav-link-extra body-14 js-admin-nav-link" data-link="admin" style="display: none; color: var(--color-gold, #C58A55); font-weight: 700;">Atelier Admin</a>
           </nav>
 
           <!-- Header Utilities (Search, Account, WhatsApp, Cart, 3-Dot Menu) -->
@@ -93,7 +94,7 @@
     return `
       <div class="mobile-nav-drawer" id="mobileNavDrawer" role="dialog" aria-modal="true">
         <div class="mobile-nav-header">
-          <img src="assets/brand/krabe main logo.svg" alt="Krabe Logo" style="height: 34px;">
+          <img src="assets/brand/krabe final logo image.png" alt="Krabe Logo" style="height: 34px;">
           <button type="button" class="cart-close-btn" id="mobileNavClose" aria-label="Close Menu">
             <svg style="width: 22px; height: 22px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
@@ -107,8 +108,9 @@
           <a href="shop.html?category=native" class="body-16" data-link="native">Native &amp; Agbada</a>
           <a href="shop.html?category=formal" class="body-16" data-link="formal">English &amp; Suiting</a>
           <a href="shop.html?category=streetwear" class="body-16" data-link="streetwear">Luxury Streetwear</a>
-          <a href="about.html" class="body-16" data-link="about">About Us</a>
+          <a href="about.html" class="body-16" data-link="about">Our Story</a>
           <a href="account.html" class="body-16" id="mobileAccountLink" data-link="account">Sign In / Register</a>
+          <a href="admin.html" class="body-16 js-admin-nav-link" data-link="admin" style="display: none; color: var(--color-gold, #C58A55); font-weight: 700;">Atelier Backoffice &rarr;</a>
           <a href="help.html" class="body-16" data-link="help">Support &amp; Studio Address</a>
         </nav>
 

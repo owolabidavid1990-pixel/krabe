@@ -89,7 +89,7 @@
       // Load avatar strictly from public.profile (no fallback to user_metadata)
       const client = getClient();
       if (client) {
-        client.from('profile').select('avatar_url, name').eq('id', user.id).maybeSingle()
+        client.from('profile').select('avatar_url, name, role').eq('id', user.id).maybeSingle()
           .then(({ data: profile }) => {
             const profileAvatar = profile?.avatar_url || null;
             const priorityName = profile?.name || fullName;
@@ -97,6 +97,18 @@
               accountBtns.forEach(btn => {
                 renderHeaderAccountBtn(btn, profileAvatar, priorityName, initials);
               });
+            }
+
+            // Sync Admin Navigation Links & Account Page Portal Link strictly from database role
+            const isStaff = profile?.role === 'admin' || profile?.role === 'super admin';
+
+            document.querySelectorAll('.js-admin-nav-link').forEach(link => {
+              link.style.display = isStaff ? '' : 'none';
+            });
+
+            const accountAdminBtn = document.getElementById('accountAdminPortalBtn');
+            if (accountAdminBtn) {
+              accountAdminBtn.style.display = isStaff ? 'inline-flex' : 'none';
             }
           })
           .catch(() => {});
@@ -127,6 +139,12 @@
       mobileAccountLinks.forEach(link => {
         link.textContent = 'Sign In / Register';
       });
+
+      document.querySelectorAll('.js-admin-nav-link').forEach(link => {
+        link.style.display = 'none';
+      });
+      const accountAdminBtn = document.getElementById('accountAdminPortalBtn');
+      if (accountAdminBtn) accountAdminBtn.style.display = 'none';
 
       const signOutBtn = document.getElementById('krabeMobileSignOutBtn');
       if (signOutBtn) signOutBtn.remove();
@@ -194,6 +212,12 @@
           if (finalName) fullName = finalName;
           const finalPhone = profile.phone || profile.phone_number;
           if (finalPhone) phone = finalPhone;
+
+          const isStaff = profile.role === 'admin' || profile.role === 'super admin';
+          const accountAdminBtn = document.getElementById('accountAdminPortalBtn');
+          if (accountAdminBtn) {
+            accountAdminBtn.style.display = isStaff ? 'inline-flex' : 'none';
+          }
         }
       } catch (e) {
         // Fallback to auth metadata

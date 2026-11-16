@@ -3,11 +3,11 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Atelier Backoffice &amp; Admin — Krabe Kollection</title>
+  <title>Atelier Backoffice &amp; Admin &middot; Krabe Kollection</title>
   <meta name="description" content="Krabe Kollection Atelier &amp; Operations Management Portal. Manage Made-to-Order fulfillments, log WhatsApp bespoke commissions, and supervise staff accounts.">
 
   <!-- Favicon -->
-  <link rel="icon" type="image/svg+xml" href="assets/brand/krabe main logo.svg">
+  <link rel="icon" type="image/png" href="assets/brand/krabe final logo image.png">
   <link rel="alternate icon" type="image/png" href="assets/brand/kraberefined-logo-blue.png">
 
   <!-- Google Web Fonts -->
@@ -17,48 +17,205 @@
 
   <!-- Core Stylesheet -->
   <link rel="stylesheet" href="css/styles.css">
+
+  <style>
+    /* Admin Page Specific Refinements */
+    .admin-subbar {
+      background: #121920;
+      color: #FFFFFF;
+      padding: 12px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+    .admin-subbar-left {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+    .admin-subbar-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      padding: 3px 10px;
+      border-radius: 20px;
+      background: rgba(68, 99, 123, 0.35);
+      border: 1px solid rgba(68, 99, 123, 0.6);
+      color: #90CDF4;
+    }
+    .admin-subbar-right {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+    .admin-live-beacon {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #10B981;
+      box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.25);
+      display: inline-block;
+    }
+    .admin-refresh-btn {
+      background: transparent;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      color: #FFFFFF;
+      padding: 4px 10px;
+      border-radius: 4px;
+      font-size: 11px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      transition: all 0.2s ease;
+    }
+    .admin-refresh-btn:hover {
+      background: rgba(255, 255, 255, 0.1);
+      border-color: #FFFFFF;
+    }
+    .admin-loading-row {
+      text-align: center;
+      padding: 36px 16px;
+      color: var(--color-text-muted);
+      font-size: 14px;
+    }
+    .admin-empty-state {
+      text-align: center;
+      padding: 48px 16px;
+      color: var(--color-text-muted);
+    }
+    .admin-empty-icon {
+      font-size: 32px;
+      margin-bottom: 8px;
+      display: block;
+    }
+    .admin-item-preview-img {
+      width: 44px;
+      height: 56px;
+      object-fit: cover;
+      border-radius: 3px;
+      border: 1px solid var(--color-border);
+      flex-shrink: 0;
+      background: #ECEFF1;
+    }
+    .order-status-badge {
+      display: inline-block;
+      padding: 3px 8px;
+      border-radius: 4px;
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: capitalize;
+    }
+    .status-badge-placed { background: #FEF3C7; color: #92400E; }
+    .status-badge-payment-confirmed,
+    .status-badge-order-confirmed { background: #EFF6FF; color: #1E40AF; }
+    .status-badge-processing-order { background: #E0E7FF; color: #3730A3; }
+    .status-badge-order-ready { background: #F3E8FF; color: #6B21A8; }
+    .status-badge-dispatched { background: #ECFDF5; color: #065F46; }
+    .status-badge-delivered { background: #DEF7EC; color: #03543F; font-weight: 700; }
+    .status-badge-cancelled { background: #FEE2E2; color: #991B1B; }
+    .payment-pill-success { background: #DEF7EC; color: #03543F; padding: 2px 6px; border-radius: 3px; font-size: 10px; font-weight: 700; }
+    .payment-pill-pending { background: #FEF3C7; color: #92400E; padding: 2px 6px; border-radius: 3px; font-size: 10px; font-weight: 700; }
+    .payment-pill-failed { background: #FEE2E2; color: #991B1B; padding: 2px 6px; border-radius: 3px; font-size: 10px; font-weight: 700; }
+    .balance-callout {
+      padding: 6px 10px;
+      background: #FFFBEB;
+      border: 1px solid #FDE68A;
+      border-radius: 4px;
+      color: #92400E;
+      font-weight: 700;
+      display: inline-block;
+    }
+    .balance-settled {
+      color: #047857;
+      font-weight: 700;
+    }
+    .catalog-toggle-btn {
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-size: 11px;
+      font-weight: 600;
+      cursor: pointer;
+      border: 1px solid var(--color-border);
+      background: #FFFFFF;
+      transition: all 0.2s ease;
+    }
+    .catalog-toggle-btn.is-active {
+      background: #DEF7EC;
+      color: #03543F;
+      border-color: #31C48D;
+    }
+    .catalog-toggle-btn.is-sold-out {
+      background: #FEE2E2;
+      color: #991B1B;
+      border-color: #F87171;
+    }
+    .modal-detail-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin-bottom: 20px;
+    }
+    @media (max-width: 768px) {
+      .modal-detail-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
 </head>
 <body class="admin-body">
 
   <!-- =========================================================================
-       1. TOP BACKOFFICE NAVIGATION BAR
+       1. GLOBAL STORE HEADER (Standard Reusable Site Header)
        ========================================================================= -->
-  <header class="admin-navbar">
-    <div class="admin-nav-left">
-      <a href="admin.html" class="admin-brand">
-        <img src="assets/brand/krabe main logo.svg" alt="Krabe Kollection">
-        <span class="admin-brand-tag body-12">Atelier Operations</span>
-      </a>
-      <a href="index.html" class="store-link-btn body-12" title="Open Customer Storefront in new tab" target="_blank">
-        <span>&larr; View Live Store</span>
-      </a>
-    </div>
-
-    <div class="admin-nav-right">
-      <!-- Role Switcher (For Prototype Evaluation) -->
-      <div class="role-switcher-pill body-12">
-        <span class="role-switcher-label">Active Role:</span>
-        <select class="role-select body-12" id="roleSelector" onchange="toggleAdminRole(this.value)" aria-label="Change simulated admin role">
-          <option value="super_admin" selected>Super Admin (David)</option>
-          <option value="staff">Staff / Master Tailor</option>
-        </select>
-      </div>
-
-      <!-- User Profile -->
-      <div class="admin-user-profile">
-        <div class="admin-avatar body-14" id="userAvatar">DA</div>
-        <div style="display: flex; flex-direction: column;">
-          <span class="body-14" style="font-weight: 700; color: #FFFFFF;" id="userName">David (Owner)</span>
-          <span class="body-12" style="color: var(--color-gold);" id="userRoleBadge">Super Admin</span>
-        </div>
-      </div>
-    </div>
-  </header>
+  <div id="krabeHeader"></div>
 
   <!-- =========================================================================
-       2. ADMIN SHELL: SIDEBAR + MAIN CONTENT WORKSPACE
+       2. ATELIER OPERATIONS BACKOFFICE BAR
        ========================================================================= -->
-  <div class="admin-shell">
+  <div class="admin-subbar" id="adminSubbar" style="display: none;">
+    <div class="admin-subbar-left">
+      <span class="admin-subbar-badge">
+        <span class="admin-live-beacon"></span> Atelier Backoffice
+      </span>
+      <span class="body-12" style="color: rgba(255, 255, 255, 0.7);" id="adminActiveTabIndicator">
+        Dashboard Overview
+      </span>
+    </div>
+
+    <div class="admin-subbar-right">
+      <button type="button" class="admin-refresh-btn" onclick="refreshAdminData()" title="Reload data from database">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/></svg>
+        <span>Refresh Data</span>
+      </button>
+
+      <!-- Active Staff / Super Admin Profile -->
+      <div class="admin-user-profile" style="padding: 0;">
+        <div class="admin-avatar body-12" id="userAvatar" style="width: 28px; height: 28px; font-size: 11px;">DA</div>
+        <div style="display: flex; flex-direction: column;">
+          <span class="body-12" style="font-weight: 700; color: #FFFFFF;" id="userName">Staff</span>
+          <span class="body-10" style="color: var(--color-gold);" id="userRoleBadge">Super Admin</span>
+        </div>
+      </div>
+
+      <!-- Live Storefront Link -->
+      <a href="index.html" class="store-link-btn body-12" title="Open Customer Storefront" target="_blank" style="margin: 0; padding: 4px 10px;">
+        <span>Store &rarr;</span>
+      </a>
+    </div>
+  </div>
+
+  <!-- =========================================================================
+       3. MAIN ADMIN WORKSPACE SHELL (Sidebar + Views)
+       ========================================================================= -->
+  <div class="admin-shell" id="adminMainWorkspace" style="display: none;">
 
     <!-- SIDEBAR NAVIGATION -->
     <aside class="admin-sidebar" aria-label="Admin Navigation">
@@ -73,23 +230,34 @@
         <button type="button" class="admin-nav-item body-14" data-tab="rtw" onclick="switchAdminTab('rtw', this)">
           <div class="admin-nav-item-content">
             <span class="admin-nav-icon">🛍️</span>
-            <span>Made-to-Order Orders</span>
+            <span>Made-to-Order</span>
           </div>
-          <span class="admin-nav-pill body-10" id="rtwNavCount">18</span>
+          <span class="admin-nav-pill body-10" id="rtwNavCount">0</span>
         </button>
         <button type="button" class="admin-nav-item body-14" data-tab="bespoke" onclick="switchAdminTab('bespoke', this)">
           <div class="admin-nav-item-content">
             <span class="admin-nav-icon">🪡</span>
             <span>Bespoke (WhatsApp)</span>
           </div>
-          <span class="admin-nav-pill gold body-10" id="bespokeNavCount">12</span>
+          <span class="admin-nav-pill gold body-10" id="bespokeNavCount">0</span>
         </button>
         <button type="button" class="admin-nav-item body-14" data-tab="fittings" onclick="switchAdminTab('fittings', this)">
           <div class="admin-nav-item-content">
             <span class="admin-nav-icon">📅</span>
             <span>Studio Fittings</span>
           </div>
-          <span class="admin-nav-pill body-10">4</span>
+          <span class="admin-nav-pill body-10" id="fittingsNavCount">0</span>
+        </button>
+      </div>
+
+      <div class="admin-sidebar-section">
+        <div class="admin-sidebar-title body-10">Atelier Inventory</div>
+        <button type="button" class="admin-nav-item body-14" data-tab="catalog" onclick="switchAdminTab('catalog', this)">
+          <div class="admin-nav-item-content">
+            <span class="admin-nav-icon">🏷️</span>
+            <span>Product Catalog</span>
+          </div>
+          <span class="admin-nav-pill body-10" id="catalogNavCount">0</span>
         </button>
       </div>
 
@@ -98,9 +266,9 @@
         <button type="button" class="admin-nav-item body-14" data-tab="vault" onclick="switchAdminTab('vault', this)">
           <div class="admin-nav-item-content">
             <span class="admin-nav-icon">📐</span>
-            <span>Measurement Vault</span>
+            <span>Client Vault &amp; Sizing</span>
           </div>
-          <span class="admin-nav-pill body-10">142</span>
+          <span class="admin-nav-pill body-10" id="vaultNavCount">0</span>
         </button>
       </div>
 
@@ -109,14 +277,14 @@
         <button type="button" class="admin-nav-item body-14" data-tab="users" onclick="switchAdminTab('users', this)" id="navItemUsers">
           <div class="admin-nav-item-content">
             <span class="admin-nav-icon">👥</span>
-            <span>User Management</span>
+            <span>Staff &amp; Users</span>
           </div>
           <span class="admin-nav-pill super body-10">Super</span>
         </button>
       </div>
     </aside>
 
-    <!-- MAIN ADMIN CONTENT -->
+    <!-- MAIN WORKSPACE VIEWS -->
     <main class="admin-main">
 
       <!-- =====================================================================
@@ -130,23 +298,20 @@
           </div>
           <div class="admin-header-actions">
             <button type="button" class="btn btn-primary body-14" onclick="openBespokeModal()" style="padding: 10px 18px;">
-              + Create Bespoke Order (WhatsApp)
-            </button>
-            <button type="button" class="btn btn-outline super-admin-action body-14" onclick="openCreateUserModal()" style="padding: 10px 18px;">
-              + Create User by Email
+              + Log Bespoke Commission
             </button>
           </div>
         </div>
 
-        <!-- 4 Key Metric Cards -->
+        <!-- 4 Key Metric Cards (Dynamic Live Data) -->
         <div class="admin-stats-grid">
           <div class="admin-stat-card">
             <div class="admin-stat-header">
-              <span class="admin-stat-label body-12">Monthly Gross Revenue</span>
+              <span class="admin-stat-label body-12">Total Gross Sales</span>
               <span class="admin-stat-icon body-18">💰</span>
             </div>
-            <div class="admin-stat-value body-20" style="font-weight: 700;">₦14,850,000</div>
-            <div class="admin-stat-trend body-12">▲ 18.4% vs last month (Lagos &amp; Diaspora)</div>
+            <div class="admin-stat-value body-20" id="kpiGrossRevenue" style="font-weight: 700;">Loading...</div>
+            <div class="admin-stat-trend body-12">Paid Made-to-Order &amp; Bespoke</div>
           </div>
 
           <div class="admin-stat-card gold">
@@ -154,8 +319,8 @@
               <span class="admin-stat-label body-12">Active Made-to-Order</span>
               <span class="admin-stat-icon body-18">📦</span>
             </div>
-            <div class="admin-stat-value body-20" id="kpiRtwCount" style="font-weight: 700;">18 Orders</div>
-            <div class="admin-stat-trend body-12">Crafted on demand from fabric vault</div>
+            <div class="admin-stat-value body-20" id="kpiRtwCount" style="font-weight: 700;">Loading...</div>
+            <div class="admin-stat-trend body-12">In production / awaiting dispatch</div>
           </div>
 
           <div class="admin-stat-card indigo">
@@ -163,68 +328,44 @@
               <span class="admin-stat-label body-12">Bespoke Commissions</span>
               <span class="admin-stat-icon body-18">🪡</span>
             </div>
-            <div class="admin-stat-value body-20" id="kpiBespokeCount" style="font-weight: 700;">12 Jobs</div>
-            <div class="admin-stat-trend body-12">All agreed &amp; logged via WhatsApp</div>
+            <div class="admin-stat-value body-20" id="kpiBespokeCount" style="font-weight: 700;">Loading...</div>
+            <div class="admin-stat-trend body-12">Active custom atelier commissions</div>
           </div>
 
           <div class="admin-stat-card green">
             <div class="admin-stat-header">
-              <span class="admin-stat-label body-12">Today's Studio Fittings</span>
+              <span class="admin-stat-label body-12">Upcoming Studio Fittings</span>
               <span class="admin-stat-icon body-18">👔</span>
             </div>
-            <div class="admin-stat-value body-20" style="font-weight: 700;">4 Clients</div>
-            <div class="admin-stat-trend neutral body-12">Victoria Island Flagship Studio</div>
+            <div class="admin-stat-value body-20" id="kpiFittingsCount" style="font-weight: 700;">Loading...</div>
+            <div class="admin-stat-trend neutral body-12">Confirmed studio appointments</div>
           </div>
         </div>
 
-        <!-- Priority Workshop Urgency Cards -->
-        <div class="admin-card">
+        <!-- Priority Workshop Urgency / Recent Activity -->
+        <div class="admin-card" style="margin-top: 24px;">
           <div class="admin-card-header">
-            <h2 class="admin-card-title h3">⚠️ Priority Fulfillment &amp; Fitting Alerts</h2>
-            <span class="body-12" style="color: var(--color-text-muted);">Real-time Atelier Tasks</span>
+            <div>
+              <h2 class="admin-card-title h3">⚡ Priority Orders &amp; Workshop Activity</h2>
+              <span class="body-12" style="color: var(--color-text-muted);">Real-time action items across the atelier</span>
+            </div>
+            <button type="button" class="btn btn-outline body-12" onclick="refreshAdminData()" style="padding: 6px 12px;">Refresh</button>
           </div>
           <div class="admin-table-wrap">
-            <table class="admin-table body-14">
+            <table class="admin-table body-14" id="dashboardPriorityTable">
               <thead>
                 <tr class="body-12">
-                  <th>Job / Order</th>
+                  <th>Order / Ref</th>
                   <th>Client</th>
-                  <th>Type</th>
-                  <th>Target Milestone / Deadline</th>
-                  <th>Assigned Tailor</th>
-                  <th>Quick Action</th>
+                  <th>Category</th>
+                  <th>Amount / Status</th>
+                  <th>Date</th>
+                  <th>Action</th>
                 </tr>
               </thead>
-              <tbody>
+              <tbody id="dashboardPriorityBody">
                 <tr>
-                  <td><strong>#BESPOKE-2026-088</strong></td>
-                  <td>Chief Femi Coker</td>
-                  <td><span class="admin-nav-pill gold body-10">Bespoke Agbada</span></td>
-                  <td><strong style="color: #C05621;">Fitting in 3 Days (Oct 9)</strong></td>
-                  <td>Master Tailor Ibrahim</td>
-                  <td>
-                    <button type="button" class="btn btn-outline body-12" style="padding: 5px 10px;" onclick="switchAdminTab('bespoke')">View Commission &rarr;</button>
-                  </td>
-                </tr>
-                <tr>
-                  <td><strong>#KB-2026-9415</strong></td>
-                  <td>Dr. Tunde Alabi</td>
-                  <td><span class="admin-nav-pill body-10">Made-to-Order Kaftan</span></td>
-                  <td><strong style="color: #744210;">Needs Quality Inspection</strong></td>
-                  <td>Atelier Packing Team</td>
-                  <td>
-                    <button type="button" class="btn btn-outline body-12" style="padding: 5px 10px;" onclick="switchAdminTab('rtw')">Update Status &rarr;</button>
-                  </td>
-                </tr>
-                <tr>
-                  <td><strong>#APPT-104</strong></td>
-                  <td>Senator Bola Davies</td>
-                  <td><span class="admin-nav-pill body-10">Studio Fitting</span></td>
-                  <td><strong>Today at 2:30 PM (VI Studio)</strong></td>
-                  <td>Master Tailor Ibrahim</td>
-                  <td>
-                    <a href="https://wa.me/2348000000000" target="_blank" class="btn btn-outline body-12" style="padding: 5px 10px; color: var(--color-whatsapp);">Send WhatsApp Reminder</a>
-                  </td>
+                  <td colspan="6" class="admin-loading-row">Fetching live atelier activity...</td>
                 </tr>
               </tbody>
             </table>
@@ -233,18 +374,20 @@
       </section>
 
       <!-- =====================================================================
-           VIEW 2: MADE-TO-ORDER (ON-DEMAND) ORDERS — MANUAL STATUS MANAGEMENT
+           VIEW 2: MADE-TO-ORDER ORDERS
            ===================================================================== -->
       <section class="admin-tab-view" id="view-rtw" style="display: none;">
         <div class="admin-page-header">
           <div>
-            <h1 class="admin-header-title h1">Made-to-Order (On-Demand) Orders</h1>
+            <h1 class="admin-header-title h1">Made-to-Order Store Orders</h1>
             <p class="admin-header-sub body-14">
-              <strong>Crafted on Demand:</strong> Each piece is tailored upon order from archive fabrics. Atelier staff manually updates milestones from fabric cutting to inspection and dispatch.
+              Real customer orders placed on the storefront. Track payments, tailor on-demand, and advance fulfillment statuses.
             </p>
           </div>
           <div class="admin-header-actions">
-            <button type="button" class="btn btn-outline body-12" onclick="exportOrdersCsv()" style="padding: 9px 16px;">Export CSV</button>
+            <button type="button" class="btn btn-outline body-12" onclick="exportOrdersCsv()" style="padding: 9px 16px;">
+              Export CSV
+            </button>
           </div>
         </div>
 
@@ -252,16 +395,20 @@
           <div class="admin-card-header">
             <div class="admin-card-title h3">
               <span>All Web Store Purchases</span>
-              <span class="admin-nav-pill body-10" id="rtwTableCount">4 Displayed</span>
+              <span class="admin-nav-pill body-10" id="rtwTableCount">0 Loaded</span>
             </div>
             <div class="admin-table-controls">
-              <input type="text" class="admin-search-input body-12" id="rtwSearchInput" placeholder="Search by Order #, Client, Phone..." onkeyup="filterRtwTable()">
+              <input type="text" class="admin-search-input body-12" id="rtwSearchInput" placeholder="Search by Order #, Client, Phone..." oninput="filterRtwTable()">
               <select class="admin-filter-select body-12" id="rtwStatusFilter" onchange="filterRtwTable()">
                 <option value="all">All Statuses</option>
-                <option value="paid">Paid &amp; Processing</option>
-                <option value="inspected">Quality Inspected &amp; Steamed</option>
-                <option value="transit">In Transit (With Courier)</option>
-                <option value="delivered">Delivered &amp; Completed</option>
+                <option value="placed">Placed</option>
+                <option value="payment confirmed">Payment Confirmed</option>
+                <option value="order confirmed">Order Confirmed</option>
+                <option value="processing order">Processing Order</option>
+                <option value="order ready">Order Ready</option>
+                <option value="dispatched">Dispatched</option>
+                <option value="delivered">Delivered</option>
+                <option value="cancelled">Cancelled</option>
               </select>
             </div>
           </div>
@@ -274,190 +421,14 @@
                   <th>Client &amp; Contact</th>
                   <th>Garment Items</th>
                   <th>Total &amp; Payment</th>
-                  <th>Fulfillment Type</th>
-                  <th>Manual Status Selector</th>
+                  <th>Fulfillment Option</th>
+                  <th>Fulfillment Status</th>
                   <th>Actions</th>
                 </tr>
               </thead>
-              <tbody>
-                <!-- RTW Order 1 -->
-                <tr data-order="KB-2026-9411" data-status="transit">
-                  <td>
-                    <strong>#KB-2026-9411</strong>
-                    <div class="body-10" style="color: var(--color-text-muted);">04 Oct 2026 &bull; 14:22</div>
-                  </td>
-                  <td>
-                    <strong>Olumide Bakare</strong>
-                    <div class="body-12" style="color: var(--color-text-muted);">+234 803 123 4567</div>
-                    <div class="body-10" style="color: var(--color-text-muted);">Lekki Phase 1, Lagos</div>
-                  </td>
-                  <td>
-                    <div style="display: flex; align-items: center; gap: 8px;">
-                      <img src="assets/lookbook/lookbook-agbada-editorial.jpg" alt="" style="width: 38px; height: 48px; object-fit: cover; border-radius: 2px;">
-                      <div>
-                        <div class="body-12" style="font-weight: 600; color: var(--color-obsidian);">Monarch Navy Agbada Set</div>
-                        <div class="body-10" style="color: var(--color-text-muted);">Size: XL &bull; Qty: 1</div>
-                      </div>
-                    </div>
-                  </td>
-                  <td>
-                    <strong class="body-14" style="color: var(--color-obsidian);">₦185,000</strong>
-                    <div class="body-10" style="color: #2B6CB0; font-weight: 600;">Paystack (Card)</div>
-                  </td>
-                  <td>
-                    <span class="body-12" style="font-weight: 500;">Doorstep Delivery</span>
-                    <div class="body-10" style="color: var(--color-text-muted);">GIG Logistics (#GIG-8821)</div>
-                  </td>
-                  <td>
-                    <select class="admin-status-select status-transit body-12" onchange="handleRtwStatusChange(this, 'KB-2026-9411')" aria-label="Order status selector">
-                      <option value="paid">Paid &amp; Processing</option>
-                      <option value="inspected">Inspected &amp; Steamed</option>
-                      <option value="transit" selected>In Transit (Courier)</option>
-                      <option value="delivered">Delivered &amp; Completed</option>
-                      <option value="cancelled">Cancelled &amp; Refunded</option>
-                    </select>
-                  </td>
-                  <td>
-                    <div style="display: flex; gap: 6px;">
-                      <a href="https://wa.me/2348031234567" target="_blank" class="btn btn-outline body-12" style="padding: 4px 8px; color: var(--color-whatsapp);" title="Chat on WhatsApp">💬</a>
-                      <button type="button" class="btn btn-outline body-12" style="padding: 4px 8px;" onclick="showToast('Packing slip generated for #KB-2026-9411')">📄</button>
-                    </div>
-                  </td>
-                </tr>
-
-                <!-- RTW Order 2 -->
-                <tr data-order="KB-2026-9415" data-status="paid">
-                  <td>
-                    <strong>#KB-2026-9415</strong>
-                    <div class="body-10" style="color: var(--color-text-muted);">05 Oct 2026 &bull; 09:14</div>
-                  </td>
-                  <td>
-                    <strong>Dr. Tunde Alabi</strong>
-                    <div class="body-12" style="color: var(--color-text-muted);">+234 812 998 1234</div>
-                    <div class="body-10" style="color: var(--color-text-muted);">Maitama, Abuja</div>
-                  </td>
-                  <td>
-                    <div style="display: flex; align-items: center; gap: 8px;">
-                      <img src="assets/lookbook/lookbook-native-editorial.jpg" alt="" style="width: 38px; height: 48px; object-fit: cover; border-radius: 2px;">
-                      <div>
-                        <div class="body-12" style="font-weight: 600; color: var(--color-obsidian);">Regal Emerald 2-Piece Senator</div>
-                        <div class="body-10" style="color: var(--color-text-muted);">Size: L &bull; Qty: 1</div>
-                      </div>
-                    </div>
-                  </td>
-                  <td>
-                    <strong class="body-14" style="color: var(--color-obsidian);">₦240,000</strong>
-                    <div class="body-10" style="color: #2B6CB0; font-weight: 600;">Paystack (Bank Transfer)</div>
-                  </td>
-                  <td>
-                    <span class="body-12" style="font-weight: 500;">Doorstep (Abuja Express)</span>
-                    <div class="body-10" style="color: var(--color-text-muted);">DHL Express Nigeria</div>
-                  </td>
-                  <td>
-                    <select class="admin-status-select status-paid body-12" onchange="handleRtwStatusChange(this, 'KB-2026-9415')" aria-label="Order status selector">
-                      <option value="paid" selected>Paid &amp; Processing</option>
-                      <option value="inspected">Inspected &amp; Steamed</option>
-                      <option value="transit">In Transit (Courier)</option>
-                      <option value="delivered">Delivered &amp; Completed</option>
-                      <option value="cancelled">Cancelled &amp; Refunded</option>
-                    </select>
-                  </td>
-                  <td>
-                    <div style="display: flex; gap: 6px;">
-                      <a href="https://wa.me/2348129981234" target="_blank" class="btn btn-outline body-12" style="padding: 4px 8px; color: var(--color-whatsapp);" title="Chat on WhatsApp">💬</a>
-                      <button type="button" class="btn btn-outline body-12" style="padding: 4px 8px;" onclick="showToast('Packing slip generated for #KB-2026-9415')">📄</button>
-                    </div>
-                  </td>
-                </tr>
-
-                <!-- RTW Order 3 -->
-                <tr data-order="KB-2026-9408" data-status="inspected">
-                  <td>
-                    <strong>#KB-2026-9408</strong>
-                    <div class="body-10" style="color: var(--color-text-muted);">03 Oct 2026 &bull; 18:40</div>
-                  </td>
-                  <td>
-                    <strong>Chioma Okonjo</strong>
-                    <div class="body-12" style="color: var(--color-text-muted);">+234 701 555 7890</div>
-                    <div class="body-10" style="color: var(--color-text-muted);">Victoria Island, Lagos</div>
-                  </td>
-                  <td>
-                    <div style="display: flex; align-items: center; gap: 8px;">
-                      <img src="assets/lookbook/lookbook-streetwear-editorial.jpg" alt="" style="width: 38px; height: 48px; object-fit: cover; border-radius: 2px;">
-                      <div>
-                        <div class="body-12" style="font-weight: 600; color: var(--color-obsidian);">Eko Slate Boxy Oversized Tee</div>
-                        <div class="body-10" style="color: var(--color-text-muted);">Size: M &bull; Qty: 2</div>
-                      </div>
-                    </div>
-                  </td>
-                  <td>
-                    <strong class="body-14" style="color: var(--color-obsidian);">₦110,000</strong>
-                    <div class="body-10" style="color: #2B6CB0; font-weight: 600;">Paystack (Card)</div>
-                  </td>
-                  <td>
-                    <span class="body-12" style="font-weight: 600; color: var(--color-gold);">Studio Pickup (VI)</span>
-                    <div class="body-10" style="color: var(--color-text-muted);">Awaiting Client Collection</div>
-                  </td>
-                  <td>
-                    <select class="admin-status-select status-inspected body-12" onchange="handleRtwStatusChange(this, 'KB-2026-9408')" aria-label="Order status selector">
-                      <option value="paid">Paid &amp; Processing</option>
-                      <option value="inspected" selected>Inspected &amp; Steamed</option>
-                      <option value="transit">In Transit (Courier)</option>
-                      <option value="delivered">Delivered &amp; Completed</option>
-                      <option value="cancelled">Cancelled &amp; Refunded</option>
-                    </select>
-                  </td>
-                  <td>
-                    <div style="display: flex; gap: 6px;">
-                      <a href="https://wa.me/2347015557890" target="_blank" class="btn btn-outline body-12" style="padding: 4px 8px; color: var(--color-whatsapp);" title="Chat on WhatsApp">💬</a>
-                      <button type="button" class="btn btn-outline body-12" style="padding: 4px 8px;" onclick="showToast('Packing slip generated for #KB-2026-9408')">📄</button>
-                    </div>
-                  </td>
-                </tr>
-
-                <!-- RTW Order 4 -->
-                <tr data-order="KB-2026-9399" data-status="delivered">
-                  <td>
-                    <strong>#KB-2026-9399</strong>
-                    <div class="body-10" style="color: var(--color-text-muted);">01 Oct 2026 &bull; 11:05</div>
-                  </td>
-                  <td>
-                    <strong>Babatunde Adeleke</strong>
-                    <div class="body-12" style="color: var(--color-text-muted);">+234 802 443 9988</div>
-                    <div class="body-10" style="color: var(--color-text-muted);">Ikoyi, Lagos</div>
-                  </td>
-                  <td>
-                    <div style="display: flex; align-items: center; gap: 8px;">
-                      <img src="assets/lookbook/lookbook-agbada-editorial.jpg" alt="" style="width: 38px; height: 48px; object-fit: cover; border-radius: 2px;">
-                      <div>
-                        <div class="body-12" style="font-weight: 600; color: var(--color-obsidian);">Monarch Navy Agbada Set</div>
-                        <div class="body-10" style="color: var(--color-text-muted);">Size: XXL &bull; Qty: 1</div>
-                      </div>
-                    </div>
-                  </td>
-                  <td>
-                    <strong class="body-14" style="color: var(--color-obsidian);">₦185,000</strong>
-                    <div class="body-10" style="color: #2B6CB0; font-weight: 600;">Bank Transfer Verified</div>
-                  </td>
-                  <td>
-                    <span class="body-12" style="font-weight: 500;">Doorstep Delivery</span>
-                    <div class="body-10" style="color: #38A169;">Delivered on 03 Oct</div>
-                  </td>
-                  <td>
-                    <select class="admin-status-select status-delivered body-12" onchange="handleRtwStatusChange(this, 'KB-2026-9399')" aria-label="Order status selector">
-                      <option value="paid">Paid &amp; Processing</option>
-                      <option value="inspected">Inspected &amp; Steamed</option>
-                      <option value="transit">In Transit (Courier)</option>
-                      <option value="delivered" selected>Delivered &amp; Completed</option>
-                      <option value="cancelled">Cancelled &amp; Refunded</option>
-                    </select>
-                  </td>
-                  <td>
-                    <div style="display: flex; gap: 6px;">
-                      <a href="https://wa.me/2348024439988" target="_blank" class="btn btn-outline body-12" style="padding: 4px 8px; color: var(--color-whatsapp);" title="Chat on WhatsApp">💬</a>
-                      <button type="button" class="btn btn-outline body-12" style="padding: 4px 8px;" onclick="showToast('Packing slip generated for #KB-2026-9399')">📄</button>
-                    </div>
-                  </td>
+              <tbody id="rtwTableBody">
+                <tr>
+                  <td colspan="7" class="admin-loading-row">Loading Made-to-Order orders...</td>
                 </tr>
               </tbody>
             </table>
@@ -466,19 +437,22 @@
       </section>
 
       <!-- =====================================================================
-           VIEW 3: BESPOKE COMMISSIONS (WHATSAPP DEALS) — MIGRATED PROCESS
+           VIEW 3: BESPOKE COMMISSIONS (WHATSAPP / STUDIO)
            ===================================================================== -->
       <section class="admin-tab-view" id="view-bespoke" style="display: none;">
         <div class="admin-page-header">
           <div>
-            <h1 class="admin-header-title h1">Bespoke Commissions (WhatsApp Deals)</h1>
+            <h1 class="admin-header-title h1">Bespoke Commissions &amp; Private Orders</h1>
             <p class="admin-header-sub body-14">
-              <strong>Atelier Workflow:</strong> All custom orders are initiated via WhatsApp or in-studio consultations. Once specifications and price are agreed, atelier staff logs the commission here and advances the manual milestones.
+              Custom commissions negotiated via WhatsApp or private atelier consultations. Log agreed quotes, deposits, and workshop milestones.
             </p>
           </div>
           <div class="admin-header-actions">
-            <button type="button" class="btn btn-primary body-14" onclick="openBespokeModal()" style="padding: 10px 20px;">
-              + Create Bespoke Order (From WhatsApp)
+            <button type="button" class="btn btn-primary body-14" onclick="openBespokeModal()" style="padding: 10px 18px;">
+              + Log Bespoke Commission
+            </button>
+            <button type="button" class="btn btn-outline body-12" onclick="exportBespokeCsv()" style="padding: 9px 16px;">
+              Export CSV
             </button>
           </div>
         </div>
@@ -487,17 +461,18 @@
           <div class="admin-card-header">
             <div class="admin-card-title h3">
               <span>Active Atelier Commissions</span>
-              <span class="admin-nav-pill gold body-10" id="bespokeTableCount">4 In Workshop</span>
+              <span class="admin-nav-pill gold body-10" id="bespokeTableCount">0 Active</span>
             </div>
             <div class="admin-table-controls">
-              <input type="text" class="admin-search-input body-12" id="bespokeSearchInput" placeholder="Search client, commission #, fabric..." onkeyup="filterBespokeTable()">
+              <input type="text" class="admin-search-input body-12" id="bespokeSearchInput" placeholder="Filter by Client, ID, Phone..." oninput="filterBespokeTable()">
               <select class="admin-filter-select body-12" id="bespokeMilestoneFilter" onchange="filterBespokeTable()">
                 <option value="all">All Milestones</option>
-                <option value="sourced">Fabric Sourced</option>
-                <option value="drafting">Pattern Drafting</option>
-                <option value="embroidery">Hand Embroidery</option>
-                <option value="fitting">Studio Fitting</option>
-                <option value="completed">Completed &amp; Dispatched</option>
+                <option value="placed">Placed / In Discussion</option>
+                <option value="order confirmed">Confirmed &amp; Sizing</option>
+                <option value="processing order">Fabric Cut &amp; Tailoring</option>
+                <option value="order ready">Ready for Fitting</option>
+                <option value="delivered">Completed &amp; Handed Over</option>
+                <option value="cancelled">Cancelled</option>
               </select>
             </div>
           </div>
@@ -506,180 +481,18 @@
             <table class="admin-table body-14" id="bespokeOrdersTable">
               <thead>
                 <tr class="body-12">
-                  <th>Commission # &amp; Date</th>
-                  <th>Client &amp; WhatsApp</th>
-                  <th>Garment &amp; Fabric Specs</th>
-                  <th>Agreed Price &amp; Deposit</th>
-                  <th>Assigned Tailor &amp; Due Date</th>
-                  <th>Manual Production Milestone</th>
+                  <th>Commission # / Date</th>
+                  <th>Client &amp; Contact</th>
+                  <th>Garment &amp; Specs</th>
+                  <th>Pricing &amp; Balance</th>
+                  <th>Target Deadline</th>
+                  <th>Milestone Status</th>
                   <th>Actions</th>
                 </tr>
               </thead>
               <tbody id="bespokeTableBody">
-                <!-- Bespoke Commission 1 -->
-                <tr data-commission="BESPOKE-2026-088" data-milestone="embroidery">
-                  <td>
-                    <strong>#BESPOKE-2026-088</strong>
-                    <div class="body-10" style="color: var(--color-text-muted);">Logged: 28 Sep 2026</div>
-                  </td>
-                  <td>
-                    <strong>Chief Femi Coker</strong>
-                    <div class="body-12" style="color: var(--color-text-muted);">+234 803 999 1122</div>
-                    <div class="body-10" style="color: var(--color-whatsapp); font-weight: 600;">✓ WhatsApp Deal</div>
-                  </td>
-                  <td>
-                    <div class="body-12" style="font-weight: 600; color: var(--color-obsidian);">Royal 3-Piece Silk Agbada</div>
-                    <div class="body-10" style="color: var(--color-text-muted);">Super 150s Navy Wool &bull; Gold Zari Thread</div>
-                    <button type="button" class="btn btn-outline body-10" style="padding: 2px 6px; margin-top: 4px;" onclick="viewMeasurementCard('Chief Femi Coker', '44', '20', '26', '36', '33')">View Measurements</button>
-                  </td>
-                  <td>
-                    <strong class="body-14" style="color: var(--color-obsidian);">₦450,000</strong>
-                    <div class="body-10" style="color: #2B6CB0;">₦300,000 Deposit Paid</div>
-                    <div class="body-10" style="color: #C05621; font-weight: 600;">₦150,000 Balance on Fitting</div>
-                  </td>
-                  <td>
-                    <strong class="body-12">Master Ibrahim</strong>
-                    <div class="body-10" style="color: #C05621; font-weight: 600;">Due: 09 Oct 2026</div>
-                  </td>
-                  <td>
-                    <select class="admin-status-select status-embroidery body-12" onchange="handleBespokeStatusChange(this, 'BESPOKE-2026-088')" aria-label="Bespoke milestone selector">
-                      <option value="sourced">1. Fabric Sourced &amp; Inspected</option>
-                      <option value="drafting">2. Pattern Drafting &amp; Cutting</option>
-                      <option value="embroidery" selected>3. Hand Embroidery &amp; Assembly</option>
-                      <option value="fitting">4. Studio Fitting &amp; Steaming</option>
-                      <option value="completed">5. Completed &amp; Dispatched</option>
-                    </select>
-                  </td>
-                  <td>
-                    <div style="display: flex; gap: 6px;">
-                      <a href="https://wa.me/2348039991122" target="_blank" class="btn btn-outline body-12" style="padding: 4px 8px; color: var(--color-whatsapp);" title="Open WhatsApp Chat">💬</a>
-                      <button type="button" class="btn btn-outline body-12" style="padding: 4px 8px;" onclick="printWorkshopCard('BESPOKE-2026-088')">🖨️</button>
-                    </div>
-                  </td>
-                </tr>
-
-                <!-- Bespoke Commission 2 -->
-                <tr data-commission="BESPOKE-2026-089" data-milestone="drafting">
-                  <td>
-                    <strong>#BESPOKE-2026-089</strong>
-                    <div class="body-10" style="color: var(--color-text-muted);">Logged: 02 Oct 2026</div>
-                  </td>
-                  <td>
-                    <strong>Tariq Bello</strong>
-                    <div class="body-12" style="color: var(--color-text-muted);">+234 818 776 3456</div>
-                    <div class="body-10" style="color: var(--color-whatsapp); font-weight: 600;">✓ WhatsApp Deal</div>
-                  </td>
-                  <td>
-                    <div class="body-12" style="font-weight: 600; color: var(--color-obsidian);">Midnight 2-Piece Senator</div>
-                    <div class="body-10" style="color: var(--color-text-muted);">Italian Cashmere Blend &bull; Minimalist Mandarin Collar</div>
-                    <button type="button" class="btn btn-outline body-10" style="padding: 2px 6px; margin-top: 4px;" onclick="viewMeasurementCard('Tariq Bello', '41', '19', '25', '33', '32')">View Measurements</button>
-                  </td>
-                  <td>
-                    <strong class="body-14" style="color: var(--color-obsidian);">₦280,000</strong>
-                    <div class="body-10" style="color: #38A169; font-weight: 600;">100% Fully Paid Upfront</div>
-                  </td>
-                  <td>
-                    <strong class="body-12">Amaka (Patternmaker)</strong>
-                    <div class="body-10" style="color: var(--color-text-muted);">Due: 14 Oct 2026</div>
-                  </td>
-                  <td>
-                    <select class="admin-status-select status-drafting body-12" onchange="handleBespokeStatusChange(this, 'BESPOKE-2026-089')" aria-label="Bespoke milestone selector">
-                      <option value="sourced">1. Fabric Sourced &amp; Inspected</option>
-                      <option value="drafting" selected>2. Pattern Drafting &amp; Cutting</option>
-                      <option value="embroidery">3. Hand Embroidery &amp; Assembly</option>
-                      <option value="fitting">4. Studio Fitting &amp; Steaming</option>
-                      <option value="completed">5. Completed &amp; Dispatched</option>
-                    </select>
-                  </td>
-                  <td>
-                    <div style="display: flex; gap: 6px;">
-                      <a href="https://wa.me/2348187763456" target="_blank" class="btn btn-outline body-12" style="padding: 4px 8px; color: var(--color-whatsapp);" title="Open WhatsApp Chat">💬</a>
-                      <button type="button" class="btn btn-outline body-12" style="padding: 4px 8px;" onclick="printWorkshopCard('BESPOKE-2026-089')">🖨️</button>
-                    </div>
-                  </td>
-                </tr>
-
-                <!-- Bespoke Commission 3 -->
-                <tr data-commission="BESPOKE-2026-090" data-milestone="fitting">
-                  <td>
-                    <strong>#BESPOKE-2026-090</strong>
-                    <div class="body-10" style="color: var(--color-text-muted);">Logged: 24 Sep 2026</div>
-                  </td>
-                  <td>
-                    <strong>Senator Bola Davies</strong>
-                    <div class="body-12" style="color: var(--color-text-muted);">+234 802 888 4433</div>
-                    <div class="body-10" style="color: var(--color-whatsapp); font-weight: 600;">✓ WhatsApp Deal</div>
-                  </td>
-                  <td>
-                    <div class="body-12" style="font-weight: 600; color: var(--color-obsidian);">Ivory Silk Brocade Kaftan Set</div>
-                    <div class="body-10" style="color: var(--color-text-muted);">Imported Lyon Silk Brocade &bull; Hand-stitched Cuffs</div>
-                    <button type="button" class="btn btn-outline body-10" style="padding: 2px 6px; margin-top: 4px;" onclick="viewMeasurementCard('Senator Bola Davies', '45', '20.5', '26.5', '38', '33.5')">View Measurements</button>
-                  </td>
-                  <td>
-                    <strong class="body-14" style="color: var(--color-obsidian);">₦350,000</strong>
-                    <div class="body-10" style="color: #2B6CB0;">₦200,000 Deposit Paid</div>
-                    <div class="body-10" style="color: #C05621; font-weight: 600;">₦150,000 Balance on Fitting</div>
-                  </td>
-                  <td>
-                    <strong class="body-12">Master Ibrahim</strong>
-                    <div class="body-10" style="color: #2B6CB0; font-weight: 600;">Fitting Scheduled Today</div>
-                  </td>
-                  <td>
-                    <select class="admin-status-select status-fitting body-12" onchange="handleBespokeStatusChange(this, 'BESPOKE-2026-090')" aria-label="Bespoke milestone selector">
-                      <option value="sourced">1. Fabric Sourced &amp; Inspected</option>
-                      <option value="drafting">2. Pattern Drafting &amp; Cutting</option>
-                      <option value="embroidery">3. Hand Embroidery &amp; Assembly</option>
-                      <option value="fitting" selected>4. Studio Fitting &amp; Steaming</option>
-                      <option value="completed">5. Completed &amp; Dispatched</option>
-                    </select>
-                  </td>
-                  <td>
-                    <div style="display: flex; gap: 6px;">
-                      <a href="https://wa.me/2348028884433" target="_blank" class="btn btn-outline body-12" style="padding: 4px 8px; color: var(--color-whatsapp);" title="Open WhatsApp Chat">💬</a>
-                      <button type="button" class="btn btn-outline body-12" style="padding: 4px 8px;" onclick="printWorkshopCard('BESPOKE-2026-090')">🖨️</button>
-                    </div>
-                  </td>
-                </tr>
-
-                <!-- Bespoke Commission 4 -->
-                <tr data-commission="BESPOKE-2026-085" data-milestone="completed">
-                  <td>
-                    <strong>#BESPOKE-2026-085</strong>
-                    <div class="body-10" style="color: var(--color-text-muted);">Logged: 15 Sep 2026</div>
-                  </td>
-                  <td>
-                    <strong>Dr. Nnamdi Eze</strong>
-                    <div class="body-12" style="color: var(--color-text-muted);">+234 803 777 5544</div>
-                    <div class="body-10" style="color: var(--color-whatsapp); font-weight: 600;">✓ WhatsApp Deal</div>
-                  </td>
-                  <td>
-                    <div class="body-12" style="font-weight: 600; color: var(--color-obsidian);">Velvet Lapel Bespoke Tuxedo</div>
-                    <div class="body-10" style="color: var(--color-text-muted);">Scabal Super 160s &bull; Silk Satin Facing</div>
-                    <button type="button" class="btn btn-outline body-10" style="padding: 2px 6px; margin-top: 4px;" onclick="viewMeasurementCard('Dr. Nnamdi Eze', '43', '19.5', '25.5', '35', '32.5')">View Measurements</button>
-                  </td>
-                  <td>
-                    <strong class="body-14" style="color: var(--color-obsidian);">₦520,000</strong>
-                    <div class="body-10" style="color: #38A169; font-weight: 600;">₦520,000 Settled in Full</div>
-                  </td>
-                  <td>
-                    <strong class="body-12">Master Ibrahim</strong>
-                    <div class="body-10" style="color: #38A169;">Dispatched &amp; Received</div>
-                  </td>
-                  <td>
-                    <select class="admin-status-select status-completed body-12" onchange="handleBespokeStatusChange(this, 'BESPOKE-2026-085')" aria-label="Bespoke milestone selector">
-                      <option value="sourced">1. Fabric Sourced &amp; Inspected</option>
-                      <option value="drafting">2. Pattern Drafting &amp; Cutting</option>
-                      <option value="embroidery">3. Hand Embroidery &amp; Assembly</option>
-                      <option value="fitting">4. Studio Fitting &amp; Steaming</option>
-                      <option value="completed" selected>5. Completed &amp; Dispatched</option>
-                    </select>
-                  </td>
-                  <td>
-                    <div style="display: flex; gap: 6px;">
-                      <a href="https://wa.me/2348037775544" target="_blank" class="btn btn-outline body-12" style="padding: 4px 8px; color: var(--color-whatsapp);" title="Open WhatsApp Chat">💬</a>
-                      <button type="button" class="btn btn-outline body-12" style="padding: 4px 8px;" onclick="printWorkshopCard('BESPOKE-2026-085')">🖨️</button>
-                    </div>
-                  </td>
+                <tr>
+                  <td colspan="7" class="admin-loading-row">Loading bespoke commissions...</td>
                 </tr>
               </tbody>
             </table>
@@ -688,93 +501,52 @@
       </section>
 
       <!-- =====================================================================
-           VIEW 4: STUDIO FITTINGS & APPOINTMENTS
+           VIEW 4: STUDIO FITTING APPOINTMENTS
            ===================================================================== -->
       <section class="admin-tab-view" id="view-fittings" style="display: none;">
         <div class="admin-page-header">
           <div>
-            <h1 class="admin-header-title h1">Lagos Studio Fittings Schedule</h1>
-            <p class="admin-header-sub body-14">Victoria Island Atelier Consultation &amp; Fitting Calendar (14A Akin Adesola St).</p>
+            <h1 class="admin-header-title h1">Private Studio Fittings &amp; Consultations</h1>
+            <p class="admin-header-sub body-14">
+              Private fitting reservations booked by clients on bespoke.html. Confirm requests, schedule measurements, and mark completions.
+            </p>
           </div>
         </div>
 
         <div class="admin-card">
           <div class="admin-card-header">
-            <h2 class="admin-card-title h3">Booked Fittings &amp; Consultations</h2>
-            <span class="admin-nav-pill body-10">4 Scheduled Today</span>
+            <div class="admin-card-title h3">
+              <span>Client Appointment Schedule</span>
+              <span class="admin-nav-pill body-10" id="fittingsTableCount">0 Bookings</span>
+            </div>
+            <div class="admin-table-controls">
+              <input type="text" class="admin-search-input body-12" id="fittingsSearchInput" placeholder="Filter by client name, notes..." oninput="filterFittingsTable()">
+              <select class="admin-filter-select body-12" id="fittingsStatusFilter" onchange="filterFittingsTable()">
+                <option value="all">All Appointments</option>
+                <option value="requested">Requested (Pending Confirmation)</option>
+                <option value="confirmed">Confirmed</option>
+                <option value="inprogress">In Progress</option>
+                <option value="done">Completed (Done)</option>
+              </select>
+            </div>
           </div>
+
           <div class="admin-table-wrap">
-            <table class="admin-table body-14">
+            <table class="admin-table body-14" id="fittingsTable">
               <thead>
                 <tr class="body-12">
-                  <th>Time Slot</th>
+                  <th>Date &amp; Time</th>
                   <th>Client Name</th>
-                  <th>Phone / Contact</th>
-                  <th>Consultation Stage</th>
-                  <th>Assigned Tailor</th>
+                  <th>Contact</th>
+                  <th>Session Types</th>
+                  <th>Client Notes</th>
                   <th>Appointment Status</th>
-                  <th>Action</th>
+                  <th>Actions</th>
                 </tr>
               </thead>
-              <tbody>
+              <tbody id="fittingsTableBody">
                 <tr>
-                  <td><strong class="body-12">Today &bull; 11:30 AM</strong></td>
-                  <td>Alhaji Kashim Shehu</td>
-                  <td class="body-12">+234 809 111 2233</td>
-                  <td>Initial Measurement &amp; Fabric Selection</td>
-                  <td>Master Tailor Ibrahim</td>
-                  <td>
-                    <select class="admin-status-select status-completed body-12" onchange="showToast('Status updated to Completed')">
-                      <option value="completed" selected>Completed</option>
-                      <option value="confirmed">Confirmed</option>
-                      <option value="rescheduled">Rescheduled</option>
-                    </select>
-                  </td>
-                  <td><a href="https://wa.me/2348091112233" class="btn btn-outline body-12" style="padding: 4px 8px; color: var(--color-whatsapp);">WhatsApp</a></td>
-                </tr>
-                <tr>
-                  <td><strong class="body-12">Today &bull; 02:30 PM</strong></td>
-                  <td>Senator Bola Davies</td>
-                  <td class="body-12">+234 802 888 4433</td>
-                  <td>Second Fitting (Ivory Brocade Kaftan)</td>
-                  <td>Master Tailor Ibrahim</td>
-                  <td>
-                    <select class="admin-status-select status-transit body-12" onchange="showToast('Status updated')">
-                      <option value="in_studio" selected>Client Arrived / Fitting</option>
-                      <option value="confirmed">Confirmed</option>
-                      <option value="completed">Completed</option>
-                    </select>
-                  </td>
-                  <td><a href="https://wa.me/2348028884433" class="btn btn-outline body-12" style="padding: 4px 8px; color: var(--color-whatsapp);">WhatsApp</a></td>
-                </tr>
-                <tr>
-                  <td><strong class="body-12">Today &bull; 04:00 PM</strong></td>
-                  <td>Engr. Seyi Makinde Jr.</td>
-                  <td class="body-12">+234 805 777 9900</td>
-                  <td>Bespoke Tuxedo Final Baste Fitting</td>
-                  <td>Amaka (Patternmaker)</td>
-                  <td>
-                    <select class="admin-status-select status-inspected body-12" onchange="showToast('Status updated')">
-                      <option value="confirmed" selected>Confirmed (On Way)</option>
-                      <option value="completed">Completed</option>
-                      <option value="rescheduled">Rescheduled</option>
-                    </select>
-                  </td>
-                  <td><a href="https://wa.me/2348057779900" class="btn btn-outline body-12" style="padding: 4px 8px; color: var(--color-whatsapp);">WhatsApp</a></td>
-                </tr>
-                <tr>
-                  <td><strong class="body-12">Tomorrow &bull; 10:00 AM</strong></td>
-                  <td>Barrister Folake Sanusi</td>
-                  <td class="body-12">+234 803 222 6677</td>
-                  <td>Bridal Entourage Native Consultation</td>
-                  <td>Master Tailor Ibrahim</td>
-                  <td>
-                    <select class="admin-status-select status-inspected body-12" onchange="showToast('Status updated')">
-                      <option value="confirmed" selected>Confirmed</option>
-                      <option value="rescheduled">Rescheduled</option>
-                    </select>
-                  </td>
-                  <td><a href="https://wa.me/2348032226677" class="btn btn-outline body-12" style="padding: 4px 8px; color: var(--color-whatsapp);">WhatsApp</a></td>
+                  <td colspan="7" class="admin-loading-row">Loading fitting appointments...</td>
                 </tr>
               </tbody>
             </table>
@@ -783,147 +555,129 @@
       </section>
 
       <!-- =====================================================================
-           VIEW 5: CLIENT TAILORING MEASUREMENT VAULT
+           VIEW 5: CATALOG & INVENTORY MANAGEMENT
            ===================================================================== -->
-      <section class="admin-tab-view" id="view-vault" style="display: none;">
+      <section class="admin-tab-view" id="view-catalog" style="display: none;">
         <div class="admin-page-header">
           <div>
-            <h1 class="admin-header-title h1">Tailoring Measurement Vault</h1>
-            <p class="admin-header-sub body-14">Searchable repository of recorded client anatomy dimensions in inches.</p>
-          </div>
-          <div class="admin-header-actions">
-            <button type="button" class="btn btn-primary body-14" onclick="showToast('New client profile creator opened')" style="padding: 10px 18px;">
-              + New Client Profile
-            </button>
+            <h1 class="admin-header-title h1">Product Catalog &amp; Inventory Availability</h1>
+            <p class="admin-header-sub body-14">
+              Manage product visibility, toggle Made-to-Order fabric stock availability, and feature seasonal releases on the storefront.
+            </p>
           </div>
         </div>
 
-        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 20px;">
-          <!-- Card 1 -->
-          <div class="admin-card" style="margin-bottom: 0;">
-            <div class="admin-card-header">
-              <div>
-                <strong class="body-14" style="color: var(--color-obsidian);">Chief Femi Coker</strong>
-                <div class="body-12" style="color: var(--color-text-muted);">Profile #KB-M-041 &bull; VIP Patron</div>
-              </div>
-              <span class="admin-nav-pill gold body-10">Agbada &amp; Native</span>
+        <div class="admin-card">
+          <div class="admin-card-header">
+            <div class="admin-card-title h3">
+              <span>All Atelier Garments</span>
+              <span class="admin-nav-pill body-10" id="catalogTableCount">0 Garments</span>
             </div>
-            <div style="padding: 20px;">
-              <div class="measurements-mini-grid">
-                <div class="measure-mini-item body-12"><span>CHEST</span><input type="text" class="body-12" value="44&quot;" readonly></div>
-                <div class="measure-mini-item body-12"><span>SHOULDER</span><input type="text" class="body-12" value="20&quot;" readonly></div>
-                <div class="measure-mini-item body-12"><span>SLEEVE</span><input type="text" class="body-12" value="26&quot;" readonly></div>
-                <div class="measure-mini-item body-12"><span>WAIST</span><input type="text" class="body-12" value="36&quot;" readonly></div>
-                <div class="measure-mini-item body-12"><span>HIPS</span><input type="text" class="body-12" value="42&quot;" readonly></div>
-                <div class="measure-mini-item body-12"><span>INSEAM</span><input type="text" class="body-12" value="33&quot;" readonly></div>
-                <div class="measure-mini-item body-12"><span>OUTSEAM</span><input type="text" class="body-12" value="42.5&quot;" readonly></div>
-                <div class="measure-mini-item body-12"><span>NECK</span><input type="text" class="body-12" value="17.5&quot;" readonly></div>
-              </div>
-              <div class="body-12" style="margin-top: 14px; color: var(--color-text-muted); background: #FAF8F5; padding: 10px; border-radius: 4px;">
-                <strong>Master Notes:</strong> Prefers loose armhole drape on Agbada. Always add 1.5&quot; hem allowance.
-              </div>
+            <div class="admin-table-controls">
+              <input type="text" class="admin-search-input body-12" id="catalogSearchInput" placeholder="Search by title, category..." oninput="filterCatalogTable()">
+              <select class="admin-filter-select body-12" id="catalogCategoryFilter" onchange="filterCatalogTable()">
+                <option value="all">All Categories</option>
+                <option value="native">Native</option>
+                <option value="formal">Formal</option>
+                <option value="streetwear">Streetwear</option>
+              </select>
             </div>
           </div>
 
-          <!-- Card 2 -->
-          <div class="admin-card" style="margin-bottom: 0;">
-            <div class="admin-card-header">
-              <div>
-                <strong class="body-14" style="color: var(--color-obsidian);">Senator Bola Davies</strong>
-                <div class="body-12" style="color: var(--color-text-muted);">Profile #KB-M-019 &bull; Lagos Atelier</div>
-              </div>
-              <span class="admin-nav-pill gold body-10">Bespoke Kaftan</span>
-            </div>
-            <div style="padding: 20px;">
-              <div class="measurements-mini-grid">
-                <div class="measure-mini-item body-12"><span>CHEST</span><input type="text" class="body-12" value="45&quot;" readonly></div>
-                <div class="measure-mini-item body-12"><span>SHOULDER</span><input type="text" class="body-12" value="20.5&quot;" readonly></div>
-                <div class="measure-mini-item body-12"><span>SLEEVE</span><input type="text" class="body-12" value="26.5&quot;" readonly></div>
-                <div class="measure-mini-item body-12"><span>WAIST</span><input type="text" class="body-12" value="38&quot;" readonly></div>
-                <div class="measure-mini-item body-12"><span>HIPS</span><input type="text" class="body-12" value="44&quot;" readonly></div>
-                <div class="measure-mini-item body-12"><span>INSEAM</span><input type="text" class="body-12" value="33.5&quot;" readonly></div>
-                <div class="measure-mini-item body-12"><span>OUTSEAM</span><input type="text" class="body-12" value="43&quot;" readonly></div>
-                <div class="measure-mini-item body-12"><span>NECK</span><input type="text" class="body-12" value="18&quot;" readonly></div>
-              </div>
-              <div class="body-12" style="margin-top: 14px; color: var(--color-text-muted); background: #FAF8F5; padding: 10px; border-radius: 4px;">
-                <strong>Master Notes:</strong> Mandarin collar with hidden zip closure. Tapered ankle 14.5&quot;.
-              </div>
-            </div>
-          </div>
-
-          <!-- Card 3 -->
-          <div class="admin-card" style="margin-bottom: 0;">
-            <div class="admin-card-header">
-              <div>
-                <strong class="body-14" style="color: var(--color-obsidian);">Tariq Bello</strong>
-                <div class="body-12" style="color: var(--color-text-muted);">Profile #KB-M-072 &bull; Abuja Patron</div>
-              </div>
-              <span class="admin-nav-pill body-10">Senator Fit</span>
-            </div>
-            <div style="padding: 20px;">
-              <div class="measurements-mini-grid">
-                <div class="measure-mini-item body-12"><span>CHEST</span><input type="text" class="body-12" value="41&quot;" readonly></div>
-                <div class="measure-mini-item body-12"><span>SHOULDER</span><input type="text" class="body-12" value="19&quot;" readonly></div>
-                <div class="measure-mini-item body-12"><span>SLEEVE</span><input type="text" class="body-12" value="25&quot;" readonly></div>
-                <div class="measure-mini-item body-12"><span>WAIST</span><input type="text" class="body-12" value="33&quot;" readonly></div>
-                <div class="measure-mini-item body-12"><span>HIPS</span><input type="text" class="body-12" value="39&quot;" readonly></div>
-                <div class="measure-mini-item body-12"><span>INSEAM</span><input type="text" class="body-12" value="32&quot;" readonly></div>
-                <div class="measure-mini-item body-12"><span>OUTSEAM</span><input type="text" class="body-12" value="41&quot;" readonly></div>
-                <div class="measure-mini-item body-12"><span>NECK</span><input type="text" class="body-12" value="16.5&quot;" readonly></div>
-              </div>
-              <div class="body-12" style="margin-top: 14px; color: var(--color-text-muted); background: #FAF8F5; padding: 10px; border-radius: 4px;">
-                <strong>Master Notes:</strong> Slim athletic cut. Requires french seams throughout.
-              </div>
-            </div>
+          <div class="admin-table-wrap">
+            <table class="admin-table body-14" id="catalogTable">
+              <thead>
+                <tr class="body-12">
+                  <th>Garment Title</th>
+                  <th>Category &amp; Type</th>
+                  <th>Variations</th>
+                  <th>Base Price</th>
+                  <th>Featured</th>
+                  <th>Inventory Status</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="catalogTableBody">
+                <tr>
+                  <td colspan="7" class="admin-loading-row">Loading catalog products...</td>
+                </tr>
+              </tbody>
+            </table>
           </div>
         </div>
       </section>
 
       <!-- =====================================================================
-           VIEW 6: SUPER ADMIN USER & STAFF MANAGEMENT (EXCLUSIVE TAB)
+           VIEW 6: CLIENT VAULT & SIZING PROFILES
+           ===================================================================== -->
+      <section class="admin-tab-view" id="view-vault" style="display: none;">
+        <div class="admin-page-header">
+          <div>
+            <h1 class="admin-header-title h1">Client Sizing Vault &amp; Profiles</h1>
+            <p class="admin-header-sub body-14">
+              Database of registered clients and their saved bespoke tailoring measurements recorded during fittings or online orders.
+            </p>
+          </div>
+        </div>
+
+        <div class="admin-card">
+          <div class="admin-card-header">
+            <div class="admin-card-title h3">
+              <span>Client Tailoring Registry</span>
+              <span class="admin-nav-pill body-10" id="vaultTableCount">0 Clients</span>
+            </div>
+            <div class="admin-table-controls">
+              <input type="text" class="admin-search-input body-12" id="vaultSearchInput" placeholder="Search by name, phone, email..." oninput="filterVaultTable()">
+            </div>
+          </div>
+
+          <div class="admin-table-wrap">
+            <table class="admin-table body-14" id="vaultTable">
+              <thead>
+                <tr class="body-12">
+                  <th>Client</th>
+                  <th>Contact Info</th>
+                  <th>Role</th>
+                  <th>Joined Date</th>
+                  <th>Saved Sizing Sets</th>
+                  <th>Inspection</th>
+                </tr>
+              </thead>
+              <tbody id="vaultTableBody">
+                <tr>
+                  <td colspan="6" class="admin-loading-row">Loading client profiles...</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- =====================================================================
+           VIEW 7: STAFF & USER MANAGEMENT (SUPER ADMIN EXCLUSIVE)
            ===================================================================== -->
       <section class="admin-tab-view" id="view-users" style="display: none;">
-        <!-- Super Admin Content (Rendered when in Super Admin role) -->
         <div id="superAdminAuthorized">
           <div class="admin-page-header">
             <div>
               <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 4px;">
                 <span class="admin-nav-pill super body-10">Restricted Super Admin Area</span>
-                <span class="body-12" style="color: var(--color-gold); font-weight: 700;">&bull; Bubble.io Auth Architecture</span>
               </div>
-              <h1 class="admin-header-title h1">User &amp; Atelier Staff Management</h1>
+              <h1 class="admin-header-title h1">Staff &amp; Role Management</h1>
               <p class="admin-header-sub body-14">
-                Create back-office staff accounts by email. In Bubble.io, creating an account sends the standard <strong>"Password Reset / Set Password"</strong> onboarding email so the invitee chooses their password securely.
+                Manage atelier team members, grant administrative permissions, or adjust access tiers.
               </p>
-            </div>
-            <div class="admin-header-actions">
-              <button type="button" class="btn btn-primary body-14" onclick="openCreateUserModal()" style="padding: 10px 20px;">
-                + Create User by Email
-              </button>
-            </div>
-          </div>
-
-          <!-- Bubble.io Workflow Architecture Callout -->
-          <div class="policy-callout" style="background: #EBF8FF; border-left-color: #3182CE; margin-bottom: 24px;">
-            <div style="display: flex; gap: 12px; align-items: flex-start;">
-              <span class="body-20">⚡</span>
-              <div>
-                <strong class="body-14" style="color: #2B6CB0;">Bubble.io Invitation Workflow Implemented:</strong>
-                <p class="body-12" style="color: #2C5282; margin-top: 4px; line-height: 1.5;">
-                  When you enter a staff email, Bubble executes <code>Create an account for someone else</code>, writes their role (Super Admin, Store Manager, or Staff / Tailor) to the database, and immediately fires <code>Send password reset email</code>. The staff member clicks the secure link in their inbox to set their password.
-                </p>
-              </div>
             </div>
           </div>
 
           <div class="admin-card">
             <div class="admin-card-header">
               <div class="admin-card-title h3">
-                <span>Active Back-Office Team Members</span>
-                <span class="admin-nav-pill super body-10" id="userCountBadge">4 Team Members</span>
+                <span>Atelier Staff &amp; Team</span>
+                <span class="admin-nav-pill super body-10" id="userCountBadge">0 Members</span>
               </div>
               <div class="admin-table-controls">
-                <input type="text" class="admin-search-input body-12" id="userSearchInput" placeholder="Filter team by name, email..." onkeyup="filterUsersTable()">
+                <input type="text" class="admin-search-input body-12" id="userSearchInput" placeholder="Filter team by name, email..." oninput="filterUsersTable()">
               </div>
             </div>
 
@@ -931,117 +685,16 @@
               <table class="admin-table body-14" id="usersTable">
                 <thead>
                   <tr class="body-12">
-                    <th>User &amp; Email</th>
+                    <th>Team Member</th>
                     <th>Role Permission</th>
-                    <th>Status</th>
-                    <th>Date Added</th>
-                    <th>Last Active</th>
-                    <th>Actions</th>
+                    <th>Account Status</th>
+                    <th>Joined</th>
+                    <th>Role Actions</th>
                   </tr>
                 </thead>
                 <tbody id="usersTableBody">
-                  <!-- User 1: Super Admin -->
                   <tr>
-                    <td>
-                      <div style="display: flex; align-items: center; gap: 10px;">
-                        <div class="admin-avatar body-14" style="background: var(--color-gold);">DA</div>
-                        <div>
-                          <strong>David (Atelier Owner)</strong>
-                          <div class="body-12" style="color: var(--color-text-muted);">david@krabekollection.com</div>
-                        </div>
-                      </div>
-                    </td>
-                    <td>
-                      <span class="admin-nav-pill super body-10" style="font-weight: 700;">Super Admin</span>
-                    </td>
-                    <td>
-                      <span class="body-12" style="display: inline-flex; align-items: center; gap: 6px; color: #22543D; font-weight: 600;">
-                        <span style="width: 8px; height: 8px; border-radius: 50%; background: #38A169;"></span> Active Now
-                      </span>
-                    </td>
-                    <td>01 Oct 2026</td>
-                    <td>Just now</td>
-                    <td>
-                      <span class="body-10" style="color: var(--color-text-muted);">Root Account</span>
-                    </td>
-                  </tr>
-
-                  <!-- User 2: Master Tailor -->
-                  <tr>
-                    <td>
-                      <div style="display: flex; align-items: center; gap: 10px;">
-                        <div class="admin-avatar body-14" style="background: #44637B; color: #FFFFFF;">IA</div>
-                        <div>
-                          <strong>Ibrahim Al-Hassan</strong>
-                          <div class="body-12" style="color: var(--color-text-muted);">ibrahim@krabekollection.com</div>
-                        </div>
-                      </div>
-                    </td>
-                    <td>
-                      <span class="admin-nav-pill gold body-10">Staff / Master Tailor</span>
-                    </td>
-                    <td>
-                      <span class="body-12" style="display: inline-flex; align-items: center; gap: 6px; color: #22543D; font-weight: 600;">
-                        <span style="width: 8px; height: 8px; border-radius: 50%; background: #38A169;"></span> Active
-                      </span>
-                    </td>
-                    <td>02 Oct 2026</td>
-                    <td>2 hours ago</td>
-                    <td>
-                      <button type="button" class="btn btn-outline body-12" style="padding: 4px 8px;" onclick="resendPasswordEmail('ibrahim@krabekollection.com')">Resend Reset Email</button>
-                    </td>
-                  </tr>
-
-                  <!-- User 3: Patternmaker -->
-                  <tr>
-                    <td>
-                      <div style="display: flex; align-items: center; gap: 10px;">
-                        <div class="admin-avatar body-14" style="background: #44637B; color: #FFFFFF;">AN</div>
-                        <div>
-                          <strong>Amaka Nnamdi</strong>
-                          <div class="body-12" style="color: var(--color-text-muted);">amaka@krabekollection.com</div>
-                        </div>
-                      </div>
-                    </td>
-                    <td>
-                      <span class="admin-nav-pill body-10">Staff / Patternmaker</span>
-                    </td>
-                    <td>
-                      <span class="body-12" style="display: inline-flex; align-items: center; gap: 6px; color: #22543D; font-weight: 600;">
-                        <span style="width: 8px; height: 8px; border-radius: 50%; background: #38A169;"></span> Active
-                      </span>
-                    </td>
-                    <td>03 Oct 2026</td>
-                    <td>Yesterday</td>
-                    <td>
-                      <button type="button" class="btn btn-outline body-12" style="padding: 4px 8px;" onclick="resendPasswordEmail('amaka@krabekollection.com')">Resend Reset Email</button>
-                    </td>
-                  </tr>
-
-                  <!-- User 4: Store Manager (Invitation Pending) -->
-                  <tr>
-                    <td>
-                      <div style="display: flex; align-items: center; gap: 10px;">
-                        <div class="admin-avatar body-14" style="background: #E2E8F0; color: #4A5568;">KB</div>
-                        <div>
-                          <strong>Kemi Balogun</strong>
-                          <div class="body-12" style="color: var(--color-text-muted);">kemi.operations@krabekollection.com</div>
-                        </div>
-                      </div>
-                    </td>
-                    <td>
-                      <span class="admin-nav-pill body-10">Store Manager</span>
-                    </td>
-                    <td>
-                      <span class="body-12" style="display: inline-flex; align-items: center; gap: 6px; color: #975A16; font-weight: 600;">
-                        <span style="width: 8px; height: 8px; border-radius: 50%; background: #ECC94B;"></span> Invite Sent (Pending Set Password)
-                      </span>
-                    </td>
-                    <td>05 Oct 2026</td>
-                    <td>Awaiting First Login</td>
-                    <td>
-                      <button type="button" class="btn btn-outline body-12" style="padding: 4px 8px;" onclick="resendPasswordEmail('kemi.operations@krabekollection.com')">Resend Invite Email</button>
-                    </td>
+                    <td colspan="5" class="admin-loading-row">Loading team profiles...</td>
                   </tr>
                 </tbody>
               </table>
@@ -1049,17 +702,13 @@
           </div>
         </div>
 
-        <!-- Restricted Lock Screen (Displayed when in Staff role) -->
         <div id="superAdminRestricted" style="display: none;">
           <div class="admin-restricted-box">
             <span class="admin-restricted-icon">🔒</span>
             <h2 class="h2" style="color: var(--color-obsidian); margin-bottom: 8px;">Restricted Access: Super Admin Only</h2>
             <p class="body-14" style="color: var(--color-text-muted); line-height: 1.6; margin-bottom: 24px;">
-              You are currently viewing the backoffice in <strong>Staff / Master Tailor</strong> mode. User account provisioning and role permission management are restricted strictly to Super Admin (David).
+              Staff permission management and team account adjustments are restricted strictly to Super Admin.
             </p>
-            <button type="button" class="btn btn-primary body-14" onclick="toggleAdminRole('super_admin')" style="padding: 10px 22px;">
-              Switch Back to Super Admin Role &rarr;
-            </button>
           </div>
         </div>
       </section>
@@ -1068,18 +717,20 @@
   </div>
 
   <!-- =========================================================================
-       3. MODAL 1: CREATE BESPOKE ORDER (FROM WHATSAPP DEALS)
+       5. MODALS & WORKFLOW DIALOGS
        ========================================================================= -->
+
+  <!-- MODAL: LOG BESPOKE COMMISSION -->
   <div class="admin-modal-overlay" id="bespokeModal" role="dialog" aria-modal="true" aria-labelledby="bespokeModalTitle">
     <div class="admin-modal-card large">
       <div class="admin-modal-header">
-        <h3 class="admin-modal-title h3" id="bespokeModalTitle">Log Bespoke Commission (From WhatsApp / Studio)</h3>
+        <h3 class="admin-modal-title h3" id="bespokeModalTitle">Log Bespoke Commission (WhatsApp / Studio)</h3>
         <button type="button" class="admin-modal-close body-18" onclick="closeBespokeModal()" aria-label="Close dialog">&times;</button>
       </div>
       <form id="bespokeOrderForm" onsubmit="handleCreateBespoke(event)">
         <div class="admin-modal-body">
           <p class="body-14" style="color: var(--color-text-muted); margin-bottom: 20px;">
-            Enter the details agreed upon with the client via WhatsApp chat or private fitting consultation.
+            Log bespoke commission agreements reached with clients in-studio or via WhatsApp chat.
           </p>
 
           <!-- Client Details -->
@@ -1092,62 +743,50 @@
               <input type="text" id="bClientName" class="form-input-admin body-14" placeholder="e.g. Chief Adeleke Johnson" required>
             </div>
             <div class="form-group-admin">
-              <label class="form-label-admin body-12" for="bClientPhone">WhatsApp Number *</label>
-              <input type="tel" id="bClientPhone" class="form-input-admin body-14" placeholder="+234 803 000 0000" required>
-            </div>
-          </div>
-          <div class="form-row-2">
-            <div class="form-group-admin">
-              <label class="form-label-admin body-12" for="bClientEmail">Email Address (Optional)</label>
-              <input type="email" id="bClientEmail" class="form-input-admin body-14" placeholder="client@example.com">
-            </div>
-            <div class="form-group-admin">
-              <label class="form-label-admin body-12" for="bDeliveryCity">Delivery / Fitting City</label>
-              <input type="text" id="bDeliveryCity" class="form-input-admin body-14" placeholder="e.g. Victoria Island, Lagos" value="Lagos">
+              <label class="form-label-admin body-12" for="bClientEmail">Email Address *</label>
+              <input type="email" id="bClientEmail" class="form-input-admin body-14" placeholder="client@example.com" required>
             </div>
           </div>
 
-          <!-- Garment & Fabric Specs -->
+          <!-- Garment Specs -->
           <div class="body-12" style="font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--color-primary); margin: 16px 0 12px;">
-            2. Garment &amp; Fabric Specifications
+            2. Garment Category &amp; Details
           </div>
           <div class="form-row-2">
             <div class="form-group-admin">
               <label class="form-label-admin body-12" for="bGarmentCategory">Garment Category *</label>
               <select id="bGarmentCategory" class="form-select-admin body-14" required>
-                <option value="3-Piece Royal Agbada">3-Piece Royal Agbada</option>
-                <option value="2-Piece Bespoke Senator">2-Piece Bespoke Senator</option>
-                <option value="Luxury Silk Kaftan">Luxury Silk Kaftan</option>
-                <option value="Black Tie Velvet Tuxedo">Black Tie Velvet Tuxedo</option>
-                <option value="Two-Tone Modern Native Set">Two-Tone Modern Native Set</option>
+                <option value="native">Native (Agbada / Senator / Kaftan)</option>
+                <option value="formal">Formal (Tuxedo / Suit / Blazer)</option>
+                <option value="streetwear">Streetwear (Luxury Sets)</option>
               </select>
             </div>
             <div class="form-group-admin">
-              <label class="form-label-admin body-12" for="bAssignedTailor">Assign Master Tailor *</label>
-              <select id="bAssignedTailor" class="form-select-admin body-14" required>
-                <option value="Master Ibrahim">Master Tailor Ibrahim (Head Atelier)</option>
-                <option value="Amaka (Patternmaker)">Amaka Nnamdi (Precision Patternmaker)</option>
-                <option value="David (Creative Director)">David (Creative Direction)</option>
+              <label class="form-label-admin body-12" for="bGender">Gender *</label>
+              <select id="bGender" class="form-select-admin body-14" required>
+                <option value="male">Male</option>
+                <option value="female">Female</option>
+                <option value="unisex">Unisex</option>
               </select>
             </div>
           </div>
           <div class="form-group-admin">
-            <label class="form-label-admin body-12" for="bFabricSpecs">Fabric &amp; Embroidery Details *</label>
-            <input type="text" id="bFabricSpecs" class="form-input-admin body-14" placeholder="e.g. Super 150s Midnight Navy Cashmere Wool, Bronze Zari Threadwork on Chest" required>
+            <label class="form-label-admin body-12" for="bDescriptionNotes">Garment Description &amp; Fabric Notes *</label>
+            <input type="text" id="bDescriptionNotes" class="form-input-admin body-14" placeholder="e.g. 3-Piece Royal Agbada in Super 150s Midnight Navy with Bronze Zari embroidery" required>
           </div>
 
-          <!-- Commercials & Pricing -->
+          <!-- Commercials -->
           <div class="body-12" style="font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--color-primary); margin: 16px 0 12px;">
             3. Agreed Pricing &amp; Target Delivery
           </div>
           <div class="form-row-3">
             <div class="form-group-admin">
               <label class="form-label-admin body-12" for="bTotalPrice">Agreed Total (₦) *</label>
-              <input type="number" id="bTotalPrice" class="form-input-admin body-14" placeholder="380000" required oninput="calcBespokeBalance()">
+              <input type="number" id="bTotalPrice" class="form-input-admin body-14" placeholder="380000" min="0" required oninput="calcBespokeBalance()">
             </div>
             <div class="form-group-admin">
               <label class="form-label-admin body-12" for="bDepositPaid">Deposit Received (₦) *</label>
-              <input type="number" id="bDepositPaid" class="form-input-admin body-14" placeholder="250000" required oninput="calcBespokeBalance()">
+              <input type="number" id="bDepositPaid" class="form-input-admin body-14" placeholder="250000" min="0" required oninput="calcBespokeBalance()">
             </div>
             <div class="form-group-admin">
               <label class="form-label-admin body-12" for="bTargetDate">Target Fitting Date *</label>
@@ -1155,107 +794,43 @@
             </div>
           </div>
           <div class="body-12" style="background: #FAF8F5; padding: 10px 14px; border-radius: 4px; margin-bottom: 18px; border: 1px solid var(--color-border);" id="bBalanceDisplay">
-            <strong>Balance Due on Fitting:</strong> <span style="color: #C05621; font-weight: 700;">₦130,000</span>
-          </div>
-
-          <!-- Measurements Mini Form -->
-          <div class="body-12" style="font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--color-primary); margin: 16px 0 12px;">
-            4. Client Measurements (Inches)
-          </div>
-          <div class="measurements-mini-grid">
-            <div class="measure-mini-item body-12"><span>CHEST</span><input type="text" class="body-12" id="mChest" value="42" required></div>
-            <div class="measure-mini-item body-12"><span>SHOULDER</span><input type="text" class="body-12" id="mShoulder" value="19.5" required></div>
-            <div class="measure-mini-item body-12"><span>SLEEVE</span><input type="text" class="body-12" id="mSleeve" value="25.5" required></div>
-            <div class="measure-mini-item body-12"><span>WAIST</span><input type="text" class="body-12" id="mWaist" value="34" required></div>
-            <div class="measure-mini-item body-12"><span>HIPS</span><input type="text" class="body-12" id="mHips" value="40" required></div>
-            <div class="measure-mini-item body-12"><span>INSEAM</span><input type="text" class="body-12" id="mInseam" value="32.5" required></div>
-            <div class="measure-mini-item body-12"><span>TROUSER LENGTH</span><input type="text" class="body-12" id="mLength" value="41.5" required></div>
-            <div class="measure-mini-item body-12"><span>NECK</span><input type="text" class="body-12" id="mNeck" value="17" required></div>
-          </div>
-
-          <!-- Workshop Notes -->
-          <div class="form-group-admin" style="margin-top: 18px;">
-            <label class="form-label-admin body-12" for="bNotes">Tailoring Notes &amp; Special Client Instructions</label>
-            <textarea id="bNotes" class="form-textarea-admin body-14" rows="2" placeholder="e.g. Wedding celebration in Abuja on the 24th. Needs loose drape across chest with double-lined hem."></textarea>
+            <strong>Balance Due on Fitting:</strong> <span style="color: #C05621; font-weight: 700;" id="bBalanceAmount">₦0</span>
           </div>
         </div>
 
         <div class="admin-modal-footer">
           <button type="button" class="btn btn-outline body-14" onclick="closeBespokeModal()">Cancel</button>
-          <button type="submit" class="btn btn-primary body-14">Create Commission &amp; Log to Workshop</button>
+          <button type="submit" class="btn btn-primary body-14" id="bSubmitBtn">Create Commission &amp; Log to Workshop</button>
         </div>
       </form>
     </div>
   </div>
 
-  <!-- =========================================================================
-       4. MODAL 2: CREATE USER BY EMAIL (SUPER ADMIN EXCLUSIVE)
-       ========================================================================= -->
-  <div class="admin-modal-overlay" id="createUserModal" role="dialog" aria-modal="true" aria-labelledby="createUserModalTitle">
-    <div class="admin-modal-card">
+  <!-- MODAL: ORDER DETAILS (MADE-TO-ORDER) -->
+  <div class="admin-modal-overlay" id="orderDetailModal" role="dialog" aria-modal="true" aria-labelledby="orderDetailTitle">
+    <div class="admin-modal-card large">
       <div class="admin-modal-header">
-        <h3 class="admin-modal-title h3" id="createUserModalTitle">Create User / Staff by Email</h3>
-        <button type="button" class="admin-modal-close body-18" onclick="closeCreateUserModal()" aria-label="Close dialog">&times;</button>
+        <h3 class="admin-modal-title h3" id="orderDetailTitle">Order Details</h3>
+        <button type="button" class="admin-modal-close body-18" onclick="closeOrderDetailModal()" aria-label="Close dialog">&times;</button>
       </div>
-      <form id="createUserForm" onsubmit="handleCreateUser(event)">
-        <div class="admin-modal-body">
-          <div class="policy-callout" style="background: #EBF8FF; border-left-color: #3182CE; margin-top: 0; margin-bottom: 18px;">
-            <strong class="body-14" style="color: #2B6CB0;">Bubble.io Reset Email Flow:</strong>
-            <p class="body-12" style="color: #2C5282; margin-top: 2px;">
-              You do not set the password for this user. An official password set invitation email will be dispatched automatically upon creation.
-            </p>
-          </div>
-
-          <div class="form-group-admin">
-            <label class="form-label-admin body-12" for="newStaffEmail">Staff Email Address *</label>
-            <input type="email" id="newStaffEmail" class="form-input-admin body-14" placeholder="colleague@krabekollection.com" required>
-          </div>
-
-          <div class="form-group-admin">
-            <label class="form-label-admin body-12" for="newStaffName">Full Name *</label>
-            <input type="text" id="newStaffName" class="form-input-admin body-14" placeholder="e.g. Segun Adeyemi" required>
-          </div>
-
-          <div class="form-group-admin">
-            <label class="form-label-admin body-12" for="newStaffRole">Backoffice Access Role *</label>
-            <select id="newStaffRole" class="form-select-admin body-14" required>
-              <option value="Staff / Master Tailor">Staff / Master Tailor (Can update garment milestones)</option>
-              <option value="Staff / Patternmaker">Staff / Patternmaker (Atelier cutting &amp; sizing)</option>
-              <option value="Store Manager">Store Manager (Manage Made-to-Order, Bespoke, and Fittings)</option>
-              <option value="Super Admin">Super Admin (Full administrative and user access)</option>
-            </select>
-          </div>
-
-          <div style="background: var(--color-bone); border: 1px solid var(--color-border); border-radius: var(--radius-sm); padding: 12px 14px; margin-top: 14px;">
-            <label class="body-12" style="display: flex; align-items: flex-start; gap: 10px; cursor: pointer;">
-              <input type="checkbox" id="sendInviteEmailCheck" checked style="margin-top: 3px;" required>
-              <span>
-                <strong>Automatically send Password Reset / Onboarding Email</strong><br>
-                <span class="body-10" style="color: var(--color-text-muted);">Triggers Bubble workflow action: <em>Send password reset email (User = Result of Step 1)</em></span>
-              </span>
-            </label>
-          </div>
-        </div>
-
-        <div class="admin-modal-footer">
-          <button type="button" class="btn btn-outline body-14" onclick="closeCreateUserModal()">Cancel</button>
-          <button type="submit" class="btn btn-primary body-14">Create User &amp; Send Invitation</button>
-        </div>
-      </form>
+      <div class="admin-modal-body" id="orderDetailContent">
+        <!-- Injected dynamically -->
+      </div>
+      <div class="admin-modal-footer">
+        <button type="button" class="btn btn-primary body-14" onclick="closeOrderDetailModal()">Done</button>
+      </div>
     </div>
   </div>
 
-  <!-- =========================================================================
-       5. MODAL 3: VIEW MEASUREMENT CARD (INSPECTION)
-       ========================================================================= -->
+  <!-- MODAL: VIEW TAILORING MEASUREMENT CARD -->
   <div class="admin-modal-overlay" id="measureModal" role="dialog" aria-modal="true" aria-labelledby="measureModalTitle">
     <div class="admin-modal-card">
       <div class="admin-modal-header">
-        <h3 class="admin-modal-title h3" id="measureModalTitle">Client Tailoring Card</h3>
+        <h3 class="admin-modal-title h3" id="measureModalTitle">Client Sizing Card</h3>
         <button type="button" class="admin-modal-close body-18" onclick="closeMeasureModal()" aria-label="Close dialog">&times;</button>
       </div>
       <div class="admin-modal-body">
-        <h4 id="measureClientName" class="body-16" style="font-weight: 700; margin-bottom: 14px; color: var(--color-obsidian);">Chief Femi Coker</h4>
+        <h4 id="measureClientName" class="body-16" style="font-weight: 700; margin-bottom: 14px; color: var(--color-obsidian);">Client Measurements</h4>
         <div class="measurements-mini-grid" id="measureGridDisplay">
           <!-- Populated by JS -->
         </div>
@@ -1266,167 +841,719 @@
     </div>
   </div>
 
-  <!-- =========================================================================
-       6. FLOATING TOAST NOTIFICATION STACK
-       ========================================================================= -->
+  <!-- FLOATING TOAST CONTAINER -->
   <div class="admin-toast-container" id="toastContainer" aria-live="polite"></div>
 
   <!-- =========================================================================
-       7. INTERACTIVE JAVASCRIPT CONTROLLER
+       6. GLOBAL FOOTER (Standard Reusable Site Footer)
        ========================================================================= -->
+  <div id="krabeFooter"></div>
+
+  <!-- =========================================================================
+       7. GLOBAL JAVASCRIPT LIBRARIES & CLIENT CONTROLLER
+       ========================================================================= -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/config.js"></script>
+  <script src="js/options.js"></script>
+  <script src="js/header.js"></script>
+  <script src="js/footer.js"></script>
+  <script src="js/auth-modal.js"></script>
+  <script src="js/search-modal.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/main.js"></script>
+
   <script>
-    // Current Active Role State
-    let currentRole = 'super_admin';
+    /* =========================================================================
+       ATELIER BACKOFFICE DYNAMIC CONTROLLER
+       ========================================================================= */
 
-    // Switch Role between Super Admin and Staff Tailor
-    function toggleAdminRole(role) {
-      currentRole = role;
-      const selector = document.getElementById('roleSelector');
-      if (selector) selector.value = role;
+    // In-memory data store
+    const adminState = {
+      user: null,
+      profile: null,
+      activeRole: 'admin', // 'super_admin' or 'admin'
+      currentTab: 'dashboard',
+      rtwOrders: [],
+      bespokeOrders: [],
+      fittings: [],
+      products: [],
+      vaultProfiles: [],
+      staffMembers: []
+    };
 
-      const userRoleBadge = document.getElementById('userRoleBadge');
-      const userName = document.getElementById('userName');
-      const userAvatar = document.getElementById('userAvatar');
-      const superAdminAuthorized = document.getElementById('superAdminAuthorized');
-      const superAdminRestricted = document.getElementById('superAdminRestricted');
-      const superAdminActionButtons = document.querySelectorAll('.super-admin-action');
-
-      if (role === 'super_admin') {
-        if (userName) userName.innerText = 'David (Owner)';
-        if (userRoleBadge) userRoleBadge.innerText = 'Super Admin';
-        if (userAvatar) userAvatar.innerText = 'DA';
-        if (superAdminAuthorized) superAdminAuthorized.style.display = 'block';
-        if (superAdminRestricted) superAdminRestricted.style.display = 'none';
-        superAdminActionButtons.forEach(btn => btn.style.display = 'inline-flex');
-        showToast('Switched to Super Admin role (Full system control)');
-      } else {
-        if (userName) userName.innerText = 'Ibrahim Al-Hassan';
-        if (userRoleBadge) userRoleBadge.innerText = 'Staff / Master Tailor';
-        if (userAvatar) userAvatar.innerText = 'IA';
-        if (superAdminAuthorized) superAdminAuthorized.style.display = 'none';
-        if (superAdminRestricted) superAdminRestricted.style.display = 'block';
-        superAdminActionButtons.forEach(btn => btn.style.display = 'none');
-        showToast('Switched to Staff / Master Tailor role');
+    function getSupabase() {
+      if (window.krabeClient) return window.krabeClient;
+      if (window.KRABE_CONFIG && typeof window.KRABE_CONFIG.getClient === 'function') {
+        return window.KRABE_CONFIG.getClient();
       }
+      return null;
     }
 
-    // Switch Admin Tabs
-    function switchAdminTab(tabId, el) {
-      document.querySelectorAll('.admin-nav-item').forEach(item => {
-        item.classList.remove('active');
-        if (item.getAttribute('data-tab') === tabId) {
-          item.classList.add('active');
-        }
-      });
+    // Helper: Toast notifications
+    function showToast(msg) {
+      const container = document.getElementById('toastContainer');
+      if (!container) return;
+      const toast = document.createElement('div');
+      toast.className = 'admin-toast';
+      toast.innerText = msg;
+      container.appendChild(toast);
+      setTimeout(() => {
+        toast.style.opacity = '0';
+        toast.style.transform = 'translateY(10px)';
+        toast.style.transition = 'all 0.3s ease';
+        setTimeout(() => toast.remove(), 350);
+      }, 3500);
+    }
+
+    // Tab switcher
+    function switchAdminTab(tabName, clickedBtn) {
+      adminState.currentTab = tabName;
+      document.querySelectorAll('.admin-nav-item').forEach(btn => btn.classList.remove('active'));
+      if (clickedBtn) {
+        clickedBtn.classList.add('active');
+      } else {
+        const targetBtn = document.querySelector(`.admin-nav-item[data-tab="${tabName}"]`);
+        if (targetBtn) targetBtn.classList.add('active');
+      }
 
       document.querySelectorAll('.admin-tab-view').forEach(view => {
         view.style.display = 'none';
       });
 
-      const targetView = document.getElementById('view-' + tabId);
-      if (targetView) {
-        targetView.style.display = 'block';
+      const activeView = document.getElementById(`view-${tabName}`);
+      if (activeView) activeView.style.display = 'block';
+
+      const indicator = document.getElementById('adminActiveTabIndicator');
+      if (indicator) {
+        const titles = {
+          dashboard: 'Dashboard Overview',
+          rtw: 'Made-to-Order Orders',
+          bespoke: 'Bespoke Commissions',
+          fittings: 'Studio Fittings',
+          catalog: 'Product Catalog & Inventory',
+          vault: 'Client Vault & Measurements',
+          users: 'Staff & Role Management'
+        };
+        indicator.innerText = titles[tabName] || tabName;
+      }
+    }
+
+    // Auth gate verification
+    async function verifyAdminAuth() {
+      const client = getSupabase();
+      if (!client) {
+        setTimeout(verifyAdminAuth, 250);
+        return;
       }
 
-      // Check permissions if switching to users tab
-      if (tabId === 'users') {
-        const superAdminAuthorized = document.getElementById('superAdminAuthorized');
-        const superAdminRestricted = document.getElementById('superAdminRestricted');
-        if (currentRole === 'super_admin') {
-          if (superAdminAuthorized) superAdminAuthorized.style.display = 'block';
-          if (superAdminRestricted) superAdminRestricted.style.display = 'none';
-        } else {
-          if (superAdminAuthorized) superAdminAuthorized.style.display = 'none';
-          if (superAdminRestricted) superAdminRestricted.style.display = 'block';
+      try {
+        const { data: { user } } = await client.auth.getUser();
+        adminState.user = user;
+
+        if (!user) {
+          // Immediately redirect unauthenticated visitors to index.html
+          window.location.replace('index.html');
+          return;
         }
+
+        // Fetch user profile to verify role
+        const { data: profile } = await client
+          .from('profile')
+          .select('id, name, avatar_url, role')
+          .eq('id', user.id)
+          .maybeSingle();
+
+        adminState.profile = profile;
+
+        // Verify if user is an admin or super admin strictly from database profile role
+        const role = profile?.role;
+        const isStaff = role === 'admin' || role === 'super admin';
+
+        if (!isStaff) {
+          // Immediately redirect unauthorized users to index.html
+          window.location.replace('index.html');
+          return;
+        }
+
+        // Unlock backoffice workspace for authorized staff
+        const subbar = document.getElementById('adminSubbar');
+        if (subbar) subbar.style.display = 'flex';
+        document.getElementById('adminMainWorkspace').style.display = 'flex';
+
+        // Update active profile in top bar
+        adminState.activeRole = role === 'super admin' ? 'super_admin' : 'admin';
+        const userNameEl = document.getElementById('userName');
+        const userRoleEl = document.getElementById('userRoleBadge');
+        const userAvatarEl = document.getElementById('userAvatar');
+
+        const displayName = (profile && profile.name) || (user.email ? user.email.split('@')[0] : 'Staff');
+        if (userNameEl) userNameEl.innerText = displayName;
+        if (userRoleEl) userRoleEl.innerText = adminState.activeRole === 'super_admin' ? 'Super Admin' : 'Atelier Staff';
+
+        if (userAvatarEl) {
+          const initials = displayName.slice(0, 2).toUpperCase();
+          userAvatarEl.innerText = initials;
+        }
+
+        // Configure role permissions in DOM
+        applyRolePermissions();
+
+        // Load dynamic data from Supabase
+        await refreshAdminData();
+
+      } catch (err) {
+        console.error('[Admin] Error verifying auth:', err);
+        window.location.replace('index.html');
       }
     }
 
-    // Manual Status Changer for Made-to-Order Orders
-    function handleRtwStatusChange(selectEl, orderId) {
-      const newStatus = selectEl.value;
-      const statusClassMap = {
-        'paid': 'status-paid',
-        'inspected': 'status-inspected',
-        'transit': 'status-transit',
-        'delivered': 'status-delivered',
-        'cancelled': 'status-cancelled'
-      };
+    function applyRolePermissions() {
+      const isSuper = adminState.activeRole === 'super_admin';
+      const superAuth = document.getElementById('superAdminAuthorized');
+      const superRestricted = document.getElementById('superAdminRestricted');
+      const navUsers = document.getElementById('navItemUsers');
 
-      // Reset styling classes
-      selectEl.className = 'admin-status-select ' + (statusClassMap[newStatus] || 'status-paid');
-
-      // Update row data attribute
-      const row = selectEl.closest('tr');
-      if (row) row.setAttribute('data-status', newStatus);
-
-      const statusLabels = {
-        'paid': 'Paid & Processing',
-        'inspected': 'Quality Inspected & Steamed',
-        'transit': 'In Transit (Courier Dispatched)',
-        'delivered': 'Delivered & Completed',
-        'cancelled': 'Cancelled & Refunded'
-      };
-
-      showToast(`Order #${orderId} manually updated to: "${statusLabels[newStatus]}"`);
+      if (superAuth) superAuth.style.display = isSuper ? 'block' : 'none';
+      if (superRestricted) superRestricted.style.display = isSuper ? 'none' : 'block';
+      if (navUsers) navUsers.style.display = isSuper ? 'block' : 'none';
     }
 
-    // Manual Production Milestone Changer for Bespoke Orders
-    function handleBespokeStatusChange(selectEl, commissionId) {
-      const newMilestone = selectEl.value;
-      const milestoneClassMap = {
-        'sourced': 'status-sourced',
-        'drafting': 'status-drafting',
-        'embroidery': 'status-embroidery',
-        'fitting': 'status-fitting',
-        'completed': 'status-completed'
-      };
-
-      selectEl.className = 'admin-status-select ' + (milestoneClassMap[newMilestone] || 'status-sourced');
-
-      const row = selectEl.closest('tr');
-      if (row) row.setAttribute('data-milestone', newMilestone);
-
-      const milestoneLabels = {
-        'sourced': 'Fabric Sourced & Inspected',
-        'drafting': 'Pattern Drafting & Cutting',
-        'embroidery': 'Hand Embroidery & Assembly',
-        'fitting': 'Studio Fitting & Steaming',
-        'completed': 'Completed & Dispatched'
-      };
-
-      showToast(`Commission #${commissionId} advanced to: "${milestoneLabels[newMilestone]}"`);
+    // Refresh all data collections
+    async function refreshAdminData() {
+      await Promise.all([
+        loadRtwOrders(),
+        loadBespokeOrders(),
+        loadFittings(),
+        loadCatalogProducts(),
+        loadClientVault(),
+        loadStaffMembers()
+      ]);
+      updateDashboardStats();
     }
 
-    // Toast Notification System
-    function showToast(message) {
-      const container = document.getElementById('toastContainer');
-      if (!container) return;
+    // Format currency (Naira)
+    function formatNaira(num) {
+      const val = Number(num) || 0;
+      return '₦' + val.toLocaleString('en-NG');
+    }
 
-      const toast = document.createElement('div');
-      toast.className = 'admin-toast body-14';
-      toast.innerHTML = `
-        <span class="body-16">✨</span>
-        <span>${message}</span>
+    // Format date string
+    function formatDate(isoStr) {
+      if (!isoStr) return 'N/A';
+      try {
+        const d = new Date(isoStr);
+        return d.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
+      } catch (_) {
+        return isoStr;
+      }
+    }
+
+    /* -------------------------------------------------------------------------
+       1. MADE-TO-ORDER ORDERS (ready_to_wear_order)
+       ------------------------------------------------------------------------- */
+    async function loadRtwOrders() {
+      const client = getSupabase();
+      if (!client) return;
+
+      try {
+        const { data, error } = await client
+          .from('ready_to_wear_order')
+          .select(`
+            id,
+            slug,
+            email,
+            recipient_number,
+            subtotal,
+            total_amount,
+            delivery_fee,
+            delivery_option_chosen,
+            delivery_address,
+            payment_status,
+            status,
+            created_at,
+            rtw_order_item (
+              id,
+              selected_size,
+              quantity,
+              price,
+              custom_measurement_id,
+              measurement_snapshot,
+              product_variation (
+                color,
+                fabric,
+                main_image,
+                product (
+                  title,
+                  category
+                )
+              )
+            )
+          `)
+          .order('created_at', { ascending: false });
+
+        if (error) throw error;
+        adminState.rtwOrders = data || [];
+        renderRtwTable();
+
+        const countBadge = document.getElementById('rtwNavCount');
+        const activeCount = adminState.rtwOrders.filter(o => o.status !== 'delivered' && o.status !== 'cancelled').length;
+        if (countBadge) countBadge.innerText = activeCount;
+      } catch (err) {
+        console.error('[Admin] Error loading RTW orders:', err);
+        const tbody = document.getElementById('rtwTableBody');
+        if (tbody) tbody.innerHTML = `<tr><td colspan="7" class="admin-empty-state"><span class="admin-empty-icon">⚠️</span>Could not load orders: ${err.message}</td></tr>`;
+      }
+    }
+
+    function renderRtwTable() {
+      const tbody = document.getElementById('rtwTableBody');
+      const countEl = document.getElementById('rtwTableCount');
+      if (!tbody) return;
+
+      const query = (document.getElementById('rtwSearchInput')?.value || '').toLowerCase().trim();
+      const statusFilter = document.getElementById('rtwStatusFilter')?.value || 'all';
+
+      const filtered = adminState.rtwOrders.filter(order => {
+        const matchesStatus = statusFilter === 'all' || order.status === statusFilter;
+        if (!matchesStatus) return false;
+        if (!query) return true;
+
+        const addrName = order.delivery_address?.name || '';
+        const addrPhone = order.recipient_number || order.delivery_address?.phone || '';
+        const email = order.email || '';
+        const orderId = order.id || '';
+        const slug = order.slug || '';
+
+        return (
+          email.toLowerCase().includes(query) ||
+          addrName.toLowerCase().includes(query) ||
+          addrPhone.toLowerCase().includes(query) ||
+          orderId.toLowerCase().includes(query) ||
+          slug.toLowerCase().includes(query)
+        );
+      });
+
+      if (countEl) countEl.innerText = `${filtered.length} Displayed`;
+
+      if (filtered.length === 0) {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="7" class="admin-empty-state">
+              <span class="admin-empty-icon">🛍️</span>
+              <strong>No Made-to-Order orders found</strong>
+              <div class="body-12" style="margin-top: 4px;">Orders placed online appear here in real-time.</div>
+            </td>
+          </tr>
+        `;
+        return;
+      }
+
+      const rowsHtml = filtered.map(o => {
+        const shortId = (o.slug || o.id.slice(0, 8)).toUpperCase();
+        const dateStr = formatDate(o.created_at);
+        const clientName = o.delivery_address?.name || o.email.split('@')[0];
+        const clientPhone = o.recipient_number || o.delivery_address?.phone || 'N/A';
+        const clientCity = o.delivery_address?.city || o.delivery_address?.state || 'Lagos';
+
+        // Garment summary
+        const items = o.rtw_order_item || [];
+        let itemsHtml = '<span class="body-12" style="color: var(--color-text-muted);">No items recorded</span>';
+        if (items.length > 0) {
+          const first = items[0];
+          const prodTitle = first.product_variation?.product?.title || 'Bespoke Garment';
+          const variantColor = first.product_variation?.color || '';
+          const imgUrl = first.product_variation?.main_image || 'assets/lookbook/lookbook_1_kaftan.jpg';
+          const sizeText = first.selected_size || 'M';
+          const moreCount = items.length > 1 ? ` +${items.length - 1} more` : '';
+
+          itemsHtml = `
+            <div style="display: flex; align-items: center; gap: 8px;">
+              <img src="${imgUrl}" alt="${prodTitle}" class="admin-item-preview-img" onerror="this.onerror=null; this.src='assets/lookbook/lookbook_1_kaftan.jpg';">
+              <div>
+                <div class="body-12" style="font-weight: 700; color: var(--color-obsidian);">${prodTitle}</div>
+                <div class="body-10" style="color: var(--color-text-muted);">${variantColor ? variantColor + ' &bull; ' : ''}Size: ${sizeText}${moreCount}</div>
+              </div>
+            </div>
+          `;
+        }
+
+        // Payment status pill
+        const payStatus = o.payment_status || 'pending';
+        const payClass = payStatus === 'success' ? 'payment-pill-success' : (payStatus === 'failed' ? 'payment-pill-failed' : 'payment-pill-pending');
+
+        // Order status selector
+        const statuses = ['placed', 'payment confirmed', 'order confirmed', 'processing order', 'order ready', 'dispatched', 'delivered', 'cancelled'];
+        const selectOptions = statuses.map(s => `
+          <option value="${s}" ${o.status === s ? 'selected' : ''}>${s.charAt(0).toUpperCase() + s.slice(1)}</option>
+        `).join('');
+
+        const cleanPhone = String(clientPhone).replace(/\D/g, '');
+        const waLink = cleanPhone ? `https://wa.me/${cleanPhone.startsWith('0') ? '234' + cleanPhone.slice(1) : cleanPhone}` : null;
+
+        return `
+          <tr data-order-id="${o.id}">
+            <td>
+              <strong>#${shortId}</strong>
+              <div class="body-10" style="color: var(--color-text-muted);">${dateStr}</div>
+            </td>
+            <td>
+              <strong>${clientName}</strong>
+              <div class="body-12" style="color: var(--color-text-muted);">${clientPhone}</div>
+              <div class="body-10" style="color: var(--color-text-muted);">${clientCity}</div>
+            </td>
+            <td>${itemsHtml}</td>
+            <td>
+              <strong class="body-14" style="color: var(--color-obsidian);">${formatNaira(o.total_amount)}</strong>
+              <div><span class="${payClass}">${payStatus.toUpperCase()}</span></div>
+            </td>
+            <td>
+              <span class="body-12">${o.delivery_option_chosen || 'Doorstep Delivery'}</span>
+            </td>
+            <td>
+              <select class="admin-status-select body-12" onchange="handleRtwStatusChange('${o.id}', this.value)" aria-label="Order Status">
+                ${selectOptions}
+              </select>
+            </td>
+            <td>
+              <div style="display: flex; gap: 6px;">
+                ${waLink ? `<a href="${waLink}" target="_blank" class="btn btn-outline body-12" style="padding: 4px 8px; color: #25D366;" title="Chat Client on WhatsApp">💬</a>` : ''}
+                <button type="button" class="btn btn-outline body-12" style="padding: 4px 8px;" onclick="viewRtwOrderDetails('${o.id}')" title="View Full Order Details">👁️</button>
+              </div>
+            </td>
+          </tr>
+        `;
+      }).join('');
+
+      tbody.innerHTML = rowsHtml;
+    }
+
+    function filterRtwTable() {
+      renderRtwTable();
+    }
+
+    async function handleRtwStatusChange(orderId, newStatus) {
+      const client = getSupabase();
+      if (!client) return;
+
+      try {
+        const { error } = await client
+          .from('ready_to_wear_order')
+          .update({ status: newStatus, updated_at: new Date().toISOString() })
+          .eq('id', orderId);
+
+        if (error) throw error;
+
+        showToast(`Order status updated to: ${newStatus}`);
+        const found = adminState.rtwOrders.find(o => o.id === orderId);
+        if (found) found.status = newStatus;
+        updateDashboardStats();
+      } catch (err) {
+        console.error('[Admin] Error updating status:', err);
+        showToast(`Failed to update status: ${err.message}`);
+        await loadRtwOrders();
+      }
+    }
+
+    function viewRtwOrderDetails(orderId) {
+      const order = adminState.rtwOrders.find(o => o.id === orderId);
+      if (!order) return;
+
+      const modal = document.getElementById('orderDetailModal');
+      const title = document.getElementById('orderDetailTitle');
+      const content = document.getElementById('orderDetailContent');
+
+      if (title) title.innerText = `Order #${(order.slug || order.id.slice(0, 8)).toUpperCase()}`;
+
+      const addr = order.delivery_address || {};
+      const items = order.rtw_order_item || [];
+
+      const itemsRows = items.map(item => {
+        const p = item.product_variation?.product?.title || 'Garment Item';
+        const color = item.product_variation?.color || '';
+        const fabric = item.product_variation?.fabric || '';
+        const img = item.product_variation?.main_image || 'assets/lookbook/lookbook_1_kaftan.jpg';
+        const snapshot = item.measurement_snapshot;
+        let snapHtml = '';
+        if (snapshot && typeof snapshot === 'object') {
+          const keys = Object.keys(snapshot).filter(k => snapshot[k]);
+          if (keys.length > 0) {
+            snapHtml = `<div class="body-10" style="margin-top: 4px; color: #44637B;">Custom sizing snapshot: ${keys.map(k => `${k}: ${snapshot[k]}"`).join(', ')}</div>`;
+          }
+        }
+
+        return `
+          <div style="display: flex; gap: 12px; align-items: center; padding: 8px 0; border-bottom: 1px solid var(--color-border);">
+            <img src="${img}" alt="${p}" class="admin-item-preview-img">
+            <div style="flex: 1;">
+              <strong class="body-14">${p}</strong>
+              <div class="body-12" style="color: var(--color-text-muted);">
+                ${color ? color + ' &bull; ' : ''}${fabric ? fabric + ' &bull; ' : ''}Size: ${item.selected_size} &bull; Qty: ${item.quantity}
+              </div>
+              ${snapHtml}
+            </div>
+            <strong class="body-14">${formatNaira(item.price * item.quantity)}</strong>
+          </div>
+        `;
+      }).join('');
+
+      content.innerHTML = `
+        <div class="modal-detail-grid">
+          <div>
+            <span class="body-10" style="text-transform: uppercase; letter-spacing: 1px; color: var(--color-primary); font-weight: 700;">Customer Details</span>
+            <div class="body-14" style="margin-top: 6px;"><strong>Name:</strong> ${addr.name || order.email.split('@')[0]}</div>
+            <div class="body-14"><strong>Email:</strong> ${order.email}</div>
+            <div class="body-14"><strong>Phone:</strong> ${order.recipient_number || addr.phone || 'N/A'}</div>
+          </div>
+          <div>
+            <span class="body-10" style="text-transform: uppercase; letter-spacing: 1px; color: var(--color-primary); font-weight: 700;">Delivery Address</span>
+            <div class="body-14" style="margin-top: 6px;">${addr.formatted_address || [addr.street, addr.area, addr.city, addr.state].filter(Boolean).join(', ') || 'Lagos Delivery'}</div>
+            <div class="body-12" style="color: var(--color-text-muted); margin-top: 4px;">Option: ${order.delivery_option_chosen || 'Doorstep'}</div>
+          </div>
+        </div>
+
+        <div style="margin-top: 16px;">
+          <span class="body-10" style="text-transform: uppercase; letter-spacing: 1px; color: var(--color-primary); font-weight: 700;">Purchased Garments (${items.length})</span>
+          <div style="margin-top: 8px;">${itemsRows}</div>
+        </div>
+
+        <div style="margin-top: 20px; padding: 12px 16px; background: #FAF8F5; border-radius: 6px; display: flex; justify-content: space-between; align-items: center;">
+          <span class="body-14" style="font-weight: 700;">Grand Total Amount:</span>
+          <span class="body-18" style="font-weight: 800; color: var(--color-obsidian);">${formatNaira(order.total_amount)}</span>
+        </div>
       `;
 
-      container.appendChild(toast);
-
-      setTimeout(() => {
-        toast.style.opacity = '0';
-        toast.style.transform = 'translateX(50px)';
-        toast.style.transition = 'all 0.3s ease';
-        setTimeout(() => toast.remove(), 300);
-      }, 4000);
+      if (modal) modal.classList.add('open');
     }
 
-    // Bespoke Modal Management
+    function closeOrderDetailModal() {
+      const modal = document.getElementById('orderDetailModal');
+      if (modal) modal.classList.remove('open');
+    }
+
+    function exportOrdersCsv() {
+      if (!adminState.rtwOrders.length) {
+        showToast('No orders to export.');
+        return;
+      }
+      const headers = ['Order ID', 'Date', 'Email', 'Phone', 'Total Amount', 'Payment Status', 'Fulfillment Status'];
+      const rows = adminState.rtwOrders.map(o => [
+        `"${o.slug || o.id}"`,
+        `"${formatDate(o.created_at)}"`,
+        `"${o.email}"`,
+        `"${o.recipient_number || ''}"`,
+        `"${o.total_amount}"`,
+        `"${o.payment_status}"`,
+        `"${o.status}"`
+      ]);
+
+      const csvContent = 'data:text/csv;charset=utf-8,' + [headers.join(','), ...rows.map(e => e.join(','))].join('\n');
+      const encodedUri = encodeURI(csvContent);
+      const link = document.createElement('a');
+      link.setAttribute('href', encodedUri);
+      link.setAttribute('download', `krabe_rtw_orders_${new Date().toISOString().slice(0, 10)}.csv`);
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      showToast('Exported RTW orders CSV.');
+    }
+
+    /* -------------------------------------------------------------------------
+       2. BESPOKE COMMISSIONS (custom_order)
+       ------------------------------------------------------------------------- */
+    async function loadBespokeOrders() {
+      const client = getSupabase();
+      if (!client) return;
+
+      try {
+        const { data, error } = await client
+          .from('custom_order')
+          .select(`
+            id,
+            request_id,
+            customer_name,
+            customer_email,
+            deadline_date,
+            description_notes,
+            total_charge,
+            payment_made,
+            status,
+            created_at,
+            custom_order_item (
+              id,
+              category,
+              gender,
+              charge,
+              description_notes
+            )
+          `)
+          .order('created_at', { ascending: false });
+
+        if (error) throw error;
+        adminState.bespokeOrders = data || [];
+        renderBespokeTable();
+
+        const badge = document.getElementById('bespokeNavCount');
+        const active = adminState.bespokeOrders.filter(b => b.status !== 'delivered' && b.status !== 'cancelled').length;
+        if (badge) badge.innerText = active;
+      } catch (err) {
+        console.error('[Admin] Error loading bespoke commissions:', err);
+      }
+    }
+
+    function renderBespokeTable() {
+      const tbody = document.getElementById('bespokeTableBody');
+      const countEl = document.getElementById('bespokeTableCount');
+      if (!tbody) return;
+
+      const query = (document.getElementById('bespokeSearchInput')?.value || '').toLowerCase().trim();
+      const filter = document.getElementById('bespokeMilestoneFilter')?.value || 'all';
+
+      const filtered = adminState.bespokeOrders.filter(b => {
+        const matchesStatus = filter === 'all' || b.status === filter;
+        if (!matchesStatus) return false;
+        if (!query) return true;
+
+        const name = (b.customer_name || '').toLowerCase();
+        const email = (b.customer_email || '').toLowerCase();
+        const reqId = (b.request_id || b.id || '').toLowerCase();
+        return name.includes(query) || email.includes(query) || reqId.includes(query);
+      });
+
+      if (countEl) countEl.innerText = `${filtered.length} Active`;
+
+      if (filtered.length === 0) {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="7" class="admin-empty-state">
+              <span class="admin-empty-icon">🪡</span>
+              <strong>No Bespoke commissions found</strong>
+              <div class="body-12" style="margin-top: 4px;">Click "+ Log Bespoke Commission" to record a new client commission.</div>
+            </td>
+          </tr>
+        `;
+        return;
+      }
+
+      const rowsHtml = filtered.map(b => {
+        const refId = b.request_id || ('#BES-' + b.id.slice(0, 6).toUpperCase());
+        const dateStr = formatDate(b.created_at);
+        const deadlineStr = formatDate(b.deadline_date);
+
+        const total = Number(b.total_charge) || 0;
+        const paid = Number(b.payment_made) || 0;
+        const balance = total - paid;
+
+        // Items summary
+        const items = b.custom_order_item || [];
+        const firstCategory = items.length > 0 ? items[0].category : 'Bespoke Native';
+        const notes = b.description_notes || (items[0]?.description_notes || 'Custom tailored ensemble');
+
+        const milestones = ['placed', 'order confirmed', 'processing order', 'order ready', 'delivered', 'cancelled'];
+        const optionsHtml = milestones.map(m => `
+          <option value="${m}" ${b.status === m ? 'selected' : ''}>${m.charAt(0).toUpperCase() + m.slice(1)}</option>
+        `).join('');
+
+        return `
+          <tr data-bespoke-id="${b.id}">
+            <td>
+              <strong>${refId}</strong>
+              <div class="body-10" style="color: var(--color-text-muted);">${dateStr}</div>
+            </td>
+            <td>
+              <strong>${b.customer_name || 'VIP Client'}</strong>
+              <div class="body-12" style="color: var(--color-text-muted);">${b.customer_email || 'No email logged'}</div>
+            </td>
+            <td>
+              <span class="admin-nav-pill gold body-10" style="text-transform: capitalize;">${firstCategory}</span>
+              <div class="body-12" style="color: var(--color-obsidian); margin-top: 4px; max-width: 260px; line-height: 1.4;">${notes}</div>
+            </td>
+            <td>
+              <strong class="body-14">${formatNaira(total)}</strong>
+              <div class="body-10" style="color: #03543F;">Paid: ${formatNaira(paid)}</div>
+              ${balance > 0 ? `<div class="balance-callout body-10" style="margin-top: 4px;">Due: ${formatNaira(balance)}</div>` : '<div class="balance-settled body-10" style="margin-top: 4px;">✓ Settled</div>'}
+            </td>
+            <td>
+              <strong style="color: #92400E;">${deadlineStr}</strong>
+            </td>
+            <td>
+              <select class="admin-status-select body-12" onchange="handleBespokeStatusChange('${b.id}', this.value)" aria-label="Commission Status">
+                ${optionsHtml}
+              </select>
+            </td>
+            <td>
+              <button type="button" class="btn btn-outline body-12" style="padding: 4px 8px;" onclick="promptRecordBespokePayment('${b.id}', ${balance})" title="Record Payment">💳</button>
+            </td>
+          </tr>
+        `;
+      }).join('');
+
+      tbody.innerHTML = rowsHtml;
+    }
+
+    function filterBespokeTable() {
+      renderBespokeTable();
+    }
+
+    async function handleBespokeStatusChange(id, newStatus) {
+      const client = getSupabase();
+      if (!client) return;
+
+      try {
+        const { error } = await client
+          .from('custom_order')
+          .update({ status: newStatus, updated_at: new Date().toISOString() })
+          .eq('id', id);
+
+        if (error) throw error;
+        showToast(`Commission milestone updated to: ${newStatus}`);
+        const found = adminState.bespokeOrders.find(b => b.id === id);
+        if (found) found.status = newStatus;
+        updateDashboardStats();
+      } catch (err) {
+        console.error('[Admin] Error updating bespoke status:', err);
+        showToast(`Failed to update milestone: ${err.message}`);
+        await loadBespokeOrders();
+      }
+    }
+
+    async function promptRecordBespokePayment(id, currentBalance) {
+      const amountStr = prompt(`Record additional payment received for this commission (Remaining balance: ${formatNaira(currentBalance)}):`, currentBalance > 0 ? currentBalance : '0');
+      if (!amountStr) return;
+      const amount = Number(amountStr);
+      if (isNaN(amount) || amount <= 0) {
+        showToast('Invalid payment amount entered.');
+        return;
+      }
+
+      const client = getSupabase();
+      if (!client) return;
+
+      const order = adminState.bespokeOrders.find(b => b.id === id);
+      if (!order) return;
+
+      const newPaymentMade = (Number(order.payment_made) || 0) + amount;
+
+      try {
+        const { error } = await client
+          .from('custom_order')
+          .update({ payment_made: newPaymentMade, updated_at: new Date().toISOString() })
+          .eq('id', id);
+
+        if (error) throw error;
+        showToast(`Logged payment of ${formatNaira(amount)}!`);
+        order.payment_made = newPaymentMade;
+        renderBespokeTable();
+        updateDashboardStats();
+      } catch (err) {
+        console.error('[Admin] Error recording payment:', err);
+        showToast(`Error: ${err.message}`);
+      }
+    }
+
     function openBespokeModal() {
       const modal = document.getElementById('bespokeModal');
-      if (modal) {
-        modal.classList.add('open');
-        calcBespokeBalance();
-      }
+      if (modal) modal.classList.add('open');
+      calcBespokeBalance();
     }
 
     function closeBespokeModal() {
@@ -1435,181 +1562,587 @@
     }
 
     function calcBespokeBalance() {
-      const total = parseFloat(document.getElementById('bTotalPrice').value) || 0;
-      const deposit = parseFloat(document.getElementById('bDepositPaid').value) || 0;
-      const balance = Math.max(0, total - deposit);
-      const display = document.getElementById('bBalanceDisplay');
-      if (display) {
-        display.innerHTML = `<strong>Balance Due on Fitting:</strong> <span style="color: #C05621; font-weight: 700;">₦${balance.toLocaleString()}</span>`;
-      }
+      const total = Number(document.getElementById('bTotalPrice')?.value) || 0;
+      const deposit = Number(document.getElementById('bDepositPaid')?.value) || 0;
+      const bal = Math.max(0, total - deposit);
+      const balEl = document.getElementById('bBalanceAmount');
+      if (balEl) balEl.innerText = formatNaira(bal);
     }
 
-    // Handle Bespoke Order Form Submission
-    let bespokeCount = 12;
-    function handleCreateBespoke(e) {
+    async function handleCreateBespoke(e) {
       e.preventDefault();
-      const clientName = document.getElementById('bClientName').value.trim();
-      const clientPhone = document.getElementById('bClientPhone').value.trim();
-      const category = document.getElementById('bGarmentCategory').value;
-      const tailor = document.getElementById('bAssignedTailor').value;
-      const fabric = document.getElementById('bFabricSpecs').value.trim();
-      const total = parseFloat(document.getElementById('bTotalPrice').value) || 0;
-      const deposit = parseFloat(document.getElementById('bDepositPaid').value) || 0;
-      const targetDate = document.getElementById('bTargetDate').value;
-      const balance = Math.max(0, total - deposit);
+      const client = getSupabase();
+      if (!client) return;
 
-      bespokeCount++;
-      const commissionId = 'BESPOKE-2026-0' + (80 + bespokeCount);
-
-      // Create new table row at top
-      const tableBody = document.getElementById('bespokeTableBody');
-      if (tableBody) {
-        const newRow = document.createElement('tr');
-        newRow.setAttribute('data-commission', commissionId);
-        newRow.setAttribute('data-milestone', 'sourced');
-        newRow.innerHTML = `
-          <td>
-            <strong>#${commissionId}</strong>
-            <div class="body-10" style="color: var(--color-text-muted);">Logged: Today &bull; WhatsApp</div>
-          </td>
-          <td>
-            <strong>${clientName}</strong>
-            <div class="body-12" style="color: var(--color-text-muted);">${clientPhone}</div>
-            <div class="body-10" style="color: var(--color-whatsapp); font-weight: 600;">✓ WhatsApp Deal</div>
-          </td>
-          <td>
-            <div class="body-12" style="font-weight: 600; color: var(--color-obsidian);">${category}</div>
-            <div class="body-10" style="color: var(--color-text-muted);">${fabric}</div>
-            <button type="button" class="btn btn-outline body-10" style="padding: 2px 6px; margin-top: 4px;" onclick="viewMeasurementCard('${clientName}', '42', '19.5', '25.5', '34', '32.5')">View Measurements</button>
-          </td>
-          <td>
-            <strong class="body-14" style="color: var(--color-obsidian);">₦${total.toLocaleString()}</strong>
-            <div class="body-10" style="color: #2B6CB0;">₦${deposit.toLocaleString()} Deposit Paid</div>
-            <div class="body-10" style="color: #C05621; font-weight: 600;">₦${balance.toLocaleString()} Balance Due</div>
-          </td>
-          <td>
-            <strong class="body-12">${tailor}</strong>
-            <div class="body-10" style="color: var(--color-text-muted);">Due: ${targetDate || 'TBD'}</div>
-          </td>
-          <td>
-            <select class="admin-status-select status-sourced body-12" onchange="handleBespokeStatusChange(this, '${commissionId}')">
-              <option value="sourced" selected>1. Fabric Sourced &amp; Inspected</option>
-              <option value="drafting">2. Pattern Drafting &amp; Cutting</option>
-              <option value="embroidery">3. Hand Embroidery &amp; Assembly</option>
-              <option value="fitting">4. Studio Fitting &amp; Steaming</option>
-              <option value="completed">5. Completed &amp; Dispatched</option>
-            </select>
-          </td>
-          <td>
-            <div style="display: flex; gap: 6px;">
-              <a href="https://wa.me/${clientPhone.replace(/[^0-9]/g, '')}" target="_blank" class="btn btn-outline body-12" style="padding: 4px 8px; color: var(--color-whatsapp);" title="Open WhatsApp Chat">💬</a>
-              <button type="button" class="btn btn-outline body-12" style="padding: 4px 8px;" onclick="printWorkshopCard('${commissionId}')">🖨️</button>
-            </div>
-          </td>
-        `;
-        tableBody.insertBefore(newRow, tableBody.firstChild);
+      const submitBtn = document.getElementById('bSubmitBtn');
+      if (submitBtn) {
+        submitBtn.disabled = true;
+        submitBtn.innerText = 'Logging to Workshop...';
       }
 
-      // Update counts
-      const bespokeNav = document.getElementById('bespokeNavCount');
-      const bespokeKpi = document.getElementById('kpiBespokeCount');
-      if (bespokeNav) bespokeNav.innerText = bespokeCount;
-      if (bespokeKpi) bespokeKpi.innerText = bespokeCount + ' Jobs';
+      try {
+        const clientName = document.getElementById('bClientName').value.trim();
+        const clientEmail = document.getElementById('bClientEmail').value.trim();
+        const category = document.getElementById('bGarmentCategory').value;
+        const gender = document.getElementById('bGender').value;
+        const notes = document.getElementById('bDescriptionNotes').value.trim();
+        const total = Number(document.getElementById('bTotalPrice').value) || 0;
+        const deposit = Number(document.getElementById('bDepositPaid').value) || 0;
+        const targetDate = document.getElementById('bTargetDate').value;
 
-      closeBespokeModal();
-      document.getElementById('bespokeOrderForm').reset();
-      showToast(`WhatsApp Bespoke Commission #${commissionId} successfully logged!`);
-      switchAdminTab('bespoke');
+        const reqId = 'BES-' + Math.floor(1000 + Math.random() * 9000);
+
+        // 1. Insert custom_order
+        const { data: orderData, error: orderErr } = await client
+          .from('custom_order')
+          .insert({
+            request_id: reqId,
+            customer_name: clientName,
+            customer_email: clientEmail,
+            total_charge: total,
+            payment_made: deposit,
+            deadline_date: targetDate ? new Date(targetDate).toISOString() : null,
+            description_notes: notes,
+            status: 'placed'
+          })
+          .select()
+          .single();
+
+        if (orderErr) throw orderErr;
+
+        // 2. Insert custom_order_item
+        await client
+          .from('custom_order_item')
+          .insert({
+            custom_order_id: orderData.id,
+            category: category,
+            gender: gender,
+            charge: total,
+            description_notes: notes
+          });
+
+        showToast(`Commission #${reqId} successfully created!`);
+        closeBespokeModal();
+        document.getElementById('bespokeOrderForm').reset();
+        await loadBespokeOrders();
+        switchAdminTab('bespoke');
+      } catch (err) {
+        console.error('[Admin] Error creating bespoke commission:', err);
+        showToast(`Failed: ${err.message}`);
+      } finally {
+        if (submitBtn) {
+          submitBtn.disabled = false;
+          submitBtn.innerText = 'Create Commission & Log to Workshop';
+        }
+      }
     }
 
-    // Create User Modal Management (Super Admin Exclusive)
-    function openCreateUserModal() {
-      if (currentRole !== 'super_admin') {
-        showToast('⚠️ Only Super Admin can invite team members.');
+    function exportBespokeCsv() {
+      if (!adminState.bespokeOrders.length) {
+        showToast('No bespoke commissions to export.');
         return;
       }
-      const modal = document.getElementById('createUserModal');
-      if (modal) modal.classList.add('open');
+      const headers = ['Commission ID', 'Date', 'Client Name', 'Email', 'Total Charge', 'Payment Made', 'Balance', 'Milestone', 'Deadline'];
+      const rows = adminState.bespokeOrders.map(b => [
+        `"${b.request_id || b.id}"`,
+        `"${formatDate(b.created_at)}"`,
+        `"${b.customer_name || ''}"`,
+        `"${b.customer_email || ''}"`,
+        `"${b.total_charge}"`,
+        `"${b.payment_made}"`,
+        `"${(Number(b.total_charge) || 0) - (Number(b.payment_made) || 0)}"`,
+        `"${b.status}"`,
+        `"${formatDate(b.deadline_date)}"`
+      ]);
+
+      const csvContent = 'data:text/csv;charset=utf-8,' + [headers.join(','), ...rows.map(e => e.join(','))].join('\n');
+      const encodedUri = encodeURI(csvContent);
+      const link = document.createElement('a');
+      link.setAttribute('href', encodedUri);
+      link.setAttribute('download', `krabe_bespoke_commissions_${new Date().toISOString().slice(0, 10)}.csv`);
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      showToast('Exported Bespoke CSV.');
     }
 
-    function closeCreateUserModal() {
-      const modal = document.getElementById('createUserModal');
-      if (modal) modal.classList.remove('open');
+    /* -------------------------------------------------------------------------
+       3. STUDIO FITTINGS & APPOINTMENTS (appointment)
+       ------------------------------------------------------------------------- */
+    async function loadFittings() {
+      const client = getSupabase();
+      if (!client) return;
+
+      try {
+        const { data, error } = await client
+          .from('appointment')
+          .select(`
+            id,
+            slug,
+            requested_date,
+            appointment_types,
+            notes,
+            status,
+            created_at,
+            user_id
+          `)
+          .order('requested_date', { ascending: false });
+
+        if (error) throw error;
+        adminState.fittings = data || [];
+        renderFittingsTable();
+
+        const badge = document.getElementById('fittingsNavCount');
+        const active = adminState.fittings.filter(f => f.status === 'requested' || f.status === 'confirmed').length;
+        if (badge) badge.innerText = active;
+      } catch (err) {
+        console.error('[Admin] Error loading fittings:', err);
+      }
     }
 
-    let userCount = 4;
-    function handleCreateUser(e) {
-      e.preventDefault();
-      const email = document.getElementById('newStaffEmail').value.trim();
-      const name = document.getElementById('newStaffName').value.trim();
-      const role = document.getElementById('newStaffRole').value;
+    function renderFittingsTable() {
+      const tbody = document.getElementById('fittingsTableBody');
+      const countEl = document.getElementById('fittingsTableCount');
+      if (!tbody) return;
 
-      userCount++;
-      const initials = name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase() || 'ST';
+      const query = (document.getElementById('fittingsSearchInput')?.value || '').toLowerCase().trim();
+      const statusFilter = document.getElementById('fittingsStatusFilter')?.value || 'all';
 
-      const roleBadgeClass = role === 'Super Admin' ? 'super' : (role.includes('Tailor') ? 'gold' : '');
+      const filtered = adminState.fittings.filter(f => {
+        const matchesStatus = statusFilter === 'all' || f.status === statusFilter;
+        if (!matchesStatus) return false;
+        if (!query) return true;
 
-      const tableBody = document.getElementById('usersTableBody');
-      if (tableBody) {
-        const newRow = document.createElement('tr');
-        newRow.innerHTML = `
-          <td>
-            <div style="display: flex; align-items: center; gap: 10px;">
-              <div class="admin-avatar body-14" style="background: #44637B; color: #FFFFFF;">${initials}</div>
-              <div>
-                <strong>${name}</strong>
-                <div class="body-12" style="color: var(--color-text-muted);">${email}</div>
-              </div>
-            </div>
-          </td>
-          <td>
-            <span class="admin-nav-pill ${roleBadgeClass} body-10">${role}</span>
-          </td>
-          <td>
-            <span class="body-12" style="display: inline-flex; align-items: center; gap: 6px; color: #975A16; font-weight: 600;">
-              <span style="width: 8px; height: 8px; border-radius: 50%; background: #ECC94B;"></span> Invite Sent (Pending Set Password)
-            </span>
-          </td>
-          <td>Today</td>
-          <td>Awaiting First Login</td>
-          <td>
-            <button type="button" class="btn btn-outline body-12" style="padding: 4px 8px;" onclick="resendPasswordEmail('${email}')">Resend Invite Email</button>
-          </td>
+        const notes = (f.notes || '').toLowerCase();
+        return notes.includes(query);
+      });
+
+      if (countEl) countEl.innerText = `${filtered.length} Bookings`;
+
+      if (filtered.length === 0) {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="7" class="admin-empty-state">
+              <span class="admin-empty-icon">📅</span>
+              <strong>No Studio Fittings Found</strong>
+              <div class="body-12" style="margin-top: 4px;">Private consultations booked on bespoke.html will appear here.</div>
+            </td>
+          </tr>
         `;
-        tableBody.appendChild(newRow);
+        return;
       }
 
-      const countBadge = document.getElementById('userCountBadge');
-      if (countBadge) countBadge.innerText = userCount + ' Team Members';
+      const rowsHtml = filtered.map(f => {
+        const dateStr = formatDate(f.requested_date);
+        let timeStr = '';
+        try {
+          const d = new Date(f.requested_date);
+          timeStr = d.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+        } catch (_) {}
 
-      closeCreateUserModal();
-      document.getElementById('createUserForm').reset();
-      showToast(`User created! Password reset invitation dispatched to ${email}`);
-      switchAdminTab('users');
+        // Match user profile if found in vault
+        const profile = adminState.vaultProfiles.find(p => p.id === f.user_id);
+        const clientName = profile?.name || 'VIP Client';
+        const clientPhone = profile?.phone_number || profile?.whatsapp_number || 'N/A';
+
+        const types = f.appointment_types || ['measure'];
+        const typesHtml = types.map(t => `<span class="admin-nav-pill body-10" style="text-transform: capitalize;">${t}</span>`).join(' ');
+
+        const statuses = ['requested', 'confirmed', 'inprogress', 'done'];
+        const optionsHtml = statuses.map(s => `
+          <option value="${s}" ${f.status === s ? 'selected' : ''}>${s.charAt(0).toUpperCase() + s.slice(1)}</option>
+        `).join('');
+
+        const cleanPhone = String(clientPhone).replace(/\D/g, '');
+        const waLink = cleanPhone ? `https://wa.me/${cleanPhone.startsWith('0') ? '234' + cleanPhone.slice(1) : cleanPhone}` : null;
+
+        return `
+          <tr data-fitting-id="${f.id}">
+            <td>
+              <strong>${dateStr}</strong>
+              <div class="body-12" style="color: var(--color-primary);">${timeStr}</div>
+            </td>
+            <td>
+              <strong>${clientName}</strong>
+            </td>
+            <td>
+              <div class="body-12">${clientPhone}</div>
+            </td>
+            <td>${typesHtml}</td>
+            <td>
+              <div class="body-12" style="max-width: 240px; color: var(--color-obsidian);">${f.notes || 'Studio consultation'}</div>
+            </td>
+            <td>
+              <select class="admin-status-select body-12" onchange="handleFittingStatusChange('${f.id}', this.value)" aria-label="Appointment Status">
+                ${optionsHtml}
+              </select>
+            </td>
+            <td>
+              ${waLink ? `<a href="${waLink}" target="_blank" class="btn btn-outline body-12" style="padding: 4px 8px; color: #25D366;" title="WhatsApp Reminder">💬</a>` : '<span class="body-10" style="color: var(--color-text-muted);">&mdash;</span>'}
+            </td>
+          </tr>
+        `;
+      }).join('');
+
+      tbody.innerHTML = rowsHtml;
     }
 
-    function resendPasswordEmail(email) {
-      showToast(`Password reset link re-sent to: ${email}`);
+    function filterFittingsTable() {
+      renderFittingsTable();
     }
 
-    // Measurement Card Quick View Modal
-    function viewMeasurementCard(name, chest, shoulder, sleeve, waist, inseam) {
+    async function handleFittingStatusChange(id, newStatus) {
+      const client = getSupabase();
+      if (!client) return;
+
+      try {
+        const { error } = await client
+          .from('appointment')
+          .update({ status: newStatus, updated_at: new Date().toISOString() })
+          .eq('id', id);
+
+        if (error) throw error;
+        showToast(`Appointment status updated to: ${newStatus}`);
+        const found = adminState.fittings.find(f => f.id === id);
+        if (found) found.status = newStatus;
+        updateDashboardStats();
+      } catch (err) {
+        console.error('[Admin] Error updating appointment:', err);
+        showToast(`Error: ${err.message}`);
+        await loadFittings();
+      }
+    }
+
+    /* -------------------------------------------------------------------------
+       4. CATALOG & INVENTORY (product & product_variation)
+       ------------------------------------------------------------------------- */
+    async function loadCatalogProducts() {
+      const client = getSupabase();
+      if (!client) return;
+
+      try {
+        const { data, error } = await client
+          .from('product')
+          .select(`
+            id,
+            title,
+            category,
+            type,
+            sold_out,
+            is_featured,
+            created_at,
+            product_variation (
+              id,
+              color,
+              fabric,
+              price,
+              main_image,
+              available
+            )
+          `)
+          .order('created_at', { ascending: false });
+
+        if (error) throw error;
+        adminState.products = data || [];
+        renderCatalogTable();
+
+        const badge = document.getElementById('catalogNavCount');
+        if (badge) badge.innerText = adminState.products.length;
+      } catch (err) {
+        console.error('[Admin] Error loading catalog:', err);
+      }
+    }
+
+    function renderCatalogTable() {
+      const tbody = document.getElementById('catalogTableBody');
+      const countEl = document.getElementById('catalogTableCount');
+      if (!tbody) return;
+
+      const query = (document.getElementById('catalogSearchInput')?.value || '').toLowerCase().trim();
+      const catFilter = document.getElementById('catalogCategoryFilter')?.value || 'all';
+
+      const filtered = adminState.products.filter(p => {
+        const matchesCat = catFilter === 'all' || p.category === catFilter;
+        if (!matchesCat) return false;
+        if (!query) return true;
+        return (p.title || '').toLowerCase().includes(query);
+      });
+
+      if (countEl) countEl.innerText = `${filtered.length} Garments`;
+
+      if (filtered.length === 0) {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="7" class="admin-empty-state">
+              <span class="admin-empty-icon">🏷️</span>
+              <strong>No products found</strong>
+            </td>
+          </tr>
+        `;
+        return;
+      }
+
+      const rowsHtml = filtered.map(p => {
+        const variations = p.product_variation || [];
+        const firstVariant = variations[0];
+        const img = firstVariant?.main_image || 'assets/lookbook/lookbook_1_kaftan.jpg';
+        const price = firstVariant?.price ? formatNaira(firstVariant.price) : 'Bespoke Quote';
+
+        const isSoldOut = Boolean(p.sold_out);
+        const isFeatured = Boolean(p.is_featured);
+
+        return `
+          <tr data-product-id="${p.id}">
+            <td>
+              <div style="display: flex; align-items: center; gap: 10px;">
+                <img src="${img}" alt="${p.title}" class="admin-item-preview-img" onerror="this.onerror=null; this.src='assets/lookbook/lookbook_1_kaftan.jpg';">
+                <div>
+                  <strong>${p.title}</strong>
+                  <div class="body-10" style="color: var(--color-text-muted);">${variations.length} color variant(s)</div>
+                </div>
+              </div>
+            </td>
+            <td>
+              <span class="admin-nav-pill body-10" style="text-transform: capitalize;">${p.category || 'Native'}</span>
+              <div class="body-10" style="color: var(--color-text-muted); margin-top: 2px;">${p.type || 'Made-to-Order'}</div>
+            </td>
+            <td>
+              <span class="body-12">${variations.map(v => v.color).filter(Boolean).join(', ') || 'Standard'}</span>
+            </td>
+            <td>
+              <strong class="body-14">${price}</strong>
+            </td>
+            <td>
+              <button type="button" class="catalog-toggle-btn ${isFeatured ? 'is-active' : ''}" onclick="toggleProductFeatured('${p.id}', ${!isFeatured})">
+                ${isFeatured ? '★ Featured' : '☆ Standard'}
+              </button>
+            </td>
+            <td>
+              <button type="button" class="catalog-toggle-btn ${isSoldOut ? 'is-sold-out' : 'is-active'}" onclick="toggleProductSoldOut('${p.id}', ${!isSoldOut})">
+                ${isSoldOut ? 'Sold Out' : '✓ In Stock'}
+              </button>
+            </td>
+            <td>
+              <a href="product.html?id=${p.id}" target="_blank" class="btn btn-outline body-12" style="padding: 4px 8px;" title="View Live Page">Preview &rarr;</a>
+            </td>
+          </tr>
+        `;
+      }).join('');
+
+      tbody.innerHTML = rowsHtml;
+    }
+
+    function filterCatalogTable() {
+      renderCatalogTable();
+    }
+
+    async function toggleProductSoldOut(id, newSoldOut) {
+      const client = getSupabase();
+      if (!client) return;
+
+      try {
+        const { error } = await client
+          .from('product')
+          .update({ sold_out: newSoldOut, updated_at: new Date().toISOString() })
+          .eq('id', id);
+
+        if (error) throw error;
+        showToast(newSoldOut ? 'Garment marked as Sold Out.' : 'Garment marked as In Stock.');
+        const found = adminState.products.find(p => p.id === id);
+        if (found) found.sold_out = newSoldOut;
+        renderCatalogTable();
+      } catch (err) {
+        console.error('[Admin] Error updating product:', err);
+        showToast(`Error: ${err.message}`);
+      }
+    }
+
+    async function toggleProductFeatured(id, newFeatured) {
+      const client = getSupabase();
+      if (!client) return;
+
+      try {
+        const { error } = await client
+          .from('product')
+          .update({ is_featured: newFeatured, updated_at: new Date().toISOString() })
+          .eq('id', id);
+
+        if (error) throw error;
+        showToast(newFeatured ? 'Garment set as Featured on homepage!' : 'Garment removed from homepage featured.');
+        const found = adminState.products.find(p => p.id === id);
+        if (found) found.is_featured = newFeatured;
+        renderCatalogTable();
+      } catch (err) {
+        console.error('[Admin] Error updating product featured status:', err);
+        showToast(`Error: ${err.message}`);
+      }
+    }
+
+    /* -------------------------------------------------------------------------
+       5. CLIENT VAULT & SIZING (profile & custom_measurement)
+       ------------------------------------------------------------------------- */
+    async function loadClientVault() {
+      const client = getSupabase();
+      if (!client) return;
+
+      try {
+        const { data, error } = await client
+          .from('profile')
+          .select(`
+            id,
+            name,
+            avatar_url,
+            phone_number,
+            whatsapp_number,
+            role,
+            created_at,
+            custom_measurement (
+              id,
+              label,
+              gender,
+              neck,
+              shoulder,
+              round_chest,
+              round_bust,
+              waist,
+              hip,
+              armhole,
+              round_bicep,
+              sleeve_length_long,
+              trouser_length_long,
+              trouser_length_ankle,
+              agbada_length,
+              agbada_sleeves
+            )
+          `)
+          .order('created_at', { ascending: false });
+
+        if (error) throw error;
+        adminState.vaultProfiles = data || [];
+        renderVaultTable();
+
+        const badge = document.getElementById('vaultNavCount');
+        if (badge) badge.innerText = adminState.vaultProfiles.length;
+      } catch (err) {
+        console.error('[Admin] Error loading client vault:', err);
+      }
+    }
+
+    function renderVaultTable() {
+      const tbody = document.getElementById('vaultTableBody');
+      const countEl = document.getElementById('vaultTableCount');
+      if (!tbody) return;
+
+      const query = (document.getElementById('vaultSearchInput')?.value || '').toLowerCase().trim();
+
+      const filtered = adminState.vaultProfiles.filter(p => {
+        if (!query) return true;
+        const name = (p.name || '').toLowerCase();
+        const phone = (p.phone_number || p.whatsapp_number || '').toLowerCase();
+        return name.includes(query) || phone.includes(query);
+      });
+
+      if (countEl) countEl.innerText = `${filtered.length} Clients`;
+
+      if (filtered.length === 0) {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="6" class="admin-empty-state">
+              <span class="admin-empty-icon">📐</span>
+              <strong>No Client Profiles Found</strong>
+            </td>
+          </tr>
+        `;
+        return;
+      }
+
+      const rowsHtml = filtered.map(p => {
+        const name = p.name || 'Anonymous Client';
+        const phone = p.phone_number || p.whatsapp_number || 'No phone recorded';
+        const dateStr = formatDate(p.created_at);
+        const measurements = p.custom_measurement || [];
+        const hasCard = measurements.length > 0;
+
+        const initials = name.slice(0, 2).toUpperCase();
+
+        return `
+          <tr data-profile-id="${p.id}">
+            <td>
+              <div style="display: flex; align-items: center; gap: 10px;">
+                <div class="admin-avatar body-12" style="background: #44637B; color: #FFFFFF; width: 32px; height: 32px;">${initials}</div>
+                <div>
+                  <strong>${name}</strong>
+                </div>
+              </div>
+            </td>
+            <td>
+              <div class="body-12">${phone}</div>
+            </td>
+            <td>
+              <span class="admin-nav-pill ${p.role === 'super admin' ? 'super' : (p.role === 'admin' ? 'gold' : '')} body-10" style="text-transform: capitalize;">
+                ${p.role || 'Customer'}
+              </span>
+            </td>
+            <td>
+              <span class="body-12">${dateStr}</span>
+            </td>
+            <td>
+              <span class="body-12" style="font-weight: 600; color: ${hasCard ? 'var(--color-primary)' : 'var(--color-text-muted)'};">
+                ${measurements.length} Profile(s)
+              </span>
+            </td>
+            <td>
+              ${hasCard ? `<button type="button" class="btn btn-outline body-12" style="padding: 4px 10px;" onclick="viewClientMeasurementCard('${p.id}')">View Sizing &rarr;</button>` : '<span class="body-10" style="color: var(--color-text-muted);">No card</span>'}
+            </td>
+          </tr>
+        `;
+      }).join('');
+
+      tbody.innerHTML = rowsHtml;
+    }
+
+    function filterVaultTable() {
+      renderVaultTable();
+    }
+
+    function viewClientMeasurementCard(profileId) {
+      const profile = adminState.vaultProfiles.find(p => p.id === profileId);
+      if (!profile) return;
+
+      const measurements = profile.custom_measurement || [];
+      if (!measurements.length) {
+        showToast('No sizing measurements recorded for this client.');
+        return;
+      }
+
+      const m = measurements[0];
       const modal = document.getElementById('measureModal');
       const title = document.getElementById('measureClientName');
       const grid = document.getElementById('measureGridDisplay');
-      if (title) title.innerText = name + ' (Tailoring Profile)';
+
+      if (title) title.innerText = `${profile.name || 'Client'} (${m.label || 'Bespoke Sizing Profile'})`;
       if (grid) {
-        grid.innerHTML = `
-          <div class="measure-mini-item"><span>CHEST</span><input type="text" value="${chest}&quot;" readonly></div>
-          <div class="measure-mini-item"><span>SHOULDER</span><input type="text" value="${shoulder}&quot;" readonly></div>
-          <div class="measure-mini-item"><span>SLEEVE</span><input type="text" value="${sleeve}&quot;" readonly></div>
-          <div class="measure-mini-item"><span>WAIST</span><input type="text" value="${waist}&quot;" readonly></div>
-          <div class="measure-mini-item"><span>INSEAM</span><input type="text" value="${inseam}&quot;" readonly></div>
-          <div class="measure-mini-item"><span>NECK</span><input type="text" value="17&quot;" readonly></div>
-          <div class="measure-mini-item"><span>HIPS</span><input type="text" value="41&quot;" readonly></div>
-          <div class="measure-mini-item"><span>OUTSEAM</span><input type="text" value="42&quot;" readonly></div>
-        `;
+        const fields = [
+          { label: 'CHEST', val: m.round_chest },
+          { label: 'SHOULDER', val: m.shoulder },
+          { label: 'WAIST', val: m.waist },
+          { label: 'HIPS', val: m.hip },
+          { label: 'SLEEVE (LONG)', val: m.sleeve_length_long },
+          { label: 'TROUSER LENGTH', val: m.trouser_length_long || m.trouser_length_ankle },
+          { label: 'ARMHOLE', val: m.armhole },
+          { label: 'NECK', val: m.neck },
+          { label: 'AGBADA LENGTH', val: m.agbada_length },
+          { label: 'AGBADA SLEEVES', val: m.agbada_sleeves }
+        ];
+
+        grid.innerHTML = fields.map(f => `
+          <div class="measure-mini-item body-12">
+            <span>${f.label}</span>
+            <input type="text" value="${f.val ? f.val + '"' : '&mdash;'}" readonly>
+          </div>
+        `).join('');
       }
+
       if (modal) modal.classList.add('open');
     }
 
@@ -1618,83 +2151,267 @@
       if (modal) modal.classList.remove('open');
     }
 
-    function printWorkshopCard(id) {
-      showToast(`Printing workshop spec sheet for commission #${id}...`);
+    /* -------------------------------------------------------------------------
+       6. STAFF & USER MANAGEMENT (Super Admin)
+       ------------------------------------------------------------------------- */
+    async function loadStaffMembers() {
+      const client = getSupabase();
+      if (!client) return;
+
+      try {
+        const { data, error } = await client
+          .from('profile')
+          .select('id, name, avatar_url, phone_number, role, created_at')
+          .order('created_at', { ascending: false });
+
+        if (error) throw error;
+        adminState.staffMembers = data || [];
+        renderUsersTable();
+
+        const badge = document.getElementById('userCountBadge');
+        const staffCount = adminState.staffMembers.filter(p => p.role === 'admin' || p.role === 'super admin').length;
+        if (badge) badge.innerText = `${staffCount} Staff Accounts`;
+      } catch (err) {
+        console.error('[Admin] Error loading staff:', err);
+      }
     }
 
-    function exportOrdersCsv() {
-      showToast('Exporting Made-to-Order report as CSV...');
-    }
+    function renderUsersTable() {
+      const tbody = document.getElementById('usersTableBody');
+      if (!tbody) return;
 
-    // Filter RTW Orders Table
-    function filterRtwTable() {
-      const query = (document.getElementById('rtwSearchInput').value || '').toLowerCase();
-      const status = document.getElementById('rtwStatusFilter').value;
-      const rows = document.querySelectorAll('#rtwOrdersTable tbody tr');
+      const query = (document.getElementById('userSearchInput')?.value || '').toLowerCase().trim();
 
-      rows.forEach(row => {
-        const text = row.innerText.toLowerCase();
-        const rowStatus = row.getAttribute('data-status');
-        const matchesQuery = !query || text.includes(query);
-        const matchesStatus = status === 'all' || rowStatus === status;
-
-        if (matchesQuery && matchesStatus) {
-          row.style.display = '';
-        } else {
-          row.style.display = 'none';
-        }
+      const filtered = adminState.staffMembers.filter(p => {
+        if (!query) return true;
+        return (p.name || '').toLowerCase().includes(query);
       });
+
+      if (filtered.length === 0) {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="5" class="admin-empty-state">
+              <span class="admin-empty-icon">👥</span>
+              <strong>No Users Found</strong>
+            </td>
+          </tr>
+        `;
+        return;
+      }
+
+      const rowsHtml = filtered.map(u => {
+        const name = u.name || 'Atelier User';
+        const role = u.role || 'customer';
+        const dateStr = formatDate(u.created_at);
+        const initials = name.slice(0, 2).toUpperCase();
+
+        const isSuper = role === 'super admin';
+        const isAdmin = role === 'admin';
+
+        return `
+          <tr data-user-id="${u.id}">
+            <td>
+              <div style="display: flex; align-items: center; gap: 10px;">
+                <div class="admin-avatar body-12" style="background: ${isSuper ? 'var(--color-gold)' : '#44637B'}; color: #FFFFFF; width: 32px; height: 32px;">${initials}</div>
+                <div>
+                  <strong>${name}</strong>
+                  <div class="body-10" style="color: var(--color-text-muted);">${u.phone_number || 'Atelier Member'}</div>
+                </div>
+              </div>
+            </td>
+            <td>
+              <span class="admin-nav-pill ${isSuper ? 'super' : (isAdmin ? 'gold' : '')} body-10" style="text-transform: capitalize;">
+                ${role}
+              </span>
+            </td>
+            <td>
+              <span class="body-12" style="color: #03543F; font-weight: 600;">Active</span>
+            </td>
+            <td>
+              <span class="body-12">${dateStr}</span>
+            </td>
+            <td>
+              <select class="admin-status-select body-12" onchange="handleUserRoleChange('${u.id}', this.value)" aria-label="Change Role">
+                <option value="customer" ${role === 'customer' ? 'selected' : ''}>Customer</option>
+                <option value="admin" ${role === 'admin' ? 'selected' : ''}>Staff / Admin</option>
+                <option value="super admin" ${role === 'super admin' ? 'selected' : ''}>Super Admin</option>
+              </select>
+            </td>
+          </tr>
+        `;
+      }).join('');
+
+      tbody.innerHTML = rowsHtml;
     }
 
-    // Filter Bespoke Table
-    function filterBespokeTable() {
-      const query = (document.getElementById('bespokeSearchInput').value || '').toLowerCase();
-      const milestone = document.getElementById('bespokeMilestoneFilter').value;
-      const rows = document.querySelectorAll('#bespokeOrdersTable tbody tr');
-
-      rows.forEach(row => {
-        const text = row.innerText.toLowerCase();
-        const rowMilestone = row.getAttribute('data-milestone');
-        const matchesQuery = !query || text.includes(query);
-        const matchesMilestone = milestone === 'all' || rowMilestone === milestone;
-
-        if (matchesQuery && matchesMilestone) {
-          row.style.display = '';
-        } else {
-          row.style.display = 'none';
-        }
-      });
-    }
-
-    // Filter Users Table
     function filterUsersTable() {
-      const query = (document.getElementById('userSearchInput').value || '').toLowerCase();
-      const rows = document.querySelectorAll('#usersTable tbody tr');
-
-      rows.forEach(row => {
-        const text = row.innerText.toLowerCase();
-        if (!query || text.includes(query)) {
-          row.style.display = '';
-        } else {
-          row.style.display = 'none';
-        }
-      });
+      renderUsersTable();
     }
 
-    // Close Modals on Overlay Click or Escape Key
+    async function handleUserRoleChange(userId, newRole) {
+      if (adminState.activeRole !== 'super_admin') {
+        showToast('Only Super Admin can modify account permissions.');
+        return;
+      }
+
+      const client = getSupabase();
+      if (!client) return;
+
+      try {
+        const { error } = await client
+          .from('profile')
+          .update({ role: newRole, updated_at: new Date().toISOString() })
+          .eq('id', userId);
+
+        if (error) throw error;
+        showToast(`Account role updated to: ${newRole}`);
+        const found = adminState.staffMembers.find(u => u.id === userId);
+        if (found) found.role = newRole;
+      } catch (err) {
+        console.error('[Admin] Error updating user role:', err);
+        showToast(`Failed to update role: ${err.message}`);
+        await loadStaffMembers();
+      }
+    }
+
+    /* -------------------------------------------------------------------------
+       7. DASHBOARD KPI CARDS & PRIORITY ALERTS
+       ------------------------------------------------------------------------- */
+    function updateDashboardStats() {
+      // 1. Gross Revenue
+      const rtwRevenue = adminState.rtwOrders
+        .filter(o => o.payment_status === 'success')
+        .reduce((sum, o) => sum + (Number(o.total_amount) || 0), 0);
+
+      const bespokeRevenue = adminState.bespokeOrders
+        .reduce((sum, b) => sum + (Number(b.payment_made) || 0), 0);
+
+      const totalRevenue = rtwRevenue + bespokeRevenue;
+      const revEl = document.getElementById('kpiGrossRevenue');
+      if (revEl) revEl.innerText = formatNaira(totalRevenue);
+
+      // 2. Active Made-to-Order
+      const activeRtw = adminState.rtwOrders.filter(o => o.status !== 'delivered' && o.status !== 'cancelled').length;
+      const rtwEl = document.getElementById('kpiRtwCount');
+      if (rtwEl) rtwEl.innerText = `${activeRtw} Orders`;
+
+      // 3. Active Bespoke
+      const activeBespoke = adminState.bespokeOrders.filter(b => b.status !== 'delivered' && b.status !== 'cancelled').length;
+      const besEl = document.getElementById('kpiBespokeCount');
+      if (besEl) besEl.innerText = `${activeBespoke} Jobs`;
+
+      // 4. Upcoming Fittings
+      const upcomingFittings = adminState.fittings.filter(f => f.status === 'requested' || f.status === 'confirmed').length;
+      const fitEl = document.getElementById('kpiFittingsCount');
+      if (fitEl) fitEl.innerText = `${upcomingFittings} Clients`;
+
+      // Priority Action Items Table
+      const priorityBody = document.getElementById('dashboardPriorityBody');
+      if (!priorityBody) return;
+
+      const priorityItems = [];
+
+      // Add pending RTW orders
+      adminState.rtwOrders
+        .filter(o => o.status === 'placed' || o.status === 'payment confirmed' || o.status === 'processing order')
+        .slice(0, 5)
+        .forEach(o => {
+          priorityItems.push({
+            type: 'RTW Order',
+            ref: '#' + (o.slug || o.id.slice(0, 8)).toUpperCase(),
+            client: o.delivery_address?.name || o.email.split('@')[0],
+            category: 'Made-to-Order',
+            amount: formatNaira(o.total_amount),
+            status: o.status,
+            date: formatDate(o.created_at),
+            tab: 'rtw'
+          });
+        });
+
+      // Add urgent bespoke jobs
+      adminState.bespokeOrders
+        .filter(b => b.status === 'placed' || b.status === 'processing order')
+        .slice(0, 4)
+        .forEach(b => {
+          priorityItems.push({
+            type: 'Bespoke',
+            ref: b.request_id || ('#BES-' + b.id.slice(0, 6)),
+            client: b.customer_name || 'Bespoke Client',
+            category: 'Custom Tailoring',
+            amount: formatNaira(b.total_charge),
+            status: b.status,
+            date: formatDate(b.deadline_date || b.created_at),
+            tab: 'bespoke'
+          });
+        });
+
+      // Add pending appointments
+      adminState.fittings
+        .filter(f => f.status === 'requested' || f.status === 'confirmed')
+        .slice(0, 3)
+        .forEach(f => {
+          priorityItems.push({
+            type: 'Studio Fitting',
+            ref: '#APPT-' + f.id.slice(0, 6),
+            client: 'VIP Fitting',
+            category: 'Private Studio Session',
+            amount: 'Consultation',
+            status: f.status,
+            date: formatDate(f.requested_date),
+            tab: 'fittings'
+          });
+        });
+
+      if (priorityItems.length === 0) {
+        priorityBody.innerHTML = `
+          <tr>
+            <td colspan="6" class="admin-empty-state">
+              <span class="admin-empty-icon">✓</span>
+              <strong>All atelier orders and appointments are up to date!</strong>
+            </td>
+          </tr>
+        `;
+        return;
+      }
+
+      priorityBody.innerHTML = priorityItems.map(item => `
+        <tr>
+          <td><strong>${item.ref}</strong></td>
+          <td>${item.client}</td>
+          <td><span class="admin-nav-pill body-10">${item.category}</span></td>
+          <td>
+            <strong>${item.amount}</strong>
+            <div class="body-10" style="text-transform: capitalize; color: var(--color-primary);">${item.status}</div>
+          </td>
+          <td><span class="body-12">${item.date}</span></td>
+          <td>
+            <button type="button" class="btn btn-outline body-12" style="padding: 4px 8px;" onclick="switchAdminTab('${item.tab}')">View &rarr;</button>
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    // Initialize portal when DOM is interactive
+    document.addEventListener('DOMContentLoaded', () => {
+      verifyAdminAuth();
+    });
+
+    window.addEventListener('krabe:session:changed', () => {
+      verifyAdminAuth();
+    });
+
+    // Modal close on escape or overlay click
     document.addEventListener('keydown', (e) => {
       if (e.key === 'Escape') {
         closeBespokeModal();
-        closeCreateUserModal();
+        closeOrderDetailModal();
         closeMeasureModal();
       }
     });
 
     document.querySelectorAll('.admin-modal-overlay').forEach(overlay => {
       overlay.addEventListener('click', (e) => {
-        if (e.target === overlay) {
-          overlay.classList.remove('open');
-        }
+        if (e.target === overlay) overlay.classList.remove('open');
       });
     });
   </script>

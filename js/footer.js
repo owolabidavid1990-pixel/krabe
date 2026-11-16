@@ -21,7 +21,7 @@
           <!-- Brand Info -->
           <div class="footer-brand">
             <a href="index.html" aria-label="Krabe Kollection Home">
-              <img src="assets/brand/krabe main logo.svg" alt="Krabe Kollection" style="height: 44px; margin-bottom: 14px;">
+              <img src="assets/brand/krabe final logo image.png" alt="Krabe Kollection" style="height: 44px; margin-bottom: 14px;">
             </a>
             <p class="body-14" style="color: var(--color-text-muted);">
               Premium Nigerian unisex fashion house combining ancestral textile heritage with contemporary minimalist tailoring and luxury streetwear.

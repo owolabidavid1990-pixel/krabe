@@ -155,7 +155,7 @@ document.addEventListener('DOMContentLoaded', () => {
           </div>
           ${cart.map(item => `
           <div class="cart-item" data-id="${item.id}">
-            <img src="${item.image || 'assets/brand/krabe main logo.svg'}" alt="${item.title}" class="cart-item-img">
+            <img src="${item.image || 'assets/brand/krabe final logo image.png'}" alt="${item.title}" class="cart-item-img">
             <div class="cart-item-details">
               <h4 class="h4">${item.title}</h4>
               <div class="cart-item-meta body-12" style="display: flex; align-items: center; flex-wrap: wrap; gap: 6px;">
@@ -308,7 +308,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
       } else {
         checkoutItemsContainer.innerHTML = cart.map(item => {
-          const itemImg = item.image || 'assets/brand/krabe main logo.svg';
+          const itemImg = item.image || 'assets/brand/krabe final logo image.png';
           const itemTitle = item.title || 'Signature Garment';
           const itemVariant = item.variant || (
             item.custom_measurement_label
@@ -505,7 +505,7 @@ document.addEventListener('DOMContentLoaded', () => {
               color: pv.color || 'Standard',
               price: Number(row.unit_price) || Number(pv.price) || 0,
               qty: currentQty,
-              image: pv.main_image || 'assets/brand/krabe main logo.svg',
+              image: pv.main_image || 'assets/brand/krabe final logo image.png',
               stock_quantity: stockQty,
               product_type: prod.type || null,
               slug: prod.slug || row.slug || null
@@ -697,7 +697,7 @@ document.addEventListener('DOMContentLoaded', () => {
         color: chosenColor,
         price: Number(price) || 0,
         qty: chosenQty,
-        image: image || 'assets/brand/krabe main logo.svg',
+        image: image || 'assets/brand/krabe final logo image.png',
         stock_quantity: stock_quantity != null ? Number(stock_quantity) : null,
         product_type: product_type || null
       });
