@@ -8,9 +8,33 @@
 -- Saves full measurement data into measurement_snapshot (JSONB).
 -- =============================================================================
 
--- Ensure column measurement_snapshot exists on custom_order_item table
+-- Ensure product_type enum has 'ready to wear' value if needed
+DO $$ BEGIN
+  ALTER TYPE public.product_type ADD VALUE IF NOT EXISTS 'ready to wear';
+EXCEPTION WHEN duplicate_object THEN null; END $$;
+
+-- Ensure columns exist on custom_order_item table
 ALTER TABLE public.custom_order_item 
 ADD COLUMN IF NOT EXISTS measurement_snapshot jsonb DEFAULT NULL;
+
+ALTER TABLE public.custom_order_item 
+ADD COLUMN IF NOT EXISTS selected_size text DEFAULT 'M';
+
+DO $$ BEGIN
+  IF EXISTS (
+    SELECT 1 FROM information_schema.columns 
+    WHERE table_name = 'custom_order_item' AND column_name = 'type' AND data_type = 'text'
+  ) THEN
+    ALTER TABLE public.custom_order_item 
+    ALTER COLUMN type TYPE public.product_type USING type::public.product_type;
+  ELSIF NOT EXISTS (
+    SELECT 1 FROM information_schema.columns 
+    WHERE table_name = 'custom_order_item' AND column_name = 'type'
+  ) THEN
+    ALTER TABLE public.custom_order_item 
+    ADD COLUMN type public.product_type DEFAULT 'bespoke'::public.product_type;
+  END IF;
+EXCEPTION WHEN others THEN null; END $$;
 
 CREATE OR REPLACE FUNCTION public.create_custom_order(
   p_order jsonb,
@@ -71,54 +95,68 @@ BEGIN
   END IF;
 
   -- =========================================================================
-  -- 4. GENERATE COLLISION-PROOF REQUEST ID
-  -- Format: BES-YYMMDD-<16 hex chars>
-  -- Example: BES-261120-A3F2C8D14E9B7F01
-  -- Using full UUID stripped of dashes (32 chars), taking first 16 = ~1.2×10^19 combinations
+  -- 4. INSERT OR UPDATE PARENT: custom_order
+  -- If order_id is provided, update existing commission; otherwise insert new.
   -- =========================================================================
-  v_uuid_clean := REPLACE(gen_random_uuid()::text, '-', '');
-  v_req_id := 'BES-' || TO_CHAR(NOW(), 'YYMMDD') || '-' || UPPER(SUBSTRING(v_uuid_clean FROM 1 FOR 16));
+  IF p_order->>'order_id' ~ '^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$' THEN
+    v_order_id := (p_order->>'order_id')::uuid;
 
-  -- =========================================================================
-  -- 5. RESOLVE USER ID
-  -- Link to a patron UUID if provided & valid, else fallback to staff auth.uid()
-  -- =========================================================================
-  IF p_order->>'user_id' ~ '^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$' THEN
-    v_user_id := (p_order->>'user_id')::uuid;
+    UPDATE public.custom_order
+    SET customer_name = COALESCE(NULLIF(p_order->>'customer_name', ''), 'Bespoke Client'),
+        customer_email = p_order->>'customer_email',
+        deadline_date = CASE
+          WHEN p_order->>'deadline_date' IS NOT NULL AND p_order->>'deadline_date' <> ''
+          THEN (p_order->>'deadline_date')::timestamptz
+          ELSE NULL
+        END,
+        description_notes = p_order->>'description_notes',
+        total_charge = v_total,
+        payment_made = v_deposit,
+        updated_at = NOW()
+    WHERE id = v_order_id
+    RETURNING request_id INTO v_req_id;
+
+    -- Delete existing child items so updated items are cleanly inserted
+    DELETE FROM public.custom_order_item WHERE custom_order_id = v_order_id;
   ELSE
-    v_user_id := auth.uid();
-  END IF;
+    -- Format: BES-YYMMDD-<16 hex chars>
+    v_uuid_clean := REPLACE(gen_random_uuid()::text, '-', '');
+    v_req_id := 'BES-' || TO_CHAR(NOW(), 'YYMMDD') || '-' || UPPER(SUBSTRING(v_uuid_clean FROM 1 FOR 16));
 
-  -- =========================================================================
-  -- 6. INSERT PARENT: custom_order
-  -- =========================================================================
-  INSERT INTO public.custom_order (
-    user_id,
-    request_id,
-    customer_name,
-    customer_email,
-    deadline_date,
-    description_notes,
-    total_charge,
-    payment_made,
-    status
-  )
-  VALUES (
-    v_user_id,
-    v_req_id,
-    COALESCE(NULLIF(p_order->>'customer_name', ''), 'Bespoke Client'),
-    p_order->>'customer_email',
-    CASE
-      WHEN p_order->>'deadline_date' IS NOT NULL AND p_order->>'deadline_date' <> ''
-      THEN (p_order->>'deadline_date')::timestamptz
-      ELSE NULL
-    END,
-    p_order->>'description_notes',
-    v_total,
-    v_deposit,
-    COALESCE((p_order->>'status')::public.order_status, 'placed'::public.order_status)
-  )
-  RETURNING id INTO v_order_id;
+    IF p_order->>'user_id' ~ '^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$' THEN
+      v_user_id := (p_order->>'user_id')::uuid;
+    ELSE
+      v_user_id := auth.uid();
+    END IF;
+
+    INSERT INTO public.custom_order (
+      user_id,
+      request_id,
+      customer_name,
+      customer_email,
+      deadline_date,
+      description_notes,
+      total_charge,
+      payment_made,
+      status
+    )
+    VALUES (
+      v_user_id,
+      v_req_id,
+      COALESCE(NULLIF(p_order->>'customer_name', ''), 'Bespoke Client'),
+      p_order->>'customer_email',
+      CASE
+        WHEN p_order->>'deadline_date' IS NOT NULL AND p_order->>'deadline_date' <> ''
+        THEN (p_order->>'deadline_date')::timestamptz
+        ELSE NULL
+      END,
+      p_order->>'description_notes',
+      v_total,
+      v_deposit,
+      COALESCE((p_order->>'status')::public.order_status, 'placed'::public.order_status)
+    )
+    RETURNING id INTO v_order_id;
+  END IF;
 
   -- =========================================================================
   -- 7. INSERT CHILD ITEMS: custom_order_item (Saving measurement_snapshot JSONB)
@@ -158,7 +196,9 @@ BEGIN
       charge,
       description_notes,
       fabric_photos,
-      inspiration_photos
+      inspiration_photos,
+      type,
+      selected_size
     )
     VALUES (
       v_order_id,
@@ -168,7 +208,9 @@ BEGIN
       (v_item->>'charge')::numeric,
       v_item->>'description_notes',
       v_fabrics,
-      v_inspirations
+      v_inspirations,
+      COALESCE((v_item->>'type')::public.product_type, 'bespoke'::public.product_type),
+      COALESCE(NULLIF(v_item->>'selected_size', ''), NULLIF(v_item->>'size', ''), 'M')
     );
   END LOOP;
 

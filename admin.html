@@ -1068,7 +1068,7 @@
             <div class="form-row-2" style="margin-top: 12px;">
               <div class="form-group-admin">
                 <label class="form-label-admin body-12" for="bCatalogQty">Quantity *</label>
-                <input type="number" id="bCatalogQty" class="form-input-admin body-14" value="1" min="1" max="1000" oninput="validateCatalogQty(this)">
+                <input type="number" id="bCatalogQty" class="form-input-admin body-14" value="1" min="1" max="1000" onchange="validateCatalogQty(this)" onblur="validateCatalogQty(this)">
                 <span class="body-10" id="bCatalogQtyHint" style="color: var(--color-text-muted); margin-top: 3px; display: block;">Max 1,000 for on-demand pieces</span>
               </div>
               <div class="form-group-admin">
@@ -2086,33 +2086,35 @@
       if (!client) return;
 
       try {
-        const { data, error } = await client
+        // 1. Fetch orders
+        const { data: orders, error: orderErr } = await client
           .from('custom_order')
-          .select(`
-            id,
-            user_id,
-            request_id,
-            customer_name,
-            customer_email,
-            deadline_date,
-            description_notes,
-            total_charge,
-            payment_made,
-            status,
-            created_at,
-            custom_order_item (
-              id,
-              category,
-              gender,
-              charge,
-              description_notes,
-              measurement_snapshot
-            )
-          `)
+          .select('*')
           .order('created_at', { ascending: false });
 
-        if (error) throw error;
-        adminState.bespokeOrders = data || [];
+        if (orderErr) throw orderErr;
+
+        // 2. Fetch order items
+        let items = [];
+        try {
+          const { data: itemsData, error: itemsErr } = await client
+            .from('custom_order_item')
+            .select('*');
+          if (!itemsErr && itemsData) items = itemsData;
+        } catch (_) {}
+
+        // 3. Map child items to parent orders
+        const itemMap = new Map();
+        items.forEach(it => {
+          if (!itemMap.has(it.custom_order_id)) itemMap.set(it.custom_order_id, []);
+          itemMap.get(it.custom_order_id).push(it);
+        });
+
+        (orders || []).forEach(o => {
+          o.custom_order_item = itemMap.get(o.id) || [];
+        });
+
+        adminState.bespokeOrders = orders || [];
         renderBespokeTable();
 
         const badge = document.getElementById('bespokeNavCount');
@@ -2120,6 +2122,7 @@
         if (badge) badge.innerText = active;
       } catch (err) {
         console.error('[Admin] Error loading bespoke commissions:', err);
+        renderBespokeTable();
       }
     }
 
@@ -2204,7 +2207,7 @@
               </select>
             </td>
             <td>
-              <button type="button" class="btn btn-outline body-12" style="padding: 4px 8px;" onclick="promptRecordBespokePayment('${b.id}', ${balance})" title="Record Payment">💳</button>
+              <button type="button" class="btn btn-outline body-12" style="padding: 4px 10px; font-weight: 500;" onclick="openEditBespokeOrder('${b.id}')" title="Edit Commission Details">Edit</button>
             </td>
           </tr>
         `;
@@ -2293,7 +2296,7 @@
 
     let selectedCatalogSize = 'M';
 
-    function openBespokeModal() {
+    function openBespokeModal(isEditing = false) {
       const modal = document.getElementById('bespokeModal');
       if (modal) modal.classList.add('open');
 
@@ -2318,9 +2321,98 @@
         });
       }
 
-      loadBespokeDraft();
+      if (!isEditing) {
+        bespokeDraft.editingOrderId = null;
+        const titleEl = document.getElementById('bespokeModalTitle');
+        if (titleEl) titleEl.innerText = 'Log Custom Order (Private Commission)';
+        const subEl = document.getElementById('bespokeModalSubtitle');
+        if (subEl) subEl.innerText = 'Draft auto-saved locally';
+        const submitBtn = document.getElementById('bSubmitBtn');
+        if (submitBtn) submitBtn.innerText = 'Log Custom Order to Workshop';
+        loadBespokeDraft();
+      }
+
       populateBespokeCatalogDropdowns();
       searchCatalogProductsFromDatabase('');
+    }
+
+    function openEditBespokeOrder(orderId) {
+      const order = (adminState.bespokeOrders || []).find(b => b.id === orderId);
+      if (!order) {
+        showToast('Commission not found.');
+        return;
+      }
+
+      // 1. Map existing items into draft items structure
+      const mappedItems = (order.custom_order_item || []).map(it => {
+        const isBespoke = it.type === 'bespoke' || !it.type;
+        return {
+          id: it.id,
+          source: isBespoke ? 'bespoke' : 'catalog',
+          type: it.type || (isBespoke ? 'bespoke' : 'made to order'),
+          title: it.description_notes || `${it.category || 'Custom'} Garment`,
+          category: it.category || 'native',
+          gender: it.gender || 'male',
+          charge: Number(it.charge) || 0,
+          quantity: 1,
+          unit_price: Number(it.charge) || 0,
+          selected_size: it.selected_size || 'M',
+          size: it.selected_size || 'M',
+          user_id: null,
+          measurement_id: it.measurement_id || null,
+          measurement_snapshot: it.measurement_snapshot || null,
+          description_notes: it.description_notes || '',
+          fabric_photos: Array.isArray(it.fabric_photos) ? it.fabric_photos : [],
+          inspiration_photos: Array.isArray(it.inspiration_photos) ? it.inspiration_photos : []
+        };
+      });
+
+      // 2. Populate bespokeDraft in memory for editing
+      bespokeDraft = {
+        editingOrderId: order.id,
+        step: 1,
+        itemType: 'catalog',
+        client: {
+          name: order.customer_name || '',
+          email: order.customer_email || '',
+          targetDate: order.deadline_date ? order.deadline_date.split('T')[0] : '',
+          deposit: Number(order.payment_made) || 0,
+          notes: order.description_notes || ''
+        },
+        items: mappedItems
+      };
+
+      // 3. Update modal texts for editing
+      const refId = order.request_id || ('#BES-' + order.id.slice(0, 6).toUpperCase());
+      const titleEl = document.getElementById('bespokeModalTitle');
+      if (titleEl) titleEl.innerText = `Edit Commission ${refId}`;
+      const subEl = document.getElementById('bespokeModalSubtitle');
+      if (subEl) subEl.innerText = 'Editing saved workshop commission';
+      const submitBtn = document.getElementById('bSubmitBtn');
+      if (submitBtn) submitBtn.innerText = 'Save Changes to Order';
+
+      // 4. Populate form fields
+      const nameEl = document.getElementById('bClientName');
+      const emailEl = document.getElementById('bClientEmail');
+      const dateEl = document.getElementById('bTargetDate');
+      const depEl = document.getElementById('bDepositPaid');
+      const notesEl = document.getElementById('bDescriptionNotes');
+
+      if (nameEl) nameEl.value = bespokeDraft.client.name;
+      if (emailEl) emailEl.value = bespokeDraft.client.email;
+      if (dateEl) dateEl.value = bespokeDraft.client.targetDate;
+      if (depEl) depEl.value = (bespokeDraft.client.deposit !== undefined && bespokeDraft.client.deposit !== null) ? bespokeDraft.client.deposit : '';
+      if (notesEl) notesEl.value = bespokeDraft.client.notes;
+
+      const discardBtn = document.getElementById('bDiscardDraftBtn');
+      if (discardBtn) discardBtn.style.display = 'none';
+
+      // 5. Open modal in editing mode
+      openBespokeModal(true);
+
+      renderBespokeDraftItems();
+      updateBespokeFinancialSummary();
+      goToBespokeStep(1, false);
     }
 
     function closeBespokeModal() {
@@ -2328,9 +2420,22 @@
       if (modal) modal.classList.remove('open');
       const zeroAlert = document.getElementById('bZeroItemsAlert');
       if (zeroAlert) zeroAlert.style.display = 'none';
+      bespokeDraft.editingOrderId = null;
     }
 
     function saveBespokeDraft() {
+      if (bespokeDraft.editingOrderId) {
+        // When editing an existing commission, update bespokeDraft.client in memory only
+        bespokeDraft.client = {
+          name: document.getElementById('bClientName')?.value.trim() || '',
+          email: document.getElementById('bClientEmail')?.value.trim() || '',
+          targetDate: document.getElementById('bTargetDate')?.value || '',
+          deposit: Number(document.getElementById('bDepositPaid')?.value) || 0,
+          notes: document.getElementById('bDescriptionNotes')?.value.trim() || ''
+        };
+        return;
+      }
+
       bespokeDraft.client = {
         name: document.getElementById('bClientName')?.value.trim() || '',
         email: document.getElementById('bClientEmail')?.value.trim() || '',
@@ -2790,23 +2895,43 @@
       onBespokeProductChanged();
     }
 
-    function clearBespokeProductSearch() {
+    function clearBespokeProductSearch(skipPopup = false) {
       const searchInput = document.getElementById('bCatalogProductSearch');
       const clearBtn = document.getElementById('bCatalogClearSearchBtn');
       const hiddenInput = document.getElementById('bCatalogProductSelectedId');
       const capsule = document.getElementById('bSelectedProductCapsule');
+      const variantSelect = document.getElementById('bCatalogVariantSelect');
+      const unitPriceInput = document.getElementById('bCatalogUnitPrice');
+      const badgeRow = document.getElementById('bCatalogProductBadgeRow');
+      const sizesCont = document.getElementById('bCatalogSizesContainer');
+      const customRow = document.getElementById('bCatalogCustomMeasurementRow');
+      const qtyInput = document.getElementById('bCatalogQty');
+      const qtyHint = document.getElementById('bCatalogQtyHint');
 
       if (searchInput) {
         searchInput.value = '';
-        searchInput.focus();
+        if (!skipPopup) searchInput.focus();
       }
       if (clearBtn) clearBtn.style.display = 'none';
       if (hiddenInput) hiddenInput.value = '';
       if (capsule) capsule.style.display = 'none';
       selectedCatalogProductId = '';
+      selectedCatalogSize = 'M';
 
-      openBespokeProductPopup();
-      searchCatalogProductsFromDatabase('');
+      if (variantSelect) variantSelect.innerHTML = '<option value="">-- Select a design on the left first --</option>';
+      if (unitPriceInput) unitPriceInput.value = '';
+      if (badgeRow) badgeRow.style.display = 'none';
+      if (sizesCont) sizesCont.innerHTML = '<span class="body-12" style="color: var(--color-text-muted);">Please select a product and variant first.</span>';
+      if (customRow) customRow.style.display = 'none';
+      if (qtyInput) { qtyInput.value = 1; qtyInput.max = 1000; }
+      if (qtyHint) qtyHint.innerText = 'Max 1,000 for on-demand pieces';
+
+      if (!skipPopup) {
+        openBespokeProductPopup();
+        searchCatalogProductsFromDatabase('');
+      } else {
+        closeBespokeProductPopup();
+      }
     }
 
     function onBespokeProductChanged() {
@@ -3021,10 +3146,16 @@
     }
 
     function validateCatalogQty(input) {
+      if (!input) return;
+      if (input.value === '') {
+        input.value = 1;
+        return;
+      }
       const val = parseInt(input.value, 10);
       const max = parseInt(input.max, 10);
-      if (isNaN(val) || val < 1) input.value = 1;
-      else if (max && val > max) {
+      if (isNaN(val) || val < 1) {
+        input.value = 1;
+      } else if (max && val > max) {
         input.value = max;
         showToast(`Stock limit: Maximum ${max} units available.`);
       }
@@ -3502,6 +3633,8 @@
         title: prod.title,
         color: variant.color || 'Standard',
         size: selectedCatalogSize,
+        selected_size: selectedCatalogSize,
+        type: prod.type || 'made to order',
         quantity: qty,
         unit_price: unitPrice,
         charge: unitPrice * qty,
@@ -3519,7 +3652,7 @@
       if (document.getElementById('bCatalogItemNotes')) document.getElementById('bCatalogItemNotes').value = '';
       if (document.getElementById('bCatalogQty')) document.getElementById('bCatalogQty').value = 1;
 
-      clearBespokeProductSearch();
+      clearBespokeProductSearch(true);
       clearGarmentUser('catalog');
       clearMeasurementProfile('catalog');
 
@@ -3569,6 +3702,9 @@
 
       bespokeDraft.items.push({
         source: 'bespoke',
+        type: 'bespoke',
+        selected_size: 'Custom',
+        size: 'Custom',
         title: `Bespoke ${categoryLabel} Piece`,
         category: category,
         gender: gender,
@@ -3735,15 +3871,19 @@
         return;
       }
 
+      const isEditing = Boolean(bespokeDraft.editingOrderId);
+      const editingId = bespokeDraft.editingOrderId;
+
       const submitBtn = document.getElementById('bSubmitBtn');
       if (submitBtn) {
         submitBtn.disabled = true;
-        submitBtn.innerText = 'Logging to Workshop...';
+        submitBtn.innerText = isEditing ? 'Saving Changes...' : 'Logging to Workshop...';
       }
 
       try {
         // Prepare RPC payloads
         const p_order = {
+          order_id: editingId || null,
           customer_name: clientName,
           customer_email: clientEmail || null,
           deadline_date: targetDate || null,
@@ -3761,6 +3901,9 @@
           return {
             category: item.category || 'native',
             gender: item.gender || 'male',
+            type: item.type || (item.source === 'catalog' ? 'made to order' : 'bespoke'),
+            selected_size: item.selected_size || item.size || 'M',
+            size: item.selected_size || item.size || 'M',
             charge: Number(item.charge),
             measurement_snapshot: snapshot,
             description_notes: item.description_notes || null,
@@ -3770,20 +3913,67 @@
         });
 
         // Execute atomic PostgreSQL RPC function
-        const { data: res, error: rpcErr } = await client.rpc('create_custom_order', {
-          p_order: p_order,
-          p_items: p_items
-        });
+        let res = null;
+        let rpcErr = null;
+        try {
+          const rpcRes = await client.rpc('create_custom_order', {
+            p_order: p_order,
+            p_items: p_items
+          });
+          res = rpcRes.data;
+          rpcErr = rpcRes.error;
+        } catch (e) {
+          rpcErr = e;
+        }
 
-        if (rpcErr) {
+        if (rpcErr && isEditing) {
+          console.warn('[Admin] RPC error on edit, using direct update fallback:', rpcErr);
+          const totalCharge = p_items.reduce((sum, it) => sum + (Number(it.charge) || 0), 0);
+          const { error: updErr } = await client
+            .from('custom_order')
+            .update({
+              customer_name: clientName,
+              customer_email: clientEmail || null,
+              deadline_date: targetDate ? new Date(targetDate).toISOString() : null,
+              description_notes: notes || null,
+              payment_made: deposit,
+              total_charge: totalCharge,
+              updated_at: new Date().toISOString()
+            })
+            .eq('id', editingId);
+
+          if (updErr) throw updErr;
+
+          // Replace child items
+          await client.from('custom_order_item').delete().eq('custom_order_id', editingId);
+          for (const it of p_items) {
+            await client.from('custom_order_item').insert({
+              custom_order_id: editingId,
+              category: it.category,
+              gender: it.gender,
+              type: it.type,
+              selected_size: it.selected_size,
+              charge: it.charge,
+              description_notes: it.description_notes,
+              measurement_snapshot: it.measurement_snapshot,
+              fabric_photos: it.fabric_photos,
+              inspiration_photos: it.inspiration_photos
+            });
+          }
+          res = { request_id: 'Updated' };
+          rpcErr = null;
+        } else if (rpcErr) {
           throw rpcErr;
         }
 
-        const generatedRef = res?.request_id || 'New';
-        showToast(`Bespoke commission #${generatedRef} successfully logged!`);
+        const generatedRef = res?.request_id || 'Saved';
+        if (isEditing) {
+          showToast(`Commission #${generatedRef} updated successfully!`);
+        } else {
+          showToast(`Bespoke commission #${generatedRef} successfully logged!`);
+          localStorage.removeItem(BESPOKE_DRAFT_KEY);
+        }
 
-        // Clear local storage draft upon successful database save
-        localStorage.removeItem(BESPOKE_DRAFT_KEY);
         bespokeDraft = { step: 1, itemType: 'catalog', client: {}, items: [] };
 
         clearBespokeProductSearch();
@@ -3800,12 +3990,12 @@
         switchAdminTab('bespoke');
 
       } catch (err) {
-        console.error('[Admin] Error creating bespoke commission:', err);
+        console.error('[Admin] Error saving bespoke commission:', err);
         showToast(`Failed: ${err.message || 'Unknown database error'}`);
       } finally {
         if (submitBtn) {
           submitBtn.disabled = false;
-          submitBtn.innerText = 'Log Custom Order to Workshop';
+          submitBtn.innerText = isEditing ? 'Save Changes to Order' : 'Log Custom Order to Workshop';
         }
       }
     }
