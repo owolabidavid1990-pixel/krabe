@@ -865,7 +865,7 @@
     <div class="admin-modal-card large" style="max-width: 900px;">
       <div class="admin-modal-header">
         <div>
-          <h3 class="admin-modal-title h3" id="bespokeModalTitle">Log Custom Order (Private Commission)</h3>
+          <h3 class="admin-modal-title h3" id="bespokeModalTitle">Create Custom Order</h3>
           <span class="body-12" style="color: var(--color-text-muted);" id="bespokeModalSubtitle">Draft auto-saved locally</span>
         </div>
         <div style="display: flex; gap: 8px; align-items: center;">
@@ -894,7 +894,7 @@
              =================================================================== -->
         <div id="bStep1Container">
           <p class="body-14" style="color: var(--color-text-muted); margin-bottom: 20px;">
-            Log bespoke commission agreements reached with clients in-studio or via WhatsApp chat. All progress is saved in your local draft until submitted.
+            Record custom order details, delivery deadline, and deposit. Draft is auto-saved locally.
           </p>
 
           <div class="body-12" style="font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--color-primary); margin-bottom: 12px;">
@@ -912,21 +912,21 @@
           </div>
 
           <div class="body-12" style="font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--color-primary); margin: 18px 0 12px;">
-            Delivery Timeline &amp; Upfront Deposit
+            Timeline &amp; Deposit
           </div>
           <div class="form-row-2">
             <div class="form-group-admin">
-              <label class="form-label-admin body-12" for="bTargetDate">Target Fitting / Delivery Date *</label>
+              <label class="form-label-admin body-12" for="bTargetDate">Delivery / Fitting Date *</label>
               <input type="date" id="bTargetDate" class="form-input-admin body-14" required onchange="saveBespokeDraft()">
             </div>
             <div class="form-group-admin">
-              <label class="form-label-admin body-12" for="bDepositPaid">Deposit Received (₦) *</label>
+              <label class="form-label-admin body-12" for="bDepositPaid">Deposit (₦) *</label>
               <input type="number" id="bDepositPaid" class="form-input-admin body-14" placeholder="e.g. 250000" min="0" required oninput="saveBespokeDraft(); updateBespokeFinancialSummary();">
             </div>
           </div>
 
           <div class="form-group-admin" style="margin-top: 10px;">
-            <label class="form-label-admin body-12" for="bDescriptionNotes">General Commission Notes</label>
+            <label class="form-label-admin body-12" for="bDescriptionNotes">Order Notes</label>
             <textarea id="bDescriptionNotes" class="form-input-admin body-14" rows="2" placeholder="e.g. Traditional wedding ensemble. Needs expedited fitting by 15th." oninput="saveBespokeDraft()"></textarea>
           </div>
 
@@ -953,29 +953,29 @@
             </button>
           </div>
 
-          <!-- Garment Type Selector (Catalog vs Bespoke) -->
+          <!-- Item Type Selector (Catalog vs Bespoke) -->
           <div style="margin-bottom: 16px;">
             <span class="body-12" style="font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--color-primary); display: block; margin-bottom: 8px;">
-              Select Garment Type to Add
+              Select Item Type
             </span>
             <div style="display: flex; gap: 10px;">
               <button type="button" class="btn body-12" id="bTypeCatalogBtn" onclick="switchBespokeGarmentType('catalog')" style="flex: 1; padding: 10px; border: 1px solid var(--color-primary); background: var(--color-primary); color: #fff; font-weight: 700;">
-                📦 Catalog Garment (Ready-to-Wear / Made-to-Order)
+                📦 Catalog Product (RTW / Made-to-Order)
               </button>
               <button type="button" class="btn btn-outline body-12" id="bTypeBespokeBtn" onclick="switchBespokeGarmentType('bespoke')" style="flex: 1; padding: 10px; font-weight: 700;">
-                ✂️ Bespoke Piece (Custom from Scratch)
+                ✂️ Bespoke Piece (Custom Commission)
               </button>
             </div>
           </div>
 
-          <!-- FORM A: CATALOG GARMENT PICKER (RTW / MTW) -->
+          <!-- FORM A: CATALOG PRODUCT PICKER (RTW / MTW) -->
           <div id="bCatalogPickerSection" style="padding: 16px; background: #FAF8F5; border-radius: 6px; border: 1px solid var(--color-border); margin-bottom: 24px;">
             <div class="form-row-2">
               <!-- Left Column: Product Search & Popup Top 10 List -->
               <div class="form-group-admin" style="margin-bottom: 0; position: relative;" id="bCatalogSearchWrapper">
-                <label class="form-label-admin body-12" for="bCatalogProductSearch">Search Store Catalog (by title, category, fabric) *</label>
+                <label class="form-label-admin body-12" for="bCatalogProductSearch">Catalog Product (Search title, SKU, category) *</label>
                 <div style="position: relative;">
-                  <input type="text" id="bCatalogProductSearch" class="form-input-admin body-14" placeholder="Click to choose newest or search design..." autocomplete="off" 
+                  <input type="text" id="bCatalogProductSearch" class="form-input-admin body-14" placeholder="Search product title, SKU, or category..." autocomplete="off" 
                          onclick="openBespokeProductPopup()" 
                          onfocus="openBespokeProductPopup()" 
                          oninput="onBespokeProductSearchInput(this.value)">
@@ -985,21 +985,21 @@
 
                 <!-- Floating Popup Dropdown (Top 10 Newest upfront or Live Search Results) -->
                 <div id="bCatalogProductResults" style="display: none; position: absolute; top: calc(100% + 4px); left: 0; right: 0; z-index: 1000; max-height: 280px; overflow-y: auto; background: #fff; border: 1px solid var(--color-border); border-radius: 6px; box-shadow: 0 10px 30px rgba(0,0,0,0.18);">
-                  <div class="body-12" style="padding: 14px; text-align: center; color: var(--color-text-muted);">Loading newest designs from store catalog...</div>
+                  <div class="body-12" style="padding: 14px; text-align: center; color: var(--color-text-muted);">Loading catalog products...</div>
                 </div>
 
                 <!-- Selected Product Pill -->
                 <div id="bSelectedProductCapsule" style="display: none; margin-top: 8px; padding: 6px 10px; background: #fff; border: 1px solid #D4AF37; border-radius: 4px; justify-content: space-between; align-items: center;">
                   <span class="body-12" id="bSelectedProductText"><strong>Title</strong></span>
-                  <span class="body-10" style="color: var(--color-primary); font-weight: 700;">✓ Active Design</span>
+                  <span class="body-10" style="color: var(--color-primary); font-weight: 700;">✓ Selected</span>
                 </div>
               </div>
 
               <!-- Right Column: Variant Selector with Live Descriptive Preview -->
               <div class="form-group-admin" style="margin-bottom: 0;">
-                <label class="form-label-admin body-12" for="bCatalogVariantSelect">Choose Color / Fabric Variant *</label>
+                <label class="form-label-admin body-12" for="bCatalogVariantSelect">Product Variant *</label>
                 <select id="bCatalogVariantSelect" class="form-select-admin body-14" onchange="onBespokeVariantChanged()">
-                  <option value="">-- Select a design on the left first --</option>
+                  <option value="">-- Select a product first --</option>
                 </select>
 
                 <!-- Dynamic Variant Details Preview (Image, Color, Fabric, Price, Stock/Tailoring) -->
@@ -1023,7 +1023,7 @@
 
             <!-- Size Selector -->
             <div style="margin: 14px 0 10px;">
-              <label class="form-label-admin body-12" style="display: block; margin-bottom: 6px;">Garment Size *</label>
+              <label class="form-label-admin body-12" style="display: block; margin-bottom: 6px;">Size *</label>
               <div id="bCatalogSizesContainer" style="display: flex; flex-wrap: wrap; gap: 8px;">
                 <!-- Populated dynamically based on RTW stock or Made to Order -->
                 <span class="body-12" style="color: var(--color-text-muted);">Please select a product and variant first.</span>
@@ -1033,14 +1033,14 @@
             <!-- Measurement Profile & User Assignment (Appears if "Custom" size selected for Made to Order) -->
             <div id="bCatalogCustomMeasurementRow" style="display: none; margin: 12px 0; padding: 14px; background: #fff; border-radius: 6px; border: 1px solid #D4AF37;">
               <div class="body-12" style="font-weight: 700; color: var(--color-primary); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 10px;">
-                ✂️ Custom Fit: Client &amp; Measurement Sizing
+                ✂️ Custom Fit: Client &amp; Measurement Profile
               </div>
 
               <!-- User search per item -->
               <div class="form-group-admin" style="position: relative; margin-bottom: 12px;" id="bCatUserSearchWrapper">
-                <label class="form-label-admin body-12" for="bCatUserSearch">Assign Client to this Garment (Search by Email)</label>
+                <label class="form-label-admin body-12" for="bCatUserSearch">Assign Client (Search by Email)</label>
                 <div style="position: relative;">
-                  <input type="text" id="bCatUserSearch" class="form-input-admin body-14" placeholder="Click to view clients or search by email..." autocomplete="off" onfocus="searchGarmentUser('catalog', this.value)" onclick="searchGarmentUser('catalog', this.value)" oninput="searchGarmentUser('catalog', this.value)">
+                  <input type="text" id="bCatUserSearch" class="form-input-admin body-14" placeholder="Search client by email or name..." autocomplete="off" onfocus="searchGarmentUser('catalog', this.value)" onclick="searchGarmentUser('catalog', this.value)" oninput="searchGarmentUser('catalog', this.value)">
                   <button type="button" id="bCatClearUserBtn" onclick="clearGarmentUser('catalog')" style="display: none; position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: none; border: none; font-size: 16px; cursor: pointer; color: var(--color-text-muted);">&times;</button>
                   <div id="bCatUserResults" style="display: none; position: absolute; top: calc(100% + 4px); left: 0; right: 0; background: #fff; border: 1px solid var(--color-border); border-radius: 6px; box-shadow: 0 10px 30px rgba(0,0,0,0.18); max-height: 220px; overflow-y: auto; z-index: 1000;"></div>
                 </div>
@@ -1051,13 +1051,13 @@
               <!-- Measurement Search by Label & Source Tabs -->
               <div class="form-group-admin" id="bCatMeasGroup">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
-                  <label class="form-label-admin body-12" style="margin: 0;">Select Measurement (Search by Label) *</label>
+                  <label class="form-label-admin body-12" style="margin: 0;">Measurement Profile *</label>
                   <div style="display: flex; gap: 6px;">
-                    <button type="button" class="btn body-10" id="bCatMeasTabUser" onclick="switchMeasurementTab('catalog', 'user')" style="padding: 3px 8px;">Client Measurements</button>
-                    <button type="button" class="btn btn-outline body-10" id="bCatMeasTabStudio" onclick="switchMeasurementTab('catalog', 'studio')" style="padding: 3px 8px;">Admin Created Measurements</button>
+                    <button type="button" class="btn body-10" id="bCatMeasTabUser" onclick="switchMeasurementTab('catalog', 'user')" style="padding: 3px 8px;">Client Profiles</button>
+                    <button type="button" class="btn btn-outline body-10" id="bCatMeasTabStudio" onclick="switchMeasurementTab('catalog', 'studio')" style="padding: 3px 8px;">Studio Presets</button>
                   </div>
                 </div>
-                <input type="text" id="bCatMeasSearch" class="form-input-admin body-14" placeholder="Search measurements by label (e.g. Wedding Fit, Senator)..." oninput="filterMeasurementList('catalog', this.value)">
+                <input type="text" id="bCatMeasSearch" class="form-input-admin body-14" placeholder="Search measurements by profile name..." oninput="filterMeasurementList('catalog', this.value)">
                 <div id="bCatSelectedMeasBadge" style="display: none; margin-top: 6px; padding: 6px 10px; background: #EBF8FF; border: 1px solid #BEE3F8; border-radius: 4px; font-size: 12px; color: #2B6CB0; font-weight: 600; justify-content: space-between; align-items: center;"></div>
                 <div id="bCatMeasList" style="margin-top: 6px; max-height: 140px; overflow-y: auto; border: 1px solid var(--color-border); border-radius: 4px; background: #FAF8F5; padding: 4px;"></div>
                 <input type="hidden" id="bCatSelectedMeasId" value="">
@@ -1072,14 +1072,14 @@
                 <span class="body-10" id="bCatalogQtyHint" style="color: var(--color-text-muted); margin-top: 3px; display: block;">Max 1,000 for on-demand pieces</span>
               </div>
               <div class="form-group-admin">
-                <label class="form-label-admin body-12" for="bCatalogUnitPrice">Agreed Unit Charge (₦) *</label>
+                <label class="form-label-admin body-12" for="bCatalogUnitPrice">Unit Price (₦) *</label>
                 <input type="number" id="bCatalogUnitPrice" class="form-input-admin body-14" placeholder="0" min="1">
               </div>
             </div>
 
             <div class="form-group-admin" style="margin-top: 10px;">
-              <label class="form-label-admin body-12" for="bCatalogItemNotes">Tailoring Notes / Alteration Requests</label>
-              <input type="text" id="bCatalogItemNotes" class="form-input-admin body-14" placeholder="e.g. Add 1 inch to kaftan sleeve length. Gold buttons.">
+              <label class="form-label-admin body-12" for="bCatalogItemNotes">Production Notes / Alterations</label>
+              <input type="text" id="bCatalogItemNotes" class="form-input-admin body-14" placeholder="e.g. Sleeve length, custom buttons, specific tailoring notes...">
             </div>
 
             <div style="margin-top: 14px; text-align: right;">
@@ -1089,11 +1089,11 @@
             </div>
           </div>
 
-          <!-- FORM B: BESPOKE GARMENT FROM SCRATCH -->
+          <!-- FORM B: BESPOKE ITEM -->
           <div id="bBespokePickerSection" style="display: none; padding: 16px; background: #FAF8F5; border-radius: 6px; border: 1px solid var(--color-border); margin-bottom: 24px;">
             <div class="form-row-2">
               <div class="form-group-admin">
-                <label class="form-label-admin body-12" for="bBespokeCategory">Clothing Category *</label>
+                <label class="form-label-admin body-12" for="bBespokeCategory">Category *</label>
                 <select id="bBespokeCategory" class="form-select-admin body-14">
                   <option value="native">Native (Agbada / Senator / Kaftan)</option>
                   <option value="formal">Formal (Tuxedo / 3-Piece Suit / Blazer)</option>
@@ -1111,21 +1111,21 @@
             </div>
 
             <div class="form-group-admin" style="margin-top: 10px;">
-              <label class="form-label-admin body-12" for="bBespokeDesc">Garment Description &amp; Detailed Brief *</label>
-              <textarea id="bBespokeDesc" class="form-input-admin body-14" rows="2" placeholder="e.g. 3-Piece Grand Royal Agbada in Super 150s Midnight Navy Cashmere with bronze chain embroidery"></textarea>
+              <label class="form-label-admin body-12" for="bBespokeDesc">Item Description / Specifications *</label>
+              <textarea id="bBespokeDesc" class="form-input-admin body-14" rows="2" placeholder="e.g. 3-Piece Grand Royal Agbada in Midnight Navy Cashmere with bronze embroidery"></textarea>
             </div>
 
             <!-- Client & Measurement Assignment for Bespoke Piece -->
             <div style="margin: 12px 0; padding: 14px; background: #fff; border-radius: 6px; border: 1px solid var(--color-border);">
               <div class="body-12" style="font-weight: 700; color: var(--color-primary); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 10px;">
-                ✂️ Client Assignment &amp; Measurement Sizing
+                ✂️ Client &amp; Measurement Profile
               </div>
 
               <!-- User search per bespoke item -->
               <div class="form-group-admin" style="position: relative; margin-bottom: 12px;" id="bBespUserSearchWrapper">
-                <label class="form-label-admin body-12" for="bBespUserSearch">Assign Client to this Garment (Search by Email)</label>
+                <label class="form-label-admin body-12" for="bBespUserSearch">Assign Client (Search by Email)</label>
                 <div style="position: relative;">
-                  <input type="text" id="bBespUserSearch" class="form-input-admin body-14" placeholder="Click to view clients or search by email..." autocomplete="off" onfocus="searchGarmentUser('bespoke', this.value)" onclick="searchGarmentUser('bespoke', this.value)" oninput="searchGarmentUser('bespoke', this.value)">
+                  <input type="text" id="bBespUserSearch" class="form-input-admin body-14" placeholder="Search client by email or name..." autocomplete="off" onfocus="searchGarmentUser('bespoke', this.value)" onclick="searchGarmentUser('bespoke', this.value)" oninput="searchGarmentUser('bespoke', this.value)">
                   <button type="button" id="bBespClearUserBtn" onclick="clearGarmentUser('bespoke')" style="display: none; position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: none; border: none; font-size: 16px; cursor: pointer; color: var(--color-text-muted);">&times;</button>
                   <div id="bBespUserResults" style="display: none; position: absolute; top: calc(100% + 4px); left: 0; right: 0; background: #fff; border: 1px solid var(--color-border); border-radius: 6px; box-shadow: 0 10px 30px rgba(0,0,0,0.18); max-height: 220px; overflow-y: auto; z-index: 1000;"></div>
                 </div>
@@ -1136,13 +1136,13 @@
               <!-- Measurement Search by Label & Source Tabs for Bespoke -->
               <div class="form-group-admin" id="bBespMeasGroup">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
-                  <label class="form-label-admin body-12" style="margin: 0;">Select Measurement (Search by Label)</label>
+                  <label class="form-label-admin body-12" style="margin: 0;">Measurement Profile</label>
                   <div style="display: flex; gap: 6px;">
-                    <button type="button" class="btn body-10" id="bBespMeasTabUser" onclick="switchMeasurementTab('bespoke', 'user')" style="padding: 3px 8px;">Client Measurements</button>
-                    <button type="button" class="btn btn-outline body-10" id="bBespMeasTabStudio" onclick="switchMeasurementTab('bespoke', 'studio')" style="padding: 3px 8px;">Admin Created Measurements</button>
+                    <button type="button" class="btn body-10" id="bBespMeasTabUser" onclick="switchMeasurementTab('bespoke', 'user')" style="padding: 3px 8px;">Client Profiles</button>
+                    <button type="button" class="btn btn-outline body-10" id="bBespMeasTabStudio" onclick="switchMeasurementTab('bespoke', 'studio')" style="padding: 3px 8px;">Studio Presets</button>
                   </div>
                 </div>
-                <input type="text" id="bBespMeasSearch" class="form-input-admin body-14" placeholder="Search measurements by label (e.g. Wedding Fit, Senator)..." oninput="filterMeasurementList('bespoke', this.value)">
+                <input type="text" id="bBespMeasSearch" class="form-input-admin body-14" placeholder="Search measurements by profile name..." oninput="filterMeasurementList('bespoke', this.value)">
                 <div id="bBespSelectedMeasBadge" style="display: none; margin-top: 6px; padding: 6px 10px; background: #EBF8FF; border: 1px solid #BEE3F8; border-radius: 4px; font-size: 12px; color: #2B6CB0; font-weight: 600; justify-content: space-between; align-items: center;"></div>
                 <div id="bBespMeasList" style="margin-top: 6px; max-height: 140px; overflow-y: auto; border: 1px solid var(--color-border); border-radius: 4px; background: #FAF8F5; padding: 4px;"></div>
                 <input type="hidden" id="bBespSelectedMeasId" value="">
@@ -1150,7 +1150,7 @@
             </div>
 
             <div class="form-group-admin" style="margin-top: 10px;">
-              <label class="form-label-admin body-12" for="bBespokeCharge">Agreed Garment Charge (₦) *</label>
+              <label class="form-label-admin body-12" for="bBespokeCharge">Unit Price / Charge (₦) *</label>
               <input type="number" id="bBespokeCharge" class="form-input-admin body-14" placeholder="e.g. 350000" min="1">
             </div>
 
@@ -1165,7 +1165,7 @@
                   <input type="file" id="bFabricFileInput" multiple accept="image/*" style="display: none;" onchange="handleBespokePhotoUpload(event, 'fabric', 'create')">
                   <div id="bFabricUploadPrompt" style="display: flex; flex-direction: column; align-items: center; gap: 3px;">
                     <span style="font-size: 20px;">📷</span>
-                    <span class="body-12" style="color: var(--color-primary); font-weight: 600;">+ Choose or Snap Fabric Photos</span>
+                    <span class="body-12" style="color: var(--color-primary); font-weight: 600;">+ Upload Fabric Photos</span>
                     <span class="body-10" style="color: var(--color-text-muted);">Max 5 photos &bull; Up to 5MB each</span>
                   </div>
                   <div id="bFabricUploadingSpinner" style="display: none; padding: 6px; font-size: 12px; color: var(--color-primary); font-weight: 600;">
@@ -1177,14 +1177,14 @@
 
               <div class="form-group-admin" style="margin-bottom: 0;">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
-                  <label class="form-label-admin body-12" style="margin: 0; font-weight: 600;">Inspiration Photos</label>
+                  <label class="form-label-admin body-12" style="margin: 0; font-weight: 600;">Inspiration / Reference Photos</label>
                   <span class="body-10" id="bInspoCountBadge" style="color: var(--color-text-muted);">0/5 (Max 5MB each)</span>
                 </div>
                 <div id="bInspoDropZone" style="border: 1px dashed var(--color-border); border-radius: 6px; padding: 14px 10px; background: #fff; text-align: center; cursor: pointer; transition: all 0.2s;" onclick="document.getElementById('bInspoFileInput').click()" ondragover="event.preventDefault(); this.style.borderColor='var(--color-primary)';" ondragleave="this.style.borderColor='var(--color-border)';" ondrop="this.style.borderColor='var(--color-border)'; handleBespokePhotoDrop(event, 'inspo', 'create');">
                   <input type="file" id="bInspoFileInput" multiple accept="image/*" style="display: none;" onchange="handleBespokePhotoUpload(event, 'inspo', 'create')">
                   <div id="bInspoUploadPrompt" style="display: flex; flex-direction: column; align-items: center; gap: 3px;">
                     <span style="font-size: 20px;">🖼️</span>
-                    <span class="body-12" style="color: var(--color-primary); font-weight: 600;">+ Choose Inspiration Photos</span>
+                    <span class="body-12" style="color: var(--color-primary); font-weight: 600;">+ Upload Reference Photos</span>
                     <span class="body-10" style="color: var(--color-text-muted);">Max 5 photos &bull; Up to 5MB each</span>
                   </div>
                   <div id="bInspoUploadingSpinner" style="display: none; padding: 6px; font-size: 12px; color: var(--color-primary); font-weight: 600;">
@@ -1202,18 +1202,18 @@
             </div>
           </div>
 
-          <!-- RUNNING GARMENTS LIST -->
+          <!-- RUNNING ITEMS LIST -->
           <div style="margin-top: 20px;">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
               <span class="body-12" style="font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--color-primary);">
                 Items in this Order (<span id="bItemsCount">0</span>)
               </span>
-              <span class="body-12" style="color: var(--color-text-muted);">At least 1 garment required</span>
+              <span class="body-12" style="color: var(--color-text-muted);">At least 1 item required</span>
             </div>
 
             <div id="bDraftItemsContainer" style="display: flex; flex-direction: column; gap: 8px;">
               <div class="body-14" style="text-align: center; padding: 24px; background: #FAF8F5; border-radius: 6px; border: 1px dashed var(--color-border); color: var(--color-text-muted);">
-                No garments added yet. Select a catalog garment or bespoke piece above and click "+ Add Item to Order".
+                No items added yet. Select a catalog product or bespoke piece above and click "+ Add Item to Order".
               </div>
             </div>
           </div>
@@ -1229,14 +1229,14 @@
               <div class="body-16" id="bDepositDisplay" style="font-weight: 700; color: var(--color-primary);">₦0</div>
             </div>
             <div style="text-align: right;">
-              <span class="body-10" style="text-transform: uppercase; color: var(--color-text-muted); font-weight: 700;">Balance Due on Fitting</span>
+              <span class="body-10" style="text-transform: uppercase; color: var(--color-text-muted); font-weight: 700;">Balance Due</span>
               <div class="body-18" id="bBalanceDisplay" style="font-weight: 800; color: #C05621;">₦0</div>
             </div>
           </div>
 
           <!-- Zero Items Alert Banner -->
           <div id="bZeroItemsAlert" style="display: none; margin-top: 16px; padding: 12px 16px; background: #FFF5F5; border: 1px solid #FEB2B2; border-radius: 6px; color: #C53030; font-size: 13px; font-weight: 600; align-items: center; gap: 8px;">
-            <span>⚠️ Cannot submit: Please add at least 1 garment item to this order before logging it to the workshop.</span>
+            <span>⚠️ Cannot submit: Please add at least 1 item to this order before logging it to the workshop.</span>
           </div>
 
           <div style="margin-top: 20px; display: flex; justify-content: space-between; align-items: center;">
@@ -1257,8 +1257,8 @@
     <div class="admin-modal-card large" style="max-width: 900px;">
       <div class="admin-modal-header">
         <div>
-          <h3 class="admin-modal-title h3" id="editBespokeModalTitle">Edit Commission</h3>
-          <span class="body-12" style="color: var(--color-text-muted);" id="editBespokeModalSubtitle">Direct live database commission editor</span>
+          <h3 class="admin-modal-title h3" id="editBespokeModalTitle">Edit Custom Order</h3>
+          <span class="body-12" style="color: var(--color-text-muted);" id="editBespokeModalSubtitle">Direct database order editor</span>
         </div>
         <div style="display: flex; gap: 8px; align-items: center;">
           <button type="button" class="admin-modal-close body-18" onclick="closeEditBespokeModal()" aria-label="Close dialog">&times;</button>
@@ -1285,7 +1285,7 @@
              =================================================================== -->
         <div id="ebStep1Container">
           <p class="body-14" style="color: var(--color-text-muted); margin-bottom: 20px;">
-            Update client contact details, agreed target delivery timeline, and initial deposit received.
+            Update client details, delivery date, and deposit received.
           </p>
 
           <div class="body-12" style="font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--color-primary); margin-bottom: 12px;">
@@ -1303,21 +1303,21 @@
           </div>
 
           <div class="body-12" style="font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--color-primary); margin: 18px 0 12px;">
-            Delivery Timeline &amp; Upfront Deposit
+            Timeline &amp; Deposit
           </div>
           <div class="form-row-2">
             <div class="form-group-admin">
-              <label class="form-label-admin body-12" for="ebTargetDate">Target Fitting / Delivery Date *</label>
+              <label class="form-label-admin body-12" for="ebTargetDate">Delivery / Fitting Date *</label>
               <input type="date" id="ebTargetDate" class="form-input-admin body-14" required>
             </div>
             <div class="form-group-admin">
-              <label class="form-label-admin body-12" for="ebDepositPaid">Deposit Received (₦) *</label>
+              <label class="form-label-admin body-12" for="ebDepositPaid">Deposit (₦) *</label>
               <input type="number" id="ebDepositPaid" class="form-input-admin body-14" placeholder="e.g. 250000" min="0" required oninput="updateEditBespokeFinancialSummary();">
             </div>
           </div>
 
           <div class="form-group-admin" style="margin-top: 10px;">
-            <label class="form-label-admin body-12" for="ebDescriptionNotes">General Commission Notes</label>
+            <label class="form-label-admin body-12" for="ebDescriptionNotes">Order Notes</label>
             <textarea id="ebDescriptionNotes" class="form-input-admin body-14" rows="2" placeholder="e.g. Traditional wedding ensemble. Needs expedited fitting by 15th."></textarea>
           </div>
 
@@ -1362,28 +1362,28 @@
             </button>
           </div>
 
-          <!-- Garment Type Selector (Catalog vs Bespoke) -->
+          <!-- Item Type Selector (Catalog vs Bespoke) -->
           <div style="margin-bottom: 16px;">
             <span class="body-12" style="font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--color-primary); display: block; margin-bottom: 8px;">
-              Add Additional Garment Piece to Order
+              Select Item Type
             </span>
             <div style="display: flex; gap: 10px;">
               <button type="button" class="btn body-12" id="ebTypeCatalogBtn" onclick="switchEditBespokeGarmentType('catalog')" style="flex: 1; padding: 10px; border: 1px solid var(--color-primary); background: var(--color-primary); color: #fff; font-weight: 700;">
-                📦 Catalog Garment (Ready-to-Wear / Made-to-Order)
+                📦 Catalog Product (RTW / Made-to-Order)
               </button>
               <button type="button" class="btn btn-outline body-12" id="ebTypeBespokeBtn" onclick="switchEditBespokeGarmentType('bespoke')" style="flex: 1; padding: 10px; font-weight: 700;">
-                ✂️ Bespoke Piece (Custom from Scratch)
+                ✂️ Bespoke Piece (Custom Commission)
               </button>
             </div>
           </div>
 
-          <!-- FORM A: CATALOG GARMENT PICKER -->
+          <!-- FORM A: CATALOG PRODUCT PICKER -->
           <div id="ebCatalogPickerSection" style="padding: 16px; background: #FAF8F5; border-radius: 6px; border: 1px solid var(--color-border); margin-bottom: 24px;">
             <div class="form-row-2">
               <div class="form-group-admin" style="margin-bottom: 0; position: relative;" id="ebCatalogSearchWrapper">
-                <label class="form-label-admin body-12" for="ebCatalogProductSearch">Search Store Catalog (by title, category, fabric) *</label>
+                <label class="form-label-admin body-12" for="ebCatalogProductSearch">Catalog Product (Search title, SKU, category) *</label>
                 <div style="position: relative;">
-                  <input type="text" id="ebCatalogProductSearch" class="form-input-admin body-14" placeholder="Click to choose newest or search design..." autocomplete="off" 
+                  <input type="text" id="ebCatalogProductSearch" class="form-input-admin body-14" placeholder="Search product title, SKU, or category..." autocomplete="off" 
                          onclick="openEditBespokeProductPopup()" 
                          onfocus="openEditBespokeProductPopup()" 
                          oninput="onEditBespokeProductSearchInput(this.value)">
@@ -1392,19 +1392,19 @@
                 <input type="hidden" id="ebCatalogProductSelectedId" value="">
 
                 <div id="ebCatalogProductResults" style="display: none; position: absolute; top: calc(100% + 4px); left: 0; right: 0; z-index: 1000; max-height: 280px; overflow-y: auto; background: #fff; border: 1px solid var(--color-border); border-radius: 6px; box-shadow: 0 10px 30px rgba(0,0,0,0.18);">
-                  <div class="body-12" style="padding: 14px; text-align: center; color: var(--color-text-muted);">Loading newest designs from store catalog...</div>
+                  <div class="body-12" style="padding: 14px; text-align: center; color: var(--color-text-muted);">Loading catalog products...</div>
                 </div>
 
                 <div id="ebSelectedProductCapsule" style="display: none; margin-top: 8px; padding: 6px 10px; background: #fff; border: 1px solid #D4AF37; border-radius: 4px; justify-content: space-between; align-items: center;">
                   <span class="body-12" id="ebSelectedProductText"><strong>Title</strong></span>
-                  <span class="body-10" style="color: var(--color-primary); font-weight: 700;">✓ Active Design</span>
+                  <span class="body-10" style="color: var(--color-primary); font-weight: 700;">✓ Selected</span>
                 </div>
               </div>
 
               <div class="form-group-admin" style="margin-bottom: 0;">
-                <label class="form-label-admin body-12" for="ebCatalogVariantSelect">Choose Color / Fabric Variant *</label>
+                <label class="form-label-admin body-12" for="ebCatalogVariantSelect">Product Variant *</label>
                 <select id="ebCatalogVariantSelect" class="form-select-admin body-14" onchange="onEditBespokeVariantChanged()">
-                  <option value="">-- Select a design on the left first --</option>
+                  <option value="">-- Select a product first --</option>
                 </select>
 
                 <div id="ebCatalogProductBadgeRow" style="display: none; align-items: center; justify-content: space-between; margin-top: 10px; padding: 10px 12px; background: #fff; border-radius: 6px; border: 1px solid var(--color-border);">
@@ -1428,7 +1428,7 @@
 
             <div class="form-row-2" style="margin-top: 14px;">
               <div class="form-group-admin">
-                <label class="form-label-admin body-12">Select Size / Fit *</label>
+                <label class="form-label-admin body-12">Size *</label>
                 <div id="ebCatalogSizesContainer" style="display: flex; gap: 6px; flex-wrap: wrap;">
                   <span class="body-12" style="color: var(--color-text-muted);">Select a product first</span>
                 </div>
@@ -1443,7 +1443,7 @@
                            onblur="const n = parseInt(this.value, 10); if (isNaN(n) || n < 1) this.value = 1;">
                   </div>
                   <div>
-                    <label class="form-label-admin body-12" for="ebCatalogUnitPrice">Agreed Unit Price (₦) *</label>
+                    <label class="form-label-admin body-12" for="ebCatalogUnitPrice">Unit Price (₦) *</label>
                     <input type="number" id="ebCatalogUnitPrice" class="form-input-admin body-14" placeholder="Unit Price" min="1">
                   </div>
                 </div>
@@ -1453,12 +1453,12 @@
             <!-- Custom Measurement Row for Catalog Custom Fit -->
             <div id="ebCatalogCustomMeasurementRow" style="display: none; margin-top: 12px; padding: 12px; background: #fff; border-radius: 6px; border: 1px dashed var(--color-primary);">
               <div class="body-12" style="font-weight: 700; color: var(--color-primary); margin-bottom: 8px;">
-                ✂️ Custom Measurement Selection for Catalog Garment
+                ✂️ Custom Fit: Client &amp; Measurement Profile
               </div>
               <div class="form-group-admin" style="position: relative; margin-bottom: 12px;" id="ebCatUserSearchWrapper">
-                <label class="form-label-admin body-12" for="ebCatUserSearch">Assign Client to this Garment (Search by Email)</label>
+                <label class="form-label-admin body-12" for="ebCatUserSearch">Assign Client (Search by Email)</label>
                 <div style="position: relative;">
-                  <input type="text" id="ebCatUserSearch" class="form-input-admin body-14" placeholder="Click to view clients or search by email..." autocomplete="off" onfocus="searchEditGarmentUser('catalog', this.value)" onclick="searchEditGarmentUser('catalog', this.value)" oninput="searchEditGarmentUser('catalog', this.value)">
+                  <input type="text" id="ebCatUserSearch" class="form-input-admin body-14" placeholder="Search client by email or name..." autocomplete="off" onfocus="searchEditGarmentUser('catalog', this.value)" onclick="searchEditGarmentUser('catalog', this.value)" oninput="searchEditGarmentUser('catalog', this.value)">
                   <button type="button" id="ebCatClearUserBtn" onclick="clearEditGarmentUser('catalog')" style="display: none; position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: none; border: none; font-size: 16px; cursor: pointer; color: var(--color-text-muted);">&times;</button>
                   <div id="ebCatUserResults" style="display: none; position: absolute; top: calc(100% + 4px); left: 0; right: 0; background: #fff; border: 1px solid var(--color-border); border-radius: 6px; box-shadow: 0 10px 30px rgba(0,0,0,0.18); max-height: 220px; overflow-y: auto; z-index: 1000;"></div>
                 </div>
@@ -1468,13 +1468,13 @@
 
               <div class="form-group-admin" id="ebCatMeasGroup">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
-                  <label class="form-label-admin body-12" style="margin: 0;">Select Measurement (Search by Label)</label>
+                  <label class="form-label-admin body-12" style="margin: 0;">Measurement Profile *</label>
                   <div style="display: flex; gap: 6px;">
-                    <button type="button" class="btn body-10" id="ebCatMeasTabUser" onclick="switchEditMeasurementTab('catalog', 'user')" style="padding: 3px 8px;">Client Measurements</button>
-                    <button type="button" class="btn btn-outline body-10" id="ebCatMeasTabStudio" onclick="switchEditMeasurementTab('catalog', 'studio')" style="padding: 3px 8px;">Admin Created Measurements</button>
+                    <button type="button" class="btn body-10" id="ebCatMeasTabUser" onclick="switchEditMeasurementTab('catalog', 'user')" style="padding: 3px 8px;">Client Profiles</button>
+                    <button type="button" class="btn btn-outline body-10" id="ebCatMeasTabStudio" onclick="switchEditMeasurementTab('catalog', 'studio')" style="padding: 3px 8px;">Studio Presets</button>
                   </div>
                 </div>
-                <input type="text" id="ebCatMeasSearch" class="form-input-admin body-14" placeholder="Search measurements by label (e.g. Wedding Fit, Senator)..." oninput="filterEditMeasurementList('catalog', this.value)">
+                <input type="text" id="ebCatMeasSearch" class="form-input-admin body-14" placeholder="Search measurements by profile name..." oninput="filterEditMeasurementList('catalog', this.value)">
                 <div id="ebCatSelectedMeasBadge" style="display: none; margin-top: 6px; padding: 6px 10px; background: #EBF8FF; border: 1px solid #BEE3F8; border-radius: 4px; font-size: 12px; color: #2B6CB0; font-weight: 600; justify-content: space-between; align-items: center;"></div>
                 <div id="ebCatMeasList" style="margin-top: 6px; max-height: 140px; overflow-y: auto; border: 1px solid var(--color-border); border-radius: 4px; background: #FAF8F5; padding: 4px;"></div>
                 <input type="hidden" id="ebCatSelectedMeasId" value="">
@@ -1482,8 +1482,8 @@
             </div>
 
             <div class="form-group-admin" style="margin-top: 10px;">
-              <label class="form-label-admin body-12" for="ebCatalogItemNotes">Tailoring Notes / Alteration Requests</label>
-              <input type="text" id="ebCatalogItemNotes" class="form-input-admin body-14" placeholder="e.g. Add 1 inch to kaftan sleeve length. Gold buttons.">
+              <label class="form-label-admin body-12" for="ebCatalogItemNotes">Production Notes / Alterations</label>
+              <input type="text" id="ebCatalogItemNotes" class="form-input-admin body-14" placeholder="e.g. Sleeve length, custom buttons, specific tailoring notes...">
             </div>
 
             <div style="margin-top: 14px; text-align: right;">
@@ -1497,7 +1497,7 @@
           <div id="ebBespokePickerSection" style="display: none; padding: 16px; background: #FAF8F5; border-radius: 6px; border: 1px solid var(--color-border); margin-bottom: 24px;">
             <div class="form-row-2">
               <div class="form-group-admin">
-                <label class="form-label-admin body-12" for="ebBespokeCategory">Clothing Category *</label>
+                <label class="form-label-admin body-12" for="ebBespokeCategory">Category *</label>
                 <select id="ebBespokeCategory" class="form-select-admin body-14">
                   <option value="native">Native (Agbada / Senator / Kaftan)</option>
                   <option value="formal">Formal (Tuxedo / 3-Piece Suit / Blazer)</option>
@@ -1515,20 +1515,20 @@
             </div>
 
             <div class="form-group-admin" style="margin-top: 10px;">
-              <label class="form-label-admin body-12" for="ebBespokeDesc">Garment Description &amp; Detailed Brief *</label>
-              <textarea id="ebBespokeDesc" class="form-input-admin body-14" rows="2" placeholder="e.g. 3-Piece Grand Royal Agbada in Super 150s Midnight Navy Cashmere with bronze chain embroidery"></textarea>
+              <label class="form-label-admin body-12" for="ebBespokeDesc">Item Description / Specifications *</label>
+              <textarea id="ebBespokeDesc" class="form-input-admin body-14" rows="2" placeholder="e.g. 3-Piece Grand Royal Agbada in Midnight Navy Cashmere with bronze embroidery"></textarea>
             </div>
 
             <!-- Client & Measurement Assignment for Bespoke Piece -->
             <div style="margin: 12px 0; padding: 14px; background: #fff; border-radius: 6px; border: 1px solid var(--color-border);">
               <div class="body-12" style="font-weight: 700; color: var(--color-primary); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 10px;">
-                ✂️ Client Assignment &amp; Measurement Sizing
+                ✂️ Client &amp; Measurement Profile
               </div>
 
               <div class="form-group-admin" style="position: relative; margin-bottom: 12px;" id="ebBespUserSearchWrapper">
-                <label class="form-label-admin body-12" for="ebBespUserSearch">Assign Client to this Garment (Search by Email)</label>
+                <label class="form-label-admin body-12" for="ebBespUserSearch">Assign Client (Search by Email)</label>
                 <div style="position: relative;">
-                  <input type="text" id="ebBespUserSearch" class="form-input-admin body-14" placeholder="Click to view clients or search by email..." autocomplete="off" onfocus="searchEditGarmentUser('bespoke', this.value)" onclick="searchEditGarmentUser('bespoke', this.value)" oninput="searchEditGarmentUser('bespoke', this.value)">
+                  <input type="text" id="ebBespUserSearch" class="form-input-admin body-14" placeholder="Search client by email or name..." autocomplete="off" onfocus="searchEditGarmentUser('bespoke', this.value)" onclick="searchEditGarmentUser('bespoke', this.value)" oninput="searchEditGarmentUser('bespoke', this.value)">
                   <button type="button" id="ebBespClearUserBtn" onclick="clearEditGarmentUser('bespoke')" style="display: none; position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: none; border: none; font-size: 16px; cursor: pointer; color: var(--color-text-muted);">&times;</button>
                   <div id="ebBespUserResults" style="display: none; position: absolute; top: calc(100% + 4px); left: 0; right: 0; background: #fff; border: 1px solid var(--color-border); border-radius: 6px; box-shadow: 0 10px 30px rgba(0,0,0,0.18); max-height: 220px; overflow-y: auto; z-index: 1000;"></div>
                 </div>
@@ -1538,13 +1538,13 @@
 
               <div class="form-group-admin" id="ebBespMeasGroup">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
-                  <label class="form-label-admin body-12" style="margin: 0;">Select Measurement (Search by Label)</label>
+                  <label class="form-label-admin body-12" style="margin: 0;">Measurement Profile</label>
                   <div style="display: flex; gap: 6px;">
-                    <button type="button" class="btn body-10" id="ebBespMeasTabUser" onclick="switchEditMeasurementTab('bespoke', 'user')" style="padding: 3px 8px;">Client Measurements</button>
-                    <button type="button" class="btn btn-outline body-10" id="ebBespMeasTabStudio" onclick="switchEditMeasurementTab('bespoke', 'studio')" style="padding: 3px 8px;">Admin Created Measurements</button>
+                    <button type="button" class="btn body-10" id="ebBespMeasTabUser" onclick="switchEditMeasurementTab('bespoke', 'user')" style="padding: 3px 8px;">Client Profiles</button>
+                    <button type="button" class="btn btn-outline body-10" id="ebBespMeasTabStudio" onclick="switchEditMeasurementTab('bespoke', 'studio')" style="padding: 3px 8px;">Studio Presets</button>
                   </div>
                 </div>
-                <input type="text" id="ebBespMeasSearch" class="form-input-admin body-14" placeholder="Search measurements by label (e.g. Wedding Fit, Senator)..." oninput="filterEditMeasurementList('bespoke', this.value)">
+                <input type="text" id="ebBespMeasSearch" class="form-input-admin body-14" placeholder="Search measurements by profile name..." oninput="filterEditMeasurementList('bespoke', this.value)">
                 <div id="ebBespSelectedMeasBadge" style="display: none; margin-top: 6px; padding: 6px 10px; background: #EBF8FF; border: 1px solid #BEE3F8; border-radius: 4px; font-size: 12px; color: #2B6CB0; font-weight: 600; justify-content: space-between; align-items: center;"></div>
                 <div id="ebBespMeasList" style="margin-top: 6px; max-height: 140px; overflow-y: auto; border: 1px solid var(--color-border); border-radius: 4px; background: #FAF8F5; padding: 4px;"></div>
                 <input type="hidden" id="ebBespSelectedMeasId" value="">
@@ -1552,7 +1552,7 @@
             </div>
 
             <div class="form-group-admin" style="margin-top: 10px;">
-              <label class="form-label-admin body-12" for="ebBespokeCharge">Agreed Garment Charge (₦) *</label>
+              <label class="form-label-admin body-12" for="ebBespokeCharge">Unit Price / Charge (₦) *</label>
               <input type="number" id="ebBespokeCharge" class="form-input-admin body-14" placeholder="e.g. 350000" min="1">
             </div>
 
@@ -1567,7 +1567,7 @@
                   <input type="file" id="ebFabricFileInput" multiple accept="image/*" style="display: none;" onchange="handleBespokePhotoUpload(event, 'fabric', 'edit')">
                   <div id="ebFabricUploadPrompt" style="display: flex; flex-direction: column; align-items: center; gap: 3px;">
                     <span style="font-size: 20px;">📷</span>
-                    <span class="body-12" style="color: var(--color-primary); font-weight: 600;">+ Choose or Snap Fabric Photos</span>
+                    <span class="body-12" style="color: var(--color-primary); font-weight: 600;">+ Upload Fabric Photos</span>
                     <span class="body-10" style="color: var(--color-text-muted);">Max 5 photos &bull; Up to 5MB each</span>
                   </div>
                   <div id="ebFabricUploadingSpinner" style="display: none; padding: 6px; font-size: 12px; color: var(--color-primary); font-weight: 600;">
@@ -1579,14 +1579,14 @@
 
               <div class="form-group-admin" style="margin-bottom: 0;">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
-                  <label class="form-label-admin body-12" style="margin: 0; font-weight: 600;">Inspiration Photos</label>
+                  <label class="form-label-admin body-12" style="margin: 0; font-weight: 600;">Inspiration / Reference Photos</label>
                   <span class="body-10" id="ebInspoCountBadge" style="color: var(--color-text-muted);">0/5 (Max 5MB each)</span>
                 </div>
                 <div id="ebInspoDropZone" style="border: 1px dashed var(--color-border); border-radius: 6px; padding: 14px 10px; background: #fff; text-align: center; cursor: pointer; transition: all 0.2s;" onclick="document.getElementById('ebInspoFileInput').click()" ondragover="event.preventDefault(); this.style.borderColor='var(--color-primary)';" ondragleave="this.style.borderColor='var(--color-border)';" ondrop="this.style.borderColor='var(--color-border)'; handleBespokePhotoDrop(event, 'inspo', 'edit');">
                   <input type="file" id="ebInspoFileInput" multiple accept="image/*" style="display: none;" onchange="handleBespokePhotoUpload(event, 'inspo', 'edit')">
                   <div id="ebInspoUploadPrompt" style="display: flex; flex-direction: column; align-items: center; gap: 3px;">
                     <span style="font-size: 20px;">🖼️</span>
-                    <span class="body-12" style="color: var(--color-primary); font-weight: 600;">+ Choose Inspiration Photos</span>
+                    <span class="body-12" style="color: var(--color-primary); font-weight: 600;">+ Upload Reference Photos</span>
                     <span class="body-10" style="color: var(--color-text-muted);">Max 5 photos &bull; Up to 5MB each</span>
                   </div>
                   <div id="ebInspoUploadingSpinner" style="display: none; padding: 6px; font-size: 12px; color: var(--color-primary); font-weight: 600;">
@@ -1615,7 +1615,7 @@
 
             <div id="ebDraftItemsContainer" style="display: flex; flex-direction: column; gap: 8px;">
               <div class="body-14" style="text-align: center; padding: 24px; background: #FAF8F5; border-radius: 6px; border: 1px dashed var(--color-border); color: var(--color-text-muted);">
-                Loading commission garments...
+                Loading commission items...
               </div>
             </div>
           </div>
@@ -1631,14 +1631,14 @@
               <div class="body-16" id="ebDepositDisplay" style="font-weight: 700; color: var(--color-primary);">₦0</div>
             </div>
             <div style="text-align: right;">
-              <span class="body-10" style="text-transform: uppercase; color: var(--color-text-muted); font-weight: 700;">Balance Due on Fitting</span>
+              <span class="body-10" style="text-transform: uppercase; color: var(--color-text-muted); font-weight: 700;">Balance Due</span>
               <div class="body-18" id="ebBalanceDisplay" style="font-weight: 800; color: #C05621;">₦0</div>
             </div>
           </div>
 
           <!-- Zero Items Alert Banner -->
           <div id="ebZeroItemsAlert" style="display: none; margin-top: 16px; padding: 12px 16px; background: #FFF5F5; border: 1px solid #FEB2B2; border-radius: 6px; color: #C53030; font-size: 13px; font-weight: 600; align-items: center; gap: 8px;">
-            <span>⚠️ Cannot submit: Please ensure there is at least 1 garment item in this order.</span>
+            <span>⚠️ Cannot submit: Please ensure there is at least 1 item in this order.</span>
           </div>
 
           <div style="margin-top: 20px; display: flex; justify-content: space-between; align-items: center;">
@@ -1646,7 +1646,7 @@
               &larr; Back to Client Info
             </button>
             <button type="button" class="btn btn-primary body-14" id="ebSubmitBtn" onclick="saveCustomOrderEditsToDatabase()" style="padding: 10px 24px;">
-              Save Changes to Commission
+              Save Changes to Order
             </button>
           </div>
         </div>
@@ -2837,7 +2837,7 @@
         if (isBusy && statusText) {
           submitBtn.innerText = statusText;
         } else if (!isBusy) {
-          submitBtn.innerText = flow === 'create' ? 'Log Custom Order to Workshop' : 'Save Changes to Commission';
+          submitBtn.innerText = flow === 'create' ? 'Log Custom Order to Workshop' : 'Save Changes to Order';
         }
       }
     }
@@ -3147,7 +3147,7 @@
       });
 
       const titleEl = document.getElementById('bespokeModalTitle');
-      if (titleEl) titleEl.innerText = 'Log Custom Order (Private Commission)';
+      if (titleEl) titleEl.innerText = 'Create Custom Order';
       const subEl = document.getElementById('bespokeModalSubtitle');
       if (subEl) subEl.innerText = 'Draft auto-saved locally';
       const submitBtn = document.getElementById('bSubmitBtn');
@@ -3555,12 +3555,12 @@
         return;
       }
 
-      const headerTitle = query ? `Matching Search Results (${products.length})` : `Top 10 Newest Store Designs (Sorted by Date)`;
+      const headerTitle = query ? `Matching Search Results (${products.length})` : `Recent Products (Newest First)`;
 
       resultsEl.innerHTML = `
         <div style="padding: 6px 12px; background: #FAF8F5; border-bottom: 1px solid var(--color-border); display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 2;">
           <span class="body-10" style="color: var(--color-text-muted); font-weight: 700; text-transform: uppercase;">${escapeHtml(headerTitle)}</span>
-          <span class="body-10" style="color: var(--color-text-muted);">Click a design to select</span>
+          <span class="body-10" style="color: var(--color-text-muted);">Click a product to select</span>
         </div>
       ` + products.map(p => {
         const isRTW = (p.type || '').toLowerCase() === 'ready to wear';
@@ -3648,7 +3648,7 @@
       selectedCatalogProductId = '';
       selectedCatalogSize = 'M';
 
-      if (variantSelect) variantSelect.innerHTML = '<option value="">-- Select a design on the left first --</option>';
+      if (variantSelect) variantSelect.innerHTML = '<option value="">-- Select a product first --</option>';
       if (unitPriceInput) unitPriceInput.value = '';
       if (badgeRow) badgeRow.style.display = 'none';
       if (sizesCont) sizesCont.innerHTML = '<span class="body-12" style="color: var(--color-text-muted);">Please select a product and variant first.</span>';
@@ -3672,7 +3672,7 @@
       const sizesCont = document.getElementById('bCatalogSizesContainer');
 
       if (!prodId) {
-        if (variantSelect) variantSelect.innerHTML = '<option value="">-- Select a design on the left first --</option>';
+        if (variantSelect) variantSelect.innerHTML = '<option value="">-- Select a product first --</option>';
         if (badgeRow) badgeRow.style.display = 'none';
         if (sizesCont) sizesCont.innerHTML = '<span class="body-12" style="color: var(--color-text-muted);">Please select a product and variant first.</span>';
         return;
@@ -4117,9 +4117,9 @@
         if (!state.userId) {
           listEl.innerHTML = `
             <div class="body-12" style="padding: 12px; text-align: center; color: var(--color-text-muted);">
-              Assign a user to view their custom measurements or search admin created measurements.
+              Assign a client to view client profiles or switch to Studio Presets.
               <div style="margin-top: 6px;">
-                <button type="button" class="btn btn-outline body-10" onclick="switchMeasurementTab('${itemType}', 'studio')" style="padding: 3px 8px;">View Admin Created Measurements &rarr;</button>
+                <button type="button" class="btn btn-outline body-10" onclick="switchMeasurementTab('${itemType}', 'studio')" style="padding: 3px 8px;">View Studio Presets &rarr;</button>
               </div>
             </div>
           `;
@@ -4137,7 +4137,7 @@
         if (!filtered.length) {
           listEl.innerHTML = `
             <div class="body-12" style="padding: 12px; text-align: center; color: var(--color-text-muted);">
-              ${query ? `No client measurements matching "${escapeHtml(query)}"` : 'This client has no saved measurement profiles. Select the Admin Created tab to choose standard atelier measurements.'}
+              ${query ? `No client profiles matching "${escapeHtml(query)}"` : 'This client has no saved measurement profiles. Select the Studio Presets tab to choose standard measurements.'}
             </div>
           `;
           return;
@@ -4179,7 +4179,7 @@
         if (!filtered.length) {
           listEl.innerHTML = `
             <div class="body-12" style="padding: 12px; text-align: center; color: var(--color-text-muted);">
-              ${query ? `No admin created measurements matching "${escapeHtml(query)}"` : 'No admin created measurements found.'}
+              ${query ? `No studio presets matching "${escapeHtml(query)}"` : 'No studio presets found.'}
             </div>
           `;
           return;
@@ -4196,8 +4196,8 @@
             <div class="bespoke-search-item" style="padding: 8px 10px; cursor: pointer; border-radius: 4px; margin-bottom: 4px; display: flex; align-items: center; justify-content: space-between; background: ${isSelected ? '#FEFCBF' : '#fff'}; border: 1px solid ${isSelected ? '#D4AF37' : 'var(--color-border)'};"
                  onclick="selectMeasurementProfile('${itemType}', '${m.id}')">
               <div>
-                <strong class="body-12" style="color: var(--color-obsidian);">${escapeHtml(m.label || 'Studio Sizing')}</strong>
-                <span class="admin-nav-pill body-10" style="margin-left: 6px; background: #EDF2F7; color: #4A5568;">ADMIN CREATED</span>
+                <strong class="body-12" style="color: var(--color-obsidian);">${escapeHtml(m.label || 'Studio Profile')}</strong>
+                <span class="admin-nav-pill body-10" style="margin-left: 6px; background: #EDF2F7; color: #4A5568;">STUDIO PRESET</span>
                 ${details ? `<div class="body-10" style="color: var(--color-text-muted); margin-top: 2px;">${escapeHtml(details)}</div>` : ''}
               </div>
               <span class="body-10" style="font-weight: 700; color: ${isSelected ? 'var(--color-primary)' : 'var(--color-text-muted)'};">
@@ -4318,7 +4318,7 @@
       const unitPrice = Number(document.getElementById('bCatalogUnitPrice')?.value) || Number(variant.price) || 0;
 
       if (unitPrice <= 0) {
-        showToast('Please enter a valid positive garment price.');
+        showToast('Please enter a valid unit price.');
         return;
       }
 
@@ -4409,7 +4409,7 @@
       const inspPhoto = document.getElementById('bBespokeInspirationPhoto')?.value.trim();
 
       if (!desc) {
-        showToast('Please provide a garment description or tailoring brief.');
+        showToast('Please provide an item description or specifications.');
         document.getElementById('bBespokeDesc')?.focus();
         return;
       }
@@ -4465,7 +4465,7 @@
       saveBespokeDraft();
       renderBespokeDraftItems();
       updateBespokeFinancialSummary();
-      showToast(`Added bespoke ${categoryLabel} garment to order!`);
+      showToast(`Added bespoke ${categoryLabel} item to order!`);
     }
 
     function removeBespokeDraftItem(idx) {
@@ -4499,7 +4499,7 @@
       if (items.length === 0) {
         cont.innerHTML = `
           <div class="body-14" style="text-align: center; padding: 24px; background: #FAF8F5; border-radius: 6px; border: 1px dashed var(--color-border); color: var(--color-text-muted);">
-            No garments added yet. Select a catalog garment or bespoke piece above and click "+ Add Item to Order".
+            No items added yet. Select a catalog product or bespoke piece above and click "+ Add Item to Order".
           </div>
         `;
         return;
@@ -4532,7 +4532,7 @@
 
             <div style="display: flex; align-items: center; gap: 14px; flex-shrink: 0;">
               <strong class="body-14" style="color: var(--color-obsidian);">${formatNaira(item.charge)}</strong>
-              <button type="button" class="btn btn-outline body-12" onclick="removeBespokeDraftItem(${idx})" style="padding: 4px 8px; color: #991B1B; border-color: #F87171;" title="Remove this garment">
+              <button type="button" class="btn btn-outline body-12" onclick="removeBespokeDraftItem(${idx})" style="padding: 4px 8px; color: #991B1B; border-color: #F87171;" title="Remove this item">
                 &times; Remove
               </button>
             </div>
@@ -4602,7 +4602,7 @@
           zeroAlert.style.display = 'flex';
           zeroAlert.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
         }
-        showToast('Cannot submit: Please add at least 1 garment item to the order.');
+        showToast('Cannot submit: Please add at least 1 item to the order.');
         return;
       }
 
@@ -4632,7 +4632,7 @@
         for (let i = 0; i < items.length; i++) {
           const it = items[i];
           if (submitBtn) {
-            submitBtn.innerText = `⏳ Uploading garment ${i + 1} of ${items.length} photos...`;
+            submitBtn.innerText = `⏳ Uploading item ${i + 1} of ${items.length} photos...`;
           }
 
           if (Array.isArray(it.fabric_photos) && it.fabric_photos.length > 0) {
@@ -4706,7 +4706,7 @@
         if (rpcErr) throw rpcErr;
 
         const generatedRef = res?.request_id || 'Saved';
-        showToast(`Bespoke commission #${generatedRef} successfully logged!`);
+        showToast(`Custom order #${generatedRef} successfully created!`);
         localStorage.removeItem(BESPOKE_DRAFT_KEY);
 
         bespokeDraft = { step: 1, itemType: 'catalog', client: {}, items: [] };
@@ -4865,7 +4865,7 @@
 
       // 5. Populate form fields
       const titleEl = document.getElementById('editBespokeModalTitle');
-      if (titleEl) titleEl.innerText = `Edit Commission ${editBespokeState.orderRef}`;
+      if (titleEl) titleEl.innerText = `Edit Custom Order ${editBespokeState.orderRef}`;
 
       const nameEl = document.getElementById('ebClientName');
       const emailEl = document.getElementById('ebClientEmail');
@@ -5151,12 +5151,12 @@
         return;
       }
 
-      const headerTitle = query ? `Matching Search Results (${products.length})` : `Top 10 Newest Store Designs`;
+      const headerTitle = query ? `Matching Search Results (${products.length})` : `Recent Products (Newest First)`;
 
       resultsEl.innerHTML = `
         <div style="padding: 6px 12px; background: #FAF8F5; border-bottom: 1px solid var(--color-border); display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 2;">
           <span class="body-10" style="color: var(--color-text-muted); font-weight: 700; text-transform: uppercase;">${escapeHtml(headerTitle)}</span>
-          <span class="body-10" style="color: var(--color-text-muted);">Click a design to select</span>
+          <span class="body-10" style="color: var(--color-text-muted);">Click a product to select</span>
         </div>
       ` + products.map(p => {
         const isRTW = (p.type || '').toLowerCase() === 'ready to wear';
@@ -5231,7 +5231,7 @@
       if (clearBtn) clearBtn.style.display = 'none';
       if (hiddenInput) hiddenInput.value = '';
       if (capsule) capsule.style.display = 'none';
-      if (variantSelect) variantSelect.innerHTML = '<option value="">-- Select a design on the left first --</option>';
+      if (variantSelect) variantSelect.innerHTML = '<option value="">-- Select a product first --</option>';
       if (badgeRow) badgeRow.style.display = 'none';
       if (sizesCont) sizesCont.innerHTML = '<span class="body-12" style="color: var(--color-text-muted);">Select a product first</span>';
 
@@ -5247,7 +5247,7 @@
 
       const variations = prod.product_variation || [];
       if (!variations.length) {
-        variantSelect.innerHTML = '<option value="">Standard Edition (Single Variant)</option>';
+        variantSelect.innerHTML = '<option value="">Standard Variant</option>';
       } else {
         variantSelect.innerHTML = variations.map(v => {
           const color = v.color || 'Standard';
@@ -5291,7 +5291,7 @@
           stockText.innerText = qty > 0 ? `Stock: ${qty} units available` : '⚠️ Sold Out / On Backorder';
           stockText.style.color = qty > 0 ? '#03543F' : '#991B1B';
         } else {
-          stockText.innerText = 'Crafted to order in atelier';
+          stockText.innerText = 'Made to order';
           stockText.style.color = 'var(--color-text-muted)';
         }
       }
@@ -5520,9 +5520,9 @@
         if (!state.userId) {
           listEl.innerHTML = `
             <div class="body-12" style="padding: 12px; text-align: center; color: var(--color-text-muted);">
-              Assign a client to view their measurements or search admin created measurements.
+              Assign a client to view client profiles or switch to Studio Presets.
               <div style="margin-top: 6px;">
-                <button type="button" class="btn btn-outline body-10" onclick="switchEditMeasurementTab('${itemType}', 'studio')" style="padding: 3px 8px;">View Admin Created Measurements &rarr;</button>
+                <button type="button" class="btn btn-outline body-10" onclick="switchEditMeasurementTab('${itemType}', 'studio')" style="padding: 3px 8px;">View Studio Presets &rarr;</button>
               </div>
             </div>
           `;
@@ -5539,7 +5539,7 @@
         if (!filtered.length) {
           listEl.innerHTML = `
             <div class="body-12" style="padding: 12px; text-align: center; color: var(--color-text-muted);">
-              ${query ? `No client measurements matching "${escapeHtml(query)}"` : 'This client has no saved measurement profiles. Select the Admin Created tab to choose standard measurements.'}
+              ${query ? `No client profiles matching "${escapeHtml(query)}"` : 'This client has no saved measurement profiles. Select the Studio Presets tab to choose standard measurements.'}
             </div>
           `;
           return;
@@ -5577,7 +5577,7 @@
         if (!filtered.length) {
           listEl.innerHTML = `
             <div class="body-12" style="padding: 12px; text-align: center; color: var(--color-text-muted);">
-              No standard measurements found.
+              No studio presets found.
             </div>
           `;
           return;
@@ -5657,7 +5657,7 @@
       const unitPrice = Number(document.getElementById('ebCatalogUnitPrice')?.value) || Number(variant.price) || 0;
 
       if (unitPrice <= 0) {
-        showToast('Please enter a valid positive garment price.');
+        showToast('Please enter a valid unit price.');
         return;
       }
 
@@ -5728,7 +5728,7 @@
 
       renderEditBespokeItems();
       updateEditBespokeFinancialSummary();
-      showToast(`Added "${prod.title}" to commission!`);
+      showToast(`Added "${prod.title}" to order!`);
     }
 
     function addBespokeGarmentToEditOrder() {
@@ -5746,7 +5746,7 @@
       const inspPhoto = document.getElementById('ebBespokeInspirationPhoto')?.value.trim();
 
       if (!desc) {
-        showToast('Please provide a garment description or tailoring brief.');
+        showToast('Please provide an item description or specifications.');
         document.getElementById('ebBespokeDesc')?.focus();
         return;
       }
@@ -5800,7 +5800,7 @@
 
       renderEditBespokeItems();
       updateEditBespokeFinancialSummary();
-      showToast(`Added bespoke ${categoryLabel} garment to commission!`);
+      showToast(`Added bespoke ${categoryLabel} item to order!`);
     }
 
     function removeEditBespokeItem(idx) {
@@ -5885,7 +5885,7 @@
       if (items.length === 0) {
         cont.innerHTML = `
           <div class="body-14" style="text-align: center; padding: 24px; background: #FAF8F5; border-radius: 6px; border: 1px dashed var(--color-border); color: var(--color-text-muted);">
-            No garments in this order. Add a catalog garment or bespoke piece above.
+            No items in this order. Add a catalog product or bespoke piece above.
           </div>
         `;
         return;
@@ -5929,7 +5929,7 @@
 
             <div style="display: flex; align-items: center; gap: 14px; flex-shrink: 0;">
               <strong class="body-14" style="color: var(--color-obsidian);">${formatNaira(item.charge)}</strong>
-              <button type="button" class="btn btn-outline body-12" onclick="removeEditBespokeItem(${idx})" style="padding: 4px 8px; color: #991B1B; border-color: #F87171;" title="Remove this garment">
+              <button type="button" class="btn btn-outline body-12" onclick="removeEditBespokeItem(${idx})" style="padding: 4px 8px; color: #991B1B; border-color: #F87171;" title="Remove this item">
                 &times; Remove
               </button>
             </div>
@@ -5962,7 +5962,7 @@
 
       const orderId = editBespokeState.orderId;
       if (!orderId) {
-        showToast('No commission selected to update.');
+        showToast('No order selected to update.');
         return;
       }
 
@@ -5991,7 +5991,7 @@
           zeroAlert.style.display = 'flex';
           zeroAlert.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
         }
-        showToast('Cannot submit: Please ensure there is at least 1 garment item in the order.');
+        showToast('Cannot submit: Please ensure there is at least 1 item in the order.');
         return;
       }
 
@@ -6017,7 +6017,7 @@
         for (let i = 0; i < items.length; i++) {
           const it = items[i];
           if (submitBtn) {
-            submitBtn.innerText = `⏳ Uploading garment ${i + 1} of ${items.length} photos...`;
+            submitBtn.innerText = `⏳ Uploading item ${i + 1} of ${items.length} photos...`;
           }
 
           if (Array.isArray(it.fabric_photos) && it.fabric_photos.length > 0) {
@@ -6132,7 +6132,7 @@
         }
 
         const generatedRef = res?.request_id || editBespokeState.orderRef || 'Updated';
-        showToast(`Commission ${generatedRef} updated successfully!`);
+        showToast(`Custom order ${generatedRef} updated successfully!`);
 
         closeEditBespokeModal();
         await loadBespokeOrders();
@@ -6145,7 +6145,7 @@
         setBespokeModalBusyState(false, 'edit');
         if (submitBtn) {
           submitBtn.disabled = false;
-          submitBtn.innerText = 'Save Changes to Commission';
+          submitBtn.innerText = 'Save Changes to Order';
         }
       }
     }
