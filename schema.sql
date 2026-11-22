@@ -325,6 +325,7 @@ CREATE TABLE IF NOT EXISTS public.profile (
   id uuid NOT NULL DEFAULT auth.uid(),
   created_at timestamp with time zone DEFAULT now(),
   updated_at timestamp with time zone DEFAULT now(),
+  email text,
   name text,
   avatar_url text,
   phone_number text,
@@ -406,22 +407,34 @@ AS $$
 DECLARE
   assigned_role user_role := 'customer'::user_role;
 BEGIN
-  -- If officially INVITED with the master secret key, allow the assigned role
+  -- If officially INVITED via Admin API (secret key), allow the assigned role
   IF new.invited_at IS NOT NULL AND new.raw_user_meta_data->>'role' IS NOT NULL THEN
     assigned_role := (new.raw_user_meta_data->>'role')::user_role;
   ELSE
-    -- Any public website signup is FORCED to be 'customer'
+    -- Every public website signup is FORCED to be 'customer'
     assigned_role := 'customer'::user_role;
   END IF;
 
-  INSERT INTO public.profile (id, name, phone_number, whatsapp_number, role)
+  -- 1. Insert into public.profile (including real auth email)
+  INSERT INTO public.profile (id, email, name, phone_number, whatsapp_number, role)
   VALUES (
     new.id,
+    new.email,
     new.raw_user_meta_data->>'name',
     new.raw_user_meta_data->>'phone_number',
     new.raw_user_meta_data->>'whatsapp_number',
     assigned_role
   );
+
+  -- 2. Overwrite auth.users metadata so it also matches assigned_role 100%!
+  UPDATE auth.users 
+  SET raw_user_meta_data = jsonb_set(
+    COALESCE(raw_user_meta_data, '{}'::jsonb), 
+    '{role}', 
+    to_jsonb(assigned_role::text)
+  )
+  WHERE id = new.id;
+
   RETURN new;
 END;
 $$;
@@ -449,22 +462,34 @@ AS $$
 DECLARE
   assigned_role user_role := 'customer'::user_role;
 BEGIN
-  -- If officially INVITED with the master secret key, allow the assigned role
+  -- If officially INVITED via Admin API (secret key), allow the assigned role
   IF new.invited_at IS NOT NULL AND new.raw_user_meta_data->>'role' IS NOT NULL THEN
     assigned_role := (new.raw_user_meta_data->>'role')::user_role;
   ELSE
-    -- Any public website signup is FORCED to be 'customer'
+    -- Every public website signup is FORCED to be 'customer'
     assigned_role := 'customer'::user_role;
   END IF;
 
-  INSERT INTO public.profile (id, name, phone_number, whatsapp_number, role)
+  -- 1. Insert into public.profile (including real auth email)
+  INSERT INTO public.profile (id, email, name, phone_number, whatsapp_number, role)
   VALUES (
     new.id,
+    new.email,
     new.raw_user_meta_data->>'name',
     new.raw_user_meta_data->>'phone_number',
     new.raw_user_meta_data->>'whatsapp_number',
     assigned_role
   );
+
+  -- 2. Overwrite auth.users metadata so it also matches assigned_role 100%!
+  UPDATE auth.users 
+  SET raw_user_meta_data = jsonb_set(
+    COALESCE(raw_user_meta_data, '{}'::jsonb), 
+    '{role}', 
+    to_jsonb(assigned_role::text)
+  )
+  WHERE id = new.id;
+
   RETURN new;
 END;
 $$;

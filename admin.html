@@ -3182,27 +3182,15 @@
     function getPatronEmail(userId) {
       if (!userId) return '';
       const profile = (adminState.vaultProfiles || []).find(p => p.id === userId);
-      if (profile && profile.email) return profile.email;
-      const bespoke = (adminState.bespokeOrders || []).find(b => b.user_id === userId && b.customer_email);
-      if (bespoke) return bespoke.customer_email;
-      const rtw = (adminState.rtwOrders || []).find(o => o.user_id === userId && o.email);
-      if (rtw) return rtw.email;
-      return '';
+      return (profile && profile.email) ? profile.email : '';
     }
 
     function autoSyncClientToGarmentState() {
       const email = (document.getElementById('bClientEmail')?.value || bespokeDraft.client?.email || '').toLowerCase().trim();
-      const name = (document.getElementById('bClientName')?.value || bespokeDraft.client?.name || '').toLowerCase().trim();
-      if (!email && !name) return;
+      if (!email) return;
 
       const profiles = adminState.vaultProfiles || [];
-      const matched = profiles.find(p => {
-        const pEmail = (p.email || getPatronEmail(p.id) || '').toLowerCase().trim();
-        if (email && pEmail === email) return true;
-        const pName = (p.name || '').toLowerCase().trim();
-        if (name && pName === name) return true;
-        return false;
-      });
+      const matched = profiles.find(p => (p.email || '').toLowerCase().trim() === email);
 
       if (matched) {
         if (!bespokeGarmentState.catalog.userId) selectGarmentUser('catalog', matched.id);
@@ -3230,16 +3218,15 @@
         return;
       }
 
-      // Prioritize searching against email
+      // Search directly against profile.email (no fallback)
       const matches = profiles.filter(p => {
         if (!q) return true;
-        const email = (p.email || getPatronEmail(p.id)).toLowerCase();
-        const name = (p.name || '').toLowerCase();
-        return email.includes(q) || name.includes(q);
+        const email = (p.email || '').toLowerCase();
+        return email.includes(q);
       }).sort((a, b) => {
         if (!q) return 0;
-        const emailA = (a.email || getPatronEmail(a.id)).toLowerCase();
-        const emailB = (b.email || getPatronEmail(b.id)).toLowerCase();
+        const emailA = (a.email || '').toLowerCase();
+        const emailB = (b.email || '').toLowerCase();
         const aMatches = emailA.includes(q);
         const bMatches = emailB.includes(q);
         if (aMatches && !bMatches) return -1;
@@ -3261,7 +3248,7 @@
           <span class="body-10" style="color: var(--color-text-muted);">Click to select</span>
         </div>
       ` + matches.map(p => {
-        const email = p.email || getPatronEmail(p.id) || 'No registered email';
+        const email = p.email || 'No registered email';
         const isSelected = bespokeGarmentState[itemType].userId === p.id;
         const measCount = (p.custom_measurement || []).length;
         const measBadge = measCount > 0 ? `<span class="admin-nav-pill body-10" style="background: #EBF8FF; color: #2B6CB0;">${measCount} Sizing Profile${measCount === 1 ? '' : 's'}</span>` : '<span class="body-10" style="color: var(--color-text-muted);">0 Profiles</span>';
@@ -3300,7 +3287,7 @@
       const clearBtn = document.getElementById(`${prefix}ClearUserBtn`);
       const badgeEl = document.getElementById(`${prefix}SelectedUserBadge`);
 
-      const email = profile.email || getPatronEmail(profile.id) || profile.name || 'Assigned Client';
+      const email = profile.email || profile.name || 'Assigned Client';
 
       if (hiddenInput) hiddenInput.value = userId;
       if (searchInput) searchInput.value = email;
@@ -3616,6 +3603,18 @@
       let measurementSnapshot = null;
       if (measurementId) {
         measurementSnapshot = (adminState.allMeasurements || []).find(x => x.id === measurementId) || null;
+      }
+
+      if (isCustomSize && (!measurementId || !measurementSnapshot)) {
+        showToast('Custom fit selected: Please select a client or studio measurement profile.');
+        const measRow = document.getElementById('bCatalogCustomMeasurementRow');
+        if (measRow) {
+          measRow.style.display = 'block';
+          measRow.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+        const searchInput = document.getElementById('bCatMeasSearch');
+        if (searchInput) searchInput.focus();
+        return;
       }
       let notes = document.getElementById('bCatalogItemNotes')?.value.trim() || '';
 
@@ -4381,7 +4380,7 @@
       try {
         const { data: profiles, error: profileErr } = await client
           .from('profile')
-          .select('id, name, avatar_url, phone_number, whatsapp_number, role, created_at')
+          .select('id, name, email, avatar_url, phone_number, whatsapp_number, role, created_at')
           .order('created_at', { ascending: false });
 
         if (profileErr) throw profileErr;
@@ -4410,17 +4409,9 @@
           measurementMap.get(uid).push(m);
         });
 
-        const emailMap = new Map();
-        (adminState.rtwOrders || []).forEach(o => {
-          if (o.user_id && o.email) emailMap.set(normId(o.user_id), o.email);
-        });
-        (adminState.bespokeOrders || []).forEach(b => {
-          if (b.user_id && b.customer_email) emailMap.set(normId(b.user_id), b.customer_email);
-        });
-
         (profiles || []).forEach(p => {
           const pId = normId(p.id);
-          p.email = p.email || emailMap.get(pId) || '';
+          p.email = p.email || '';
           p.custom_measurement = measurementMap.get(pId) || [];
         });
 
@@ -4456,8 +4447,9 @@
       const filtered = adminState.vaultProfiles.filter(p => {
         if (!query) return true;
         const name = (p.name || '').toLowerCase();
+        const email = (p.email || '').toLowerCase();
         const phone = (p.phone_number || p.whatsapp_number || '').toLowerCase();
-        return name.includes(query) || phone.includes(query);
+        return name.includes(query) || email.includes(query) || phone.includes(query);
       });
 
       if (countEl) countEl.innerText = `${filtered.length} Clients`;
@@ -4490,6 +4482,7 @@
                 <div class="admin-avatar body-12" style="background: #44637B; color: #FFFFFF; width: 32px; height: 32px;">${initials}</div>
                 <div>
                   <strong>${name}</strong>
+                  ${p.email ? `<div class="body-10" style="color: var(--color-text-muted);">${escapeHtml(p.email)}</div>` : ''}
                 </div>
               </div>
             </td>
