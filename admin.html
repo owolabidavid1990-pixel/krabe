@@ -1157,8 +1157,8 @@
             <!-- Photo Uploads & Links -->
             <div class="form-row-2" style="margin-top: 10px;">
               <div class="form-group-admin">
-                <label class="form-label-admin body-12" for="bBespokeFabricPhoto">Fabric Swatch Photo (URL)</label>
-                <input type="text" id="bBespokeFabricPhoto" class="form-input-admin body-14" placeholder="Image URL or WhatsApp photo link">
+                <label class="form-label-admin body-12" for="bBespokeFabricPhoto">Fabric Photo</label>
+                <input type="text" id="bBespokeFabricPhoto" class="form-input-admin body-14" placeholder="Image URL or photo link">
               </div>
               <div class="form-group-admin">
                 <label class="form-label-admin body-12" for="bBespokeInspirationPhoto">Inspiration Reference Photo (URL)</label>
@@ -1216,6 +1216,379 @@
             </button>
             <button type="button" class="btn btn-primary body-14" id="bSubmitBtn" onclick="submitCustomOrderToWorkshop()" style="padding: 10px 24px;">
               Log Custom Order to Workshop
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: EDIT CUSTOM ORDER (DIRECT DATABASE SYNC) -->
+  <div class="admin-modal-overlay" id="editBespokeModal" role="dialog" aria-modal="true" aria-labelledby="editBespokeModalTitle">
+    <div class="admin-modal-card large" style="max-width: 900px;">
+      <div class="admin-modal-header">
+        <div>
+          <h3 class="admin-modal-title h3" id="editBespokeModalTitle">Edit Commission</h3>
+          <span class="body-12" style="color: var(--color-text-muted);" id="editBespokeModalSubtitle">Direct live database commission editor</span>
+        </div>
+        <div style="display: flex; gap: 8px; align-items: center;">
+          <button type="button" class="admin-modal-close body-18" onclick="closeEditBespokeModal()" aria-label="Close dialog">&times;</button>
+        </div>
+      </div>
+
+      <!-- Step Navigation Indicator -->
+      <div style="padding: 12px 28px; background: #FAF8F5; border-bottom: 1px solid var(--color-border); display: flex; gap: 16px; align-items: center;">
+        <button type="button" id="ebStepIndicator1" class="body-12" onclick="goToEditBespokeStep(1, false)" style="background: none; border: none; cursor: pointer; font-weight: 700; color: var(--color-primary); display: flex; align-items: center; gap: 6px;">
+          <span style="display: inline-flex; width: 20px; height: 20px; border-radius: 50%; background: var(--color-primary); color: #fff; align-items: center; justify-content: center; font-size: 11px;">1</span>
+          <span>1. Client Information</span>
+        </button>
+        <span style="color: var(--color-border);">&rarr;</span>
+        <button type="button" id="ebStepIndicator2" class="body-12" onclick="goToEditBespokeStep(2, false)" style="background: none; border: none; cursor: pointer; font-weight: 600; color: var(--color-text-muted); display: flex; align-items: center; gap: 6px;">
+          <span id="ebStep2Badge" style="display: inline-flex; width: 20px; height: 20px; border-radius: 50%; background: var(--color-sand); color: var(--color-text-muted); align-items: center; justify-content: center; font-size: 11px;">2</span>
+          <span>2. Garments &amp; Pricing</span>
+          <span class="admin-nav-pill body-10" id="ebItemsPillCount" style="margin-left: 4px; display: none;">0 items</span>
+        </button>
+      </div>
+
+      <div class="admin-modal-body">
+        <!-- ===================================================================
+             STEP 1: CLIENT INFORMATION & COMMISSION HEADER
+             =================================================================== -->
+        <div id="ebStep1Container">
+          <p class="body-14" style="color: var(--color-text-muted); margin-bottom: 20px;">
+            Update client contact details, agreed target delivery timeline, and initial deposit received.
+          </p>
+
+          <div class="body-12" style="font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--color-primary); margin-bottom: 12px;">
+            Client Information
+          </div>
+          <div class="form-row-2">
+            <div class="form-group-admin">
+              <label class="form-label-admin body-12" for="ebClientName">Client Full Name *</label>
+              <input type="text" id="ebClientName" class="form-input-admin body-14" placeholder="e.g. Chief Adeleke Johnson">
+            </div>
+            <div class="form-group-admin">
+              <label class="form-label-admin body-12" for="ebClientEmail">Email Address (Optional)</label>
+              <input type="email" id="ebClientEmail" class="form-input-admin body-14" placeholder="client@example.com">
+            </div>
+          </div>
+
+          <div class="body-12" style="font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--color-primary); margin: 18px 0 12px;">
+            Delivery Timeline &amp; Upfront Deposit
+          </div>
+          <div class="form-row-2">
+            <div class="form-group-admin">
+              <label class="form-label-admin body-12" for="ebTargetDate">Target Fitting / Delivery Date *</label>
+              <input type="date" id="ebTargetDate" class="form-input-admin body-14" required>
+            </div>
+            <div class="form-group-admin">
+              <label class="form-label-admin body-12" for="ebDepositPaid">Deposit Received (₦) *</label>
+              <input type="number" id="ebDepositPaid" class="form-input-admin body-14" placeholder="e.g. 250000" min="0" required oninput="updateEditBespokeFinancialSummary();">
+            </div>
+          </div>
+
+          <div class="form-group-admin" style="margin-top: 10px;">
+            <label class="form-label-admin body-12" for="ebDescriptionNotes">General Commission Notes</label>
+            <textarea id="ebDescriptionNotes" class="form-input-admin body-14" rows="2" placeholder="e.g. Traditional wedding ensemble. Needs expedited fitting by 15th."></textarea>
+          </div>
+
+          <!-- STEP 1: CURRENT COMMISSION GARMENTS PREVIEW -->
+          <div style="margin-top: 20px; padding: 14px 16px; background: #FAF8F5; border-radius: 6px; border: 1px solid var(--color-border);">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+              <div style="display: flex; align-items: center; gap: 8px;">
+                <span class="body-12" style="font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--color-primary);">
+                  Garments in this Commission
+                </span>
+                <span class="admin-nav-pill body-10" id="ebStep1PillCount">0 items</span>
+              </div>
+              <button type="button" class="btn btn-outline body-12" onclick="goToEditBespokeStep(2, false)" style="padding: 4px 12px; font-weight: 600;">
+                + Add / Modify Garments &rarr;
+              </button>
+            </div>
+            <div id="ebStep1ItemsList" style="display: flex; flex-direction: column; gap: 8px;">
+              <!-- Populated by renderEditBespokeItems() -->
+            </div>
+          </div>
+
+          <div style="margin-top: 24px; display: flex; justify-content: flex-end;">
+            <button type="button" class="btn btn-primary body-14" onclick="goToEditBespokeStep(2, true)" style="padding: 10px 22px;">
+              Next: View &amp; Modify Garments &rarr;
+            </button>
+          </div>
+        </div>
+
+        <!-- ===================================================================
+             STEP 2: EDIT & ADD GARMENT ITEMS
+             =================================================================== -->
+        <div id="ebStep2Container" style="display: none;">
+          <!-- Top Client Capsule -->
+          <div style="padding: 10px 14px; background: #FAF8F5; border-radius: 6px; border: 1px solid var(--color-border); display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+            <div>
+              <span class="body-10" style="text-transform: uppercase; color: var(--color-text-muted); font-weight: 700;">Client:</span>
+              <strong class="body-14" id="ebCapsuleClientName" style="margin-left: 6px;">Client Name</strong>
+              <span class="body-12" id="ebCapsuleClientEmail" style="color: var(--color-text-muted); margin-left: 8px;"></span>
+            </div>
+            <button type="button" class="btn btn-outline body-12" onclick="goToEditBespokeStep(1)" style="padding: 4px 10px;">
+              &larr; Edit Client Info
+            </button>
+          </div>
+
+          <!-- Garment Type Selector (Catalog vs Bespoke) -->
+          <div style="margin-bottom: 16px;">
+            <span class="body-12" style="font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--color-primary); display: block; margin-bottom: 8px;">
+              Add Additional Garment Piece to Order
+            </span>
+            <div style="display: flex; gap: 10px;">
+              <button type="button" class="btn body-12" id="ebTypeCatalogBtn" onclick="switchEditBespokeGarmentType('catalog')" style="flex: 1; padding: 10px; border: 1px solid var(--color-primary); background: var(--color-primary); color: #fff; font-weight: 700;">
+                📦 Catalog Garment (Ready-to-Wear / Made-to-Order)
+              </button>
+              <button type="button" class="btn btn-outline body-12" id="ebTypeBespokeBtn" onclick="switchEditBespokeGarmentType('bespoke')" style="flex: 1; padding: 10px; font-weight: 700;">
+                ✂️ Bespoke Piece (Custom from Scratch)
+              </button>
+            </div>
+          </div>
+
+          <!-- FORM A: CATALOG GARMENT PICKER -->
+          <div id="ebCatalogPickerSection" style="padding: 16px; background: #FAF8F5; border-radius: 6px; border: 1px solid var(--color-border); margin-bottom: 24px;">
+            <div class="form-row-2">
+              <div class="form-group-admin" style="margin-bottom: 0; position: relative;" id="ebCatalogSearchWrapper">
+                <label class="form-label-admin body-12" for="ebCatalogProductSearch">Search Store Catalog (by title, category, fabric) *</label>
+                <div style="position: relative;">
+                  <input type="text" id="ebCatalogProductSearch" class="form-input-admin body-14" placeholder="Click to choose newest or search design..." autocomplete="off" 
+                         onclick="openEditBespokeProductPopup()" 
+                         onfocus="openEditBespokeProductPopup()" 
+                         oninput="onEditBespokeProductSearchInput(this.value)">
+                  <button type="button" id="ebCatalogClearSearchBtn" onclick="clearEditBespokeProductSearch()" style="display: none; position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: none; border: none; font-size: 16px; cursor: pointer; color: var(--color-text-muted);">&times;</button>
+                </div>
+                <input type="hidden" id="ebCatalogProductSelectedId" value="">
+
+                <div id="ebCatalogProductResults" style="display: none; position: absolute; top: calc(100% + 4px); left: 0; right: 0; z-index: 1000; max-height: 280px; overflow-y: auto; background: #fff; border: 1px solid var(--color-border); border-radius: 6px; box-shadow: 0 10px 30px rgba(0,0,0,0.18);">
+                  <div class="body-12" style="padding: 14px; text-align: center; color: var(--color-text-muted);">Loading newest designs from store catalog...</div>
+                </div>
+
+                <div id="ebSelectedProductCapsule" style="display: none; margin-top: 8px; padding: 6px 10px; background: #fff; border: 1px solid #D4AF37; border-radius: 4px; justify-content: space-between; align-items: center;">
+                  <span class="body-12" id="ebSelectedProductText"><strong>Title</strong></span>
+                  <span class="body-10" style="color: var(--color-primary); font-weight: 700;">✓ Active Design</span>
+                </div>
+              </div>
+
+              <div class="form-group-admin" style="margin-bottom: 0;">
+                <label class="form-label-admin body-12" for="ebCatalogVariantSelect">Choose Color / Fabric Variant *</label>
+                <select id="ebCatalogVariantSelect" class="form-select-admin body-14" onchange="onEditBespokeVariantChanged()">
+                  <option value="">-- Select a design on the left first --</option>
+                </select>
+
+                <div id="ebCatalogProductBadgeRow" style="display: none; align-items: center; justify-content: space-between; margin-top: 10px; padding: 10px 12px; background: #fff; border-radius: 6px; border: 1px solid var(--color-border);">
+                  <div style="display: flex; align-items: center; gap: 10px;">
+                    <img id="ebCatalogVariantImg" src="" alt="Variant Preview" style="width: 44px; height: 44px; object-fit: cover; border-radius: 4px; border: 1px solid var(--color-border); background: #FAF8F5; flex-shrink: 0; display: none;">
+                    <div>
+                      <div style="display: flex; align-items: center; gap: 6px;">
+                        <span class="admin-nav-pill body-10" id="ebCatalogTypeBadge">MTW</span>
+                        <strong class="body-12" id="ebCatalogVariantColorFabric" style="color: var(--color-obsidian);">Color &bull; Fabric</strong>
+                      </div>
+                      <div class="body-10" id="ebCatalogStockText" style="color: var(--color-text-muted); margin-top: 2px;"></div>
+                    </div>
+                  </div>
+                  <div style="text-align: right;">
+                    <div class="body-10" style="text-transform: uppercase; color: var(--color-text-muted); font-weight: 700;">Unit Price</div>
+                    <strong class="body-14" id="ebCatalogPriceDisplay" style="color: var(--color-primary);">₦0</strong>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="form-row-2" style="margin-top: 14px;">
+              <div class="form-group-admin">
+                <label class="form-label-admin body-12">Select Size / Fit *</label>
+                <div id="ebCatalogSizesContainer" style="display: flex; gap: 6px; flex-wrap: wrap;">
+                  <span class="body-12" style="color: var(--color-text-muted);">Select a product first</span>
+                </div>
+              </div>
+
+              <div class="form-group-admin">
+                <div class="form-row-2">
+                  <div>
+                    <label class="form-label-admin body-12" for="ebCatalogQty">Quantity *</label>
+                    <input type="number" id="ebCatalogQty" class="form-input-admin body-14" value="1" min="1" max="100"
+                           onchange="const n = parseInt(this.value, 10); if (isNaN(n) || n < 1) this.value = 1;"
+                           onblur="const n = parseInt(this.value, 10); if (isNaN(n) || n < 1) this.value = 1;">
+                  </div>
+                  <div>
+                    <label class="form-label-admin body-12" for="ebCatalogUnitPrice">Agreed Unit Price (₦) *</label>
+                    <input type="number" id="ebCatalogUnitPrice" class="form-input-admin body-14" placeholder="Unit Price" min="1">
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Custom Measurement Row for Catalog Custom Fit -->
+            <div id="ebCatalogCustomMeasurementRow" style="display: none; margin-top: 12px; padding: 12px; background: #fff; border-radius: 6px; border: 1px dashed var(--color-primary);">
+              <div class="body-12" style="font-weight: 700; color: var(--color-primary); margin-bottom: 8px;">
+                ✂️ Custom Measurement Selection for Catalog Garment
+              </div>
+              <div class="form-group-admin" style="position: relative; margin-bottom: 12px;" id="ebCatUserSearchWrapper">
+                <label class="form-label-admin body-12" for="ebCatUserSearch">Assign Client to this Garment (Search by Email)</label>
+                <div style="position: relative;">
+                  <input type="text" id="ebCatUserSearch" class="form-input-admin body-14" placeholder="Click to view clients or search by email..." autocomplete="off" onfocus="searchEditGarmentUser('catalog', this.value)" onclick="searchEditGarmentUser('catalog', this.value)" oninput="searchEditGarmentUser('catalog', this.value)">
+                  <button type="button" id="ebCatClearUserBtn" onclick="clearEditGarmentUser('catalog')" style="display: none; position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: none; border: none; font-size: 16px; cursor: pointer; color: var(--color-text-muted);">&times;</button>
+                  <div id="ebCatUserResults" style="display: none; position: absolute; top: calc(100% + 4px); left: 0; right: 0; background: #fff; border: 1px solid var(--color-border); border-radius: 6px; box-shadow: 0 10px 30px rgba(0,0,0,0.18); max-height: 220px; overflow-y: auto; z-index: 1000;"></div>
+                </div>
+                <input type="hidden" id="ebCatSelectedUserId" value="">
+                <div id="ebCatSelectedUserBadge" style="display: none; margin-top: 6px; padding: 6px 10px; background: #FAF8F5; border: 1px solid var(--color-border); border-radius: 4px; font-size: 12px; color: var(--color-primary); justify-content: space-between; align-items: center;"></div>
+              </div>
+
+              <div class="form-group-admin" id="ebCatMeasGroup">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                  <label class="form-label-admin body-12" style="margin: 0;">Select Measurement (Search by Label)</label>
+                  <div style="display: flex; gap: 6px;">
+                    <button type="button" class="btn body-10" id="ebCatMeasTabUser" onclick="switchEditMeasurementTab('catalog', 'user')" style="padding: 3px 8px;">Client Measurements</button>
+                    <button type="button" class="btn btn-outline body-10" id="ebCatMeasTabStudio" onclick="switchEditMeasurementTab('catalog', 'studio')" style="padding: 3px 8px;">Admin Created Measurements</button>
+                  </div>
+                </div>
+                <input type="text" id="ebCatMeasSearch" class="form-input-admin body-14" placeholder="Search measurements by label (e.g. Wedding Fit, Senator)..." oninput="filterEditMeasurementList('catalog', this.value)">
+                <div id="ebCatSelectedMeasBadge" style="display: none; margin-top: 6px; padding: 6px 10px; background: #EBF8FF; border: 1px solid #BEE3F8; border-radius: 4px; font-size: 12px; color: #2B6CB0; font-weight: 600; justify-content: space-between; align-items: center;"></div>
+                <div id="ebCatMeasList" style="margin-top: 6px; max-height: 140px; overflow-y: auto; border: 1px solid var(--color-border); border-radius: 4px; background: #FAF8F5; padding: 4px;"></div>
+                <input type="hidden" id="ebCatSelectedMeasId" value="">
+              </div>
+            </div>
+
+            <div class="form-group-admin" style="margin-top: 10px;">
+              <label class="form-label-admin body-12" for="ebCatalogItemNotes">Tailoring Notes / Alteration Requests</label>
+              <input type="text" id="ebCatalogItemNotes" class="form-input-admin body-14" placeholder="e.g. Add 1 inch to kaftan sleeve length. Gold buttons.">
+            </div>
+
+            <div style="margin-top: 14px; text-align: right;">
+              <button type="button" class="btn btn-primary body-14" onclick="addCatalogGarmentToEditOrder()" style="padding: 8px 18px;">
+                + Add Catalog Garment to Order
+              </button>
+            </div>
+          </div>
+
+          <!-- FORM B: BESPOKE GARMENT FROM SCRATCH -->
+          <div id="ebBespokePickerSection" style="display: none; padding: 16px; background: #FAF8F5; border-radius: 6px; border: 1px solid var(--color-border); margin-bottom: 24px;">
+            <div class="form-row-2">
+              <div class="form-group-admin">
+                <label class="form-label-admin body-12" for="ebBespokeCategory">Clothing Category *</label>
+                <select id="ebBespokeCategory" class="form-select-admin body-14">
+                  <option value="native">Native (Agbada / Senator / Kaftan)</option>
+                  <option value="formal">Formal (Tuxedo / 3-Piece Suit / Blazer)</option>
+                  <option value="streetwear">Streetwear (Luxury Sets)</option>
+                </select>
+              </div>
+              <div class="form-group-admin">
+                <label class="form-label-admin body-12" for="ebBespokeGender">Gender *</label>
+                <select id="ebBespokeGender" class="form-select-admin body-14">
+                  <option value="male">Male</option>
+                  <option value="female">Female</option>
+                  <option value="unisex">Unisex</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="form-group-admin" style="margin-top: 10px;">
+              <label class="form-label-admin body-12" for="ebBespokeDesc">Garment Description &amp; Detailed Brief *</label>
+              <textarea id="ebBespokeDesc" class="form-input-admin body-14" rows="2" placeholder="e.g. 3-Piece Grand Royal Agbada in Super 150s Midnight Navy Cashmere with bronze chain embroidery"></textarea>
+            </div>
+
+            <!-- Client & Measurement Assignment for Bespoke Piece -->
+            <div style="margin: 12px 0; padding: 14px; background: #fff; border-radius: 6px; border: 1px solid var(--color-border);">
+              <div class="body-12" style="font-weight: 700; color: var(--color-primary); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 10px;">
+                ✂️ Client Assignment &amp; Measurement Sizing
+              </div>
+
+              <div class="form-group-admin" style="position: relative; margin-bottom: 12px;" id="ebBespUserSearchWrapper">
+                <label class="form-label-admin body-12" for="ebBespUserSearch">Assign Client to this Garment (Search by Email)</label>
+                <div style="position: relative;">
+                  <input type="text" id="ebBespUserSearch" class="form-input-admin body-14" placeholder="Click to view clients or search by email..." autocomplete="off" onfocus="searchEditGarmentUser('bespoke', this.value)" onclick="searchEditGarmentUser('bespoke', this.value)" oninput="searchEditGarmentUser('bespoke', this.value)">
+                  <button type="button" id="ebBespClearUserBtn" onclick="clearEditGarmentUser('bespoke')" style="display: none; position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: none; border: none; font-size: 16px; cursor: pointer; color: var(--color-text-muted);">&times;</button>
+                  <div id="ebBespUserResults" style="display: none; position: absolute; top: calc(100% + 4px); left: 0; right: 0; background: #fff; border: 1px solid var(--color-border); border-radius: 6px; box-shadow: 0 10px 30px rgba(0,0,0,0.18); max-height: 220px; overflow-y: auto; z-index: 1000;"></div>
+                </div>
+                <input type="hidden" id="ebBespSelectedUserId" value="">
+                <div id="ebBespSelectedUserBadge" style="display: none; margin-top: 6px; padding: 6px 10px; background: #FAF8F5; border: 1px solid var(--color-border); border-radius: 4px; font-size: 12px; color: var(--color-primary); justify-content: space-between; align-items: center;"></div>
+              </div>
+
+              <div class="form-group-admin" id="ebBespMeasGroup">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                  <label class="form-label-admin body-12" style="margin: 0;">Select Measurement (Search by Label)</label>
+                  <div style="display: flex; gap: 6px;">
+                    <button type="button" class="btn body-10" id="ebBespMeasTabUser" onclick="switchEditMeasurementTab('bespoke', 'user')" style="padding: 3px 8px;">Client Measurements</button>
+                    <button type="button" class="btn btn-outline body-10" id="ebBespMeasTabStudio" onclick="switchEditMeasurementTab('bespoke', 'studio')" style="padding: 3px 8px;">Admin Created Measurements</button>
+                  </div>
+                </div>
+                <input type="text" id="ebBespMeasSearch" class="form-input-admin body-14" placeholder="Search measurements by label (e.g. Wedding Fit, Senator)..." oninput="filterEditMeasurementList('bespoke', this.value)">
+                <div id="ebBespSelectedMeasBadge" style="display: none; margin-top: 6px; padding: 6px 10px; background: #EBF8FF; border: 1px solid #BEE3F8; border-radius: 4px; font-size: 12px; color: #2B6CB0; font-weight: 600; justify-content: space-between; align-items: center;"></div>
+                <div id="ebBespMeasList" style="margin-top: 6px; max-height: 140px; overflow-y: auto; border: 1px solid var(--color-border); border-radius: 4px; background: #FAF8F5; padding: 4px;"></div>
+                <input type="hidden" id="ebBespSelectedMeasId" value="">
+              </div>
+            </div>
+
+            <div class="form-group-admin" style="margin-top: 10px;">
+              <label class="form-label-admin body-12" for="ebBespokeCharge">Agreed Garment Charge (₦) *</label>
+              <input type="number" id="ebBespokeCharge" class="form-input-admin body-14" placeholder="e.g. 350000" min="1">
+            </div>
+
+            <!-- Photo Uploads & Links -->
+            <div class="form-row-2" style="margin-top: 10px;">
+              <div class="form-group-admin">
+                <label class="form-label-admin body-12" for="ebBespokeFabricPhoto">Fabric Photo</label>
+                <input type="text" id="ebBespokeFabricPhoto" class="form-input-admin body-14" placeholder="Image URL or photo link">
+              </div>
+              <div class="form-group-admin">
+                <label class="form-label-admin body-12" for="ebBespokeInspirationPhoto">Inspiration Reference Photo (URL)</label>
+                <input type="text" id="ebBespokeInspirationPhoto" class="form-input-admin body-14" placeholder="Reference photo link">
+              </div>
+            </div>
+
+            <div style="margin-top: 14px; text-align: right;">
+              <button type="button" class="btn btn-primary body-14" onclick="addBespokeGarmentToEditOrder()" style="padding: 8px 18px;">
+                + Add Bespoke Piece to Order
+              </button>
+            </div>
+          </div>
+
+          <!-- CURRENT GARMENTS IN THIS COMMISSION -->
+          <div style="margin-top: 20px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+              <span class="body-12" style="font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--color-primary);">
+                Garments in this Commission (<span id="ebItemsCount">0</span>)
+              </span>
+              <span class="body-12" style="color: var(--color-text-muted);">Directly fetched from database</span>
+            </div>
+
+            <div id="ebDraftItemsContainer" style="display: flex; flex-direction: column; gap: 8px;">
+              <div class="body-14" style="text-align: center; padding: 24px; background: #FAF8F5; border-radius: 6px; border: 1px dashed var(--color-border); color: var(--color-text-muted);">
+                Loading commission garments...
+              </div>
+            </div>
+          </div>
+
+          <!-- LIVE FINANCIAL LEDGER -->
+          <div style="margin-top: 24px; padding: 14px 18px; background: #FAF8F5; border-radius: 6px; border: 1px solid var(--color-border); display: flex; justify-content: space-between; align-items: center;">
+            <div>
+              <span class="body-10" style="text-transform: uppercase; color: var(--color-text-muted); font-weight: 700;">Total Order Charge</span>
+              <div class="body-20" id="ebTotalChargeDisplay" style="font-weight: 800; color: var(--color-obsidian);">₦0</div>
+            </div>
+            <div style="text-align: center;">
+              <span class="body-10" style="text-transform: uppercase; color: var(--color-text-muted); font-weight: 700;">Deposit Received</span>
+              <div class="body-16" id="ebDepositDisplay" style="font-weight: 700; color: var(--color-primary);">₦0</div>
+            </div>
+            <div style="text-align: right;">
+              <span class="body-10" style="text-transform: uppercase; color: var(--color-text-muted); font-weight: 700;">Balance Due on Fitting</span>
+              <div class="body-18" id="ebBalanceDisplay" style="font-weight: 800; color: #C05621;">₦0</div>
+            </div>
+          </div>
+
+          <!-- Zero Items Alert Banner -->
+          <div id="ebZeroItemsAlert" style="display: none; margin-top: 16px; padding: 12px 16px; background: #FFF5F5; border: 1px solid #FEB2B2; border-radius: 6px; color: #C53030; font-size: 13px; font-weight: 600; align-items: center; gap: 8px;">
+            <span>⚠️ Cannot submit: Please ensure there is at least 1 garment item in this order.</span>
+          </div>
+
+          <div style="margin-top: 20px; display: flex; justify-content: space-between; align-items: center;">
+            <button type="button" class="btn btn-outline body-14" onclick="goToEditBespokeStep(1)">
+              &larr; Back to Client Info
+            </button>
+            <button type="button" class="btn btn-primary body-14" id="ebSubmitBtn" onclick="saveCustomOrderEditsToDatabase()" style="padding: 10px 24px;">
+              Save Changes to Commission
             </button>
           </div>
         </div>
@@ -2086,35 +2459,64 @@
       if (!client) return;
 
       try {
-        // 1. Fetch orders
-        const { data: orders, error: orderErr } = await client
+        let orders = [];
+        // Direct relational database call to load custom_order with embedded custom_order_item
+        const { data: ordersData, error: orderErr } = await client
           .from('custom_order')
-          .select('*')
+          .select(`
+            *,
+            custom_order_item (*)
+          `)
           .order('created_at', { ascending: false });
 
-        if (orderErr) throw orderErr;
+        if (!orderErr && ordersData) {
+          orders = ordersData;
+        } else {
+          console.warn('[Admin] Relational bespoke query error, falling back:', orderErr);
+          const { data: fallbackOrders, error: fallbackErr } = await client
+            .from('custom_order')
+            .select('*')
+            .order('created_at', { ascending: false });
+          if (fallbackErr) throw fallbackErr;
+          orders = fallbackOrders || [];
+        }
 
-        // 2. Fetch order items
-        let items = [];
-        try {
-          const { data: itemsData, error: itemsErr } = await client
-            .from('custom_order_item')
-            .select('*');
-          if (!itemsErr && itemsData) items = itemsData;
-        } catch (_) {}
+        // Verify child items are loaded for every order; if missing, query custom_order_item directly
+        const missingOrderIds = orders
+          .filter(o => !Array.isArray(o.custom_order_item) || o.custom_order_item.length === 0)
+          .map(o => o.id);
 
-        // 3. Map child items to parent orders
-        const itemMap = new Map();
-        items.forEach(it => {
-          if (!itemMap.has(it.custom_order_id)) itemMap.set(it.custom_order_id, []);
-          itemMap.get(it.custom_order_id).push(it);
+        if (missingOrderIds.length > 0) {
+          try {
+            const { data: itemsData, error: itemsErr } = await client
+              .from('custom_order_item')
+              .select('*')
+              .in('custom_order_id', missingOrderIds);
+
+            if (!itemsErr && itemsData && itemsData.length > 0) {
+              const itemMap = new Map();
+              itemsData.forEach(it => {
+                if (!itemMap.has(it.custom_order_id)) itemMap.set(it.custom_order_id, []);
+                itemMap.get(it.custom_order_id).push(it);
+              });
+              orders.forEach(o => {
+                if (!Array.isArray(o.custom_order_item) || o.custom_order_item.length === 0) {
+                  o.custom_order_item = itemMap.get(o.id) || [];
+                }
+              });
+            }
+          } catch (e) {
+            console.warn('[Admin] Fallback items query error:', e);
+          }
+        }
+
+        orders.forEach(o => {
+          if (!Array.isArray(o.custom_order_item)) {
+            o.custom_order_item = [];
+          }
         });
 
-        (orders || []).forEach(o => {
-          o.custom_order_item = itemMap.get(o.id) || [];
-        });
-
-        adminState.bespokeOrders = orders || [];
+        adminState.bespokeOrders = orders;
         renderBespokeTable();
 
         const badge = document.getElementById('bespokeNavCount');
@@ -2122,7 +2524,10 @@
         if (badge) badge.innerText = active;
       } catch (err) {
         console.error('[Admin] Error loading bespoke commissions:', err);
-        renderBespokeTable();
+        const tbody = document.getElementById('bespokeTableBody');
+        if (tbody) {
+          tbody.innerHTML = `<tr><td colspan="7" class="admin-empty-state"><span class="admin-empty-icon">⚠️</span>Could not load bespoke commissions: ${escapeHtml(err.message || 'Database error')}</td></tr>`;
+        }
       }
     }
 
@@ -2169,10 +2574,60 @@
         const paid = Number(b.payment_made) || 0;
         const balance = total - paid;
 
-        // Items summary
-        const items = b.custom_order_item || [];
-        const firstCategory = items.length > 0 ? items[0].category : 'Bespoke Native';
-        const notes = b.description_notes || (items[0]?.description_notes || 'Custom tailored ensemble');
+        // Garments summary for this bespoke order
+        const items = Array.isArray(b.custom_order_item) ? b.custom_order_item : [];
+        let itemsHtml = '';
+
+        if (items.length === 0) {
+          const notes = b.description_notes || 'Custom tailored ensemble';
+          itemsHtml = `
+            <div>
+              <span class="admin-nav-pill gold body-10">BESPOKE</span>
+              <div class="body-12" style="color: var(--color-obsidian); margin-top: 4px; max-width: 260px; line-height: 1.4;">${escapeHtml(notes)}</div>
+            </div>
+          `;
+        } else {
+          itemsHtml = `
+            <div style="display: flex; flex-direction: column; gap: 8px; max-width: 320px;">
+              ${items.map(it => {
+                const isBespoke = it.type === 'bespoke' || !it.type;
+                const badge = isBespoke
+                  ? '<span class="admin-nav-pill body-10" style="background: #EBF8FF; color: #2B6CB0; font-weight: 700; padding: 1px 6px;">BESPOKE</span>'
+                  : '<span class="admin-nav-pill body-10" style="font-weight: 700; padding: 1px 6px;">CATALOG</span>';
+
+                let imgUrl = 'assets/lookbook/lookbook_1_kaftan.jpg';
+                if (Array.isArray(it.fabric_photos) && it.fabric_photos[0]) {
+                  imgUrl = it.fabric_photos[0];
+                } else if (typeof it.fabric_photos === 'string' && it.fabric_photos) {
+                  imgUrl = it.fabric_photos;
+                } else if (Array.isArray(it.inspiration_photos) && it.inspiration_photos[0]) {
+                  imgUrl = it.inspiration_photos[0];
+                } else if (typeof it.inspiration_photos === 'string' && it.inspiration_photos) {
+                  imgUrl = it.inspiration_photos;
+                }
+
+                const title = it.description_notes || `${it.category ? it.category.charAt(0).toUpperCase() + it.category.slice(1) : 'Bespoke'} Piece`;
+                const sizeText = it.selected_size || (it.measurement_snapshot ? 'Custom Fitted' : 'M');
+                const priceText = it.charge ? formatNaira(it.charge) : '';
+
+                return `
+                  <div style="display: flex; align-items: center; gap: 8px;">
+                    <img src="${imgUrl}" alt="${escapeHtml(title)}" class="admin-item-preview-img" style="width: 38px; height: 38px; border-radius: 4px; object-fit: cover; flex-shrink: 0;" onerror="this.onerror=null; this.src='assets/lookbook/lookbook_1_kaftan.jpg';">
+                    <div style="min-width: 0; line-height: 1.3;">
+                      <div style="display: flex; align-items: center; gap: 4px; flex-wrap: wrap;">
+                        ${badge}
+                        <strong class="body-12" style="color: var(--color-obsidian);">${escapeHtml(title)}</strong>
+                      </div>
+                      <div class="body-10" style="color: var(--color-text-muted); margin-top: 2px;">
+                        <span style="text-transform: capitalize;">${escapeHtml(it.category || 'garment')}</span> &bull; Size: ${escapeHtml(sizeText)}${priceText ? ` &bull; <strong>${priceText}</strong>` : ''}
+                      </div>
+                    </div>
+                  </div>
+                `;
+              }).join('')}
+            </div>
+          `;
+        }
 
         const milestones = ['placed', 'order confirmed', 'processing order', 'order ready', 'delivered', 'cancelled'];
         const optionsHtml = milestones.map(m => `
@@ -2181,17 +2636,16 @@
 
         return `
           <tr data-bespoke-id="${b.id}">
-            <td>
+            <td onclick="openEditBespokeOrder('${b.id}')" style="cursor: pointer;" title="Click to view and edit commission">
               <strong>${refId}</strong>
               <div class="body-10" style="color: var(--color-text-muted);">${dateStr}</div>
             </td>
             <td>
-              <strong>${b.customer_name || 'VIP Client'}</strong>
-              <div class="body-12" style="color: var(--color-text-muted);">${b.customer_email || 'No email logged'}</div>
+              <strong>${escapeHtml(b.customer_name || 'VIP Client')}</strong>
+              <div class="body-12" style="color: var(--color-text-muted);">${escapeHtml(b.customer_email || 'No email logged')}</div>
             </td>
-            <td>
-              <span class="admin-nav-pill gold body-10" style="text-transform: capitalize;">${firstCategory}</span>
-              <div class="body-12" style="color: var(--color-obsidian); margin-top: 4px; max-width: 260px; line-height: 1.4;">${notes}</div>
+            <td onclick="openEditBespokeOrder('${b.id}')" style="cursor: pointer;" title="Click to view and edit garments">
+              ${itemsHtml}
             </td>
             <td>
               <strong class="body-14">${formatNaira(total)}</strong>
@@ -2311,108 +2765,22 @@
       if (zeroAlert) zeroAlert.style.display = 'none';
 
       // Ensure catalog and vault data are ready
-      if (!adminState.products || !adminState.products.length) {
-        loadCatalogProducts();
-      }
-      if (!adminState.vaultProfiles || !adminState.vaultProfiles.length || !adminState.allMeasurements || !adminState.allMeasurements.length) {
-        loadClientVault().then(() => {
-          if (typeof autoSyncClientToGarmentState === 'function') autoSyncClientToGarmentState();
-          populateBespokeCatalogDropdowns();
-        });
-      }
+      loadCatalogProducts();
+      loadClientVault().then(() => {
+        if (typeof autoSyncClientToGarmentState === 'function') autoSyncClientToGarmentState();
+        populateBespokeCatalogDropdowns();
+      });
 
-      if (!isEditing) {
-        bespokeDraft.editingOrderId = null;
-        const titleEl = document.getElementById('bespokeModalTitle');
-        if (titleEl) titleEl.innerText = 'Log Custom Order (Private Commission)';
-        const subEl = document.getElementById('bespokeModalSubtitle');
-        if (subEl) subEl.innerText = 'Draft auto-saved locally';
-        const submitBtn = document.getElementById('bSubmitBtn');
-        if (submitBtn) submitBtn.innerText = 'Log Custom Order to Workshop';
-        loadBespokeDraft();
-      }
+      const titleEl = document.getElementById('bespokeModalTitle');
+      if (titleEl) titleEl.innerText = 'Log Custom Order (Private Commission)';
+      const subEl = document.getElementById('bespokeModalSubtitle');
+      if (subEl) subEl.innerText = 'Draft auto-saved locally';
+      const submitBtn = document.getElementById('bSubmitBtn');
+      if (submitBtn) submitBtn.innerText = 'Log Custom Order to Workshop';
+      loadBespokeDraft();
 
       populateBespokeCatalogDropdowns();
       searchCatalogProductsFromDatabase('');
-    }
-
-    function openEditBespokeOrder(orderId) {
-      const order = (adminState.bespokeOrders || []).find(b => b.id === orderId);
-      if (!order) {
-        showToast('Commission not found.');
-        return;
-      }
-
-      // 1. Map existing items into draft items structure
-      const mappedItems = (order.custom_order_item || []).map(it => {
-        const isBespoke = it.type === 'bespoke' || !it.type;
-        return {
-          id: it.id,
-          source: isBespoke ? 'bespoke' : 'catalog',
-          type: it.type || (isBespoke ? 'bespoke' : 'made to order'),
-          title: it.description_notes || `${it.category || 'Custom'} Garment`,
-          category: it.category || 'native',
-          gender: it.gender || 'male',
-          charge: Number(it.charge) || 0,
-          quantity: 1,
-          unit_price: Number(it.charge) || 0,
-          selected_size: it.selected_size || 'M',
-          size: it.selected_size || 'M',
-          user_id: null,
-          measurement_id: it.measurement_id || null,
-          measurement_snapshot: it.measurement_snapshot || null,
-          description_notes: it.description_notes || '',
-          fabric_photos: Array.isArray(it.fabric_photos) ? it.fabric_photos : [],
-          inspiration_photos: Array.isArray(it.inspiration_photos) ? it.inspiration_photos : []
-        };
-      });
-
-      // 2. Populate bespokeDraft in memory for editing
-      bespokeDraft = {
-        editingOrderId: order.id,
-        step: 1,
-        itemType: 'catalog',
-        client: {
-          name: order.customer_name || '',
-          email: order.customer_email || '',
-          targetDate: order.deadline_date ? order.deadline_date.split('T')[0] : '',
-          deposit: Number(order.payment_made) || 0,
-          notes: order.description_notes || ''
-        },
-        items: mappedItems
-      };
-
-      // 3. Update modal texts for editing
-      const refId = order.request_id || ('#BES-' + order.id.slice(0, 6).toUpperCase());
-      const titleEl = document.getElementById('bespokeModalTitle');
-      if (titleEl) titleEl.innerText = `Edit Commission ${refId}`;
-      const subEl = document.getElementById('bespokeModalSubtitle');
-      if (subEl) subEl.innerText = 'Editing saved workshop commission';
-      const submitBtn = document.getElementById('bSubmitBtn');
-      if (submitBtn) submitBtn.innerText = 'Save Changes to Order';
-
-      // 4. Populate form fields
-      const nameEl = document.getElementById('bClientName');
-      const emailEl = document.getElementById('bClientEmail');
-      const dateEl = document.getElementById('bTargetDate');
-      const depEl = document.getElementById('bDepositPaid');
-      const notesEl = document.getElementById('bDescriptionNotes');
-
-      if (nameEl) nameEl.value = bespokeDraft.client.name;
-      if (emailEl) emailEl.value = bespokeDraft.client.email;
-      if (dateEl) dateEl.value = bespokeDraft.client.targetDate;
-      if (depEl) depEl.value = (bespokeDraft.client.deposit !== undefined && bespokeDraft.client.deposit !== null) ? bespokeDraft.client.deposit : '';
-      if (notesEl) notesEl.value = bespokeDraft.client.notes;
-
-      const discardBtn = document.getElementById('bDiscardDraftBtn');
-      if (discardBtn) discardBtn.style.display = 'none';
-
-      // 5. Open modal in editing mode
-      openBespokeModal(true);
-
-      renderBespokeDraftItems();
-      updateBespokeFinancialSummary();
-      goToBespokeStep(1, false);
     }
 
     function closeBespokeModal() {
@@ -2420,22 +2788,9 @@
       if (modal) modal.classList.remove('open');
       const zeroAlert = document.getElementById('bZeroItemsAlert');
       if (zeroAlert) zeroAlert.style.display = 'none';
-      bespokeDraft.editingOrderId = null;
     }
 
     function saveBespokeDraft() {
-      if (bespokeDraft.editingOrderId) {
-        // When editing an existing commission, update bespokeDraft.client in memory only
-        bespokeDraft.client = {
-          name: document.getElementById('bClientName')?.value.trim() || '',
-          email: document.getElementById('bClientEmail')?.value.trim() || '',
-          targetDate: document.getElementById('bTargetDate')?.value || '',
-          deposit: Number(document.getElementById('bDepositPaid')?.value) || 0,
-          notes: document.getElementById('bDescriptionNotes')?.value.trim() || ''
-        };
-        return;
-      }
-
       bespokeDraft.client = {
         name: document.getElementById('bClientName')?.value.trim() || '',
         email: document.getElementById('bClientEmail')?.value.trim() || '',
@@ -3870,19 +4225,19 @@
         return;
       }
 
-      const isEditing = Boolean(bespokeDraft.editingOrderId);
-      const editingId = bespokeDraft.editingOrderId;
+      const isEditing = false;
+      const editingId = null;
 
       const submitBtn = document.getElementById('bSubmitBtn');
       if (submitBtn) {
         submitBtn.disabled = true;
-        submitBtn.innerText = isEditing ? 'Saving Changes...' : 'Logging to Workshop...';
+        submitBtn.innerText = 'Logging to Workshop...';
       }
 
       try {
         // Prepare RPC payloads
         const p_order = {
-          order_id: editingId || null,
+          order_id: null,
           customer_name: clientName,
           customer_email: clientEmail || null,
           deadline_date: targetDate || null,
@@ -3912,66 +4267,16 @@
         });
 
         // Execute atomic PostgreSQL RPC function
-        let res = null;
-        let rpcErr = null;
-        try {
-          const rpcRes = await client.rpc('create_custom_order', {
-            p_order: p_order,
-            p_items: p_items
-          });
-          res = rpcRes.data;
-          rpcErr = rpcRes.error;
-        } catch (e) {
-          rpcErr = e;
-        }
+        const { data: res, error: rpcErr } = await client.rpc('create_custom_order', {
+          p_order: p_order,
+          p_items: p_items
+        });
 
-        if (rpcErr && isEditing) {
-          console.warn('[Admin] RPC error on edit, using direct update fallback:', rpcErr);
-          const totalCharge = p_items.reduce((sum, it) => sum + (Number(it.charge) || 0), 0);
-          const { error: updErr } = await client
-            .from('custom_order')
-            .update({
-              customer_name: clientName,
-              customer_email: clientEmail || null,
-              deadline_date: targetDate ? new Date(targetDate).toISOString() : null,
-              description_notes: notes || null,
-              payment_made: deposit,
-              total_charge: totalCharge,
-              updated_at: new Date().toISOString()
-            })
-            .eq('id', editingId);
-
-          if (updErr) throw updErr;
-
-          // Replace child items
-          await client.from('custom_order_item').delete().eq('custom_order_id', editingId);
-          for (const it of p_items) {
-            await client.from('custom_order_item').insert({
-              custom_order_id: editingId,
-              category: it.category,
-              gender: it.gender,
-              type: it.type,
-              selected_size: it.selected_size,
-              charge: it.charge,
-              description_notes: it.description_notes,
-              measurement_snapshot: it.measurement_snapshot,
-              fabric_photos: it.fabric_photos,
-              inspiration_photos: it.inspiration_photos
-            });
-          }
-          res = { request_id: 'Updated' };
-          rpcErr = null;
-        } else if (rpcErr) {
-          throw rpcErr;
-        }
+        if (rpcErr) throw rpcErr;
 
         const generatedRef = res?.request_id || 'Saved';
-        if (isEditing) {
-          showToast(`Commission #${generatedRef} updated successfully!`);
-        } else {
-          showToast(`Bespoke commission #${generatedRef} successfully logged!`);
-          localStorage.removeItem(BESPOKE_DRAFT_KEY);
-        }
+        showToast(`Bespoke commission #${generatedRef} successfully logged!`);
+        localStorage.removeItem(BESPOKE_DRAFT_KEY);
 
         bespokeDraft = { step: 1, itemType: 'catalog', client: {}, items: [] };
 
@@ -3994,7 +4299,1364 @@
       } finally {
         if (submitBtn) {
           submitBtn.disabled = false;
-          submitBtn.innerText = isEditing ? 'Save Changes to Order' : 'Log Custom Order to Workshop';
+          submitBtn.innerText = 'Log Custom Order to Workshop';
+        }
+      }
+    }
+
+    /* -------------------------------------------------------------------------
+       2B. DEDICATED EDIT CUSTOM ORDER CONTROLLER (Direct Database Sync)
+       ------------------------------------------------------------------------- */
+    let editBespokeState = {
+      orderId: null,
+      orderRef: '',
+      step: 1,
+      itemType: 'catalog',
+      client: {
+        name: '',
+        email: '',
+        targetDate: '',
+        deposit: 0,
+        notes: ''
+      },
+      items: []
+    };
+
+    let selectedEditCatalogSize = 'M';
+    let selectedEditCatalogProductId = null;
+    let editActiveProductVariations = [];
+    let currentEditCatalogSearchResults = [];
+
+    let editGarmentState = {
+      catalog: { userId: null, measId: null, measTab: 'user', measQuery: '' },
+      bespoke: { userId: null, measId: null, measTab: 'user', measQuery: '' }
+    };
+
+    async function openEditBespokeOrder(orderId) {
+      const client = getSupabase();
+      if (!client) {
+        showToast('Database connection unavailable.');
+        return;
+      }
+
+      // 1. Direct database call to get order and all child items
+      let order = null;
+      let dbItems = [];
+
+      try {
+        const { data: dbOrder, error: orderErr } = await client
+          .from('custom_order')
+          .select(`
+            *,
+            custom_order_item (*)
+          `)
+          .eq('id', orderId)
+          .single();
+
+        if (!orderErr && dbOrder) {
+          order = dbOrder;
+          if (Array.isArray(dbOrder.custom_order_item) && dbOrder.custom_order_item.length > 0) {
+            dbItems = dbOrder.custom_order_item;
+          }
+        }
+      } catch (e) {
+        console.warn('[Admin] Direct relational fetch custom_order failed:', e);
+      }
+
+      // 2. Direct database call to custom_order_item table if items not yet populated
+      if (dbItems.length === 0) {
+        try {
+          const { data: itemsData, error: itemsErr } = await client
+            .from('custom_order_item')
+            .select('*')
+            .eq('custom_order_id', orderId);
+
+          if (!itemsErr && itemsData && itemsData.length > 0) {
+            dbItems = itemsData;
+          }
+        } catch (e) {
+          console.warn('[Admin] Direct fetch custom_order_item failed:', e);
+        }
+      }
+
+      // 3. Fallback to cached order in adminState if direct call did not return order
+      if (!order) {
+        order = (adminState.bespokeOrders || []).find(b => b.id === orderId);
+        if (order && dbItems.length === 0 && Array.isArray(order.custom_order_item)) {
+          dbItems = order.custom_order_item;
+        }
+      }
+
+      if (!order) {
+        showToast('Commission order not found.');
+        return;
+      }
+
+      const mappedItems = dbItems.map(it => {
+        const isBespoke = it.type === 'bespoke' || !it.type;
+        return {
+          id: it.id,
+          source: isBespoke ? 'bespoke' : 'catalog',
+          type: it.type || (isBespoke ? 'bespoke' : 'made to order'),
+          title: it.description_notes || `${(it.category ? it.category.charAt(0).toUpperCase() + it.category.slice(1) : 'Bespoke')} Garment`,
+          category: it.category || 'native',
+          gender: it.gender || 'male',
+          charge: Number(it.charge) || 0,
+          quantity: 1,
+          unit_price: Number(it.charge) || 0,
+          selected_size: it.selected_size || 'M',
+          size: it.selected_size || 'M',
+          user_id: null,
+          measurement_id: it.measurement_id || null,
+          measurement_snapshot: it.measurement_snapshot || null,
+          description_notes: it.description_notes || '',
+          fabric_photos: Array.isArray(it.fabric_photos) ? it.fabric_photos : (it.fabric_photos ? [it.fabric_photos] : []),
+          inspiration_photos: Array.isArray(it.inspiration_photos) ? it.inspiration_photos : (it.inspiration_photos ? [it.inspiration_photos] : [])
+        };
+      });
+
+      // 4. Initialize edit state
+      editBespokeState = {
+        orderId: order.id,
+        orderRef: order.request_id || ('#BES-' + order.id.slice(0, 6).toUpperCase()),
+        step: 1,
+        itemType: 'catalog',
+        client: {
+          name: order.customer_name || '',
+          email: order.customer_email || '',
+          targetDate: order.deadline_date ? order.deadline_date.split('T')[0] : '',
+          deposit: Number(order.payment_made) || 0,
+          notes: order.description_notes || ''
+        },
+        items: mappedItems
+      };
+
+      // 5. Populate form fields
+      const titleEl = document.getElementById('editBespokeModalTitle');
+      if (titleEl) titleEl.innerText = `Edit Commission ${editBespokeState.orderRef}`;
+
+      const nameEl = document.getElementById('ebClientName');
+      const emailEl = document.getElementById('ebClientEmail');
+      const dateEl = document.getElementById('ebTargetDate');
+      const depEl = document.getElementById('ebDepositPaid');
+      const notesEl = document.getElementById('ebDescriptionNotes');
+
+      if (nameEl) nameEl.value = editBespokeState.client.name;
+      if (emailEl) emailEl.value = editBespokeState.client.email;
+      if (dateEl) {
+        dateEl.value = editBespokeState.client.targetDate;
+      }
+      if (depEl) depEl.value = (editBespokeState.client.deposit !== undefined && editBespokeState.client.deposit !== null) ? editBespokeState.client.deposit : '';
+      if (notesEl) notesEl.value = editBespokeState.client.notes;
+
+      // 6. Ensure catalog and vault data are ready
+      if (!adminState.products || !adminState.products.length) {
+        loadCatalogProducts();
+      }
+      if (!adminState.vaultProfiles || !adminState.vaultProfiles.length || !adminState.allMeasurements || !adminState.allMeasurements.length) {
+        loadClientVault();
+      }
+
+      // 7. Reset picker controls
+      clearEditBespokeProductSearch();
+      clearEditGarmentUser('catalog');
+      clearEditMeasurementProfile('catalog');
+      clearEditGarmentUser('bespoke');
+      clearEditMeasurementProfile('bespoke');
+
+      // 8. Render items & financials, and show modal
+      renderEditBespokeItems();
+      updateEditBespokeFinancialSummary();
+      goToEditBespokeStep(1, false);
+
+      const modal = document.getElementById('editBespokeModal');
+      if (modal) modal.classList.add('open');
+    }
+
+    function closeEditBespokeModal() {
+      const modal = document.getElementById('editBespokeModal');
+      if (modal) modal.classList.remove('open');
+      const zeroAlert = document.getElementById('ebZeroItemsAlert');
+      if (zeroAlert) zeroAlert.style.display = 'none';
+      editBespokeState.orderId = null;
+      editBespokeState.items = [];
+    }
+
+    function goToEditBespokeStep(step, validate = true) {
+      if (step === 2 && validate) {
+        const nameInput = document.getElementById('ebClientName');
+        const nameVal = nameInput ? nameInput.value.trim() : '';
+        if (!nameVal) {
+          if (nameInput) {
+            nameInput.focus();
+            nameInput.style.borderColor = '#E53E3E';
+          }
+          showToast('Please provide the client full name to proceed.');
+          return;
+        }
+
+        const dateInput = document.getElementById('ebTargetDate');
+        const dateVal = dateInput ? dateInput.value : '';
+        if (!dateVal) {
+          if (dateInput) {
+            dateInput.focus();
+            dateInput.style.borderColor = '#E53E3E';
+          }
+          showToast('Please specify a target fitting / delivery date.');
+          return;
+        }
+
+        const depInput = document.getElementById('ebDepositPaid');
+        const depVal = depInput ? depInput.value.trim() : '';
+        if (depVal === '' || isNaN(Number(depVal)) || Number(depVal) < 0) {
+          if (depInput) {
+            depInput.focus();
+            depInput.style.borderColor = '#E53E3E';
+          }
+          showToast('Deposit received is compulsory.');
+          return;
+        }
+
+        // Sync client capsule
+        const emailVal = document.getElementById('ebClientEmail')?.value.trim() || '';
+        const capName = document.getElementById('ebCapsuleClientName');
+        const capEmail = document.getElementById('ebCapsuleClientEmail');
+        if (capName) capName.innerText = nameVal;
+        if (capEmail) capEmail.innerText = emailVal ? `(${emailVal})` : '';
+
+        // Auto-match client in vault if available
+        if (emailVal) {
+          const match = (adminState.vaultProfiles || []).find(p => (p.email || '').toLowerCase().trim() === emailVal.toLowerCase().trim());
+          if (match) {
+            editGarmentState.catalog.userId = match.id;
+            editGarmentState.bespoke.userId = match.id;
+          }
+        }
+      } else if (step === 2) {
+        // Soft sync client capsule without failing validation
+        const nameVal = document.getElementById('ebClientName')?.value.trim() || editBespokeState.client.name || 'Client';
+        const emailVal = document.getElementById('ebClientEmail')?.value.trim() || editBespokeState.client.email || '';
+        const capName = document.getElementById('ebCapsuleClientName');
+        const capEmail = document.getElementById('ebCapsuleClientEmail');
+        if (capName) capName.innerText = nameVal;
+        if (capEmail) capEmail.innerText = emailVal ? `(${emailVal})` : '';
+      }
+
+      editBespokeState.step = step;
+      const step1Cont = document.getElementById('ebStep1Container');
+      const step2Cont = document.getElementById('ebStep2Container');
+      const ind1 = document.getElementById('ebStepIndicator1');
+      const ind2 = document.getElementById('ebStepIndicator2');
+      const badge2 = document.getElementById('ebStep2Badge');
+
+      if (step === 1) {
+        if (step1Cont) step1Cont.style.display = 'block';
+        if (step2Cont) step2Cont.style.display = 'none';
+        if (ind1) {
+          ind1.style.color = 'var(--color-primary)';
+          ind1.style.fontWeight = '700';
+        }
+        if (ind2) {
+          ind2.style.color = 'var(--color-text-muted)';
+          ind2.style.fontWeight = '600';
+        }
+        if (badge2) {
+          badge2.style.background = 'var(--color-sand)';
+          badge2.style.color = 'var(--color-text-muted)';
+        }
+      } else {
+        if (step1Cont) step1Cont.style.display = 'none';
+        if (step2Cont) step2Cont.style.display = 'block';
+        if (ind1) {
+          ind1.style.color = 'var(--color-text-muted)';
+          ind1.style.fontWeight = '600';
+        }
+        if (ind2) {
+          ind2.style.color = 'var(--color-primary)';
+          ind2.style.fontWeight = '700';
+        }
+        if (badge2) {
+          badge2.style.background = 'var(--color-primary)';
+          badge2.style.color = '#fff';
+        }
+        renderEditBespokeItems();
+        updateEditBespokeFinancialSummary();
+      }
+    }
+
+    function switchEditBespokeGarmentType(type) {
+      editBespokeState.itemType = type;
+      const catBtn = document.getElementById('ebTypeCatalogBtn');
+      const bespBtn = document.getElementById('ebTypeBespokeBtn');
+      const catSection = document.getElementById('ebCatalogPickerSection');
+      const bespSection = document.getElementById('ebBespokePickerSection');
+
+      if (type === 'catalog') {
+        if (catBtn) {
+          catBtn.className = 'btn body-12';
+          catBtn.style.background = 'var(--color-primary)';
+          catBtn.style.color = '#fff';
+          catBtn.style.border = '1px solid var(--color-primary)';
+        }
+        if (bespBtn) {
+          bespBtn.className = 'btn btn-outline body-12';
+          bespBtn.style.background = '';
+          bespBtn.style.color = '';
+        }
+        if (catSection) catSection.style.display = 'block';
+        if (bespSection) bespSection.style.display = 'none';
+      } else {
+        if (bespBtn) {
+          bespBtn.className = 'btn body-12';
+          bespBtn.style.background = 'var(--color-primary)';
+          bespBtn.style.color = '#fff';
+          bespBtn.style.border = '1px solid var(--color-primary)';
+        }
+        if (catBtn) {
+          catBtn.className = 'btn btn-outline body-12';
+          catBtn.style.background = '';
+          catBtn.style.color = '';
+        }
+        if (bespSection) bespSection.style.display = 'block';
+        if (catSection) catSection.style.display = 'none';
+      }
+    }
+
+    /* Product search for Edit Modal */
+    function openEditBespokeProductPopup() {
+      const resultsEl = document.getElementById('ebCatalogProductResults');
+      if (!resultsEl) return;
+      resultsEl.style.display = 'block';
+      const input = document.getElementById('ebCatalogProductSearch');
+      searchEditCatalogProducts(input ? input.value : '');
+    }
+
+    function closeEditBespokeProductPopup() {
+      const resultsEl = document.getElementById('ebCatalogProductResults');
+      if (resultsEl) resultsEl.style.display = 'none';
+    }
+
+    let editBespokeSearchDebounce = null;
+    function onEditBespokeProductSearchInput(val) {
+      const clearBtn = document.getElementById('ebCatalogClearSearchBtn');
+      if (clearBtn) clearBtn.style.display = val ? 'inline-block' : 'none';
+
+      clearTimeout(editBespokeSearchDebounce);
+      editBespokeSearchDebounce = setTimeout(() => {
+        searchEditCatalogProducts(val);
+      }, 150);
+    }
+
+    async function searchEditCatalogProducts(query) {
+      const q = (query || '').trim().toLowerCase();
+      const resultsEl = document.getElementById('ebCatalogProductResults');
+      if (!resultsEl) return;
+
+      const client = getSupabase();
+      if (!client) return;
+
+      try {
+        let dbQuery = client
+          .from('product')
+          .select(`
+            id,
+            title,
+            slug,
+            category,
+            gender,
+            type,
+            created_at,
+            product_variation (
+              id,
+              color,
+              fabric,
+              size,
+              price,
+              quantity,
+              main_image,
+              sku
+            )
+          `)
+          .order('created_at', { ascending: false });
+
+        if (q) {
+          dbQuery = dbQuery.or(`title.ilike.%${q}%,category.ilike.%${q}%`);
+        } else {
+          dbQuery = dbQuery.limit(10);
+        }
+
+        const { data, error } = await dbQuery;
+        if (error) throw error;
+
+        currentEditCatalogSearchResults = data || [];
+        renderEditCatalogSearchResults(currentEditCatalogSearchResults, q);
+      } catch (err) {
+        console.warn('[Admin] Fallback to in-memory catalog search:', err);
+        const inMemory = (adminState.products || []).filter(p => {
+          if (!q) return true;
+          return (p.title || '').toLowerCase().includes(q) || (p.category || '').toLowerCase().includes(q);
+        }).slice(0, 10);
+        currentEditCatalogSearchResults = inMemory;
+        renderEditCatalogSearchResults(inMemory, q);
+      }
+    }
+
+    function renderEditCatalogSearchResults(products, query) {
+      const resultsEl = document.getElementById('ebCatalogProductResults');
+      if (!resultsEl) return;
+
+      if (!products.length) {
+        resultsEl.innerHTML = `
+          <div class="body-12" style="padding: 20px; text-align: center; color: var(--color-text-muted);">
+            No catalog products matching "<strong>${escapeHtml(query)}</strong>" in database.
+          </div>
+        `;
+        return;
+      }
+
+      const headerTitle = query ? `Matching Search Results (${products.length})` : `Top 10 Newest Store Designs`;
+
+      resultsEl.innerHTML = `
+        <div style="padding: 6px 12px; background: #FAF8F5; border-bottom: 1px solid var(--color-border); display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 2;">
+          <span class="body-10" style="color: var(--color-text-muted); font-weight: 700; text-transform: uppercase;">${escapeHtml(headerTitle)}</span>
+          <span class="body-10" style="color: var(--color-text-muted);">Click a design to select</span>
+        </div>
+      ` + products.map(p => {
+        const isRTW = (p.type || '').toLowerCase() === 'ready to wear';
+        const typeBadge = `<span class="admin-nav-pill body-10 ${isRTW ? 'gold' : ''}" style="margin-right: 6px;">${isRTW ? 'RTW' : 'MTW'}</span>`;
+        const variations = p.product_variation || [];
+        const minPrice = variations.reduce((min, v) => Math.min(min, Number(v.price) || 0), Infinity);
+        const priceTxt = minPrice !== Infinity ? formatNaira(minPrice) : '₦0';
+        const isSelected = selectedEditCatalogProductId === p.id;
+        const fabrics = variations.map(v => v.fabric).filter(Boolean).slice(0, 2).join(', ');
+        const colors = variations.map(v => v.color).filter(Boolean).slice(0, 3).join(', ');
+        const details = [fabrics, colors ? `Colors: ${colors}` : ''].filter(Boolean).join(' • ');
+
+        return `
+          <div class="bespoke-search-item" style="padding: 10px 14px; cursor: pointer; border-bottom: 1px solid var(--color-border); display: flex; align-items: center; justify-content: space-between; transition: all 0.15s ease; background: ${isSelected ? '#FEFCBF' : '#fff'};"
+               onmouseover="if (!${isSelected}) this.style.background='#F7FAFC'" onmouseout="if (!${isSelected}) this.style.background='#fff'"
+               onmousedown="event.preventDefault(); selectEditBespokeCatalogProduct('${p.id}')">
+            <div>
+              <div style="display: flex; align-items: center;">
+                ${typeBadge}
+                <strong class="body-14" style="color: var(--color-obsidian);">${escapeHtml(p.title)}</strong>
+                ${isSelected ? '<span style="color: #D4AF37; margin-left: 6px; font-weight: 700;">✓ SELECTED</span>' : ''}
+              </div>
+              <div class="body-10" style="color: var(--color-text-muted); text-transform: uppercase; margin-top: 2px;">
+                ${escapeHtml(p.category || 'Garment')} &bull; ${escapeHtml(p.gender || 'male')}${details ? ` &bull; ${escapeHtml(details)}` : ''}
+              </div>
+            </div>
+            <div style="text-align: right;">
+              <span class="body-12" style="font-weight: 700; color: var(--color-primary);">${priceTxt}</span>
+              <div class="body-10" style="color: var(--color-text-muted);">${variations.length} variant${variations.length === 1 ? '' : 's'}</div>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function selectEditBespokeCatalogProduct(prodId) {
+      selectedEditCatalogProductId = prodId;
+      const prod = (adminState.products || []).find(p => p.id === prodId) || (currentEditCatalogSearchResults || []).find(p => p.id === prodId);
+      if (!prod) return;
+
+      const hiddenInput = document.getElementById('ebCatalogProductSelectedId');
+      const searchInput = document.getElementById('ebCatalogProductSearch');
+      const capsule = document.getElementById('ebSelectedProductCapsule');
+      const textEl = document.getElementById('ebSelectedProductText');
+      const clearBtn = document.getElementById('ebCatalogClearSearchBtn');
+
+      if (hiddenInput) hiddenInput.value = prod.id;
+      if (searchInput) searchInput.value = prod.title;
+      if (clearBtn) clearBtn.style.display = 'inline-block';
+
+      const isRTW = (prod.type || '').toLowerCase() === 'ready to wear';
+      if (capsule && textEl) {
+        textEl.innerHTML = `<span class="admin-nav-pill body-10 ${isRTW ? 'gold' : ''}" style="margin-right: 6px;">${isRTW ? 'RTW' : 'MTW'}</span><strong>${escapeHtml(prod.title)}</strong> <span class="body-12" style="color: var(--color-text-muted);">(${escapeHtml(prod.category || 'Garment')})</span>`;
+        capsule.style.display = 'flex';
+      }
+
+      closeEditBespokeProductPopup();
+      editActiveProductVariations = prod.product_variation || [];
+      onEditBespokeProductChanged();
+    }
+
+    function clearEditBespokeProductSearch() {
+      const searchInput = document.getElementById('ebCatalogProductSearch');
+      const clearBtn = document.getElementById('ebCatalogClearSearchBtn');
+      const hiddenInput = document.getElementById('ebCatalogProductSelectedId');
+      const capsule = document.getElementById('ebSelectedProductCapsule');
+      const variantSelect = document.getElementById('ebCatalogVariantSelect');
+      const badgeRow = document.getElementById('ebCatalogProductBadgeRow');
+      const sizesCont = document.getElementById('ebCatalogSizesContainer');
+
+      if (searchInput) searchInput.value = '';
+      if (clearBtn) clearBtn.style.display = 'none';
+      if (hiddenInput) hiddenInput.value = '';
+      if (capsule) capsule.style.display = 'none';
+      if (variantSelect) variantSelect.innerHTML = '<option value="">-- Select a design on the left first --</option>';
+      if (badgeRow) badgeRow.style.display = 'none';
+      if (sizesCont) sizesCont.innerHTML = '<span class="body-12" style="color: var(--color-text-muted);">Select a product first</span>';
+
+      selectedEditCatalogProductId = null;
+      editActiveProductVariations = [];
+      closeEditBespokeProductPopup();
+    }
+
+    function onEditBespokeProductChanged() {
+      const prod = (adminState.products || []).find(p => p.id === selectedEditCatalogProductId) || (currentEditCatalogSearchResults || []).find(p => p.id === selectedEditCatalogProductId);
+      const variantSelect = document.getElementById('ebCatalogVariantSelect');
+      if (!prod || !variantSelect) return;
+
+      const variations = prod.product_variation || [];
+      if (!variations.length) {
+        variantSelect.innerHTML = '<option value="">Standard Edition (Single Variant)</option>';
+      } else {
+        variantSelect.innerHTML = variations.map(v => {
+          const color = v.color || 'Standard';
+          const fabric = v.fabric ? ` (${v.fabric})` : '';
+          const price = v.price ? ` - ${formatNaira(v.price)}` : '';
+          const stock = v.quantity != null ? ` [${v.quantity} in stock]` : '';
+          return `<option value="${v.id}">${escapeHtml(color + fabric + price + stock)}</option>`;
+        }).join('');
+      }
+
+      onEditBespokeVariantChanged();
+    }
+
+    function onEditBespokeVariantChanged() {
+      const prod = (adminState.products || []).find(p => p.id === selectedEditCatalogProductId) || (currentEditCatalogSearchResults || []).find(p => p.id === selectedEditCatalogProductId);
+      const variantSelect = document.getElementById('ebCatalogVariantSelect');
+      const variantId = variantSelect?.value;
+      if (!prod) return;
+
+      const variations = prod.product_variation || [];
+      const activeVariant = variations.find(v => String(v.id) === String(variantId)) || variations[0] || {};
+
+      const isRTW = (prod.type || '').toLowerCase() === 'ready to wear';
+      const badgeRow = document.getElementById('ebCatalogProductBadgeRow');
+      const typeBadge = document.getElementById('ebCatalogTypeBadge');
+      const colorFabric = document.getElementById('ebCatalogVariantColorFabric');
+      const stockText = document.getElementById('ebCatalogStockText');
+      const priceDisplay = document.getElementById('ebCatalogPriceDisplay');
+      const imgEl = document.getElementById('ebCatalogVariantImg');
+      const unitPriceInput = document.getElementById('ebCatalogUnitPrice');
+
+      if (badgeRow) badgeRow.style.display = 'flex';
+      if (typeBadge) {
+        typeBadge.innerText = isRTW ? 'RTW' : 'MTW';
+        typeBadge.className = isRTW ? 'admin-nav-pill gold body-10' : 'admin-nav-pill body-10';
+      }
+      if (colorFabric) colorFabric.innerText = `${activeVariant.color || 'Standard'} • ${activeVariant.fabric || 'Standard Fabric'}`;
+      if (stockText) {
+        if (isRTW) {
+          const qty = activeVariant.quantity != null ? activeVariant.quantity : 0;
+          stockText.innerText = qty > 0 ? `Stock: ${qty} units available` : '⚠️ Sold Out / On Backorder';
+          stockText.style.color = qty > 0 ? '#03543F' : '#991B1B';
+        } else {
+          stockText.innerText = 'Crafted to order in atelier';
+          stockText.style.color = 'var(--color-text-muted)';
+        }
+      }
+
+      const price = Number(activeVariant.price) || 0;
+      if (priceDisplay) priceDisplay.innerText = formatNaira(price);
+      if (unitPriceInput) unitPriceInput.value = price > 0 ? price : '';
+
+      if (imgEl) {
+        if (activeVariant.main_image) {
+          imgEl.src = activeVariant.main_image;
+          imgEl.style.display = 'block';
+        } else {
+          imgEl.style.display = 'none';
+        }
+      }
+
+      renderEditCatalogSizes(prod, activeVariant);
+    }
+
+    function renderEditCatalogSizes(prod, activeVariant) {
+      const sizesCont = document.getElementById('ebCatalogSizesContainer');
+      if (!sizesCont) return;
+
+      const isRTW = (prod.type || '').toLowerCase() === 'ready to wear';
+      const variations = prod.product_variation || [];
+
+      if (isRTW) {
+        const targetColor = (activeVariant.color || 'Standard').trim().toLowerCase();
+        const colorVariants = variations.filter(v => (v.color || 'Standard').trim().toLowerCase() === targetColor);
+
+        if (!colorVariants.length) {
+          sizesCont.innerHTML = '<span class="body-12" style="color: var(--color-text-muted);">Standard M</span>';
+          selectedEditCatalogSize = 'M';
+          return;
+        }
+
+        const sizeOrder = ['XS', 'S', 'M', 'L', 'XL', 'XXL', 'XXXL'];
+        colorVariants.sort((a, b) => {
+          const idxA = sizeOrder.indexOf(String(a.size || '').toUpperCase());
+          const idxB = sizeOrder.indexOf(String(b.size || '').toUpperCase());
+          if (idxA !== -1 && idxB !== -1) return idxA - idxB;
+          return String(a.size || '').localeCompare(String(b.size || ''));
+        });
+
+        selectedEditCatalogSize = activeVariant.size || colorVariants[0].size || 'M';
+
+        sizesCont.innerHTML = colorVariants.map(v => {
+          const s = v.size || 'M';
+          const isOut = v.quantity != null && Number(v.quantity) <= 0;
+          const isSel = String(v.id) === String(activeVariant.id);
+          const stockTxt = v.quantity != null ? ` (${v.quantity})` : '';
+          return `
+            <button type="button" 
+                    class="btn ${isSel ? 'btn-primary' : 'btn-outline'} body-12" 
+                    style="padding: 6px 14px; ${isOut ? 'opacity: 0.5; text-decoration: line-through;' : ''}"
+                    onclick="selectEditCatalogSize(this, '${escapeHtml(s)}', '${v.id}')"
+                    title="${isOut ? 'Sold out' : s + stockTxt}">
+              ${escapeHtml(s)}${stockTxt}
+            </button>
+          `;
+        }).join('');
+
+        const measRow = document.getElementById('ebCatalogCustomMeasurementRow');
+        if (measRow) measRow.style.display = 'none';
+
+      } else {
+        const sizes = ['S', 'M', 'L', 'XL', 'XXL', 'Custom'];
+        selectedEditCatalogSize = 'M';
+
+        sizesCont.innerHTML = sizes.map(s => {
+          const isSel = s === selectedEditCatalogSize;
+          return `
+            <button type="button" 
+                    class="btn ${isSel ? 'btn-primary' : 'btn-outline'} body-12" 
+                    style="padding: 6px 14px;"
+                    onclick="selectEditCatalogSize(this, '${s}', null)">
+              ${s === 'Custom' ? '✂️ Custom Fit' : s}
+            </button>
+          `;
+        }).join('');
+
+        const measRow = document.getElementById('ebCatalogCustomMeasurementRow');
+        if (measRow) measRow.style.display = 'none';
+      }
+    }
+
+    function selectEditCatalogSize(btn, sizeVal, variantId) {
+      const container = document.getElementById('ebCatalogSizesContainer');
+      if (container) {
+        container.querySelectorAll('button').forEach(b => {
+          b.className = 'btn btn-outline body-12';
+        });
+      }
+      btn.className = 'btn btn-primary body-12';
+      selectedEditCatalogSize = sizeVal;
+
+      const measRow = document.getElementById('ebCatalogCustomMeasurementRow');
+      if (measRow) {
+        const isCustom = sizeVal.toLowerCase() === 'custom';
+        measRow.style.display = isCustom ? 'block' : 'none';
+        if (isCustom) renderEditMeasurementList('catalog');
+      }
+
+      if (variantId) {
+        const variantSelect = document.getElementById('ebCatalogVariantSelect');
+        if (variantSelect) {
+          variantSelect.value = variantId;
+          onEditBespokeVariantChanged();
+        }
+      }
+    }
+
+    /* Client and measurement handling in edit modal */
+    function searchEditGarmentUser(itemType, query) {
+      const q = (query || '').toLowerCase().trim();
+      const prefix = itemType === 'catalog' ? 'ebCat' : 'ebBesp';
+      const resultsEl = document.getElementById(`${prefix}UserResults`);
+      const clearBtn = document.getElementById(`${prefix}ClearUserBtn`);
+
+      if (clearBtn) clearBtn.style.display = q ? 'inline-block' : 'none';
+      if (!resultsEl) return;
+
+      const profiles = adminState.vaultProfiles || [];
+      const filtered = profiles.filter(p => {
+        if (!q) return true;
+        return (p.name || '').toLowerCase().includes(q) || (p.email || '').toLowerCase().includes(q) || (p.phone_number || '').includes(q);
+      }).slice(0, 10);
+
+      resultsEl.style.display = 'block';
+
+      if (!filtered.length) {
+        resultsEl.innerHTML = `<div class="body-12" style="padding: 10px; text-align: center; color: var(--color-text-muted);">No client found in vault matching "${escapeHtml(q)}".</div>`;
+        return;
+      }
+
+      resultsEl.innerHTML = filtered.map(p => `
+        <div class="bespoke-search-item" style="padding: 8px 12px; cursor: pointer; border-bottom: 1px solid var(--color-border); display: flex; justify-content: space-between; align-items: center;"
+             onmousedown="selectEditGarmentUser('${itemType}', '${p.id}', '${escapeHtml(p.name || 'Client')}', '${escapeHtml(p.email || '')}')">
+          <div>
+            <strong class="body-12" style="color: var(--color-obsidian);">${escapeHtml(p.name || 'Client')}</strong>
+            <div class="body-10" style="color: var(--color-text-muted);">${escapeHtml(p.email || 'No email logged')}</div>
+          </div>
+          <span class="body-10" style="color: var(--color-primary); font-weight: 700;">Assign &rarr;</span>
+        </div>
+      `).join('');
+    }
+
+    function selectEditGarmentUser(itemType, userId, name, email) {
+      const prefix = itemType === 'catalog' ? 'ebCat' : 'ebBesp';
+      editGarmentState[itemType].userId = userId;
+
+      const input = document.getElementById(`${prefix}UserSearch`);
+      const hiddenInput = document.getElementById(`${prefix}SelectedUserId`);
+      const badge = document.getElementById(`${prefix}SelectedUserBadge`);
+      const resultsEl = document.getElementById(`${prefix}UserResults`);
+
+      if (input) input.value = email || name;
+      if (hiddenInput) hiddenInput.value = userId;
+      if (resultsEl) resultsEl.style.display = 'none';
+
+      if (badge) {
+        badge.innerHTML = `<span><strong>Assigned Client:</strong> ${escapeHtml(name)} ${email ? `(${escapeHtml(email)})` : ''}</span><button type="button" onclick="clearEditGarmentUser('${itemType}')" style="background:none; border:none; color:#C53030; cursor:pointer; font-weight:700;">&times;</button>`;
+        badge.style.display = 'flex';
+      }
+
+      renderEditMeasurementList(itemType);
+    }
+
+    function clearEditGarmentUser(itemType) {
+      const prefix = itemType === 'catalog' ? 'ebCat' : 'ebBesp';
+      editGarmentState[itemType].userId = null;
+      const input = document.getElementById(`${prefix}UserSearch`);
+      const hiddenInput = document.getElementById(`${prefix}SelectedUserId`);
+      const badge = document.getElementById(`${prefix}SelectedUserBadge`);
+      const resultsEl = document.getElementById(`${prefix}UserResults`);
+      const clearBtn = document.getElementById(`${prefix}ClearUserBtn`);
+
+      if (input) input.value = '';
+      if (hiddenInput) hiddenInput.value = '';
+      if (badge) badge.style.display = 'none';
+      if (resultsEl) resultsEl.style.display = 'none';
+      if (clearBtn) clearBtn.style.display = 'none';
+
+      renderEditMeasurementList(itemType);
+    }
+
+    function switchEditMeasurementTab(itemType, tab) {
+      editGarmentState[itemType].measTab = tab;
+      const prefix = itemType === 'catalog' ? 'ebCat' : 'ebBesp';
+      const userTabBtn = document.getElementById(`${prefix}MeasTabUser`);
+      const studioTabBtn = document.getElementById(`${prefix}MeasTabStudio`);
+      const isUser = tab === 'user';
+
+      if (userTabBtn) {
+        userTabBtn.className = isUser ? 'btn body-10' : 'btn btn-outline body-10';
+        userTabBtn.style.background = isUser ? 'var(--color-primary)' : '';
+        userTabBtn.style.color = isUser ? '#fff' : '';
+      }
+      if (studioTabBtn) {
+        studioTabBtn.className = !isUser ? 'btn body-10' : 'btn btn-outline body-10';
+        studioTabBtn.style.background = !isUser ? 'var(--color-primary)' : '';
+        studioTabBtn.style.color = !isUser ? '#fff' : '';
+      }
+
+      renderEditMeasurementList(itemType);
+    }
+
+    function filterEditMeasurementList(itemType, query) {
+      editGarmentState[itemType].measQuery = (query || '').toLowerCase().trim();
+      renderEditMeasurementList(itemType);
+    }
+
+    function renderEditMeasurementList(itemType) {
+      const prefix = itemType === 'catalog' ? 'ebCat' : 'ebBesp';
+      const listEl = document.getElementById(`${prefix}MeasList`);
+      if (!listEl) return;
+
+      const state = editGarmentState[itemType];
+      const isUserTab = state.measTab === 'user';
+      const query = state.measQuery;
+
+      const normId = (uid) => uid ? String(uid).toLowerCase().trim() : '';
+
+      if (isUserTab) {
+        if (!state.userId) {
+          listEl.innerHTML = `
+            <div class="body-12" style="padding: 12px; text-align: center; color: var(--color-text-muted);">
+              Assign a client to view their measurements or search admin created measurements.
+              <div style="margin-top: 6px;">
+                <button type="button" class="btn btn-outline body-10" onclick="switchEditMeasurementTab('${itemType}', 'studio')" style="padding: 3px 8px;">View Admin Created Measurements &rarr;</button>
+              </div>
+            </div>
+          `;
+          return;
+        }
+
+        const targetUserId = normId(state.userId);
+        const userMeasurements = (adminState.allMeasurements || []).filter(m => normId(m.user_id) === targetUserId);
+        const filtered = userMeasurements.filter(m => {
+          if (!query) return true;
+          return (m.label || '').toLowerCase().includes(query) || (m.notes || '').toLowerCase().includes(query);
+        });
+
+        if (!filtered.length) {
+          listEl.innerHTML = `
+            <div class="body-12" style="padding: 12px; text-align: center; color: var(--color-text-muted);">
+              ${query ? `No client measurements matching "${escapeHtml(query)}"` : 'This client has no saved measurement profiles. Select the Admin Created tab to choose standard measurements.'}
+            </div>
+          `;
+          return;
+        }
+
+        listEl.innerHTML = filtered.map(m => {
+          const isSelected = m.id === state.measId;
+          const chestTxt = m.round_chest ? `Chest: ${m.round_chest}"` : '';
+          const waistTxt = m.waist ? `Waist: ${m.waist}"` : '';
+          const shoulderTxt = m.shoulder ? `Shoulder: ${m.shoulder}"` : '';
+          const details = [chestTxt, waistTxt, shoulderTxt].filter(Boolean).join(' • ');
+
+          return `
+            <div class="bespoke-search-item" style="padding: 8px 10px; cursor: pointer; border-radius: 4px; margin-bottom: 4px; display: flex; align-items: center; justify-content: space-between; background: ${isSelected ? '#FEFCBF' : '#fff'}; border: 1px solid ${isSelected ? '#D4AF37' : 'var(--color-border)'};"
+                 onclick="selectEditMeasurementProfile('${itemType}', '${m.id}')">
+              <div>
+                <strong class="body-12" style="color: var(--color-obsidian);">${escapeHtml(m.label || 'Sizing Profile')}</strong>
+                <span class="body-10" style="color: var(--color-text-muted); text-transform: uppercase; margin-left: 6px;">(${escapeHtml(m.gender || 'male')})</span>
+                ${details ? `<div class="body-10" style="color: var(--color-text-muted); margin-top: 2px;">${escapeHtml(details)}</div>` : ''}
+              </div>
+              <span class="body-10" style="font-weight: 700; color: ${isSelected ? 'var(--color-primary)' : 'var(--color-text-muted)'};">
+                ${isSelected ? '✓ SELECTED' : 'Select'}
+              </span>
+            </div>
+          `;
+        }).join('');
+
+      } else {
+        const studioMeasurements = (adminState.allMeasurements || []).filter(m => !m.user_id || m.user_id === '00000000-0000-0000-0000-000000000000');
+        const filtered = studioMeasurements.filter(m => {
+          if (!query) return true;
+          return (m.label || '').toLowerCase().includes(query) || (m.notes || '').toLowerCase().includes(query);
+        });
+
+        if (!filtered.length) {
+          listEl.innerHTML = `
+            <div class="body-12" style="padding: 12px; text-align: center; color: var(--color-text-muted);">
+              No standard measurements found.
+            </div>
+          `;
+          return;
+        }
+
+        listEl.innerHTML = filtered.map(m => {
+          const isSelected = m.id === state.measId;
+          const chestTxt = m.round_chest ? `Chest: ${m.round_chest}"` : '';
+          const waistTxt = m.waist ? `Waist: ${m.waist}"` : '';
+          const shoulderTxt = m.shoulder ? `Shoulder: ${m.shoulder}"` : '';
+          const details = [chestTxt, waistTxt, shoulderTxt].filter(Boolean).join(' • ');
+
+          return `
+            <div class="bespoke-search-item" style="padding: 8px 10px; cursor: pointer; border-radius: 4px; margin-bottom: 4px; display: flex; align-items: center; justify-content: space-between; background: ${isSelected ? '#FEFCBF' : '#fff'}; border: 1px solid ${isSelected ? '#D4AF37' : 'var(--color-border)'};"
+                 onclick="selectEditMeasurementProfile('${itemType}', '${m.id}')">
+              <div>
+                <strong class="body-12" style="color: var(--color-obsidian);">${escapeHtml(m.label || 'Standard Studio Profile')}</strong>
+                <span class="body-10" style="color: var(--color-text-muted); text-transform: uppercase; margin-left: 6px;">(${escapeHtml(m.gender || 'male')})</span>
+                ${details ? `<div class="body-10" style="color: var(--color-text-muted); margin-top: 2px;">${escapeHtml(details)}</div>` : ''}
+              </div>
+              <span class="body-10" style="font-weight: 700; color: ${isSelected ? 'var(--color-primary)' : 'var(--color-text-muted)'};">
+                ${isSelected ? '✓ SELECTED' : 'Select'}
+              </span>
+            </div>
+          `;
+        }).join('');
+      }
+    }
+
+    function selectEditMeasurementProfile(itemType, measId) {
+      const prefix = itemType === 'catalog' ? 'ebCat' : 'ebBesp';
+      editGarmentState[itemType].measId = measId;
+
+      const meas = (adminState.allMeasurements || []).find(m => m.id === measId);
+      const hiddenInput = document.getElementById(`${prefix}SelectedMeasId`);
+      const badge = document.getElementById(`${prefix}SelectedMeasBadge`);
+
+      if (hiddenInput) hiddenInput.value = measId;
+      if (badge && meas) {
+        badge.innerHTML = `<span><strong>Active Measurement:</strong> ${escapeHtml(meas.label || 'Sizing Profile')} (${escapeHtml(meas.gender || 'male')})</span><button type="button" onclick="clearEditMeasurementProfile('${itemType}')" style="background:none; border:none; color:#C53030; cursor:pointer; font-weight:700;">&times;</button>`;
+        badge.style.display = 'flex';
+      }
+
+      renderEditMeasurementList(itemType);
+    }
+
+    function clearEditMeasurementProfile(itemType) {
+      const prefix = itemType === 'catalog' ? 'ebCat' : 'ebBesp';
+      editGarmentState[itemType].measId = null;
+      const hiddenInput = document.getElementById(`${prefix}SelectedMeasId`);
+      const badge = document.getElementById(`${prefix}SelectedMeasBadge`);
+
+      if (hiddenInput) hiddenInput.value = '';
+      if (badge) badge.style.display = 'none';
+
+      renderEditMeasurementList(itemType);
+    }
+
+    /* Adding garments to Edit Order */
+    function addCatalogGarmentToEditOrder() {
+      const prodId = document.getElementById('ebCatalogProductSelectedId')?.value || selectedEditCatalogProductId;
+      if (!prodId) {
+        showToast('Please search and select a catalog product.');
+        document.getElementById('ebCatalogProductSearch')?.focus();
+        return;
+      }
+
+      const prod = (adminState.products || []).find(p => p.id === prodId) || (currentEditCatalogSearchResults || []).find(p => p.id === prodId);
+      if (!prod) return;
+
+      const variantId = document.getElementById('ebCatalogVariantSelect')?.value;
+      const variations = prod.product_variation || [];
+      const variant = variations.find(v => String(v.id) === String(variantId)) || variations[0] || {};
+
+      const isRTW = (prod.type || '').toLowerCase() === 'ready to wear';
+      const qty = parseInt(document.getElementById('ebCatalogQty')?.value || 1, 10);
+      const unitPrice = Number(document.getElementById('ebCatalogUnitPrice')?.value) || Number(variant.price) || 0;
+
+      if (unitPrice <= 0) {
+        showToast('Please enter a valid positive garment price.');
+        return;
+      }
+
+      if (isRTW && variant.quantity !== null && qty > Number(variant.quantity)) {
+        showToast(`Cannot order ${qty} units. Only ${variant.quantity} available in stock.`);
+        return;
+      }
+
+      const isCustomSize = selectedEditCatalogSize.toLowerCase() === 'custom';
+      const measurementId = isCustomSize ? (editGarmentState.catalog.measId || null) : null;
+      const assignedUserId = isCustomSize ? (editGarmentState.catalog.userId || null) : null;
+      let measurementSnapshot = null;
+      if (measurementId) {
+        measurementSnapshot = (adminState.allMeasurements || []).find(x => x.id === measurementId) || null;
+      }
+
+      if (isCustomSize && (!measurementId || !measurementSnapshot)) {
+        showToast('Custom fit selected: Please select a client or studio measurement profile.');
+        const measRow = document.getElementById('ebCatalogCustomMeasurementRow');
+        if (measRow) {
+          measRow.style.display = 'block';
+          measRow.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+        const searchInput = document.getElementById('ebCatMeasSearch');
+        if (searchInput) searchInput.focus();
+        return;
+      }
+
+      let notes = document.getElementById('ebCatalogItemNotes')?.value.trim() || '';
+      if (assignedUserId) {
+        const patron = (adminState.vaultProfiles || []).find(p => p.id === assignedUserId);
+        if (patron && patron.name) {
+          notes = notes ? `[Client: ${patron.name}] ${notes}` : `[Client: ${patron.name}]`;
+        }
+      }
+
+      const itemDesc = `${prod.title} (${variant.color || 'Standard'}, Size: ${selectedEditCatalogSize}, Qty: ${qty})${notes ? ` — ${notes}` : ''}`;
+
+      editBespokeState.items.push({
+        source: 'catalog',
+        title: prod.title,
+        color: variant.color || 'Standard',
+        size: selectedEditCatalogSize,
+        selected_size: selectedEditCatalogSize,
+        type: prod.type || 'made to order',
+        quantity: qty,
+        unit_price: unitPrice,
+        charge: unitPrice * qty,
+        category: prod.category || 'native',
+        gender: prod.gender || 'male',
+        user_id: assignedUserId,
+        measurement_id: measurementId,
+        measurement_snapshot: measurementSnapshot,
+        description_notes: itemDesc,
+        fabric_photos: variant.main_image ? [variant.main_image] : [],
+        inspiration_photos: []
+      });
+
+      if (document.getElementById('ebCatalogItemNotes')) document.getElementById('ebCatalogItemNotes').value = '';
+      if (document.getElementById('ebCatalogQty')) document.getElementById('ebCatalogQty').value = 1;
+
+      clearEditBespokeProductSearch();
+      clearEditGarmentUser('catalog');
+      clearEditMeasurementProfile('catalog');
+
+      const zeroAlert = document.getElementById('ebZeroItemsAlert');
+      if (zeroAlert) zeroAlert.style.display = 'none';
+
+      renderEditBespokeItems();
+      updateEditBespokeFinancialSummary();
+      showToast(`Added "${prod.title}" to commission!`);
+    }
+
+    function addBespokeGarmentToEditOrder() {
+      const category = document.getElementById('ebBespokeCategory')?.value || 'native';
+      const gender = document.getElementById('ebBespokeGender')?.value || 'male';
+      let desc = document.getElementById('ebBespokeDesc')?.value.trim();
+      const charge = Number(document.getElementById('ebBespokeCharge')?.value) || 0;
+      const measurementId = editGarmentState.bespoke.measId || null;
+      const assignedUserId = editGarmentState.bespoke.userId || null;
+      let measurementSnapshot = null;
+      if (measurementId) {
+        measurementSnapshot = (adminState.allMeasurements || []).find(x => x.id === measurementId) || null;
+      }
+      const fabricPhoto = document.getElementById('ebBespokeFabricPhoto')?.value.trim();
+      const inspPhoto = document.getElementById('ebBespokeInspirationPhoto')?.value.trim();
+
+      if (!desc) {
+        showToast('Please provide a garment description or tailoring brief.');
+        document.getElementById('ebBespokeDesc')?.focus();
+        return;
+      }
+
+      if (charge <= 0) {
+        showToast('Please enter an agreed price greater than ₦0.');
+        document.getElementById('ebBespokeCharge')?.focus();
+        return;
+      }
+
+      if (assignedUserId) {
+        const patron = (adminState.vaultProfiles || []).find(p => p.id === assignedUserId);
+        if (patron && patron.name) {
+          desc = `[Client: ${patron.name}] ${desc}`;
+        }
+      }
+
+      const categoryLabel = category.charAt(0).toUpperCase() + category.slice(1);
+
+      editBespokeState.items.push({
+        source: 'bespoke',
+        type: 'bespoke',
+        selected_size: 'Custom',
+        size: 'Custom',
+        title: `Bespoke ${categoryLabel} Piece`,
+        category: category,
+        gender: gender,
+        charge: charge,
+        quantity: 1,
+        unit_price: charge,
+        user_id: assignedUserId,
+        measurement_id: measurementId,
+        measurement_snapshot: measurementSnapshot,
+        description_notes: desc,
+        fabric_photos: fabricPhoto ? [fabricPhoto] : [],
+        inspiration_photos: inspPhoto ? [inspPhoto] : []
+      });
+
+      if (document.getElementById('ebBespokeDesc')) document.getElementById('ebBespokeDesc').value = '';
+      if (document.getElementById('ebBespokeCharge')) document.getElementById('ebBespokeCharge').value = '';
+      if (document.getElementById('ebBespokeFabricPhoto')) document.getElementById('ebBespokeFabricPhoto').value = '';
+      if (document.getElementById('ebBespokeInspirationPhoto')) document.getElementById('ebBespokeInspirationPhoto').value = '';
+
+      clearEditGarmentUser('bespoke');
+      clearEditMeasurementProfile('bespoke');
+
+      const zeroAlert = document.getElementById('ebZeroItemsAlert');
+      if (zeroAlert) zeroAlert.style.display = 'none';
+
+      renderEditBespokeItems();
+      updateEditBespokeFinancialSummary();
+      showToast(`Added bespoke ${categoryLabel} garment to commission!`);
+    }
+
+    function removeEditBespokeItem(idx) {
+      if (idx >= 0 && idx < editBespokeState.items.length) {
+        const removed = editBespokeState.items.splice(idx, 1);
+        renderEditBespokeItems();
+        updateEditBespokeFinancialSummary();
+        showToast(`Removed "${removed[0]?.title || 'item'}".`);
+      }
+    }
+
+    function renderEditBespokeItems() {
+      const cont = document.getElementById('ebDraftItemsContainer');
+      const step1Cont = document.getElementById('ebStep1ItemsList');
+      const countEl = document.getElementById('ebItemsCount');
+      const pillCountEl = document.getElementById('ebItemsPillCount');
+      const step1PillEl = document.getElementById('ebStep1PillCount');
+      const items = editBespokeState.items || [];
+
+      if (countEl) countEl.innerText = items.length;
+      if (pillCountEl) {
+        pillCountEl.innerText = `${items.length} item${items.length === 1 ? '' : 's'}`;
+        pillCountEl.style.display = items.length > 0 ? 'inline-block' : 'none';
+      }
+      if (step1PillEl) {
+        step1PillEl.innerText = `${items.length} item${items.length === 1 ? '' : 's'}`;
+      }
+
+      // Step 1: Visible summary of existing garments in this commission
+      if (step1Cont) {
+        if (items.length === 0) {
+          step1Cont.innerHTML = `
+            <div class="body-12" style="text-align: center; padding: 14px; background: #fff; border-radius: 4px; border: 1px dashed var(--color-border); color: var(--color-text-muted);">
+              No garments recorded in this commission yet. Click &quot;+ Add / Modify Garments &rarr;&quot; to add.
+            </div>
+          `;
+        } else {
+          step1Cont.innerHTML = items.map((item, idx) => {
+            const isBespoke = item.source === 'bespoke';
+            const badge = isBespoke
+              ? '<span class="admin-nav-pill body-10" style="background: #EBF8FF; color: #2B6CB0; font-weight: 700; padding: 1px 6px;">BESPOKE</span>'
+              : '<span class="admin-nav-pill body-10" style="font-weight: 700; padding: 1px 6px;">CATALOG</span>';
+
+            let imgUrl = 'assets/lookbook/lookbook_1_kaftan.jpg';
+            if (Array.isArray(item.fabric_photos) && item.fabric_photos[0]) {
+              imgUrl = item.fabric_photos[0];
+            } else if (typeof item.fabric_photos === 'string' && item.fabric_photos) {
+              imgUrl = item.fabric_photos;
+            } else if (Array.isArray(item.inspiration_photos) && item.inspiration_photos[0]) {
+              imgUrl = item.inspiration_photos[0];
+            } else if (typeof item.inspiration_photos === 'string' && item.inspiration_photos) {
+              imgUrl = item.inspiration_photos;
+            }
+
+            const title = item.title || item.description_notes || `${item.category || 'Bespoke'} Piece`;
+            const sizeLabel = item.selected_size || item.size || 'M';
+
+            return `
+              <div style="padding: 10px 12px; background: #fff; border-radius: 6px; border: 1px solid var(--color-border); display: flex; align-items: center; justify-content: space-between; gap: 10px;">
+                <div style="display: flex; align-items: center; gap: 10px; flex: 1; min-width: 0;">
+                  <img src="${imgUrl}" alt="${escapeHtml(title)}" style="width: 38px; height: 38px; border-radius: 4px; object-fit: cover; flex-shrink: 0;" onerror="this.onerror=null; this.src='assets/lookbook/lookbook_1_kaftan.jpg';">
+                  <div style="min-width: 0; line-height: 1.3;">
+                    <div style="display: flex; align-items: center; gap: 6px; flex-wrap: wrap;">
+                      ${badge}
+                      <strong class="body-12" style="color: var(--color-obsidian);">${escapeHtml(title)}</strong>
+                    </div>
+                    <div class="body-10" style="color: var(--color-text-muted); margin-top: 2px;">
+                      <span style="text-transform: capitalize;">${escapeHtml(item.category || 'native')}</span> &bull; Size: ${escapeHtml(sizeLabel)}${item.description_notes ? ' &bull; ' + escapeHtml(item.description_notes) : ''}
+                    </div>
+                  </div>
+                </div>
+                <strong class="body-14" style="color: var(--color-obsidian); flex-shrink: 0;">${formatNaira(item.charge)}</strong>
+              </div>
+            `;
+          }).join('');
+        }
+      }
+
+      // Step 2: Interactive list with remove buttons
+      if (!cont) return;
+
+      if (items.length === 0) {
+        cont.innerHTML = `
+          <div class="body-14" style="text-align: center; padding: 24px; background: #FAF8F5; border-radius: 6px; border: 1px dashed var(--color-border); color: var(--color-text-muted);">
+            No garments in this order. Add a catalog garment or bespoke piece above.
+          </div>
+        `;
+        return;
+      }
+
+      cont.innerHTML = items.map((item, idx) => {
+        const isBespoke = item.source === 'bespoke';
+        const badge = isBespoke
+          ? '<span class="admin-nav-pill body-10" style="background: #EBF8FF; color: #2B6CB0; font-weight: 700; padding: 1px 6px;">BESPOKE</span>'
+          : '<span class="admin-nav-pill body-10" style="font-weight: 700; padding: 1px 6px;">CATALOG</span>';
+
+        let imgUrl = 'assets/lookbook/lookbook_1_kaftan.jpg';
+        if (Array.isArray(item.fabric_photos) && item.fabric_photos[0]) {
+          imgUrl = item.fabric_photos[0];
+        } else if (typeof item.fabric_photos === 'string' && item.fabric_photos) {
+          imgUrl = item.fabric_photos;
+        } else if (Array.isArray(item.inspiration_photos) && item.inspiration_photos[0]) {
+          imgUrl = item.inspiration_photos[0];
+        } else if (typeof item.inspiration_photos === 'string' && item.inspiration_photos) {
+          imgUrl = item.inspiration_photos;
+        }
+
+        const title = item.title || item.description_notes || `${item.category || 'Bespoke'} Piece`;
+        const sizeLabel = item.selected_size || item.size || 'M';
+
+        return `
+          <div style="padding: 12px 14px; background: #fff; border-radius: 6px; border: 1px solid var(--color-border); display: flex; align-items: center; justify-content: space-between; gap: 12px;">
+            <div style="display: flex; align-items: center; gap: 12px; flex: 1; min-width: 0;">
+              <img src="${imgUrl}" alt="${escapeHtml(title)}" style="width: 38px; height: 38px; border-radius: 4px; object-fit: cover; flex-shrink: 0;" onerror="this.onerror=null; this.src='assets/lookbook/lookbook_1_kaftan.jpg';">
+              <div style="min-width: 0;">
+                <div style="display: flex; align-items: center; gap: 6px;">
+                  ${badge}
+                  <strong class="body-14" style="color: var(--color-obsidian);">${escapeHtml(title)}</strong>
+                  <span class="body-12" style="color: var(--color-text-muted);">&bull; ${escapeHtml(item.category || 'native').toUpperCase()}</span>
+                </div>
+                <div class="body-12" style="color: var(--color-text-muted); margin-top: 2px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+                  Size: ${escapeHtml(sizeLabel)}${item.description_notes ? ' &bull; ' + escapeHtml(item.description_notes) : ''}
+                </div>
+              </div>
+            </div>
+
+            <div style="display: flex; align-items: center; gap: 14px; flex-shrink: 0;">
+              <strong class="body-14" style="color: var(--color-obsidian);">${formatNaira(item.charge)}</strong>
+              <button type="button" class="btn btn-outline body-12" onclick="removeEditBespokeItem(${idx})" style="padding: 4px 8px; color: #991B1B; border-color: #F87171;" title="Remove this garment">
+                &times; Remove
+              </button>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function updateEditBespokeFinancialSummary() {
+      const items = editBespokeState.items || [];
+      const totalCharge = items.reduce((sum, item) => sum + (Number(item.charge) || 0), 0);
+      const deposit = Number(document.getElementById('ebDepositPaid')?.value) || 0;
+      const balance = Math.max(0, totalCharge - deposit);
+
+      const totalEl = document.getElementById('ebTotalChargeDisplay');
+      const depEl = document.getElementById('ebDepositDisplay');
+      const balEl = document.getElementById('ebBalanceDisplay');
+
+      if (totalEl) totalEl.innerText = formatNaira(totalCharge);
+      if (depEl) depEl.innerText = formatNaira(deposit);
+      if (balEl) balEl.innerText = formatNaira(balance);
+    }
+
+    async function saveCustomOrderEditsToDatabase() {
+      const client = getSupabase();
+      if (!client) {
+        showToast('Database connection unavailable.');
+        return;
+      }
+
+      const orderId = editBespokeState.orderId;
+      if (!orderId) {
+        showToast('No commission selected to update.');
+        return;
+      }
+
+      const clientName = document.getElementById('ebClientName')?.value.trim();
+      const clientEmail = document.getElementById('ebClientEmail')?.value.trim();
+      const targetDate = document.getElementById('ebTargetDate')?.value;
+      const deposit = Number(document.getElementById('ebDepositPaid')?.value) || 0;
+      const notes = document.getElementById('ebDescriptionNotes')?.value.trim();
+
+      if (!clientName) {
+        showToast('Please provide a client name.');
+        goToEditBespokeStep(1);
+        return;
+      }
+
+      if (!targetDate) {
+        showToast('Please specify a target fitting / delivery date.');
+        goToEditBespokeStep(1);
+        return;
+      }
+
+      const items = editBespokeState.items || [];
+      if (items.length === 0) {
+        const zeroAlert = document.getElementById('ebZeroItemsAlert');
+        if (zeroAlert) {
+          zeroAlert.style.display = 'flex';
+          zeroAlert.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+        showToast('Cannot submit: Please ensure there is at least 1 garment item in the order.');
+        return;
+      }
+
+      const submitBtn = document.getElementById('ebSubmitBtn');
+      if (submitBtn) {
+        submitBtn.disabled = true;
+        submitBtn.innerText = 'Saving Changes...';
+      }
+
+      try {
+        const p_order = {
+          order_id: orderId,
+          customer_name: clientName,
+          customer_email: clientEmail || null,
+          deadline_date: targetDate || null,
+          description_notes: notes || null,
+          payment_made: deposit,
+          status: 'placed'
+        };
+
+        const p_items = items.map(item => {
+          let snapshot = item.measurement_snapshot || null;
+          if (!snapshot && item.measurement_id) {
+            snapshot = (adminState.allMeasurements || []).find(x => x.id === item.measurement_id) || null;
+          }
+
+          return {
+            category: item.category || 'native',
+            gender: item.gender || 'male',
+            type: item.type || (item.source === 'catalog' ? 'made to order' : 'bespoke'),
+            selected_size: item.selected_size || item.size || 'M',
+            size: item.selected_size || item.size || 'M',
+            charge: Number(item.charge),
+            measurement_snapshot: snapshot,
+            description_notes: item.description_notes || null,
+            fabric_photos: item.fabric_photos || [],
+            inspiration_photos: item.inspiration_photos || []
+          };
+        });
+
+        let res = null;
+        let rpcErr = null;
+        try {
+          const rpcRes = await client.rpc('create_custom_order', {
+            p_order: p_order,
+            p_items: p_items
+          });
+          res = rpcRes.data;
+          rpcErr = rpcRes.error;
+        } catch (e) {
+          rpcErr = e;
+        }
+
+        if (rpcErr) {
+          console.warn('[Admin] RPC error on edit, falling back to direct database transaction:', rpcErr);
+          const totalCharge = p_items.reduce((sum, it) => sum + (Number(it.charge) || 0), 0);
+          const { error: updErr } = await client
+            .from('custom_order')
+            .update({
+              customer_name: clientName,
+              customer_email: clientEmail || null,
+              deadline_date: targetDate ? new Date(targetDate).toISOString() : null,
+              description_notes: notes || null,
+              payment_made: deposit,
+              total_charge: totalCharge,
+              updated_at: new Date().toISOString()
+            })
+            .eq('id', orderId);
+
+          if (updErr) throw updErr;
+
+          // Cleanly replace items in custom_order_item
+          await client.from('custom_order_item').delete().eq('custom_order_id', orderId);
+          for (const it of p_items) {
+            await client.from('custom_order_item').insert({
+              custom_order_id: orderId,
+              category: it.category,
+              gender: it.gender,
+              type: it.type,
+              selected_size: it.selected_size,
+              charge: it.charge,
+              description_notes: it.description_notes,
+              measurement_snapshot: it.measurement_snapshot,
+              fabric_photos: it.fabric_photos,
+              inspiration_photos: it.inspiration_photos
+            });
+          }
+          res = { request_id: editBespokeState.orderRef };
+        }
+
+        const generatedRef = res?.request_id || editBespokeState.orderRef || 'Updated';
+        showToast(`Commission ${generatedRef} updated successfully!`);
+
+        closeEditBespokeModal();
+        await loadBespokeOrders();
+        switchAdminTab('bespoke');
+
+      } catch (err) {
+        console.error('[Admin] Error saving commission edits:', err);
+        showToast(`Failed: ${err.message || 'Unknown database error'}`);
+      } finally {
+        if (submitBtn) {
+          submitBtn.disabled = false;
+          submitBtn.innerText = 'Save Changes to Commission';
         }
       }
     }
