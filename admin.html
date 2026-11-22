@@ -1154,15 +1154,44 @@
               <input type="number" id="bBespokeCharge" class="form-input-admin body-14" placeholder="e.g. 350000" min="1">
             </div>
 
-            <!-- Photo Uploads & Links -->
-            <div class="form-row-2" style="margin-top: 10px;">
-              <div class="form-group-admin">
-                <label class="form-label-admin body-12" for="bBespokeFabricPhoto">Fabric Photo</label>
-                <input type="text" id="bBespokeFabricPhoto" class="form-input-admin body-14" placeholder="Image URL or photo link">
+            <!-- Photo Uploads (Multi-upload, Max 5MB per image, Max 5 images) -->
+            <div class="form-row-2" style="margin-top: 12px; gap: 14px;">
+              <div class="form-group-admin" style="margin-bottom: 0;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                  <label class="form-label-admin body-12" style="margin: 0; font-weight: 600;">Fabric Photos</label>
+                  <span class="body-10" id="bFabricCountBadge" style="color: var(--color-text-muted);">0/5 (Max 5MB each)</span>
+                </div>
+                <div id="bFabricDropZone" style="border: 1px dashed var(--color-border); border-radius: 6px; padding: 14px 10px; background: #fff; text-align: center; cursor: pointer; transition: all 0.2s;" onclick="document.getElementById('bFabricFileInput').click()" ondragover="event.preventDefault(); this.style.borderColor='var(--color-primary)';" ondragleave="this.style.borderColor='var(--color-border)';" ondrop="this.style.borderColor='var(--color-border)'; handleBespokePhotoDrop(event, 'fabric', 'create');">
+                  <input type="file" id="bFabricFileInput" multiple accept="image/*" style="display: none;" onchange="handleBespokePhotoUpload(event, 'fabric', 'create')">
+                  <div id="bFabricUploadPrompt" style="display: flex; flex-direction: column; align-items: center; gap: 3px;">
+                    <span style="font-size: 20px;">📷</span>
+                    <span class="body-12" style="color: var(--color-primary); font-weight: 600;">+ Choose or Snap Fabric Photos</span>
+                    <span class="body-10" style="color: var(--color-text-muted);">Max 5 photos &bull; Up to 5MB each</span>
+                  </div>
+                  <div id="bFabricUploadingSpinner" style="display: none; padding: 6px; font-size: 12px; color: var(--color-primary); font-weight: 600;">
+                    ⏳ Uploading images...
+                  </div>
+                </div>
+                <div id="bFabricThumbnailsContainer" style="display: flex; gap: 8px; flex-wrap: wrap; margin-top: 8px;"></div>
               </div>
-              <div class="form-group-admin">
-                <label class="form-label-admin body-12" for="bBespokeInspirationPhoto">Inspiration Reference Photo (URL)</label>
-                <input type="text" id="bBespokeInspirationPhoto" class="form-input-admin body-14" placeholder="Reference photo link">
+
+              <div class="form-group-admin" style="margin-bottom: 0;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                  <label class="form-label-admin body-12" style="margin: 0; font-weight: 600;">Inspiration Photos</label>
+                  <span class="body-10" id="bInspoCountBadge" style="color: var(--color-text-muted);">0/5 (Max 5MB each)</span>
+                </div>
+                <div id="bInspoDropZone" style="border: 1px dashed var(--color-border); border-radius: 6px; padding: 14px 10px; background: #fff; text-align: center; cursor: pointer; transition: all 0.2s;" onclick="document.getElementById('bInspoFileInput').click()" ondragover="event.preventDefault(); this.style.borderColor='var(--color-primary)';" ondragleave="this.style.borderColor='var(--color-border)';" ondrop="this.style.borderColor='var(--color-border)'; handleBespokePhotoDrop(event, 'inspo', 'create');">
+                  <input type="file" id="bInspoFileInput" multiple accept="image/*" style="display: none;" onchange="handleBespokePhotoUpload(event, 'inspo', 'create')">
+                  <div id="bInspoUploadPrompt" style="display: flex; flex-direction: column; align-items: center; gap: 3px;">
+                    <span style="font-size: 20px;">🖼️</span>
+                    <span class="body-12" style="color: var(--color-primary); font-weight: 600;">+ Choose Inspiration Photos</span>
+                    <span class="body-10" style="color: var(--color-text-muted);">Max 5 photos &bull; Up to 5MB each</span>
+                  </div>
+                  <div id="bInspoUploadingSpinner" style="display: none; padding: 6px; font-size: 12px; color: var(--color-primary); font-weight: 600;">
+                    ⏳ Uploading images...
+                  </div>
+                </div>
+                <div id="bInspoThumbnailsContainer" style="display: flex; gap: 8px; flex-wrap: wrap; margin-top: 8px;"></div>
               </div>
             </div>
 
@@ -1177,7 +1206,7 @@
           <div style="margin-top: 20px;">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
               <span class="body-12" style="font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--color-primary);">
-                Garments in this Order (<span id="bItemsCount">0</span>)
+                Items in this Order (<span id="bItemsCount">0</span>)
               </span>
               <span class="body-12" style="color: var(--color-text-muted);">At least 1 garment required</span>
             </div>
@@ -1527,15 +1556,44 @@
               <input type="number" id="ebBespokeCharge" class="form-input-admin body-14" placeholder="e.g. 350000" min="1">
             </div>
 
-            <!-- Photo Uploads & Links -->
-            <div class="form-row-2" style="margin-top: 10px;">
-              <div class="form-group-admin">
-                <label class="form-label-admin body-12" for="ebBespokeFabricPhoto">Fabric Photo</label>
-                <input type="text" id="ebBespokeFabricPhoto" class="form-input-admin body-14" placeholder="Image URL or photo link">
+            <!-- Photo Uploads (Multi-upload, Max 5MB per image, Max 5 images) -->
+            <div class="form-row-2" style="margin-top: 12px; gap: 14px;">
+              <div class="form-group-admin" style="margin-bottom: 0;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                  <label class="form-label-admin body-12" style="margin: 0; font-weight: 600;">Fabric Photos</label>
+                  <span class="body-10" id="ebFabricCountBadge" style="color: var(--color-text-muted);">0/5 (Max 5MB each)</span>
+                </div>
+                <div id="ebFabricDropZone" style="border: 1px dashed var(--color-border); border-radius: 6px; padding: 14px 10px; background: #fff; text-align: center; cursor: pointer; transition: all 0.2s;" onclick="document.getElementById('ebFabricFileInput').click()" ondragover="event.preventDefault(); this.style.borderColor='var(--color-primary)';" ondragleave="this.style.borderColor='var(--color-border)';" ondrop="this.style.borderColor='var(--color-border)'; handleBespokePhotoDrop(event, 'fabric', 'edit');">
+                  <input type="file" id="ebFabricFileInput" multiple accept="image/*" style="display: none;" onchange="handleBespokePhotoUpload(event, 'fabric', 'edit')">
+                  <div id="ebFabricUploadPrompt" style="display: flex; flex-direction: column; align-items: center; gap: 3px;">
+                    <span style="font-size: 20px;">📷</span>
+                    <span class="body-12" style="color: var(--color-primary); font-weight: 600;">+ Choose or Snap Fabric Photos</span>
+                    <span class="body-10" style="color: var(--color-text-muted);">Max 5 photos &bull; Up to 5MB each</span>
+                  </div>
+                  <div id="ebFabricUploadingSpinner" style="display: none; padding: 6px; font-size: 12px; color: var(--color-primary); font-weight: 600;">
+                    ⏳ Uploading images...
+                  </div>
+                </div>
+                <div id="ebFabricThumbnailsContainer" style="display: flex; gap: 8px; flex-wrap: wrap; margin-top: 8px;"></div>
               </div>
-              <div class="form-group-admin">
-                <label class="form-label-admin body-12" for="ebBespokeInspirationPhoto">Inspiration Reference Photo (URL)</label>
-                <input type="text" id="ebBespokeInspirationPhoto" class="form-input-admin body-14" placeholder="Reference photo link">
+
+              <div class="form-group-admin" style="margin-bottom: 0;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                  <label class="form-label-admin body-12" style="margin: 0; font-weight: 600;">Inspiration Photos</label>
+                  <span class="body-10" id="ebInspoCountBadge" style="color: var(--color-text-muted);">0/5 (Max 5MB each)</span>
+                </div>
+                <div id="ebInspoDropZone" style="border: 1px dashed var(--color-border); border-radius: 6px; padding: 14px 10px; background: #fff; text-align: center; cursor: pointer; transition: all 0.2s;" onclick="document.getElementById('ebInspoFileInput').click()" ondragover="event.preventDefault(); this.style.borderColor='var(--color-primary)';" ondragleave="this.style.borderColor='var(--color-border)';" ondrop="this.style.borderColor='var(--color-border)'; handleBespokePhotoDrop(event, 'inspo', 'edit');">
+                  <input type="file" id="ebInspoFileInput" multiple accept="image/*" style="display: none;" onchange="handleBespokePhotoUpload(event, 'inspo', 'edit')">
+                  <div id="ebInspoUploadPrompt" style="display: flex; flex-direction: column; align-items: center; gap: 3px;">
+                    <span style="font-size: 20px;">🖼️</span>
+                    <span class="body-12" style="color: var(--color-primary); font-weight: 600;">+ Choose Inspiration Photos</span>
+                    <span class="body-10" style="color: var(--color-text-muted);">Max 5 photos &bull; Up to 5MB each</span>
+                  </div>
+                  <div id="ebInspoUploadingSpinner" style="display: none; padding: 6px; font-size: 12px; color: var(--color-primary); font-weight: 600;">
+                    ⏳ Uploading images...
+                  </div>
+                </div>
+                <div id="ebInspoThumbnailsContainer" style="display: flex; gap: 8px; flex-wrap: wrap; margin-top: 8px;"></div>
               </div>
             </div>
 
@@ -1550,7 +1608,7 @@
           <div style="margin-top: 20px;">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
               <span class="body-12" style="font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--color-primary);">
-                Garments in this Commission (<span id="ebItemsCount">0</span>)
+                Items in this Commission (<span id="ebItemsCount">0</span>)
               </span>
               <span class="body-12" style="color: var(--color-text-muted);">Directly fetched from database</span>
             </div>
@@ -1665,6 +1723,7 @@
        7. GLOBAL JAVASCRIPT LIBRARIES & CLIENT CONTROLLER
        ========================================================================= -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="https://cdn.jsdelivr.net/npm/browser-image-compression@2.0.2/dist/browser-image-compression.js"></script>
   <script src="js/config.js"></script>
   <script src="js/options.js"></script>
   <script src="js/header.js"></script>
@@ -2735,6 +2794,317 @@
        ------------------------------------------------------------------------- */
     const BESPOKE_DRAFT_KEY = 'krabe_custom_order_draft';
 
+    const MAX_BESPOKE_IMAGE_SIZE = 5 * 1024 * 1024; // 5MB max per image
+    const MAX_BESPOKE_IMAGES_PER_TYPE = 5; // Max 5 fabric photos, max 5 inspo photos
+
+    let createBespokeFabricPhotos = [];
+    let createBespokeInspoPhotos = [];
+    let editBespokeFabricPhotos = [];
+    let editBespokeInspoPhotos = [];
+
+    /**
+     * Modal interaction lock during async photo compression & final order submission.
+     * Prevents duplicate clicks, accidental closes, and user input races.
+     */
+    function setBespokeModalBusyState(isBusy, flow = 'create', statusText = '') {
+      const modalId = flow === 'create' ? 'bespokeModal' : 'editBespokeModal';
+      const modal = document.getElementById(modalId);
+      if (!modal) return;
+      const card = modal.querySelector('.admin-modal-card');
+      if (card) {
+        card.style.pointerEvents = isBusy ? 'none' : 'auto';
+        card.style.userSelect = isBusy ? 'none' : 'auto';
+        card.style.cursor = isBusy ? 'wait' : 'default';
+        card.style.opacity = isBusy ? '0.78' : '1';
+        card.style.transition = 'opacity 0.2s ease';
+
+        const interactables = card.querySelectorAll('button, input, select, textarea');
+        interactables.forEach(el => {
+          if (isBusy) {
+            el.setAttribute('data-pre-busy-disabled', el.disabled ? 'true' : 'false');
+            el.disabled = true;
+          } else {
+            const wasDisabled = el.getAttribute('data-pre-busy-disabled') === 'true';
+            el.disabled = wasDisabled;
+            el.removeAttribute('data-pre-busy-disabled');
+          }
+        });
+      }
+
+      const submitBtnId = flow === 'create' ? 'bSubmitBtn' : 'ebSubmitBtn';
+      const submitBtn = document.getElementById(submitBtnId);
+      if (submitBtn) {
+        if (isBusy && statusText) {
+          submitBtn.innerText = statusText;
+        } else if (!isBusy) {
+          submitBtn.innerText = flow === 'create' ? 'Log Custom Order to Workshop' : 'Save Changes to Commission';
+        }
+      }
+    }
+
+    /**
+     * Client-side WebP image compressor.
+     * Shrinks 2MB-5MB photos down to ~40-60KB without quality degradation.
+     * Uses browser-image-compression with Web Worker if available, falling back
+     * seamlessly to native HTML5 Canvas WebP encoding (100% offline capable).
+     */
+    async function compressImageToWebP(file) {
+      // 1. Try web worker compression library if available
+      if (typeof window.imageCompression === 'function') {
+        try {
+          const options = {
+            maxSizeMB: 0.6,
+            maxWidthOrHeight: 800,
+            initialQuality: 0.9,
+            fileType: 'image/webp',
+            useWebWorker: true
+          };
+          const compressedBlob = await window.imageCompression(file, options);
+          return await new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onload = () => resolve(reader.result);
+            reader.onerror = () => reject(new Error('Failed to read compressed WebP blob'));
+            reader.readAsDataURL(compressedBlob);
+          });
+        } catch (workerErr) {
+          console.warn('[Admin] Web worker compression fallback to Canvas:', workerErr);
+        }
+      }
+
+      // 2. High-performance native HTML5 Canvas WebP compression (0 network dependencies)
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onerror = () => reject(new Error('Failed to read image file.'));
+        reader.onload = (e) => {
+          const img = new Image();
+          img.onerror = () => reject(new Error('Failed to decode image data.'));
+          img.onload = () => {
+            const maxDimension = 800;
+            let width = img.width;
+            let height = img.height;
+
+            if (width > maxDimension || height > maxDimension) {
+              if (width > height) {
+                height = Math.round((height * maxDimension) / width);
+                width = maxDimension;
+              } else {
+                width = Math.round((width * maxDimension) / height);
+                height = maxDimension;
+              }
+            }
+
+            const canvas = document.createElement('canvas');
+            canvas.width = width;
+            canvas.height = height;
+            const ctx = canvas.getContext('2d');
+            ctx.imageSmoothingEnabled = true;
+            ctx.imageSmoothingQuality = 'high';
+            ctx.drawImage(img, 0, 0, width, height);
+
+            const webpDataUrl = canvas.toDataURL('image/webp', 0.9);
+            resolve(webpDataUrl);
+          };
+          img.src = e.target.result;
+        };
+        reader.readAsDataURL(file);
+      });
+    }
+
+    /**
+     * Converts a base64 WebP data URL into a native Blob for Supabase Storage uploads.
+     */
+    function dataURLtoBlob(dataurl) {
+      const arr = dataurl.split(',');
+      const mimeMatch = arr[0].match(/:(.*?);/);
+      const mime = mimeMatch ? mimeMatch[1] : 'image/webp';
+      const bstr = atob(arr[1]);
+      let n = bstr.length;
+      const u8arr = new Uint8Array(n);
+      while (n--) {
+        u8arr[n] = bstr.charCodeAt(n);
+      }
+      return new Blob([u8arr], { type: mime });
+    }
+
+    /**
+     * Uploads a compressed WebP image to Supabase Storage bucket.
+     * Upload only occurs during final order submission, NOT upon selection.
+     */
+    async function uploadDataUrlToSupabaseStorage(client, dataUrl, userId, folder = 'fabrics') {
+      try {
+        const blob = dataURLtoBlob(dataUrl);
+        const fileName = `${folder}_${Date.now()}_${Math.random().toString(36).substring(2, 9)}.webp`;
+        const filePath = userId ? `${userId}/${fileName}` : fileName;
+
+        const candidateBuckets = ['product-images', 'product_images', 'custom_orders', 'custom-orders', 'avatars'];
+        let lastErr = null;
+
+        for (const bucket of candidateBuckets) {
+          try {
+            const { data, error } = await client.storage
+              .from(bucket)
+              .upload(filePath, blob, {
+                contentType: 'image/webp',
+                cacheControl: '3600',
+                upsert: false
+              });
+
+            if (!error && data) {
+              const { data: urlData } = client.storage.from(bucket).getPublicUrl(data.path || filePath);
+              if (urlData && urlData.publicUrl) {
+                return urlData.publicUrl;
+              }
+            } else if (error) {
+              lastErr = error;
+            }
+          } catch (e) {
+            lastErr = e;
+          }
+        }
+
+        console.warn('[Admin] Storage upload fell back to data URL:', lastErr);
+        return dataUrl;
+      } catch (err) {
+        console.error('[Admin] Error uploading data URL to storage:', err);
+        return dataUrl;
+      }
+    }
+
+    function renderBespokePhotoThumbnails(type, flow = 'create') {
+      const isFabric = type === 'fabric';
+      const prefix = flow === 'create' ? 'b' : 'eb';
+      const containerId = isFabric ? `${prefix}FabricThumbnailsContainer` : `${prefix}InspoThumbnailsContainer`;
+      const countBadgeId = isFabric ? `${prefix}FabricCountBadge` : `${prefix}InspoCountBadge`;
+      const dropZoneId = isFabric ? `${prefix}FabricDropZone` : `${prefix}InspoDropZone`;
+
+      const container = document.getElementById(containerId);
+      const countBadge = document.getElementById(countBadgeId);
+      const dropZone = document.getElementById(dropZoneId);
+
+      const targetArray = flow === 'create'
+        ? (isFabric ? createBespokeFabricPhotos : createBespokeInspoPhotos)
+        : (isFabric ? editBespokeFabricPhotos : editBespokeInspoPhotos);
+
+      if (countBadge) {
+        countBadge.innerText = `${targetArray.length}/${MAX_BESPOKE_IMAGES_PER_TYPE} (Max 5MB each)`;
+        countBadge.style.color = targetArray.length >= MAX_BESPOKE_IMAGES_PER_TYPE ? '#C53030' : 'var(--color-text-muted)';
+      }
+
+      if (dropZone) {
+        dropZone.style.display = targetArray.length >= MAX_BESPOKE_IMAGES_PER_TYPE ? 'none' : 'block';
+      }
+
+      if (!container) return;
+
+      if (!targetArray.length) {
+        container.innerHTML = '';
+        return;
+      }
+
+      container.innerHTML = targetArray.map((url, idx) => `
+        <div style="position: relative; width: 62px; height: 62px; border-radius: 6px; overflow: hidden; border: 1px solid var(--color-border); box-shadow: 0 1px 3px rgba(0,0,0,0.1); background: #FAF8F5; flex-shrink: 0;">
+          <img src="${url}" alt="Preview" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.onerror=null; this.src='assets/lookbook/lookbook_1_kaftan.jpg';">
+          <button type="button" onclick="removeBespokePhoto('${type}', ${idx}, '${flow}')" style="position: absolute; top: 2px; right: 2px; width: 20px; height: 20px; border-radius: 50%; background: rgba(0,0,0,0.7); color: #fff; border: none; font-size: 13px; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; line-height: 1;" title="Remove image">&times;</button>
+        </div>
+      `).join('');
+    }
+
+    function removeBespokePhoto(type, index, flow = 'create') {
+      const isFabric = type === 'fabric';
+      const targetArray = flow === 'create'
+        ? (isFabric ? createBespokeFabricPhotos : createBespokeInspoPhotos)
+        : (isFabric ? editBespokeFabricPhotos : editBespokeInspoPhotos);
+
+      if (index >= 0 && index < targetArray.length) {
+        targetArray.splice(index, 1);
+        renderBespokePhotoThumbnails(type, flow);
+      }
+    }
+
+    async function handleBespokePhotoUpload(event, type, flow = 'create') {
+      const files = Array.from(event.target.files || []);
+      if (!files.length) return;
+      event.target.value = '';
+
+      const isFabric = type === 'fabric';
+      const targetArray = flow === 'create'
+        ? (isFabric ? createBespokeFabricPhotos : createBespokeInspoPhotos)
+        : (isFabric ? editBespokeFabricPhotos : editBespokeInspoPhotos);
+
+      const remainingSlots = MAX_BESPOKE_IMAGES_PER_TYPE - targetArray.length;
+      if (remainingSlots <= 0) {
+        showToast(`Maximum ${MAX_BESPOKE_IMAGES_PER_TYPE} ${isFabric ? 'fabric' : 'inspiration'} photos allowed.`);
+        return;
+      }
+
+      const filesToProcess = files.slice(0, remainingSlots);
+      if (files.length > remainingSlots) {
+        showToast(`Only ${remainingSlots} more photo${remainingSlots === 1 ? '' : 's'} can be added (Max 5).`);
+      }
+
+      const validFiles = [];
+      for (const file of filesToProcess) {
+        if (file.size > MAX_BESPOKE_IMAGE_SIZE) {
+          const sizeMB = (file.size / (1024 * 1024)).toFixed(1);
+          showToast(`"${file.name}" is ${sizeMB}MB (exceeds 5MB max limit).`);
+        } else {
+          validFiles.push(file);
+        }
+      }
+
+      if (!validFiles.length) return;
+
+      const prefix = flow === 'create' ? 'b' : 'eb';
+      const spinnerId = isFabric ? `${prefix}FabricUploadingSpinner` : `${prefix}InspoUploadingSpinner`;
+      const promptId = isFabric ? `${prefix}FabricUploadPrompt` : `${prefix}InspoUploadPrompt`;
+
+      const spinnerEl = document.getElementById(spinnerId);
+      const promptEl = document.getElementById(promptId);
+      if (spinnerEl) spinnerEl.style.display = 'block';
+      if (promptEl) promptEl.style.display = 'none';
+
+      // 1. Lock modal from any clicks during photo processing
+      setBespokeModalBusyState(true, flow);
+
+      let processedCount = 0;
+      try {
+        for (let i = 0; i < validFiles.length; i++) {
+          const file = validFiles[i];
+          if (spinnerEl) spinnerEl.innerText = validFiles.length > 1 ? `⏳ Processing photo ${i + 1} of ${validFiles.length}...` : '⏳ Processing photo...';
+          try {
+            const webpDataUrl = await compressImageToWebP(file);
+            if (webpDataUrl) {
+              targetArray.push(webpDataUrl);
+              processedCount++;
+            }
+          } catch (err) {
+            console.error('[Admin] Photo processing error:', err);
+            showToast(`Failed to process "${file.name}": ${err.message || 'Error'}`);
+          }
+        }
+      } finally {
+        // 2. Unlock modal once processing completes
+        setBespokeModalBusyState(false, flow);
+        if (spinnerEl) {
+          spinnerEl.style.display = 'none';
+          spinnerEl.innerText = '⏳ Processing photos...';
+        }
+        if (promptEl) promptEl.style.display = 'flex';
+      }
+
+      renderBespokePhotoThumbnails(type, flow);
+      if (processedCount > 0) {
+        showToast(`Added ${processedCount} ${isFabric ? 'fabric' : 'inspiration'} photo${processedCount === 1 ? '' : 's'}.`);
+      }
+    }
+
+    function handleBespokePhotoDrop(event, type, flow = 'create') {
+      event.preventDefault();
+      if (event.dataTransfer && event.dataTransfer.files) {
+        handleBespokePhotoUpload({ target: { files: event.dataTransfer.files, value: '' } }, type, flow);
+      }
+    }
+
     let bespokeDraft = {
       step: 1,
       itemType: 'catalog', // 'catalog' | 'bespoke'
@@ -2753,6 +3123,11 @@
     function openBespokeModal(isEditing = false) {
       const modal = document.getElementById('bespokeModal');
       if (modal) modal.classList.add('open');
+
+      createBespokeFabricPhotos = [];
+      createBespokeInspoPhotos = [];
+      renderBespokePhotoThumbnails('fabric', 'create');
+      renderBespokePhotoThumbnails('inspo', 'create');
 
       // 1. Min date for fitting/delivery date strictly >= today
       const dateInput = document.getElementById('bTargetDate');
@@ -4069,15 +4444,17 @@
         measurement_id: measurementId,
         measurement_snapshot: measurementSnapshot,
         description_notes: desc,
-        fabric_photos: fabricPhoto ? [fabricPhoto] : [],
-        inspiration_photos: inspPhoto ? [inspPhoto] : []
+        fabric_photos: [...createBespokeFabricPhotos],
+        inspiration_photos: [...createBespokeInspoPhotos]
       });
 
       // Clear bespoke inputs
       if (document.getElementById('bBespokeDesc')) document.getElementById('bBespokeDesc').value = '';
       if (document.getElementById('bBespokeCharge')) document.getElementById('bBespokeCharge').value = '';
-      if (document.getElementById('bBespokeFabricPhoto')) document.getElementById('bBespokeFabricPhoto').value = '';
-      if (document.getElementById('bBespokeInspirationPhoto')) document.getElementById('bBespokeInspirationPhoto').value = '';
+      createBespokeFabricPhotos = [];
+      createBespokeInspoPhotos = [];
+      renderBespokePhotoThumbnails('fabric', 'create');
+      renderBespokePhotoThumbnails('inspo', 'create');
 
       clearGarmentUser('bespoke');
       clearMeasurementProfile('bespoke');
@@ -4131,7 +4508,10 @@
       cont.innerHTML = items.map((item, idx) => {
         const isBespoke = item.source === 'bespoke';
         const badge = isBespoke ? '<span class="admin-nav-pill body-10" style="background: #EBF8FF; color: #2B6CB0;">BESPOKE</span>' : '<span class="admin-nav-pill body-10">CATALOG</span>';
-        const photoPreview = item.fabric_photos && item.fabric_photos[0] ? `<img src="${item.fabric_photos[0]}" style="width: 38px; height: 38px; border-radius: 4px; object-fit: cover;" onerror="this.style.display='none';">` : '';
+        const photo = (item.fabric_photos && item.fabric_photos[0]) || (item.inspiration_photos && item.inspiration_photos[0]) || 'assets/lookbook/lookbook_1_kaftan.jpg';
+        const photoPreview = `<img src="${photo}" style="width: 40px; height: 40px; border-radius: 4px; object-fit: cover;" onerror="this.onerror=null; this.src='assets/lookbook/lookbook_1_kaftan.jpg';">`;
+        const photoCount = (Array.isArray(item.fabric_photos) ? item.fabric_photos.length : 0) + (Array.isArray(item.inspiration_photos) ? item.inspiration_photos.length : 0);
+        const photoCountBadge = photoCount > 1 ? `<span class="admin-nav-pill body-10" style="margin-left: 4px;">📷 ${photoCount} photos</span>` : '';
 
         return `
           <div style="padding: 12px 14px; background: #fff; border-radius: 6px; border: 1px solid var(--color-border); display: flex; align-items: center; justify-content: space-between; gap: 12px;">
@@ -4140,6 +4520,7 @@
               <div style="min-width: 0;">
                 <div style="display: flex; align-items: center; gap: 6px;">
                   ${badge}
+                  ${photoCountBadge}
                   <strong class="body-14" style="color: var(--color-obsidian);">${escapeHtml(item.title)}</strong>
                   <span class="body-12" style="color: var(--color-text-muted);">&bull; ${escapeHtml(item.category || 'native').toUpperCase()}</span>
                 </div>
@@ -4231,10 +4612,60 @@
       const submitBtn = document.getElementById('bSubmitBtn');
       if (submitBtn) {
         submitBtn.disabled = true;
-        submitBtn.innerText = 'Logging to Workshop...';
+        submitBtn.innerText = '⏳ Uploading photos to cloud...';
       }
 
+      // 1. Lock modal clicks during upload and order creation
+      setBespokeModalBusyState(true, 'create', '⏳ Uploading photos to cloud...');
+
       try {
+        // Authenticated user ID for isolated storage pathing
+        let authUserId = 'admin';
+        try {
+          const { data: authData } = await client.auth.getUser();
+          if (authData?.user?.id) authUserId = authData.user.id;
+        } catch (e) {
+          console.warn('[Admin] Auth lookup warning:', e);
+        }
+
+        // Upload any local base64/WebP draft images to Supabase storage before creating order
+        for (let i = 0; i < items.length; i++) {
+          const it = items[i];
+          if (submitBtn) {
+            submitBtn.innerText = `⏳ Uploading garment ${i + 1} of ${items.length} photos...`;
+          }
+
+          if (Array.isArray(it.fabric_photos) && it.fabric_photos.length > 0) {
+            const uploadedFabrics = [];
+            for (const photo of it.fabric_photos) {
+              if (typeof photo === 'string' && photo.startsWith('data:')) {
+                const cdnUrl = await uploadDataUrlToSupabaseStorage(client, photo, authUserId, 'fabrics');
+                uploadedFabrics.push(cdnUrl);
+              } else {
+                uploadedFabrics.push(photo);
+              }
+            }
+            it.fabric_photos = uploadedFabrics;
+          }
+
+          if (Array.isArray(it.inspiration_photos) && it.inspiration_photos.length > 0) {
+            const uploadedInspos = [];
+            for (const photo of it.inspiration_photos) {
+              if (typeof photo === 'string' && photo.startsWith('data:')) {
+                const cdnUrl = await uploadDataUrlToSupabaseStorage(client, photo, authUserId, 'inspo');
+                uploadedInspos.push(cdnUrl);
+              } else {
+                uploadedInspos.push(photo);
+              }
+            }
+            it.inspiration_photos = uploadedInspos;
+          }
+        }
+
+        if (submitBtn) {
+          submitBtn.innerText = '⏳ Logging to Workshop...';
+        }
+
         // Prepare RPC payloads
         const p_order = {
           order_id: null,
@@ -4297,6 +4728,7 @@
         console.error('[Admin] Error saving bespoke commission:', err);
         showToast(`Failed: ${err.message || 'Unknown database error'}`);
       } finally {
+        setBespokeModalBusyState(false, 'create');
         if (submitBtn) {
           submitBtn.disabled = false;
           submitBtn.innerText = 'Log Custom Order to Workshop';
@@ -4463,6 +4895,11 @@
       clearEditMeasurementProfile('catalog');
       clearEditGarmentUser('bespoke');
       clearEditMeasurementProfile('bespoke');
+
+      editBespokeFabricPhotos = [];
+      editBespokeInspoPhotos = [];
+      renderBespokePhotoThumbnails('fabric', 'edit');
+      renderBespokePhotoThumbnails('inspo', 'edit');
 
       // 8. Render items & financials, and show modal
       renderEditBespokeItems();
@@ -5344,14 +5781,16 @@
         measurement_id: measurementId,
         measurement_snapshot: measurementSnapshot,
         description_notes: desc,
-        fabric_photos: fabricPhoto ? [fabricPhoto] : [],
-        inspiration_photos: inspPhoto ? [inspPhoto] : []
+        fabric_photos: [...editBespokeFabricPhotos],
+        inspiration_photos: [...editBespokeInspoPhotos]
       });
 
       if (document.getElementById('ebBespokeDesc')) document.getElementById('ebBespokeDesc').value = '';
       if (document.getElementById('ebBespokeCharge')) document.getElementById('ebBespokeCharge').value = '';
-      if (document.getElementById('ebBespokeFabricPhoto')) document.getElementById('ebBespokeFabricPhoto').value = '';
-      if (document.getElementById('ebBespokeInspirationPhoto')) document.getElementById('ebBespokeInspirationPhoto').value = '';
+      editBespokeFabricPhotos = [];
+      editBespokeInspoPhotos = [];
+      renderBespokePhotoThumbnails('fabric', 'edit');
+      renderBespokePhotoThumbnails('inspo', 'edit');
 
       clearEditGarmentUser('bespoke');
       clearEditMeasurementProfile('bespoke');
@@ -5559,10 +5998,59 @@
       const submitBtn = document.getElementById('ebSubmitBtn');
       if (submitBtn) {
         submitBtn.disabled = true;
-        submitBtn.innerText = 'Saving Changes...';
+        submitBtn.innerText = '⏳ Uploading photos to cloud...';
       }
 
+      // 1. Lock modal clicks during upload and database update
+      setBespokeModalBusyState(true, 'edit', '⏳ Uploading photos to cloud...');
+
       try {
+        let authUserId = 'admin';
+        try {
+          const { data: authData } = await client.auth.getUser();
+          if (authData?.user?.id) authUserId = authData.user.id;
+        } catch (e) {
+          console.warn('[Admin] Auth lookup warning:', e);
+        }
+
+        // Upload any newly added local base64/WebP images to Supabase storage
+        for (let i = 0; i < items.length; i++) {
+          const it = items[i];
+          if (submitBtn) {
+            submitBtn.innerText = `⏳ Uploading garment ${i + 1} of ${items.length} photos...`;
+          }
+
+          if (Array.isArray(it.fabric_photos) && it.fabric_photos.length > 0) {
+            const uploadedFabrics = [];
+            for (const photo of it.fabric_photos) {
+              if (typeof photo === 'string' && photo.startsWith('data:')) {
+                const cdnUrl = await uploadDataUrlToSupabaseStorage(client, photo, authUserId, 'fabrics');
+                uploadedFabrics.push(cdnUrl);
+              } else {
+                uploadedFabrics.push(photo);
+              }
+            }
+            it.fabric_photos = uploadedFabrics;
+          }
+
+          if (Array.isArray(it.inspiration_photos) && it.inspiration_photos.length > 0) {
+            const uploadedInspos = [];
+            for (const photo of it.inspiration_photos) {
+              if (typeof photo === 'string' && photo.startsWith('data:')) {
+                const cdnUrl = await uploadDataUrlToSupabaseStorage(client, photo, authUserId, 'inspo');
+                uploadedInspos.push(cdnUrl);
+              } else {
+                uploadedInspos.push(photo);
+              }
+            }
+            it.inspiration_photos = uploadedInspos;
+          }
+        }
+
+        if (submitBtn) {
+          submitBtn.innerText = 'Saving Changes...';
+        }
+
         const p_order = {
           order_id: orderId,
           customer_name: clientName,
@@ -5654,6 +6142,7 @@
         console.error('[Admin] Error saving commission edits:', err);
         showToast(`Failed: ${err.message || 'Unknown database error'}`);
       } finally {
+        setBespokeModalBusyState(false, 'edit');
         if (submitBtn) {
           submitBtn.disabled = false;
           submitBtn.innerText = 'Save Changes to Commission';
