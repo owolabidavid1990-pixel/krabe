@@ -510,6 +510,12 @@
               </tbody>
             </table>
           </div>
+
+          <!-- Dashboard Priority Pagination Bar (20 per page) -->
+          <div id="dashboardPaginationContainer" style="display: none; padding: 14px 20px; border-top: 1px solid var(--color-border); justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; background: #FAF8F5;">
+            <div class="body-12" id="dashboardPaginationInfo" style="color: var(--color-text-muted);">Showing 0 items</div>
+            <div id="dashboardPaginationControls" style="display: flex; gap: 6px; align-items: center;"></div>
+          </div>
         </div>
       </section>
 
@@ -535,7 +541,7 @@
           <div class="admin-card-header">
             <div class="admin-card-title h3">
               <span>All Web Store Purchases</span>
-              <span class="admin-nav-pill body-10" id="rtwTableCount">0 Loaded</span>
+              <span class="admin-nav-pill body-10" id="rtwTableCount">0 Orders</span>
             </div>
             <div class="admin-table-controls">
               <input type="text" class="admin-search-input body-12" id="rtwSearchInput" placeholder="Search by Order #, Client, Phone..." oninput="filterRtwTable()">
@@ -558,7 +564,7 @@
               <thead>
                 <tr class="body-12">
                   <th>Order # / Date</th>
-                  <th>Client &amp; Contact</th>
+                  <th>Delivery Contact</th>
                   <th>Garment Items</th>
                   <th>Total &amp; Payment</th>
                   <th>Fulfillment Option</th>
@@ -572,6 +578,12 @@
                 </tr>
               </tbody>
             </table>
+          </div>
+
+          <!-- RTW Collection Orders Pagination Bar (20 per page) -->
+          <div id="rtwPaginationContainer" style="display: none; padding: 14px 20px; border-top: 1px solid var(--color-border); justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; background: #FAF8F5;">
+            <div class="body-12" id="rtwPaginationInfo" style="color: var(--color-text-muted);">Showing 0 orders</div>
+            <div id="rtwPaginationControls" style="display: flex; gap: 6px; align-items: center;"></div>
           </div>
         </div>
       </section>
@@ -600,8 +612,8 @@
         <div class="admin-card">
           <div class="admin-card-header">
             <div class="admin-card-title h3">
-              <span>Active Custom Orders</span>
-              <span class="admin-nav-pill gold body-10" id="bespokeTableCount">0 Active</span>
+              <span>All Custom Orders</span>
+              <span class="admin-nav-pill gold body-10" id="bespokeTableCount">0 Orders</span>
             </div>
             <div class="admin-table-controls">
               <input type="text" class="admin-search-input body-12" id="bespokeSearchInput" placeholder="Search by email, number, name..." oninput="filterBespokeTable()" aria-label="Search by email, number, name">
@@ -699,6 +711,12 @@
               </tbody>
             </table>
           </div>
+
+          <!-- Studio Fittings Pagination Bar (20 per page) -->
+          <div id="fittingsPaginationContainer" style="display: none; padding: 14px 20px; border-top: 1px solid var(--color-border); justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; background: #FAF8F5;">
+            <div class="body-12" id="fittingsPaginationInfo" style="color: var(--color-text-muted);">Showing 0 appointments</div>
+            <div id="fittingsPaginationControls" style="display: flex; gap: 6px; align-items: center;"></div>
+          </div>
         </div>
       </section>
 
@@ -752,6 +770,12 @@
               </tbody>
             </table>
           </div>
+
+          <!-- Product Catalog Pagination Bar (20 per page) -->
+          <div id="catalogPaginationContainer" style="display: none; padding: 14px 20px; border-top: 1px solid var(--color-border); justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; background: #FAF8F5;">
+            <div class="body-12" id="catalogPaginationInfo" style="color: var(--color-text-muted);">Showing 0 garments</div>
+            <div id="catalogPaginationControls" style="display: flex; gap: 6px; align-items: center;"></div>
+          </div>
         </div>
       </section>
 
@@ -797,6 +821,12 @@
                 </tr>
               </tbody>
             </table>
+          </div>
+
+          <!-- Client Vault Pagination Bar (20 per page) -->
+          <div id="vaultPaginationContainer" style="display: none; padding: 14px 20px; border-top: 1px solid var(--color-border); justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; background: #FAF8F5;">
+            <div class="body-12" id="vaultPaginationInfo" style="color: var(--color-text-muted);">Showing 0 clients</div>
+            <div id="vaultPaginationControls" style="display: flex; gap: 6px; align-items: center;"></div>
           </div>
         </div>
       </section>
@@ -1825,6 +1855,7 @@
         };
         indicator.innerText = titles[tabName] || tabName;
       }
+      updateAllTabCounts();
     }
 
     // Auth gate verification
@@ -1907,6 +1938,56 @@
       if (navUsers) navUsers.style.display = isSuper ? 'block' : 'none';
     }
 
+    /* -------------------------------------------------------------------------
+       TAB COUNTS SYNCHRONIZATION
+       Updates all navigation tab count badges across the backoffice sidebar
+       ------------------------------------------------------------------------- */
+    function updateAllTabCounts() {
+      // 1. Collection Orders (total orders in database)
+      const rtwBadge = document.getElementById('rtwNavCount');
+      if (rtwBadge) {
+        const count = Array.isArray(adminState.rtwOrders) ? adminState.rtwOrders.length : 0;
+        rtwBadge.innerText = count;
+      }
+
+      // 2. Custom Orders (total custom commissions in database)
+      const bespokeBadge = document.getElementById('bespokeNavCount');
+      if (bespokeBadge) {
+        const count = Array.isArray(adminState.bespokeOrders) ? adminState.bespokeOrders.length : 0;
+        bespokeBadge.innerText = count;
+      }
+
+      // 3. Studio Fittings (total appointment reservations in database)
+      const fittingsBadge = document.getElementById('fittingsNavCount');
+      if (fittingsBadge) {
+        const count = Array.isArray(adminState.fittings) ? adminState.fittings.length : 0;
+        fittingsBadge.innerText = count;
+      }
+
+      // 4. Product Catalog (total products in catalog)
+      const catalogBadge = document.getElementById('catalogNavCount');
+      if (catalogBadge) {
+        const count = Array.isArray(adminState.products) ? adminState.products.length : 0;
+        catalogBadge.innerText = count;
+      }
+
+      // 5. Client Vault & Sizing (total client profiles in vault)
+      const vaultBadge = document.getElementById('vaultNavCount');
+      if (vaultBadge) {
+        const count = Array.isArray(adminState.vaultProfiles) ? adminState.vaultProfiles.length : 0;
+        vaultBadge.innerText = count;
+      }
+
+      // 6. Super Admin Staff Accounts
+      const userBadge = document.getElementById('userCountBadge');
+      if (userBadge) {
+        const staffCount = Array.isArray(adminState.staffMembers)
+          ? adminState.staffMembers.filter(p => p.role === 'admin' || p.role === 'super admin').length
+          : 0;
+        userBadge.innerText = `${staffCount} Staff Accounts`;
+      }
+    }
+
     // Refresh all data collections
     async function refreshAdminData() {
       await Promise.all([
@@ -1918,6 +1999,7 @@
         loadStaffMembers()
       ]);
       updateDashboardStats();
+      updateAllTabCounts();
     }
 
     // Format currency (Naira)
@@ -1997,15 +2079,84 @@
         adminState.rtwOrders = data || [];
         renderRtwTable();
 
-        const countBadge = document.getElementById('rtwNavCount');
-        const activeCount = adminState.rtwOrders.filter(o => o.status !== 'delivered' && o.status !== 'cancelled').length;
-        if (countBadge) countBadge.innerText = activeCount;
+        updateAllTabCounts();
       } catch (err) {
         console.error('[Admin] Error loading RTW orders:', err);
         const tbody = document.getElementById('rtwTableBody');
         if (tbody) tbody.innerHTML = `<tr><td colspan="7" class="admin-empty-state"><span class="admin-empty-icon">⚠️</span>Could not load orders: ${err.message}</td></tr>`;
       }
     }
+
+    /* -------------------------------------------------------------------------
+       REUSABLE PAGINATION CONTROLS GENERATOR
+       ------------------------------------------------------------------------- */
+    function buildPaginationControlsHtml(currentPage, totalPages, goToPageFnName) {
+      if (totalPages <= 1) {
+        return `<span class="body-12" style="color: var(--color-text-muted); font-weight: 600;">Page 1 of 1</span>`;
+      }
+
+      let html = '';
+
+      // Previous button
+      const prevDisabled = currentPage <= 1;
+      html += `
+        <button type="button" class="btn btn-outline body-12" 
+                onclick="${goToPageFnName}(${currentPage - 1})" 
+                ${prevDisabled ? 'disabled style="opacity: 0.4; cursor: not-allowed; padding: 5px 12px;"' : 'style="padding: 5px 12px; font-weight: 600;"'}>
+          &larr; Prev
+        </button>
+      `;
+
+      // Page numbers (smart windowing)
+      const pages = [];
+      if (totalPages <= 7) {
+        for (let p = 1; p <= totalPages; p++) pages.push(p);
+      } else {
+        pages.push(1);
+        if (currentPage > 3) pages.push('...');
+
+        const start = Math.max(2, currentPage - 1);
+        const end = Math.min(totalPages - 1, currentPage + 1);
+        for (let p = start; p <= end; p++) {
+          if (!pages.includes(p)) pages.push(p);
+        }
+
+        if (currentPage < totalPages - 2) pages.push('...');
+        if (!pages.includes(totalPages)) pages.push(totalPages);
+      }
+
+      pages.forEach(p => {
+        if (p === '...') {
+          html += `<span style="padding: 5px 6px; color: var(--color-text-muted); font-size: 12px;">...</span>`;
+        } else {
+          const isCur = p === currentPage;
+          html += `
+            <button type="button" class="btn ${isCur ? 'btn-primary' : 'btn-outline'} body-12" 
+                    onclick="${goToPageFnName}(${p})" 
+                    style="padding: 5px 10px; min-width: 32px; ${isCur ? 'font-weight: 700;' : ''}">
+              ${p}
+            </button>
+          `;
+        }
+      });
+
+      // Next button
+      const nextDisabled = currentPage >= totalPages;
+      html += `
+        <button type="button" class="btn btn-outline body-12" 
+                onclick="${goToPageFnName}(${currentPage + 1})" 
+                ${nextDisabled ? 'disabled style="opacity: 0.4; cursor: not-allowed; padding: 5px 12px;"' : 'style="padding: 5px 12px; font-weight: 600;"'}>
+          Next &rarr;
+        </button>
+      `;
+
+      return html;
+    }
+
+    let rtwPagination = {
+      currentPage: 1,
+      pageSize: 20
+    };
 
     function renderRtwTable() {
       const tbody = document.getElementById('rtwTableBody');
@@ -2035,9 +2186,16 @@
         );
       });
 
-      if (countEl) countEl.innerText = `${filtered.length} Displayed`;
+      const totalItems = filtered.length;
+      const pageSize = rtwPagination.pageSize || 20;
+      const totalPages = Math.ceil(totalItems / pageSize) || 1;
 
-      if (filtered.length === 0) {
+      if (rtwPagination.currentPage > totalPages) rtwPagination.currentPage = totalPages;
+      if (rtwPagination.currentPage < 1) rtwPagination.currentPage = 1;
+
+      if (countEl) countEl.innerText = `${totalItems} Order${totalItems === 1 ? '' : 's'}`;
+
+      if (totalItems === 0) {
         tbody.innerHTML = `
           <tr>
             <td colspan="7" class="admin-empty-state">
@@ -2047,10 +2205,15 @@
             </td>
           </tr>
         `;
+        const container = document.getElementById('rtwPaginationContainer');
+        if (container) container.style.display = 'none';
         return;
       }
 
-      const rowsHtml = filtered.map(o => {
+      const startIndex = (rtwPagination.currentPage - 1) * pageSize;
+      const pageItems = filtered.slice(startIndex, startIndex + pageSize);
+
+      const rowsHtml = pageItems.map(o => {
         const shortId = (o.slug || o.id.slice(0, 8)).toUpperCase();
         const dateStr = formatDate(o.created_at);
         const clientName = o.delivery_address?.name || o.email.split('@')[0];
@@ -2137,9 +2300,42 @@
       }).join('');
 
       tbody.innerHTML = rowsHtml;
+      renderRtwPagination(totalItems, rtwPagination.currentPage, pageSize);
+    }
+
+    function renderRtwPagination(totalItems, currentPage, pageSize) {
+      const container = document.getElementById('rtwPaginationContainer');
+      const infoEl = document.getElementById('rtwPaginationInfo');
+      const controlsEl = document.getElementById('rtwPaginationControls');
+      if (!container || !infoEl || !controlsEl) return;
+
+      if (totalItems === 0) {
+        container.style.display = 'none';
+        return;
+      }
+
+      container.style.display = 'flex';
+
+      const totalPages = Math.ceil(totalItems / pageSize) || 1;
+      const startItem = (currentPage - 1) * pageSize + 1;
+      const endItem = Math.min(currentPage * pageSize, totalItems);
+
+      infoEl.innerHTML = `Showing <strong>${startItem}&ndash;${endItem}</strong> of <strong>${totalItems}</strong> orders (20 per page)`;
+      controlsEl.innerHTML = buildPaginationControlsHtml(currentPage, totalPages, 'goToRtwPage');
+    }
+
+    function goToRtwPage(page) {
+      rtwPagination.currentPage = page;
+      renderRtwTable();
+
+      const tableWrap = document.querySelector('#view-rtw .admin-card');
+      if (tableWrap) {
+        tableWrap.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
     }
 
     function filterRtwTable() {
+      rtwPagination.currentPage = 1;
       renderRtwTable();
     }
 
@@ -2233,9 +2429,11 @@
       content.innerHTML = `
         <div class="modal-detail-grid">
           <div>
-            <span class="body-10" style="text-transform: uppercase; letter-spacing: 1px; color: var(--color-primary); font-weight: 700;">Customer Details</span>
-            <div class="body-14" style="margin-top: 6px;"><strong>Email:</strong> ${order.email}</div>
-            <div class="body-14"><strong>Phone:</strong> ${order.recipient_number || addr.phone || 'N/A'}</div>
+            <span class="body-10" style="text-transform: uppercase; letter-spacing: 1px; color: var(--color-primary); font-weight: 700;">Delivery Contact</span>
+            ${addr.name ? `<div class="body-14" style="margin-top: 6px;"><strong>Recipient:</strong> ${escapeHtml(addr.name)}</div>` : ''}
+            <div class="body-14" style="${addr.name ? '' : 'margin-top: 6px;'}"><strong>Delivery Email:</strong> ${escapeHtml(order.email || 'N/A')}</div>
+            <div class="body-14"><strong>Delivery Phone:</strong> ${escapeHtml(order.recipient_number || addr.phone || 'N/A')}</div>
+            <div class="body-10" style="color: var(--color-text-muted); margin-top: 4px;"><em>(Delivery recipient contact entered at checkout &bull; not account email)</em></div>
           </div>
           <div>
             <span class="body-10" style="text-transform: uppercase; letter-spacing: 1px; color: var(--color-primary); font-weight: 700;">Delivery Address</span>
@@ -2586,9 +2784,7 @@
         adminState.bespokeOrders = orders;
         renderBespokeTable();
 
-        const badge = document.getElementById('bespokeNavCount');
-        const active = adminState.bespokeOrders.filter(b => b.status !== 'delivered' && b.status !== 'cancelled').length;
-        if (badge) badge.innerText = active;
+        updateAllTabCounts();
       } catch (err) {
         console.error('[Admin] Error loading bespoke commissions:', err);
         const tbody = document.getElementById('bespokeTableBody');
@@ -2778,68 +2974,7 @@
       const endItem = Math.min(currentPage * pageSize, totalItems);
 
       infoEl.innerHTML = `Showing <strong>${startItem}&ndash;${endItem}</strong> of <strong>${totalItems}</strong> orders (20 per page)`;
-
-      if (totalPages <= 1) {
-        controlsEl.innerHTML = `<span class="body-12" style="color: var(--color-text-muted); font-weight: 600;">Page 1 of 1</span>`;
-        return;
-      }
-
-      let html = '';
-
-      // Previous button
-      const prevDisabled = currentPage <= 1;
-      html += `
-        <button type="button" class="btn btn-outline body-12" 
-                onclick="goToBespokePage(${currentPage - 1})" 
-                ${prevDisabled ? 'disabled style="opacity: 0.4; cursor: not-allowed; padding: 5px 12px;"' : 'style="padding: 5px 12px; font-weight: 600;"'}>
-          &larr; Prev
-        </button>
-      `;
-
-      // Page numbers (smart windowing)
-      const pages = [];
-      if (totalPages <= 7) {
-        for (let p = 1; p <= totalPages; p++) pages.push(p);
-      } else {
-        pages.push(1);
-        if (currentPage > 3) pages.push('...');
-
-        const start = Math.max(2, currentPage - 1);
-        const end = Math.min(totalPages - 1, currentPage + 1);
-        for (let p = start; p <= end; p++) {
-          if (!pages.includes(p)) pages.push(p);
-        }
-
-        if (currentPage < totalPages - 2) pages.push('...');
-        if (!pages.includes(totalPages)) pages.push(totalPages);
-      }
-
-      pages.forEach(p => {
-        if (p === '...') {
-          html += `<span style="padding: 5px 6px; color: var(--color-text-muted); font-size: 12px;">...</span>`;
-        } else {
-          const isCur = p === currentPage;
-          html += `
-            <button type="button" class="btn ${isCur ? 'btn-primary' : 'btn-outline'} body-12" 
-                    onclick="goToBespokePage(${p})" 
-                    style="padding: 5px 10px; min-width: 32px; ${isCur ? 'font-weight: 700;' : ''}">
-              ${p}
-            </button>
-          `;
-        }
-      });
-
-      // Next button
-      const nextDisabled = currentPage >= totalPages;
-      html += `
-        <button type="button" class="btn btn-outline body-12" 
-                onclick="goToBespokePage(${currentPage + 1})" 
-                ${nextDisabled ? 'disabled style="opacity: 0.4; cursor: not-allowed; padding: 5px 12px;"' : 'style="padding: 5px 12px; font-weight: 600;"'}>
-          Next &rarr;
-        </button>
-      `;
-
-      controlsEl.innerHTML = html;
+      controlsEl.innerHTML = buildPaginationControlsHtml(currentPage, totalPages, 'goToBespokePage');
     }
 
     function goToBespokePage(page) {
@@ -6329,13 +6464,16 @@
         adminState.fittings = data || [];
         renderFittingsTable();
 
-        const badge = document.getElementById('fittingsNavCount');
-        const active = adminState.fittings.filter(f => f.status === 'requested' || f.status === 'confirmed').length;
-        if (badge) badge.innerText = active;
+        updateAllTabCounts();
       } catch (err) {
         console.error('[Admin] Error loading fittings:', err);
       }
     }
+
+    let fittingsPagination = {
+      currentPage: 1,
+      pageSize: 20
+    };
 
     function renderFittingsTable() {
       const tbody = document.getElementById('fittingsTableBody');
@@ -6354,9 +6492,16 @@
         return notes.includes(query);
       });
 
-      if (countEl) countEl.innerText = `${filtered.length} Bookings`;
+      const totalItems = filtered.length;
+      const pageSize = fittingsPagination.pageSize || 20;
+      const totalPages = Math.ceil(totalItems / pageSize) || 1;
 
-      if (filtered.length === 0) {
+      if (fittingsPagination.currentPage > totalPages) fittingsPagination.currentPage = totalPages;
+      if (fittingsPagination.currentPage < 1) fittingsPagination.currentPage = 1;
+
+      if (countEl) countEl.innerText = `${totalItems} Booking${totalItems === 1 ? '' : 's'}`;
+
+      if (totalItems === 0) {
         tbody.innerHTML = `
           <tr>
             <td colspan="7" class="admin-empty-state">
@@ -6366,10 +6511,15 @@
             </td>
           </tr>
         `;
+        const container = document.getElementById('fittingsPaginationContainer');
+        if (container) container.style.display = 'none';
         return;
       }
 
-      const rowsHtml = filtered.map(f => {
+      const startIndex = (fittingsPagination.currentPage - 1) * pageSize;
+      const pageItems = filtered.slice(startIndex, startIndex + pageSize);
+
+      const rowsHtml = pageItems.map(f => {
         const dateStr = formatDate(f.requested_date);
         let timeStr = '';
         try {
@@ -6422,9 +6572,42 @@
       }).join('');
 
       tbody.innerHTML = rowsHtml;
+      renderFittingsPagination(totalItems, fittingsPagination.currentPage, pageSize);
+    }
+
+    function renderFittingsPagination(totalItems, currentPage, pageSize) {
+      const container = document.getElementById('fittingsPaginationContainer');
+      const infoEl = document.getElementById('fittingsPaginationInfo');
+      const controlsEl = document.getElementById('fittingsPaginationControls');
+      if (!container || !infoEl || !controlsEl) return;
+
+      if (totalItems === 0) {
+        container.style.display = 'none';
+        return;
+      }
+
+      container.style.display = 'flex';
+
+      const totalPages = Math.ceil(totalItems / pageSize) || 1;
+      const startItem = (currentPage - 1) * pageSize + 1;
+      const endItem = Math.min(currentPage * pageSize, totalItems);
+
+      infoEl.innerHTML = `Showing <strong>${startItem}&ndash;${endItem}</strong> of <strong>${totalItems}</strong> appointments (20 per page)`;
+      controlsEl.innerHTML = buildPaginationControlsHtml(currentPage, totalPages, 'goToFittingsPage');
+    }
+
+    function goToFittingsPage(page) {
+      fittingsPagination.currentPage = page;
+      renderFittingsTable();
+
+      const tableWrap = document.querySelector('#view-fittings .admin-card');
+      if (tableWrap) {
+        tableWrap.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
     }
 
     function filterFittingsTable() {
+      fittingsPagination.currentPage = 1;
       renderFittingsTable();
     }
 
@@ -6513,12 +6696,16 @@
         adminState.products = data || [];
         renderCatalogTable();
 
-        const badge = document.getElementById('catalogNavCount');
-        if (badge) badge.innerText = adminState.products.length;
+        updateAllTabCounts();
       } catch (err) {
         console.error('[Admin] Error loading catalog:', err);
       }
     }
+
+    let catalogPagination = {
+      currentPage: 1,
+      pageSize: 20
+    };
 
     function renderCatalogTable() {
       const tbody = document.getElementById('catalogTableBody');
@@ -6535,9 +6722,16 @@
         return (p.title || '').toLowerCase().includes(query);
       });
 
-      if (countEl) countEl.innerText = `${filtered.length} Garments`;
+      const totalItems = filtered.length;
+      const pageSize = catalogPagination.pageSize || 20;
+      const totalPages = Math.ceil(totalItems / pageSize) || 1;
 
-      if (filtered.length === 0) {
+      if (catalogPagination.currentPage > totalPages) catalogPagination.currentPage = totalPages;
+      if (catalogPagination.currentPage < 1) catalogPagination.currentPage = 1;
+
+      if (countEl) countEl.innerText = `${totalItems} Garment${totalItems === 1 ? '' : 's'}`;
+
+      if (totalItems === 0) {
         tbody.innerHTML = `
           <tr>
             <td colspan="7" class="admin-empty-state">
@@ -6546,10 +6740,15 @@
             </td>
           </tr>
         `;
+        const container = document.getElementById('catalogPaginationContainer');
+        if (container) container.style.display = 'none';
         return;
       }
 
-      const rowsHtml = filtered.map(p => {
+      const startIndex = (catalogPagination.currentPage - 1) * pageSize;
+      const pageItems = filtered.slice(startIndex, startIndex + pageSize);
+
+      const rowsHtml = pageItems.map(p => {
         const variations = p.product_variation || [];
         const firstVariant = variations[0];
         const img = firstVariant?.main_image || 'assets/lookbook/lookbook_1_kaftan.jpg';
@@ -6597,9 +6796,42 @@
       }).join('');
 
       tbody.innerHTML = rowsHtml;
+      renderCatalogPagination(totalItems, catalogPagination.currentPage, pageSize);
+    }
+
+    function renderCatalogPagination(totalItems, currentPage, pageSize) {
+      const container = document.getElementById('catalogPaginationContainer');
+      const infoEl = document.getElementById('catalogPaginationInfo');
+      const controlsEl = document.getElementById('catalogPaginationControls');
+      if (!container || !infoEl || !controlsEl) return;
+
+      if (totalItems === 0) {
+        container.style.display = 'none';
+        return;
+      }
+
+      container.style.display = 'flex';
+
+      const totalPages = Math.ceil(totalItems / pageSize) || 1;
+      const startItem = (currentPage - 1) * pageSize + 1;
+      const endItem = Math.min(currentPage * pageSize, totalItems);
+
+      infoEl.innerHTML = `Showing <strong>${startItem}&ndash;${endItem}</strong> of <strong>${totalItems}</strong> garments (20 per page)`;
+      controlsEl.innerHTML = buildPaginationControlsHtml(currentPage, totalPages, 'goToCatalogPage');
+    }
+
+    function goToCatalogPage(page) {
+      catalogPagination.currentPage = page;
+      renderCatalogTable();
+
+      const tableWrap = document.querySelector('#view-catalog .admin-card');
+      if (tableWrap) {
+        tableWrap.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
     }
 
     function filterCatalogTable() {
+      catalogPagination.currentPage = 1;
       renderCatalogTable();
     }
 
@@ -6698,8 +6930,7 @@
         });
         renderVaultTable();
 
-        const badge = document.getElementById('vaultNavCount');
-        if (badge) badge.innerText = adminState.vaultProfiles.length;
+        updateAllTabCounts();
 
         // If bespoke modal is open, refresh dropdowns and sync client
         const bespokeModal = document.getElementById('bespokeModal');
@@ -6711,6 +6942,11 @@
         console.error('[Admin] Error loading client vault:', err);
       }
     }
+
+    let vaultPagination = {
+      currentPage: 1,
+      pageSize: 20
+    };
 
     function renderVaultTable() {
       const tbody = document.getElementById('vaultTableBody');
@@ -6727,9 +6963,16 @@
         return name.includes(query) || email.includes(query) || phone.includes(query);
       });
 
-      if (countEl) countEl.innerText = `${filtered.length} Clients`;
+      const totalItems = filtered.length;
+      const pageSize = vaultPagination.pageSize || 20;
+      const totalPages = Math.ceil(totalItems / pageSize) || 1;
 
-      if (filtered.length === 0) {
+      if (vaultPagination.currentPage > totalPages) vaultPagination.currentPage = totalPages;
+      if (vaultPagination.currentPage < 1) vaultPagination.currentPage = 1;
+
+      if (countEl) countEl.innerText = `${totalItems} Client${totalItems === 1 ? '' : 's'}`;
+
+      if (totalItems === 0) {
         tbody.innerHTML = `
           <tr>
             <td colspan="6" class="admin-empty-state">
@@ -6738,10 +6981,15 @@
             </td>
           </tr>
         `;
+        const container = document.getElementById('vaultPaginationContainer');
+        if (container) container.style.display = 'none';
         return;
       }
 
-      const rowsHtml = filtered.map(p => {
+      const startIndex = (vaultPagination.currentPage - 1) * pageSize;
+      const pageItems = filtered.slice(startIndex, startIndex + pageSize);
+
+      const rowsHtml = pageItems.map(p => {
         const name = p.name || 'Anonymous Client';
         const phone = p.phone_number || p.whatsapp_number || 'No phone recorded';
         const dateStr = formatDate(p.created_at);
@@ -6785,9 +7033,42 @@
       }).join('');
 
       tbody.innerHTML = rowsHtml;
+      renderVaultPagination(totalItems, vaultPagination.currentPage, pageSize);
+    }
+
+    function renderVaultPagination(totalItems, currentPage, pageSize) {
+      const container = document.getElementById('vaultPaginationContainer');
+      const infoEl = document.getElementById('vaultPaginationInfo');
+      const controlsEl = document.getElementById('vaultPaginationControls');
+      if (!container || !infoEl || !controlsEl) return;
+
+      if (totalItems === 0) {
+        container.style.display = 'none';
+        return;
+      }
+
+      container.style.display = 'flex';
+
+      const totalPages = Math.ceil(totalItems / pageSize) || 1;
+      const startItem = (currentPage - 1) * pageSize + 1;
+      const endItem = Math.min(currentPage * pageSize, totalItems);
+
+      infoEl.innerHTML = `Showing <strong>${startItem}&ndash;${endItem}</strong> of <strong>${totalItems}</strong> clients (20 per page)`;
+      controlsEl.innerHTML = buildPaginationControlsHtml(currentPage, totalPages, 'goToVaultPage');
+    }
+
+    function goToVaultPage(page) {
+      vaultPagination.currentPage = page;
+      renderVaultTable();
+
+      const tableWrap = document.querySelector('#view-vault .admin-card');
+      if (tableWrap) {
+        tableWrap.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
     }
 
     function filterVaultTable() {
+      vaultPagination.currentPage = 1;
       renderVaultTable();
     }
 
@@ -6854,9 +7135,7 @@
         adminState.staffMembers = data || [];
         renderUsersTable();
 
-        const badge = document.getElementById('userCountBadge');
-        const staffCount = adminState.staffMembers.filter(p => p.role === 'admin' || p.role === 'super admin').length;
-        if (badge) badge.innerText = `${staffCount} Staff Accounts`;
+        updateAllTabCounts();
       } catch (err) {
         console.error('[Admin] Error loading staff:', err);
       }
@@ -6963,6 +7242,11 @@
     /* -------------------------------------------------------------------------
        7. DASHBOARD KPI CARDS & PRIORITY ALERTS
        ------------------------------------------------------------------------- */
+    let dashboardPagination = {
+      currentPage: 1,
+      pageSize: 20
+    };
+
     function updateDashboardStats() {
       // 1. Gross Revenue
       const rtwRevenue = adminState.rtwOrders
@@ -7000,7 +7284,6 @@
       // Add pending Collection orders
       adminState.rtwOrders
         .filter(o => o.status === 'placed' || o.status === 'payment confirmed' || o.status === 'processing order')
-        .slice(0, 5)
         .forEach(o => {
           priorityItems.push({
             type: 'Collection Order',
@@ -7017,7 +7300,6 @@
       // Add urgent custom orders
       adminState.bespokeOrders
         .filter(b => b.status === 'placed' || b.status === 'processing order')
-        .slice(0, 4)
         .forEach(b => {
           priorityItems.push({
             type: 'Custom Order',
@@ -7034,7 +7316,6 @@
       // Add pending appointments with email in client field
       adminState.fittings
         .filter(f => f.status === 'requested' || f.status === 'confirmed')
-        .slice(0, 3)
         .forEach(f => {
           const profile = (adminState.vaultProfiles || []).find(p => p.id === f.user_id);
           const emailMatch = (adminState.rtwOrders || []).find(o => o.user_id === f.user_id && o.email)?.email
@@ -7057,7 +7338,14 @@
           });
         });
 
-      if (priorityItems.length === 0) {
+      const totalItems = priorityItems.length;
+      const pageSize = dashboardPagination.pageSize || 20;
+      const totalPages = Math.ceil(totalItems / pageSize) || 1;
+
+      if (dashboardPagination.currentPage > totalPages) dashboardPagination.currentPage = totalPages;
+      if (dashboardPagination.currentPage < 1) dashboardPagination.currentPage = 1;
+
+      if (totalItems === 0) {
         priorityBody.innerHTML = `
           <tr>
             <td colspan="6" class="admin-empty-state">
@@ -7066,10 +7354,15 @@
             </td>
           </tr>
         `;
+        const container = document.getElementById('dashboardPaginationContainer');
+        if (container) container.style.display = 'none';
         return;
       }
 
-      priorityBody.innerHTML = priorityItems.map(item => `
+      const startIndex = (dashboardPagination.currentPage - 1) * pageSize;
+      const pageItems = priorityItems.slice(startIndex, startIndex + pageSize);
+
+      priorityBody.innerHTML = pageItems.map(item => `
         <tr>
           <td><strong>${item.ref}</strong></td>
           <td>${item.client}</td>
@@ -7084,6 +7377,40 @@
           </td>
         </tr>
       `).join('');
+
+      renderDashboardPagination(totalItems, dashboardPagination.currentPage, pageSize);
+      updateAllTabCounts();
+    }
+
+    function renderDashboardPagination(totalItems, currentPage, pageSize) {
+      const container = document.getElementById('dashboardPaginationContainer');
+      const infoEl = document.getElementById('dashboardPaginationInfo');
+      const controlsEl = document.getElementById('dashboardPaginationControls');
+      if (!container || !infoEl || !controlsEl) return;
+
+      if (totalItems === 0) {
+        container.style.display = 'none';
+        return;
+      }
+
+      container.style.display = 'flex';
+
+      const totalPages = Math.ceil(totalItems / pageSize) || 1;
+      const startItem = (currentPage - 1) * pageSize + 1;
+      const endItem = Math.min(currentPage * pageSize, totalItems);
+
+      infoEl.innerHTML = `Showing <strong>${startItem}&ndash;${endItem}</strong> of <strong>${totalItems}</strong> action items (20 per page)`;
+      controlsEl.innerHTML = buildPaginationControlsHtml(currentPage, totalPages, 'goToDashboardPage');
+    }
+
+    function goToDashboardPage(page) {
+      dashboardPagination.currentPage = page;
+      updateDashboardStats();
+
+      const tableWrap = document.querySelector('#view-dashboard .admin-card');
+      if (tableWrap) {
+        tableWrap.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
     }
 
     // Initialize portal when DOM is interactive
