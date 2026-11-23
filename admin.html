@@ -432,6 +432,13 @@
           </div>
           <span class="admin-nav-pill body-10" id="catalogNavCount">0</span>
         </button>
+        <button type="button" class="admin-nav-item body-14" data-tab="measurements" onclick="switchAdminTab('measurements', this)">
+          <div class="admin-nav-item-content">
+            <span class="admin-nav-icon">📏</span>
+            <span>Measurements</span>
+          </div>
+          <span class="admin-nav-pill body-10" id="measurementsNavCount">0</span>
+        </button>
       </div>
 
       <div class="admin-sidebar-section">
@@ -808,6 +815,63 @@
           <div id="catalogPaginationContainer" style="display: none; padding: 14px 20px; border-top: 1px solid var(--color-border); justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; background: #FAF8F5;">
             <div class="body-12" id="catalogPaginationInfo" style="color: var(--color-text-muted);">Showing 0 garments</div>
             <div id="catalogPaginationControls" style="display: flex; gap: 6px; align-items: center;"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- =====================================================================
+           VIEW: STUDIO MEASUREMENTS (USER IS NULL)
+           ===================================================================== -->
+      <section class="admin-tab-view" id="view-measurements" style="display: none;">
+        <div class="admin-page-header" style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 16px;">
+          <div>
+            <h1 class="admin-header-title h1">Measurements</h1>
+            <p class="admin-header-sub body-14">
+              Studio &amp; atelier tailoring measurement specifications. Profiles created or edited here have no assigned user account (<code style="background: #EAE5DE; padding: 1px 5px; border-radius: 3px; font-size: 11px;">user_id is null</code>).
+            </p>
+          </div>
+          <div>
+            <button type="button" class="btn btn-primary body-14" onclick="openAdminCreateMeasurement()" style="display: inline-flex; align-items: center; gap: 6px; padding: 10px 18px;">
+              <span style="font-size: 16px; line-height: 1;">+</span>
+              <span>New Measurement</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="admin-card">
+          <div class="admin-card-header">
+            <div class="admin-card-title h3">
+              <span>Studio Measurements</span>
+              <span class="admin-nav-pill body-10" id="adminMeasTableCount">0 Profiles</span>
+            </div>
+            <div class="admin-table-controls">
+              <input type="text" class="admin-search-input body-12" id="adminMeasSearchInput" placeholder="Search measurements by name, silhouette, notes..." oninput="filterAdminMeasurementsTable()">
+            </div>
+          </div>
+
+          <div class="admin-table-wrap">
+            <table class="admin-table body-14" id="adminMeasTable">
+              <thead>
+                <tr class="body-12">
+                  <th>Measurement Profile</th>
+                  <th>Silhouette</th>
+                  <th>Key Measurements (Inches)</th>
+                  <th>Last Updated</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="adminMeasTableBody">
+                <tr>
+                  <td colspan="5" class="admin-loading-row">Loading studio measurements...</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Pagination Bar -->
+          <div id="adminMeasPaginationContainer" style="display: none; padding: 14px 20px; border-top: 1px solid var(--color-border); justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; background: #FAF8F5;">
+            <div class="body-12" id="adminMeasPaginationInfo" style="color: var(--color-text-muted);">Showing 0 profiles</div>
+            <div id="adminMeasPaginationControls" style="display: flex; gap: 6px; align-items: center;"></div>
           </div>
         </div>
       </section>
@@ -2390,6 +2454,7 @@
   <script src="js/search-modal.js"></script>
   <script src="js/auth.js"></script>
   <script src="js/main.js"></script>
+  <script src="js/admin-measurement-modal.js"></script>
 
   <script>
     /* =========================================================================
@@ -2407,6 +2472,7 @@
       fittings: [],
       products: [],
       vaultProfiles: [],
+      studioMeasurements: [],
       staffMembers: []
     };
 
@@ -2470,11 +2536,17 @@
           bespoke: 'Custom Orders',
           fittings: 'Studio Fittings',
           catalog: 'Product Catalog & Inventory',
+          measurements: 'Studio Measurements',
           vault: 'Customers',
           users: 'Staff & Role Management'
         };
         indicator.innerText = titles[tabName] || tabName;
       }
+
+      if (tabName === 'measurements') {
+        loadAdminStudioMeasurements();
+      }
+
       updateAllTabCounts();
     }
 
@@ -2598,7 +2670,14 @@
         vaultBadge.innerText = count;
       }
 
-      // 6. Super Admin Staff Accounts
+      // 6. Studio Measurements (total measurements where user_id is null)
+      const measBadge = document.getElementById('measurementsNavCount');
+      if (measBadge) {
+        const count = Array.isArray(adminState.studioMeasurements) ? adminState.studioMeasurements.length : 0;
+        measBadge.innerText = count;
+      }
+
+      // 7. Super Admin Staff Accounts
       const userBadge = document.getElementById('userCountBadge');
       if (userBadge) {
         const staffCount = Array.isArray(adminState.staffMembers)
@@ -2616,6 +2695,7 @@
         loadFittings(),
         loadCatalogProducts(),
         loadClientVault(),
+        loadAdminStudioMeasurements(),
         loadStaffMembers()
       ]);
       updateDashboardStats();
@@ -3507,7 +3587,12 @@
                   imgUrl = it.inspiration_photos;
                 }
 
-                const title = it.description_notes || `${it.category ? it.category.charAt(0).toUpperCase() + it.category.slice(1) : 'Bespoke'} Piece`;
+                let title = it.description_notes || '';
+                if (!title) {
+                  const fabricImg = (Array.isArray(it.fabric_photos) && it.fabric_photos[0]) || (typeof it.fabric_photos === 'string' && it.fabric_photos);
+                  const matched = fabricImg ? (adminState.products || []).find(p => (p.product_variation || []).some(v => v.main_image === fabricImg || (Array.isArray(v.gallery_images) && v.gallery_images.includes(fabricImg)))) : null;
+                  title = matched ? matched.title : `${it.category ? it.category.charAt(0).toUpperCase() + it.category.slice(1) : 'Bespoke'} Piece`;
+                }
                 const sizeText = it.selected_size || (it.measurement_snapshot ? 'Custom Fitted' : 'M');
                 const priceText = it.charge ? formatNaira(it.charge) : '';
 
@@ -5231,7 +5316,7 @@
         }
       }
 
-      const itemDesc = `${prod.title} (${variant.color || 'Standard'}, Size: ${selectedCatalogSize}, Qty: ${qty})${notes ? ` — ${notes}` : ''}`;
+      const itemDesc = notes || null;
 
       bespokeDraft.items.push({
         source: 'catalog',
@@ -5701,21 +5786,68 @@
         return;
       }
 
+      // Ensure catalog and vault data are ready for item lookup
+      if (!adminState.products || !adminState.products.length) {
+        try { await loadCatalogProducts(); } catch (_) {}
+      }
+
+      const allProds = adminState.products || [];
       const mappedItems = dbItems.map(it => {
-        const isBespoke = it.type === 'bespoke' || !it.type;
+        let isBespoke = it.type === 'bespoke' || !it.type;
+        let matchedProd = null;
+        let matchedVariant = null;
+
+        const fabricImg = (Array.isArray(it.fabric_photos) && it.fabric_photos[0]) || (typeof it.fabric_photos === 'string' && it.fabric_photos);
+
+        // Auto-detect catalog garment if description_notes matches a product title or type is catalog
+        if (!isBespoke || (it.description_notes && allProds.some(p => it.description_notes.startsWith(p.title)))) {
+          matchedProd = (it.description_notes ? allProds.find(p => it.description_notes.startsWith(p.title)) : null)
+            || (fabricImg ? allProds.find(p => (p.product_variation || []).some(v => v.main_image === fabricImg || (Array.isArray(v.gallery_images) && v.gallery_images.includes(fabricImg)))) : null)
+            || allProds.find(p => p.type === it.type && p.category === it.category && p.gender === it.gender);
+
+          if (matchedProd) {
+            isBespoke = false;
+            const variations = matchedProd.product_variation || [];
+            if (variations.length > 0) {
+              if (fabricImg) {
+                matchedVariant = variations.find(v => v.main_image === fabricImg || (Array.isArray(v.gallery_images) && v.gallery_images.includes(fabricImg)));
+              }
+              if (!matchedVariant && it.description_notes) {
+                matchedVariant = variations.find(v => v.color && it.description_notes.toLowerCase().includes(v.color.toLowerCase()));
+              }
+              if (!matchedVariant) {
+                matchedVariant = variations[0];
+              }
+            }
+          }
+        }
+
+        // Parse quantity if present in description e.g. "Qty: 2"
+        let qty = 1;
+        if (it.description_notes) {
+          const qtyMatch = it.description_notes.match(/Qty:\s*(\d+)/i);
+          if (qtyMatch && qtyMatch[1]) qty = parseInt(qtyMatch[1], 10) || 1;
+        }
+
+        const totalCharge = Number(it.charge) || 0;
+        const unitPrice = qty > 1 ? (totalCharge / qty) : (matchedVariant && matchedVariant.price ? Number(matchedVariant.price) : totalCharge);
+
         return {
           id: it.id,
           source: isBespoke ? 'bespoke' : 'catalog',
-          type: it.type || (isBespoke ? 'bespoke' : 'made to order'),
-          title: it.description_notes || `${(it.category ? it.category.charAt(0).toUpperCase() + it.category.slice(1) : 'Bespoke')} Garment`,
-          category: it.category || 'native',
-          gender: it.gender || 'male',
-          charge: Number(it.charge) || 0,
-          quantity: 1,
-          unit_price: Number(it.charge) || 0,
+          product_id: matchedProd ? matchedProd.id : (it.product_id || null),
+          variant_id: matchedVariant ? matchedVariant.id : (it.variant_id || null),
+          type: it.type || (isBespoke ? 'bespoke' : (matchedProd?.type || 'made to order')),
+          title: matchedProd ? matchedProd.title : (it.description_notes || `${(it.category ? it.category.charAt(0).toUpperCase() + it.category.slice(1) : 'Bespoke')} Garment`),
+          color: matchedVariant?.color || 'Standard',
+          category: it.category || matchedProd?.category || 'native',
+          gender: it.gender || matchedProd?.gender || 'male',
+          charge: totalCharge,
+          quantity: qty,
+          unit_price: unitPrice,
           selected_size: it.selected_size || 'M',
           size: it.selected_size || 'M',
-          user_id: null,
+          user_id: it.user_id || null,
           measurement_id: it.measurement_id || null,
           measurement_snapshot: it.measurement_snapshot || null,
           description_notes: it.description_notes || '',
@@ -6575,12 +6707,13 @@
         }
       }
 
-      const itemDesc = `${prod.title} (${variant.color || 'Standard'}, Size: ${selectedEditCatalogSize}, Qty: ${qty})${notes ? ` — ${notes}` : ''}`;
+      const itemDesc = notes || null;
 
       const isEditing = editBespokeState.editingItemIndex >= 0;
       const catalogItem = {
         source: 'catalog',
         product_id: prod.id,
+        variant_id: variant.id || null,
         title: prod.title,
         color: variant.color || 'Standard',
         size: selectedEditCatalogSize,
@@ -6696,8 +6829,14 @@
       if (item.source === 'catalog') {
         switchEditBespokeGarmentType('catalog');
         if (item.product_id) {
-          const prod = (adminState.products || []).find(p => p.id === item.product_id);
-          if (prod) selectEditBespokeProduct(prod);
+          selectEditBespokeCatalogProduct(item.product_id);
+          if (item.variant_id) {
+            const variantSelect = document.getElementById('ebCatalogVariantSelect');
+            if (variantSelect) {
+              variantSelect.value = item.variant_id;
+              onEditBespokeVariantChanged();
+            }
+          }
         }
         if (document.getElementById('ebCatalogQty')) {
           document.getElementById('ebCatalogQty').value = item.quantity || 1;
@@ -6708,9 +6847,34 @@
         if (document.getElementById('ebCatalogItemNotes')) {
           document.getElementById('ebCatalogItemNotes').value = item.description_notes || '';
         }
-        if (item.size) {
-          selectEditCatalogSize(item.size);
+
+        // Select matching size button
+        const targetSize = (item.size || item.selected_size || 'M').trim();
+        const container = document.getElementById('ebCatalogSizesContainer');
+        if (container && targetSize) {
+          const buttons = Array.from(container.querySelectorAll('button'));
+          const matchBtn = buttons.find(b => {
+            const txt = b.textContent.trim().toUpperCase();
+            const cleanTarget = targetSize.toUpperCase();
+            return txt === cleanTarget || txt.startsWith(cleanTarget + ' ') || (cleanTarget === 'CUSTOM' && txt.includes('CUSTOM'));
+          });
+          if (matchBtn) {
+            matchBtn.click();
+          }
         }
+
+        // Custom measurement profile if custom fit
+        if (targetSize.toLowerCase() === 'custom') {
+          if (item.user_id) {
+            const user = (adminState.allProfiles || adminState.vaultProfiles || []).find(p => p.id === item.user_id);
+            if (user) selectEditGarmentUser('catalog', user);
+          }
+          if (item.measurement_id) {
+            const meas = (adminState.allMeasurements || []).find(m => m.id === item.measurement_id);
+            if (meas) selectEditMeasurementProfile('catalog', meas);
+          }
+        }
+
         const saveBtn = document.getElementById('ebCatalogSaveBtn');
         if (saveBtn) saveBtn.innerText = 'Save Changes to Item';
         const discardBtn = document.getElementById('ebCatalogDiscardBtn');
@@ -9759,6 +9923,210 @@
       currentCustomerMeasurements = [];
       currentCustomerProfile = null;
     }
+
+    /* -------------------------------------------------------------------------
+       5B. STUDIO MEASUREMENTS MANAGEMENT (user_id IS NULL)
+       ------------------------------------------------------------------------- */
+    async function loadAdminStudioMeasurements() {
+      const client = getSupabase();
+      if (!client) return;
+
+      try {
+        const { data, error } = await client
+          .from('custom_measurement')
+          .select('*')
+          .is('user_id', null)
+          .order('updated_at', { ascending: false });
+
+        if (error) {
+          console.error('[Admin] Error loading studio measurements:', error);
+          return;
+        }
+
+        adminState.studioMeasurements = data || [];
+        renderAdminMeasurementsTable();
+        updateAllTabCounts();
+      } catch (err) {
+        console.error('[Admin] Exception loading studio measurements:', err);
+      }
+    }
+
+    let adminMeasPagination = {
+      currentPage: 1,
+      pageSize: 20
+    };
+
+    function filterAdminMeasurementsTable() {
+      adminMeasPagination.currentPage = 1;
+      renderAdminMeasurementsTable();
+    }
+
+    function goToAdminMeasPage(page) {
+      adminMeasPagination.currentPage = page;
+      renderAdminMeasurementsTable();
+      const wrap = document.querySelector('#view-measurements .admin-card');
+      if (wrap) wrap.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+
+    function renderAdminMeasurementsTable() {
+      const tbody = document.getElementById('adminMeasTableBody');
+      const countEl = document.getElementById('adminMeasTableCount');
+      if (!tbody) return;
+
+      const q = (document.getElementById('adminMeasSearchInput')?.value || '').toLowerCase().trim();
+
+      const filtered = (adminState.studioMeasurements || []).filter(m => {
+        if (!q) return true;
+        const label = (m.label || '').toLowerCase();
+        const notes = (m.notes || '').toLowerCase();
+        const gender = (m.gender || '').toLowerCase();
+        return label.includes(q) || notes.includes(q) || gender.includes(q);
+      });
+
+      const totalItems = filtered.length;
+      const pageSize = adminMeasPagination.pageSize || 20;
+      const totalPages = Math.ceil(totalItems / pageSize) || 1;
+
+      if (adminMeasPagination.currentPage > totalPages) adminMeasPagination.currentPage = totalPages;
+      if (adminMeasPagination.currentPage < 1) adminMeasPagination.currentPage = 1;
+
+      if (countEl) countEl.innerText = `${totalItems} Profile${totalItems === 1 ? '' : 's'}`;
+
+      if (totalItems === 0) {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="5" class="admin-empty-state">
+              <span class="admin-empty-icon">📏</span>
+              <strong>No Studio Measurements Found</strong>
+              <p class="body-12" style="color: var(--color-text-muted); margin-top: 4px;">Click "+ New Measurement" above to create an atelier measurement specification.</p>
+            </td>
+          </tr>
+        `;
+        const container = document.getElementById('adminMeasPaginationContainer');
+        if (container) container.style.display = 'none';
+        return;
+      }
+
+      const startIndex = (adminMeasPagination.currentPage - 1) * pageSize;
+      const pageItems = filtered.slice(startIndex, startIndex + pageSize);
+
+      const rowsHtml = pageItems.map(m => {
+        const label = m.label || 'Studio Profile';
+        const gender = m.gender ? (m.gender.charAt(0).toUpperCase() + m.gender.slice(1)) : 'Unspecified';
+        const dateStr = formatDate(m.updated_at || m.created_at);
+
+        const chips = [];
+        if (m.round_chest) chips.push(`Chest: ${m.round_chest}"`);
+        if (m.round_bust) chips.push(`Bust: ${m.round_bust}"`);
+        if (m.waist) chips.push(`Waist: ${m.waist}"`);
+        if (m.shoulder) chips.push(`Shoulder: ${m.shoulder}"`);
+        if (m.hip) chips.push(`Hip: ${m.hip}"`);
+        if (m.trouser_length_long || m.trouser_length_ankle) chips.push(`Trouser: ${m.trouser_length_long || m.trouser_length_ankle}"`);
+        if (m.agbada_length) chips.push(`Agbada: ${m.agbada_length}"`);
+
+        return `
+          <tr data-meas-id="${m.id}">
+            <td>
+              <div>
+                <strong class="body-14" style="color: var(--color-obsidian);">${escapeHtml(label)}</strong>
+                ${m.notes ? `<div class="body-10" style="color: var(--color-text-muted); margin-top: 2px; max-width: 280px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${escapeHtml(m.notes)}</div>` : ''}
+              </div>
+            </td>
+            <td>
+              <span class="admin-nav-pill body-10" style="text-transform: capitalize;">${gender}</span>
+            </td>
+            <td>
+              <div style="display: flex; flex-wrap: wrap; gap: 4px;">
+                ${chips.length ? chips.slice(0, 4).map(c => `<span class="body-10" style="background: #F1F5F9; padding: 2px 6px; border-radius: 4px; color: #334155;">${c}</span>`).join('') + (chips.length > 4 ? `<span class="body-10" style="color: var(--color-text-muted); font-size: 10px;">+${chips.length - 4} more</span>` : '') : '<span class="body-10" style="color: var(--color-text-muted);">No values recorded</span>'}
+              </div>
+            </td>
+            <td>
+              <span class="body-12">${dateStr}</span>
+            </td>
+            <td>
+              <div style="display: flex; align-items: center; gap: 6px;">
+                <button type="button" class="btn btn-outline body-12" style="padding: 4px 10px;" onclick="editAdminStudioMeasurement('${m.id}')">Edit</button>
+                <button type="button" class="btn btn-outline body-12" style="padding: 4px 8px; color: #991B1B; border-color: #F87171;" onclick="deleteAdminStudioMeasurement('${m.id}')">&times; Delete</button>
+              </div>
+            </td>
+          </tr>
+        `;
+      }).join('');
+
+      tbody.innerHTML = rowsHtml;
+      renderAdminMeasPagination(totalItems, adminMeasPagination.currentPage, pageSize);
+    }
+
+    function renderAdminMeasPagination(totalItems, currentPage, pageSize) {
+      const container = document.getElementById('adminMeasPaginationContainer');
+      const infoEl = document.getElementById('adminMeasPaginationInfo');
+      const controlsEl = document.getElementById('adminMeasPaginationControls');
+      if (!container || !infoEl || !controlsEl) return;
+
+      if (totalItems === 0) {
+        container.style.display = 'none';
+        return;
+      }
+
+      container.style.display = 'flex';
+      const totalPages = Math.ceil(totalItems / pageSize) || 1;
+      const startItem = (currentPage - 1) * pageSize + 1;
+      const endItem = Math.min(currentPage * pageSize, totalItems);
+
+      infoEl.innerHTML = `Showing <strong>${startItem}&ndash;${endItem}</strong> of <strong>${totalItems}</strong> studio profiles (20 per page)`;
+      controlsEl.innerHTML = buildPaginationControlsHtml(currentPage, totalPages, 'goToAdminMeasPage');
+    }
+
+    function openAdminCreateMeasurement() {
+      if (!window.KrabeAdminMeasurementForm) {
+        showToast('Admin measurement component not loaded.');
+        return;
+      }
+      window.KrabeAdminMeasurementForm.openModal(null, {
+        onSuccess: function() {
+          showToast('Studio measurement saved successfully!');
+          loadAdminStudioMeasurements();
+        }
+      });
+    }
+
+    function editAdminStudioMeasurement(measId) {
+      if (!window.KrabeAdminMeasurementForm) {
+        showToast('Admin measurement component not loaded.');
+        return;
+      }
+      const meas = (adminState.studioMeasurements || []).find(m => m.id === measId);
+      if (!meas) return;
+      window.KrabeAdminMeasurementForm.openModal(meas, {
+        onSuccess: function() {
+          showToast('Studio measurement updated successfully!');
+          loadAdminStudioMeasurements();
+        }
+      });
+    }
+
+    function deleteAdminStudioMeasurement(measId) {
+      if (!window.KrabeAdminMeasurementForm) {
+        showToast('Admin measurement component not loaded.');
+        return;
+      }
+      const meas = (adminState.studioMeasurements || []).find(m => m.id === measId);
+      if (!meas) return;
+      window.KrabeAdminMeasurementForm.promptDelete(meas, {
+        onSuccess: function() {
+          showToast('Studio measurement deleted.');
+          loadAdminStudioMeasurements();
+        }
+      });
+    }
+
+    // Global listener for measurement updates
+    window.addEventListener('krabe:admin-measurement:saved', () => {
+      loadAdminStudioMeasurements();
+    });
+    window.addEventListener('krabe:admin-measurement:deleted', () => {
+      loadAdminStudioMeasurements();
+    });
 
     /* -------------------------------------------------------------------------
        6. STAFF & USER MANAGEMENT (Super Admin)

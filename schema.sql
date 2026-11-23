@@ -225,7 +225,7 @@ CREATE TABLE IF NOT EXISTS public.custom_measurement (
   id uuid NOT NULL DEFAULT gen_random_uuid(),
   created_at timestamp with time zone DEFAULT now(),
   updated_at timestamp with time zone DEFAULT now(),
-  user_id uuid NOT NULL DEFAULT auth.uid(),
+  user_id uuid DEFAULT auth.uid(),
   label text,
   gender gender_type NOT NULL,
   notes text,
