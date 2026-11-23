@@ -110,9 +110,9 @@
           <input type="number" 
                  step="any" 
                  id="kamm_${fieldName}" 
-                 class="form-input body-14" 
+                 class="form-input body-14 kamm-meas-input" 
                  placeholder="${placeholder}" 
-                 style="width: 100%; padding: 8px 30px 8px 10px; border: 1px solid var(--color-border, #CBD5E1); border-radius: 4px; font-size: 13.5px; background: #FFFFFF; box-sizing: border-box;">
+                 style="width: 100%; padding: 8px 30px 8px 10px; border: 1px solid var(--color-border, #CBD5E1); border-radius: 4px; font-size: 13.5px; background: #FFFFFF; box-sizing: border-box; color: var(--color-obsidian, #121920); font-weight: 500;">
           <span style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); font-size: 11px; color: #94A3B8; pointer-events: none;">in</span>
         </div>
       </div>
@@ -126,6 +126,35 @@
 
     return `
       <div class="krabe-measurement-form-component krabe-admin-measurement-clone">
+        <style>
+          /* Light, faint placeholder measurement numbers to distinguish from actual entered figures */
+          .krabe-admin-measurement-clone .kamm-meas-input::placeholder,
+          .krabe-admin-measurement-clone input[type="number"]::placeholder {
+            color: #CBD5E1 !important;
+            opacity: 0.55 !important;
+            -webkit-text-fill-color: #CBD5E1 !important;
+            font-weight: 300 !important;
+          }
+          .krabe-admin-measurement-clone .kamm-meas-input::-webkit-input-placeholder,
+          .krabe-admin-measurement-clone input[type="number"]::-webkit-input-placeholder {
+            color: #CBD5E1 !important;
+            opacity: 0.55 !important;
+            -webkit-text-fill-color: #CBD5E1 !important;
+            font-weight: 300 !important;
+          }
+          .krabe-admin-measurement-clone .kamm-meas-input::-moz-placeholder,
+          .krabe-admin-measurement-clone input[type="number"]::-moz-placeholder {
+            color: #CBD5E1 !important;
+            opacity: 0.55 !important;
+            font-weight: 300 !important;
+          }
+          .krabe-admin-measurement-clone .kamm-meas-input:-ms-input-placeholder,
+          .krabe-admin-measurement-clone input[type="number"]:-ms-input-placeholder {
+            color: #CBD5E1 !important;
+            opacity: 0.55 !important;
+            font-weight: 300 !important;
+          }
+        </style>
         ${showBack ? `
           <button type="button" class="btn kamm-back-btn" onclick="window.KrabeAdminMeasurementForm.handleBack()" style="background: none; border: none; padding: 0; color: var(--color-primary, #44637B); font-size: 13px; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; margin-bottom: 16px;">
             <svg style="width: 16px; height: 16px;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
@@ -140,7 +169,7 @@
             <span class="body-12" style="color: var(--color-gold, #C58A55); font-weight: 700; letter-spacing: 1px; text-transform: uppercase;">Atelier Studio Vault</span>
           </div>
           <p class="body-14" style="color: var(--color-text-muted, #64748B); margin: 6px 0 0 0; font-size: 13.5px; line-height: 1.5;">
-            Enter atelier specifications in inches. Only <strong>Measurement Name</strong> is compulsory. Saved profiles have no customer account assigned (<code>user_id is null</code>).
+            Enter atelier specifications in inches. Only <strong>Measurement Name</strong> is compulsory.
           </p>
         </div>
 

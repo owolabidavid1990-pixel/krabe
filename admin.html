@@ -454,10 +454,10 @@
 
       <div class="admin-sidebar-section" style="margin-top: auto;">
         <div class="admin-sidebar-title body-10">Administration</div>
-        <button type="button" class="admin-nav-item body-14" data-tab="users" onclick="switchAdminTab('users', this)" id="navItemUsers">
+        <button type="button" class="admin-nav-item body-14" data-tab="users" onclick="switchAdminTab('users', this)" id="navItemUsers" style="display: none;">
           <div class="admin-nav-item-content">
-            <span class="admin-nav-icon">👥</span>
-            <span>Staff &amp; Users</span>
+            <span class="admin-nav-icon">🛡️</span>
+            <span>Admins &amp; Staff</span>
           </div>
           <span class="admin-nav-pill super body-10">Super</span>
         </button>
@@ -928,30 +928,36 @@
       </section>
 
       <!-- =====================================================================
-           VIEW 7: STAFF & USER MANAGEMENT (SUPER ADMIN EXCLUSIVE)
+           VIEW 7: ADMIN & STAFF MANAGEMENT (SUPER ADMIN EXCLUSIVE)
            ===================================================================== -->
       <section class="admin-tab-view" id="view-users" style="display: none;">
         <div id="superAdminAuthorized">
-          <div class="admin-page-header">
+          <div class="admin-page-header" style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 16px;">
             <div>
               <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 4px;">
                 <span class="admin-nav-pill super body-10">Restricted Super Admin Area</span>
               </div>
-              <h1 class="admin-header-title h1">Staff &amp; Role Management</h1>
+              <h1 class="admin-header-title h1">Admins &amp; Staff Management</h1>
               <p class="admin-header-sub body-14">
-                Manage atelier team members, grant administrative permissions, or adjust access tiers.
+                View all atelier administrators, invite new staff members, and manage or revoke admin access.
               </p>
+            </div>
+            <div>
+              <button type="button" class="btn btn-primary body-14" onclick="openInviteAdminModal()" style="display: inline-flex; align-items: center; gap: 8px; padding: 10px 18px;">
+                <span style="font-size: 16px; line-height: 1;">✉️</span>
+                <span>Invite New Admin</span>
+              </button>
             </div>
           </div>
 
           <div class="admin-card">
             <div class="admin-card-header">
               <div class="admin-card-title h3">
-                <span>Atelier Staff &amp; Team</span>
-                <span class="admin-nav-pill super body-10" id="userCountBadge">0 Members</span>
+                <span>Atelier Administrators</span>
+                <span class="admin-nav-pill super body-10" id="userCountBadge">0 Admins</span>
               </div>
               <div class="admin-table-controls">
-                <input type="text" class="admin-search-input body-12" id="userSearchInput" placeholder="Filter team by name, email..." oninput="filterUsersTable()">
+                <input type="text" class="admin-search-input body-12" id="userSearchInput" placeholder="Filter admins by name, email..." oninput="filterUsersTable()">
               </div>
             </div>
 
@@ -959,16 +965,16 @@
               <table class="admin-table body-14" id="usersTable">
                 <thead>
                   <tr class="body-12">
-                    <th>Team Member</th>
+                    <th>Administrator</th>
+                    <th>Email Address</th>
                     <th>Role Permission</th>
-                    <th>Account Status</th>
                     <th>Joined</th>
-                    <th>Role Actions</th>
+                    <th>Actions</th>
                   </tr>
                 </thead>
                 <tbody id="usersTableBody">
                   <tr>
-                    <td colspan="5" class="admin-loading-row">Loading team profiles...</td>
+                    <td colspan="5" class="admin-loading-row">Loading administrators...</td>
                   </tr>
                 </tbody>
               </table>
@@ -981,7 +987,7 @@
             <span class="admin-restricted-icon">🔒</span>
             <h2 class="h2" style="color: var(--color-obsidian); margin-bottom: 8px;">Restricted Access: Super Admin Only</h2>
             <p class="body-14" style="color: var(--color-text-muted); line-height: 1.6; margin-bottom: 24px;">
-              Staff permission management and team account adjustments are restricted strictly to Super Admin.
+              Staff permission management, administrator invitations, and account adjustments are restricted strictly to Super Admin.
             </p>
           </div>
         </div>
@@ -2433,6 +2439,94 @@
     </div>
   </div>
 
+  <!-- =========================================================================
+       MODAL: INVITE ADMIN (SUPER ADMIN EXCLUSIVE)
+       ========================================================================= -->
+  <div class="admin-modal-overlay" id="inviteAdminModal" role="dialog" aria-modal="true" aria-labelledby="inviteAdminModalTitle" style="display: none;">
+    <div class="admin-modal-card" style="max-width: 480px; padding: 28px 24px; position: relative;">
+      <div class="admin-modal-header" style="border: none; padding: 0 0 16px 0;">
+        <div style="display: flex; align-items: center; gap: 10px;">
+          <span style="font-size: 24px; line-height: 1;">✉️</span>
+          <div>
+            <h3 class="admin-modal-title h3" id="inviteAdminModalTitle" style="margin: 0;">Invite Administrator</h3>
+            <span class="body-12" style="color: var(--color-gold); font-weight: 700; text-transform: uppercase; letter-spacing: 1px;">Super Admin Action</span>
+          </div>
+        </div>
+        <button type="button" class="admin-modal-close body-18" onclick="closeInviteAdminModal()" aria-label="Close dialog">&times;</button>
+      </div>
+
+      <p class="body-13" style="color: var(--color-text-muted); margin: 0 0 18px 0; line-height: 1.5;">
+        Send an official invitation email via Brevo to invite a new atelier team member with <strong>Admin</strong> privileges.
+      </p>
+
+      <div id="inviteAdminAlert" style="display: none; padding: 10px 14px; border-radius: 4px; font-size: 13px; margin-bottom: 16px;"></div>
+
+      <form id="inviteAdminForm" onsubmit="handleSendAdminInvite(event)">
+        <div class="form-group-admin" style="margin-bottom: 14px;">
+          <label for="inviteAdminName" class="form-label-admin body-12">Full Name *</label>
+          <input type="text" id="inviteAdminName" class="form-input-admin body-14" placeholder="e.g. Ibrahim Musa" required style="width: 100%;">
+        </div>
+
+        <div class="form-group-admin" style="margin-bottom: 16px;">
+          <label for="inviteAdminEmail" class="form-label-admin body-12">Email Address *</label>
+          <input type="email" id="inviteAdminEmail" class="form-input-admin body-14" placeholder="e.g. ibrahim@krabe.store" required style="width: 100%;">
+        </div>
+
+        <div style="background: #FAF8F5; border: 1px solid var(--color-border); border-radius: 6px; padding: 12px 14px; margin-bottom: 22px;">
+          <div class="body-12" style="font-weight: 700; color: var(--color-obsidian); margin-bottom: 4px;">
+            Assigned Role: <span class="admin-nav-pill gold body-10" style="margin-left: 6px;">Staff / Admin</span>
+          </div>
+          <div class="body-11" style="color: var(--color-text-muted); line-height: 1.4;">
+            The system sets this user with official Admin permissions upon accepting the invitation link.
+          </div>
+        </div>
+
+        <div style="display: flex; gap: 10px; justify-content: flex-end;">
+          <button type="button" class="btn btn-outline body-13" onclick="closeInviteAdminModal()" style="padding: 9px 18px;">Cancel</button>
+          <button type="submit" id="submitInviteAdminBtn" class="btn btn-primary body-13" style="padding: 9px 24px;">Send Invitation &rarr;</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- =========================================================================
+       MODAL: REMOVE / REVOKE ADMIN (SUPER ADMIN EXCLUSIVE)
+       ========================================================================= -->
+  <div class="admin-modal-overlay" id="removeAdminModal" role="dialog" aria-modal="true" aria-labelledby="removeAdminModalTitle" style="display: none;">
+    <div class="admin-modal-card" style="max-width: 440px; padding: 28px 24px; position: relative; text-align: center;">
+      <button type="button" class="admin-modal-close body-18" onclick="closeRemoveAdminModal()" aria-label="Close dialog" style="position: absolute; top: 16px; right: 16px;">&times;</button>
+
+      <div style="width: 52px; height: 52px; border-radius: 50%; background: #FEE2E2; color: #DC2626; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px auto; font-size: 24px;">
+        ⚠️
+      </div>
+
+      <h3 class="h4" id="removeAdminModalTitle" style="color: var(--color-obsidian); font-weight: 700; margin: 0 0 8px 0; font-size: 19px;">Revoke Admin Privileges?</h3>
+      <p class="body-14" id="removeAdminModalText" style="color: var(--color-text-muted); margin: 0 0 18px 0; font-size: 13.5px; line-height: 1.5;">
+        Are you sure you want to remove admin access for this user?
+      </p>
+
+      <div id="removeAdminAlert" style="display: none; padding: 10px 14px; border-radius: 4px; font-size: 12px; margin-bottom: 16px; text-align: left;"></div>
+
+      <div style="background: #FAF8F5; border: 1px solid var(--color-border); border-radius: 6px; padding: 12px; margin-bottom: 22px; text-align: left;">
+        <label style="display: flex; align-items: flex-start; gap: 8px; cursor: pointer; margin: 0;">
+          <input type="checkbox" id="removeAdminDeleteAccountCheck" style="margin-top: 3px;">
+          <span class="body-12" style="color: var(--color-obsidian); line-height: 1.4;">
+            <strong>Permanently delete account</strong> from system entirely (instead of safe demotion to Customer).
+          </span>
+        </label>
+      </div>
+
+      <div style="display: flex; gap: 10px;">
+        <button type="button" class="btn body-13" onclick="closeRemoveAdminModal()" style="flex: 1; padding: 10px 16px; background: #fff; border: 1px solid var(--color-border); border-radius: 4px; color: var(--color-obsidian); font-weight: 600;">
+          Cancel
+        </button>
+        <button type="button" id="confirmRemoveAdminBtn" class="btn body-13" onclick="executeRemoveAdmin()" style="flex: 1; padding: 10px 16px; background: #DC2626; color: #fff; border: none; border-radius: 4px; font-weight: 600;">
+          Revoke Access
+        </button>
+      </div>
+    </div>
+  </div>
+
   <!-- FLOATING TOAST CONTAINER -->
   <div class="admin-toast-container" id="toastContainer" aria-live="polite"></div>
 
@@ -2538,13 +2632,17 @@
           catalog: 'Product Catalog & Inventory',
           measurements: 'Studio Measurements',
           vault: 'Customers',
-          users: 'Staff & Role Management'
+          users: 'Admins & Staff Management'
         };
         indicator.innerText = titles[tabName] || tabName;
       }
 
       if (tabName === 'measurements') {
         loadAdminStudioMeasurements();
+      }
+
+      if (tabName === 'users') {
+        loadStaffMembers();
       }
 
       updateAllTabCounts();
@@ -10129,22 +10227,31 @@
     });
 
     /* -------------------------------------------------------------------------
-       6. STAFF & USER MANAGEMENT (Super Admin)
+       6. STAFF & ADMIN MANAGEMENT (Super Admin)
        ------------------------------------------------------------------------- */
     async function loadStaffMembers() {
       const client = getSupabase();
       if (!client) return;
 
       try {
-        const { data, error } = await client
-          .from('profile')
-          .select('id, name, avatar_url, phone_number, role, created_at')
-          .order('created_at', { ascending: false });
+        // Primary: Query staff via PostgreSQL RPC get_staff_members()
+        const { data, error } = await client.rpc('get_staff_members');
 
-        if (error) throw error;
-        adminState.staffMembers = data || [];
+        if (!error && data) {
+          adminState.staffMembers = data;
+        } else {
+          // Direct query fallback for admin & super admin profiles
+          const { data: fallbackData, error: fallbackErr } = await client
+            .from('profile')
+            .select('id, name, email, avatar_url, phone_number, role, created_at')
+            .in('role', ['admin', 'super admin'])
+            .order('created_at', { ascending: false });
+
+          if (fallbackErr) throw fallbackErr;
+          adminState.staffMembers = fallbackData || [];
+        }
+
         renderUsersTable();
-
         updateAllTabCounts();
       } catch (err) {
         console.error('[Admin] Error loading staff:', err);
@@ -10157,60 +10264,80 @@
 
       const query = (document.getElementById('userSearchInput')?.value || '').toLowerCase().trim();
 
-      const filtered = adminState.staffMembers.filter(p => {
+      const filtered = (adminState.staffMembers || []).filter(p => {
         if (!query) return true;
-        return (p.name || '').toLowerCase().includes(query);
+        const nameMatch = (p.name || '').toLowerCase().includes(query);
+        const emailMatch = (p.email || '').toLowerCase().includes(query);
+        return nameMatch || emailMatch;
       });
+
+      const userBadge = document.getElementById('userCountBadge');
+      if (userBadge) {
+        const count = filtered.length;
+        userBadge.innerText = `${count} Administrator${count === 1 ? '' : 's'}`;
+      }
 
       if (filtered.length === 0) {
         tbody.innerHTML = `
           <tr>
             <td colspan="5" class="admin-empty-state">
-              <span class="admin-empty-icon">👥</span>
-              <strong>No Users Found</strong>
+              <span class="admin-empty-icon">🛡️</span>
+              <strong>No Administrators Found</strong>
             </td>
           </tr>
         `;
         return;
       }
 
+      const currentUserId = adminState.profile?.id || adminState.user?.id;
+
       const rowsHtml = filtered.map(u => {
-        const name = u.name || 'Atelier User';
-        const role = u.role || 'customer';
+        const name = u.name || 'Atelier Staff';
+        const email = u.email || '—';
+        const role = u.role || 'admin';
         const dateStr = formatDate(u.created_at);
         const initials = name.slice(0, 2).toUpperCase();
 
         const isSuper = role === 'super admin';
-        const isAdmin = role === 'admin';
+        const isSelf = currentUserId && String(currentUserId) === String(u.id);
+
+        let actionHtml = '';
+        if (isSelf) {
+          actionHtml = `<span class="body-12" style="color: var(--color-text-muted); font-style: italic; font-weight: 500;">(Your Account)</span>`;
+        } else if (isSuper) {
+          actionHtml = `<span class="admin-nav-pill super body-10">Super Admin</span>`;
+        } else {
+          actionHtml = `
+            <button type="button" class="btn btn-outline body-12" onclick="openRemoveAdminModal('${u.id}', '${escapeHtml(name)}', '${escapeHtml(email)}')" style="padding: 4px 10px; color: #991B1B; border-color: #F87171;" title="Revoke admin access">
+              &times; Remove Admin
+            </button>
+          `;
+        }
 
         return `
           <tr data-user-id="${u.id}">
             <td>
               <div style="display: flex; align-items: center; gap: 10px;">
-                <div class="admin-avatar body-12" style="background: ${isSuper ? 'var(--color-gold)' : '#44637B'}; color: #FFFFFF; width: 32px; height: 32px;">${initials}</div>
+                <div class="admin-avatar body-12" style="background: ${isSuper ? 'var(--color-gold)' : '#44637B'}; color: #FFFFFF; width: 34px; height: 34px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700;">${initials}</div>
                 <div>
-                  <strong>${name}</strong>
-                  <div class="body-10" style="color: var(--color-text-muted);">${u.phone_number || 'Atelier Member'}</div>
+                  <strong class="body-14" style="color: var(--color-obsidian);">${escapeHtml(name)}</strong>
+                  ${u.phone_number ? `<div class="body-10" style="color: var(--color-text-muted);">${escapeHtml(u.phone_number)}</div>` : ''}
                 </div>
               </div>
             </td>
             <td>
-              <span class="admin-nav-pill ${isSuper ? 'super' : (isAdmin ? 'gold' : '')} body-10" style="text-transform: capitalize;">
+              <span class="body-14" style="color: var(--color-obsidian);">${escapeHtml(email)}</span>
+            </td>
+            <td>
+              <span class="admin-nav-pill ${isSuper ? 'super' : 'gold'} body-10" style="text-transform: capitalize;">
                 ${role}
               </span>
             </td>
             <td>
-              <span class="body-12" style="color: #03543F; font-weight: 600;">Active</span>
+              <span class="body-12" style="color: var(--color-text-muted);">${dateStr}</span>
             </td>
             <td>
-              <span class="body-12">${dateStr}</span>
-            </td>
-            <td>
-              <select class="admin-status-select body-12" onchange="handleUserRoleChange('${u.id}', this.value)" aria-label="Change Role">
-                <option value="customer" ${role === 'customer' ? 'selected' : ''}>Customer</option>
-                <option value="admin" ${role === 'admin' ? 'selected' : ''}>Staff / Admin</option>
-                <option value="super admin" ${role === 'super admin' ? 'selected' : ''}>Super Admin</option>
-              </select>
+              ${actionHtml}
             </td>
           </tr>
         `;
@@ -10223,29 +10350,183 @@
       renderUsersTable();
     }
 
-    async function handleUserRoleChange(userId, newRole) {
-      if (adminState.activeRole !== 'super_admin') {
-        showToast('Only Super Admin can modify account permissions.');
+    // Modal: Invite New Admin
+    function openInviteAdminModal() {
+      const modal = document.getElementById('inviteAdminModal');
+      const alertEl = document.getElementById('inviteAdminAlert');
+      const form = document.getElementById('inviteAdminForm');
+      if (form) form.reset();
+      if (alertEl) {
+        alertEl.style.display = 'none';
+        alertEl.textContent = '';
+      }
+      if (modal) {
+        modal.style.display = 'flex';
+        modal.classList.add('active');
+        document.body.style.overflow = 'hidden';
+      }
+      setTimeout(() => {
+        document.getElementById('inviteAdminName')?.focus();
+      }, 100);
+    }
+
+    function closeInviteAdminModal() {
+      const modal = document.getElementById('inviteAdminModal');
+      if (modal) {
+        modal.style.display = 'none';
+        modal.classList.remove('active');
+        document.body.style.overflow = '';
+      }
+    }
+
+    async function handleSendAdminInvite(event) {
+      if (event) event.preventDefault();
+      const name = document.getElementById('inviteAdminName')?.value.trim();
+      const email = document.getElementById('inviteAdminEmail')?.value.trim().toLowerCase();
+      const btn = document.getElementById('submitInviteAdminBtn');
+      const alertEl = document.getElementById('inviteAdminAlert');
+
+      if (!email) {
+        showToast('Please enter a valid email address.');
         return;
       }
 
+      if (btn) {
+        btn.disabled = true;
+        btn.innerText = 'Sending Invitation...';
+      }
+      if (alertEl) {
+        alertEl.style.display = 'none';
+      }
+
       const client = getSupabase();
-      if (!client) return;
+      if (!client) {
+        if (btn) {
+          btn.disabled = false;
+          btn.innerText = 'Send Invitation →';
+        }
+        return;
+      }
 
       try {
-        const { error } = await client
-          .from('profile')
-          .update({ role: newRole, updated_at: new Date().toISOString() })
-          .eq('id', userId);
+        // Execute PostgreSQL RPC function public.invite_admin(p_email, p_name)
+        const { data, error } = await client.rpc('invite_admin', {
+          p_email: email,
+          p_name: name || ''
+        });
 
         if (error) throw error;
-        showToast(`Account role updated to: ${newRole}`);
-        const found = adminState.staffMembers.find(u => u.id === userId);
-        if (found) found.role = newRole;
-      } catch (err) {
-        console.error('[Admin] Error updating user role:', err);
-        showToast(`Failed to update role: ${err.message}`);
+
+        const msg = data?.message || `Invitation sent to ${email}`;
+        showToast(msg);
+        closeInviteAdminModal();
         await loadStaffMembers();
+      } catch (err) {
+        console.error('[Admin] Error inviting admin:', err);
+        if (alertEl) {
+          alertEl.style.display = 'block';
+          alertEl.style.background = '#FEF2F2';
+          alertEl.style.color = '#B91C1C';
+          alertEl.style.border = '1px solid #FCA5A5';
+          alertEl.textContent = err.message || 'Failed to send invitation. Please try again.';
+        }
+      } finally {
+        if (btn) {
+          btn.disabled = false;
+          btn.innerText = 'Send Invitation →';
+        }
+      }
+    }
+
+    // Modal: Remove Admin
+    let pendingRemoveAdminId = null;
+    let pendingRemoveAdminName = '';
+    let pendingRemoveAdminEmail = '';
+
+    function openRemoveAdminModal(userId, name, email) {
+      pendingRemoveAdminId = userId;
+      pendingRemoveAdminName = name || 'this administrator';
+      pendingRemoveAdminEmail = email || '';
+
+      const modal = document.getElementById('removeAdminModal');
+      const textEl = document.getElementById('removeAdminModalText');
+      const alertEl = document.getElementById('removeAdminAlert');
+      const checkEl = document.getElementById('removeAdminDeleteAccountCheck');
+
+      if (checkEl) checkEl.checked = false;
+      if (alertEl) {
+        alertEl.style.display = 'none';
+        alertEl.textContent = '';
+      }
+      if (textEl) {
+        textEl.innerHTML = `Are you sure you want to revoke admin permissions for <strong>${escapeHtml(pendingRemoveAdminName)}</strong> (${escapeHtml(pendingRemoveAdminEmail)})?`;
+      }
+
+      if (modal) {
+        modal.style.display = 'flex';
+        modal.classList.add('active');
+        document.body.style.overflow = 'hidden';
+      }
+    }
+
+    function closeRemoveAdminModal() {
+      const modal = document.getElementById('removeAdminModal');
+      if (modal) {
+        modal.style.display = 'none';
+        modal.classList.remove('active');
+        document.body.style.overflow = '';
+      }
+      pendingRemoveAdminId = null;
+    }
+
+    async function executeRemoveAdmin() {
+      if (!pendingRemoveAdminId) return;
+
+      const btn = document.getElementById('confirmRemoveAdminBtn');
+      const alertEl = document.getElementById('removeAdminAlert');
+      const shouldDelete = document.getElementById('removeAdminDeleteAccountCheck')?.checked || false;
+
+      if (btn) {
+        btn.disabled = true;
+        btn.innerText = shouldDelete ? 'Deleting Account...' : 'Revoking Privileges...';
+      }
+
+      const client = getSupabase();
+      if (!client) {
+        if (btn) {
+          btn.disabled = false;
+          btn.innerText = 'Revoke Access';
+        }
+        return;
+      }
+
+      try {
+        // Execute PostgreSQL RPC function public.remove_admin(p_user_id, p_delete_account)
+        const { data, error } = await client.rpc('remove_admin', {
+          p_user_id: pendingRemoveAdminId,
+          p_delete_account: shouldDelete
+        });
+
+        if (error) throw error;
+
+        const msg = data?.message || 'Admin privileges revoked successfully.';
+        showToast(msg);
+        closeRemoveAdminModal();
+        await loadStaffMembers();
+      } catch (err) {
+        console.error('[Admin] Error removing admin:', err);
+        if (alertEl) {
+          alertEl.style.display = 'block';
+          alertEl.style.background = '#FEF2F2';
+          alertEl.style.color = '#B91C1C';
+          alertEl.style.border = '1px solid #FCA5A5';
+          alertEl.textContent = err.message || 'Failed to remove admin. Please try again.';
+        }
+      } finally {
+        if (btn) {
+          btn.disabled = false;
+          btn.innerText = 'Revoke Access';
+        }
       }
     }
 

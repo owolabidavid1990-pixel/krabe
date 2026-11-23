@@ -2638,6 +2638,29 @@ ul {
   background: var(--color-white);
 }
 
+.krabe-measurement-form-component input[type="number"]::placeholder {
+  color: #CBD5E1 !important;
+  opacity: 0.55 !important;
+  -webkit-text-fill-color: #CBD5E1 !important;
+  font-weight: 300 !important;
+}
+.krabe-measurement-form-component input[type="number"]::-webkit-input-placeholder {
+  color: #CBD5E1 !important;
+  opacity: 0.55 !important;
+  -webkit-text-fill-color: #CBD5E1 !important;
+  font-weight: 300 !important;
+}
+.krabe-measurement-form-component input[type="number"]::-moz-placeholder {
+  color: #CBD5E1 !important;
+  opacity: 0.55 !important;
+  font-weight: 300 !important;
+}
+.krabe-measurement-form-component input[type="number"]:-ms-input-placeholder {
+  color: #CBD5E1 !important;
+  opacity: 0.55 !important;
+  font-weight: 300 !important;
+}
+
 .form-textarea {
   min-height: 110px;
   resize: vertical;
