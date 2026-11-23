@@ -318,6 +318,39 @@
       color: #162029;
       margin-top: 2px;
     }
+    @keyframes adminSpin {
+      to { transform: rotate(360deg); }
+    }
+    .customer-meas-profile-card {
+      border: 1px solid var(--color-border);
+      border-radius: 8px;
+      padding: 14px 18px;
+      background: #FFFFFF;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .customer-meas-profile-card:hover {
+      border-color: var(--color-primary);
+      box-shadow: 0 4px 12px rgba(68,99,123,0.12);
+      transform: translateY(-1px);
+    }
+    .meas-category-block {
+      background: #FAF8F5;
+      border: 1px solid var(--color-border);
+      border-radius: 8px;
+      padding: 14px 16px;
+      margin-bottom: 14px;
+    }
+    .meas-category-title {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      font-weight: 700;
+      color: var(--color-primary);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
   </style>
 </head>
 <body class="admin-body">
@@ -811,13 +844,12 @@
                   <th>Contact Info</th>
                   <th>Role</th>
                   <th>Joined Date</th>
-                  <th>Saved Sizing Sets</th>
-                  <th>Inspection</th>
+                  <th>Measurements</th>
                 </tr>
               </thead>
               <tbody id="vaultTableBody">
                 <tr>
-                  <td colspan="6" class="admin-loading-row">Loading customers...</td>
+                  <td colspan="5" class="admin-loading-row">Loading customers...</td>
                 </tr>
               </tbody>
             </table>
@@ -1524,8 +1556,11 @@
               <input type="text" id="ebCatalogItemNotes" class="form-input-admin body-14" placeholder="e.g. Sleeve length, custom buttons, specific tailoring notes...">
             </div>
 
-            <div style="margin-top: 14px; text-align: right;">
-              <button type="button" class="btn btn-primary body-14" onclick="addCatalogGarmentToEditOrder()" style="padding: 8px 18px;">
+            <div style="margin-top: 14px; display: flex; justify-content: flex-end; align-items: center; gap: 8px;">
+              <button type="button" class="btn btn-outline body-14" id="ebCatalogDiscardBtn" onclick="cancelEditBespokeItem()" style="display: none; padding: 8px 16px; border-color: var(--color-border); color: #4B5563;">
+                Discard Changes
+              </button>
+              <button type="button" class="btn btn-primary body-14" id="ebCatalogSaveBtn" onclick="addCatalogGarmentToEditOrder()" style="padding: 8px 18px;">
                 + Add Item to Order
               </button>
             </div>
@@ -1635,8 +1670,11 @@
               </div>
             </div>
 
-            <div style="margin-top: 14px; text-align: right;">
-              <button type="button" class="btn btn-primary body-14" onclick="addBespokeGarmentToEditOrder()" style="padding: 8px 18px;">
+            <div style="margin-top: 14px; display: flex; justify-content: flex-end; align-items: center; gap: 8px;">
+              <button type="button" class="btn btn-outline body-14" id="ebBespokeDiscardBtn" onclick="cancelEditBespokeItem()" style="display: none; padding: 8px 16px; border-color: var(--color-border); color: #4B5563;">
+                Discard Changes
+              </button>
+              <button type="button" class="btn btn-primary body-14" id="ebBespokeSaveBtn" onclick="addBespokeGarmentToEditOrder()" style="padding: 8px 18px;">
                 + Add Item to Order
               </button>
             </div>
@@ -1730,20 +1768,36 @@
     </div>
   </div>
 
-  <!-- MODAL: VIEW TAILORING MEASUREMENT CARD -->
+  <!-- MODAL: VIEW TAILORING MEASUREMENT CARD (ON-DEMAND LIST & FULL VIEW MODE) -->
   <div class="admin-modal-overlay" id="measureModal" role="dialog" aria-modal="true" aria-labelledby="measureModalTitle">
-    <div class="admin-modal-card">
-      <div class="admin-modal-header">
-        <h3 class="admin-modal-title h3" id="measureModalTitle">Client Sizing Card</h3>
+    <div class="admin-modal-card large" style="max-width: 780px;">
+      <div class="admin-modal-header" style="display: flex; justify-content: space-between; align-items: center;">
+        <div>
+          <h3 class="admin-modal-title h3" id="measureModalTitle">Customer Measurements</h3>
+          <div class="body-12" style="color: var(--color-text-muted); margin-top: 2px;" id="measureModalSubtitle">Select a profile to view details</div>
+        </div>
         <button type="button" class="admin-modal-close body-18" onclick="closeMeasureModal()" aria-label="Close dialog">&times;</button>
       </div>
-      <div class="admin-modal-body">
-        <h4 id="measureClientName" class="body-16" style="font-weight: 700; margin-bottom: 14px; color: var(--color-obsidian);">Client Measurements</h4>
-        <div class="measurements-mini-grid" id="measureGridDisplay">
-          <!-- Populated by JS -->
+      <div class="admin-modal-body" style="padding: 24px; min-height: 240px; max-height: 70vh; overflow-y: auto;">
+        
+        <!-- View 1: List Mode (loaded on demand) -->
+        <div id="measureListView">
+          <div id="measureListContent">
+            <!-- Injected dynamically: Loading spinner / Empty state / Profiles list -->
+          </div>
         </div>
+
+        <!-- View 2: Full Measurement Details View Mode -->
+        <div id="measureDetailView" style="display: none;">
+          <!-- Injected dynamically when an individual profile is clicked -->
+        </div>
+
       </div>
-      <div class="admin-modal-footer">
+      <div class="admin-modal-footer" style="display: flex; justify-content: space-between; align-items: center;">
+        <button type="button" class="btn btn-outline body-14" id="measureBackToListBtn" onclick="backToMeasurementListView()" style="display: none;">
+          &larr; Back to Profiles
+        </button>
+        <div style="flex: 1;"></div>
         <button type="button" class="btn btn-primary body-14" onclick="closeMeasureModal()">Done</button>
       </div>
     </div>
@@ -2163,7 +2217,7 @@
                 Add Item / Variation
               </span>
               <button type="button" class="btn btn-outline body-10" id="ep_var_cancel_edit_btn" onclick="cancelVariantEdit('edit')" style="display: none; padding: 3px 8px;">
-                Cancel Editing
+                Discard Changes
               </button>
             </div>
 
@@ -2294,7 +2348,10 @@
               </div>
             </div>
 
-            <div style="margin-top: 14px; text-align: right;">
+            <div style="margin-top: 14px; display: flex; justify-content: flex-end; align-items: center; gap: 8px;">
+              <button type="button" class="btn btn-outline body-14" id="ep_v_discard_btn" onclick="cancelVariantEdit('edit')" style="display: none; padding: 8px 16px; border-color: var(--color-border); color: #4B5563;">
+                Discard Changes
+              </button>
               <button type="button" class="btn btn-primary body-14" id="ep_v_save_btn" onclick="saveEditVariation()" style="padding: 8px 18px;">
                 + Add Item to Product
               </button>
@@ -3937,7 +3994,8 @@
         deposit: 0,
         notes: ''
       },
-      items: []
+      items: [],
+      editingItemIndex: -1
     };
 
     let selectedCatalogSize = 'M';
@@ -5569,7 +5627,8 @@
         deposit: 0,
         notes: ''
       },
-      items: []
+      items: [],
+      editingItemIndex: -1
     };
 
     let selectedEditCatalogSize = 'M';
@@ -5678,7 +5737,8 @@
           deposit: Number(order.payment_made) || 0,
           notes: order.description_notes || ''
         },
-        items: mappedItems
+        items: mappedItems,
+        editingItemIndex: -1
       };
 
       // 5. Populate form fields
@@ -5735,6 +5795,7 @@
       if (zeroAlert) zeroAlert.style.display = 'none';
       editBespokeState.orderId = null;
       editBespokeState.items = [];
+      editBespokeState.editingItemIndex = -1;
     }
 
     function goToEditBespokeStep(step, validate = true) {
@@ -6516,8 +6577,10 @@
 
       const itemDesc = `${prod.title} (${variant.color || 'Standard'}, Size: ${selectedEditCatalogSize}, Qty: ${qty})${notes ? ` — ${notes}` : ''}`;
 
-      editBespokeState.items.push({
+      const isEditing = editBespokeState.editingItemIndex >= 0;
+      const catalogItem = {
         source: 'catalog',
+        product_id: prod.id,
         title: prod.title,
         color: variant.color || 'Standard',
         size: selectedEditCatalogSize,
@@ -6534,21 +6597,23 @@
         description_notes: itemDesc,
         fabric_photos: variant.main_image ? [variant.main_image] : [],
         inspiration_photos: []
-      });
+      };
 
-      if (document.getElementById('ebCatalogItemNotes')) document.getElementById('ebCatalogItemNotes').value = '';
-      if (document.getElementById('ebCatalogQty')) document.getElementById('ebCatalogQty').value = 1;
+      if (isEditing) {
+        editBespokeState.items[editBespokeState.editingItemIndex] = catalogItem;
+        editBespokeState.editingItemIndex = -1;
+      } else {
+        editBespokeState.items.push(catalogItem);
+      }
 
-      clearEditBespokeProductSearch();
-      clearEditGarmentUser('catalog');
-      clearEditMeasurementProfile('catalog');
+      cancelEditBespokeItem();
 
       const zeroAlert = document.getElementById('ebZeroItemsAlert');
       if (zeroAlert) zeroAlert.style.display = 'none';
 
       renderEditBespokeItems();
       updateEditBespokeFinancialSummary();
-      showToast(`Added "${prod.title}" to order!`);
+      showToast(isEditing ? `Updated "${prod.title}" in order!` : `Added "${prod.title}" to order!`);
     }
 
     function addBespokeGarmentToEditOrder() {
@@ -6586,7 +6651,8 @@
 
       const categoryLabel = category.charAt(0).toUpperCase() + category.slice(1);
 
-      editBespokeState.items.push({
+      const isEditing = editBespokeState.editingItemIndex >= 0;
+      const bespokeItem = {
         source: 'bespoke',
         type: 'bespoke',
         selected_size: 'Custom',
@@ -6603,32 +6669,149 @@
         description_notes: desc,
         fabric_photos: [...editBespokeFabricPhotos],
         inspiration_photos: [...editBespokeInspoPhotos]
-      });
+      };
 
-      if (document.getElementById('ebBespokeDesc')) document.getElementById('ebBespokeDesc').value = '';
-      if (document.getElementById('ebBespokeCharge')) document.getElementById('ebBespokeCharge').value = '';
-      editBespokeFabricPhotos = [];
-      editBespokeInspoPhotos = [];
-      renderBespokePhotoThumbnails('fabric', 'edit');
-      renderBespokePhotoThumbnails('inspo', 'edit');
+      if (isEditing) {
+        editBespokeState.items[editBespokeState.editingItemIndex] = bespokeItem;
+        editBespokeState.editingItemIndex = -1;
+      } else {
+        editBespokeState.items.push(bespokeItem);
+      }
 
-      clearEditGarmentUser('bespoke');
-      clearEditMeasurementProfile('bespoke');
+      cancelEditBespokeItem();
 
       const zeroAlert = document.getElementById('ebZeroItemsAlert');
       if (zeroAlert) zeroAlert.style.display = 'none';
 
       renderEditBespokeItems();
       updateEditBespokeFinancialSummary();
-      showToast(`Added bespoke ${categoryLabel} item to order!`);
+      showToast(isEditing ? `Updated bespoke ${categoryLabel} piece!` : `Added bespoke ${categoryLabel} item to order!`);
+    }
+
+    function editEditBespokeItem(idx) {
+      if (idx < 0 || idx >= editBespokeState.items.length) return;
+      const item = editBespokeState.items[idx];
+      editBespokeState.editingItemIndex = idx;
+
+      if (item.source === 'catalog') {
+        switchEditBespokeGarmentType('catalog');
+        if (item.product_id) {
+          const prod = (adminState.products || []).find(p => p.id === item.product_id);
+          if (prod) selectEditBespokeProduct(prod);
+        }
+        if (document.getElementById('ebCatalogQty')) {
+          document.getElementById('ebCatalogQty').value = item.quantity || 1;
+        }
+        if (document.getElementById('ebCatalogUnitPrice')) {
+          document.getElementById('ebCatalogUnitPrice').value = item.unit_price || (item.charge / (item.quantity || 1)) || '';
+        }
+        if (document.getElementById('ebCatalogItemNotes')) {
+          document.getElementById('ebCatalogItemNotes').value = item.description_notes || '';
+        }
+        if (item.size) {
+          selectEditCatalogSize(item.size);
+        }
+        const saveBtn = document.getElementById('ebCatalogSaveBtn');
+        if (saveBtn) saveBtn.innerText = 'Save Changes to Item';
+        const discardBtn = document.getElementById('ebCatalogDiscardBtn');
+        if (discardBtn) discardBtn.style.display = 'inline-block';
+        document.getElementById('ebCatalogPickerSection')?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      } else {
+        switchEditBespokeGarmentType('bespoke');
+        if (document.getElementById('ebBespokeCategory')) {
+          document.getElementById('ebBespokeCategory').value = item.category || 'native';
+        }
+        if (document.getElementById('ebBespokeGender')) {
+          document.getElementById('ebBespokeGender').value = item.gender || 'male';
+        }
+        if (document.getElementById('ebBespokeDesc')) {
+          document.getElementById('ebBespokeDesc').value = item.description_notes || item.title || '';
+        }
+        if (document.getElementById('ebBespokeCharge')) {
+          document.getElementById('ebBespokeCharge').value = item.charge || item.unit_price || '';
+        }
+        editBespokeFabricPhotos = Array.isArray(item.fabric_photos) ? [...item.fabric_photos] : [];
+        editBespokeInspoPhotos = Array.isArray(item.inspiration_photos) ? [...item.inspiration_photos] : [];
+        renderBespokePhotoThumbnails('fabric', 'edit');
+        renderBespokePhotoThumbnails('inspo', 'edit');
+
+        if (item.user_id) {
+          const user = (adminState.allProfiles || adminState.vaultProfiles || []).find(p => p.id === item.user_id);
+          if (user) selectEditGarmentUser('bespoke', user);
+          else clearEditGarmentUser('bespoke');
+        } else {
+          clearEditGarmentUser('bespoke');
+        }
+
+        if (item.measurement_id) {
+          const meas = (adminState.allMeasurements || []).find(m => m.id === item.measurement_id);
+          if (meas) selectEditMeasurementProfile('bespoke', meas);
+          else clearEditMeasurementProfile('bespoke');
+        } else {
+          clearEditMeasurementProfile('bespoke');
+        }
+
+        const saveBtn = document.getElementById('ebBespokeSaveBtn');
+        if (saveBtn) saveBtn.innerText = 'Save Changes to Item';
+        const discardBtn = document.getElementById('ebBespokeDiscardBtn');
+        if (discardBtn) discardBtn.style.display = 'inline-block';
+        document.getElementById('ebBespokePickerSection')?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      }
+
+      renderEditBespokeItems();
+    }
+
+    function cancelEditBespokeItem() {
+      editBespokeState.editingItemIndex = -1;
+
+      // Reset Bespoke form
+      if (document.getElementById('ebBespokeDesc')) document.getElementById('ebBespokeDesc').value = '';
+      if (document.getElementById('ebBespokeCharge')) document.getElementById('ebBespokeCharge').value = '';
+      editBespokeFabricPhotos = [];
+      editBespokeInspoPhotos = [];
+      renderBespokePhotoThumbnails('fabric', 'edit');
+      renderBespokePhotoThumbnails('inspo', 'edit');
+      clearEditGarmentUser('bespoke');
+      clearEditMeasurementProfile('bespoke');
+
+      // Reset Catalog form
+      if (document.getElementById('ebCatalogItemNotes')) document.getElementById('ebCatalogItemNotes').value = '';
+      if (document.getElementById('ebCatalogQty')) document.getElementById('ebCatalogQty').value = 1;
+      if (document.getElementById('ebCatalogUnitPrice')) document.getElementById('ebCatalogUnitPrice').value = '';
+      clearEditBespokeProductSearch();
+      clearEditGarmentUser('catalog');
+      clearEditMeasurementProfile('catalog');
+
+      // Reset buttons
+      const bSaveBtn = document.getElementById('ebBespokeSaveBtn');
+      if (bSaveBtn) bSaveBtn.innerText = '+ Add Item to Order';
+      const bDiscardBtn = document.getElementById('ebBespokeDiscardBtn');
+      if (bDiscardBtn) bDiscardBtn.style.display = 'none';
+
+      const cSaveBtn = document.getElementById('ebCatalogSaveBtn');
+      if (cSaveBtn) cSaveBtn.innerText = '+ Add Item to Order';
+      const cDiscardBtn = document.getElementById('ebCatalogDiscardBtn');
+      if (cDiscardBtn) cDiscardBtn.style.display = 'none';
+
+      renderEditBespokeItems();
     }
 
     function removeEditBespokeItem(idx) {
       if (idx >= 0 && idx < editBespokeState.items.length) {
+        const item = editBespokeState.items[idx];
+        const title = item ? (item.title || item.description_notes || 'this item') : 'this item';
+        if (!confirm(`Are you sure you want to delete "${title}" from this order?`)) {
+          return;
+        }
+        if (editBespokeState.editingItemIndex === idx) {
+          cancelEditBespokeItem();
+        } else if (editBespokeState.editingItemIndex > idx) {
+          editBespokeState.editingItemIndex--;
+        }
         const removed = editBespokeState.items.splice(idx, 1);
         renderEditBespokeItems();
         updateEditBespokeFinancialSummary();
-        showToast(`Removed "${removed[0]?.title || 'item'}".`);
+        showToast(`Removed "${title}".`);
       }
     }
 
@@ -6731,8 +6914,10 @@
         const title = item.title || item.description_notes || `${item.category || 'Bespoke'} Piece`;
         const sizeLabel = item.selected_size || item.size || 'M';
 
+        const isEditing = editBespokeState.editingItemIndex === idx;
+
         return `
-          <div style="padding: 12px 14px; background: #fff; border-radius: 6px; border: 1px solid var(--color-border); display: flex; align-items: center; justify-content: space-between; gap: 12px;">
+          <div style="padding: 12px 14px; background: ${isEditing ? '#EBF8FF' : '#fff'}; border-radius: 6px; border: 1px solid ${isEditing ? '#3182CE' : 'var(--color-border)'}; display: flex; align-items: center; justify-content: space-between; gap: 12px;">
             <div style="display: flex; align-items: center; gap: 12px; flex: 1; min-width: 0;">
               <img src="${imgUrl}" alt="${escapeHtml(title)}" style="width: 38px; height: 38px; border-radius: 4px; object-fit: cover; flex-shrink: 0;" onerror="this.onerror=null; this.src='assets/lookbook/lookbook_1_kaftan.jpg';">
               <div style="min-width: 0;">
@@ -6747,8 +6932,11 @@
               </div>
             </div>
 
-            <div style="display: flex; align-items: center; gap: 14px; flex-shrink: 0;">
-              <strong class="body-14" style="color: var(--color-obsidian);">${formatNaira(item.charge)}</strong>
+            <div style="display: flex; align-items: center; gap: 8px; flex-shrink: 0;">
+              <strong class="body-14" style="color: var(--color-obsidian); margin-right: 6px;">${formatNaira(item.charge)}</strong>
+              <button type="button" class="btn btn-outline body-12" onclick="editEditBespokeItem(${idx})" style="padding: 4px 10px;" title="Edit this item">
+                Edit
+              </button>
               <button type="button" class="btn btn-outline body-12" onclick="removeEditBespokeItem(${idx})" style="padding: 4px 8px; color: #991B1B; border-color: #F87171;" title="Remove this item">
                 &times; Remove
               </button>
@@ -8628,6 +8816,8 @@
       document.getElementById('ep_var_form_title').innerText = 'Add Item / Variation';
       document.getElementById('ep_v_save_btn').innerText = '+ Add Item to Product';
       document.getElementById('ep_var_cancel_edit_btn').style.display = 'none';
+      const epDiscardBtn = document.getElementById('ep_v_discard_btn');
+      if (epDiscardBtn) epDiscardBtn.style.display = 'none';
 
       editProductState.activeVariantImage = null;
       editProductState.activeVariantColor = '';
@@ -8761,7 +8951,13 @@
 
       document.getElementById('ep_var_form_title').innerText = `Edit Item #${idx + 1} (${v.color || 'Item'})`;
       document.getElementById('ep_v_save_btn').innerText = 'Save Changes to Item';
-      document.getElementById('ep_var_cancel_edit_btn').style.display = 'inline-block';
+      const epDiscardBtn = document.getElementById('ep_v_discard_btn');
+      if (epDiscardBtn) epDiscardBtn.style.display = 'inline-block';
+      const epCancelHeaderBtn = document.getElementById('ep_var_cancel_edit_btn');
+      if (epCancelHeaderBtn) {
+        epCancelHeaderBtn.innerText = 'Discard Changes';
+        epCancelHeaderBtn.style.display = 'inline-block';
+      }
 
       document.getElementById('ep_variant_form')?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
     }
@@ -8772,15 +8968,21 @@
         return;
       }
       const v = editProductState.variations[idx];
+      const itemName = v?.color ? `item "${v.color}"` : 'this item';
+      if (!confirm(`Are you sure you want to delete ${itemName} from this product?`)) {
+        return;
+      }
       if (v && v.id) {
         editProductState.deletedVariantIds.push(v.id);
       }
-      editProductState.variations.splice(idx, 1);
       if (editProductState.editingVariantIndex === idx) {
         resetEditVariantForm();
+      } else if (editProductState.editingVariantIndex > idx) {
+        editProductState.editingVariantIndex--;
       }
+      editProductState.variations.splice(idx, 1);
       renderEditProductVariations();
-      showToast('Removed item.');
+      showToast('Item variation removed.');
     }
 
     function renderEditProductVariations() {
@@ -9134,7 +9336,7 @@
       if (totalItems === 0) {
         tbody.innerHTML = `
           <tr>
-            <td colspan="6" class="admin-empty-state">
+            <td colspan="5" class="admin-empty-state">
               <span class="admin-empty-icon">👥</span>
               <strong>No Customers Found</strong>
             </td>
@@ -9152,9 +9354,6 @@
         const name = p.name || 'Anonymous Customer';
         const phone = p.phone_number || p.whatsapp_number || 'No phone recorded';
         const dateStr = formatDate(p.created_at);
-        const measurements = p.custom_measurement || [];
-        const hasCard = measurements.length > 0;
-
         const initials = name.slice(0, 2).toUpperCase();
 
         return `
@@ -9180,12 +9379,7 @@
               <span class="body-12">${dateStr}</span>
             </td>
             <td>
-              <span class="body-12" style="font-weight: 600; color: ${hasCard ? 'var(--color-primary)' : 'var(--color-text-muted)'};">
-                ${measurements.length} Profile(s)
-              </span>
-            </td>
-            <td>
-              ${hasCard ? `<button type="button" class="btn btn-outline body-12" style="padding: 4px 10px;" onclick="viewClientMeasurementCard('${p.id}')">View Sizing &rarr;</button>` : '<span class="body-10" style="color: var(--color-text-muted);">No card</span>'}
+              <button type="button" class="btn btn-outline body-12" style="padding: 4px 10px;" onclick="openCustomerMeasurementsModal('${p.id}')">View Measurements</button>
             </td>
           </tr>
         `;
@@ -9231,50 +9425,339 @@
       renderVaultTable();
     }
 
-    function viewClientMeasurementCard(profileId) {
-      const profile = adminState.vaultProfiles.find(p => p.id === profileId);
-      if (!profile) return;
+    let currentCustomerMeasurements = [];
+    let currentCustomerProfile = null;
 
-      const measurements = profile.custom_measurement || [];
-      if (!measurements.length) {
-        showToast('No sizing measurements recorded for this client.');
+    async function openCustomerMeasurementsModal(customerId) {
+      currentCustomerProfile = (adminState.vaultProfiles || []).find(p => p.id === customerId)
+        || (adminState.allProfiles || []).find(p => p.id === customerId)
+        || { id: customerId, name: 'Customer' };
+
+      const modal = document.getElementById('measureModal');
+      const title = document.getElementById('measureModalTitle');
+      const subtitle = document.getElementById('measureModalSubtitle');
+      const listView = document.getElementById('measureListView');
+      const detailView = document.getElementById('measureDetailView');
+      const listContent = document.getElementById('measureListContent');
+      const backBtn = document.getElementById('measureBackToListBtn');
+
+      if (!modal) return;
+
+      if (title) title.innerText = 'Customer Measurements';
+      if (subtitle) {
+        const clientName = currentCustomerProfile.name || 'Customer';
+        const clientEmail = currentCustomerProfile.email ? ` • ${currentCustomerProfile.email}` : '';
+        subtitle.innerText = `${clientName}${clientEmail}`;
+      }
+
+      if (listView) listView.style.display = 'block';
+      if (detailView) {
+        detailView.style.display = 'none';
+        detailView.innerHTML = '';
+      }
+      if (backBtn) backBtn.style.display = 'none';
+
+      if (listContent) {
+        listContent.innerHTML = `
+          <div style="text-align: center; padding: 40px 20px;">
+            <div class="admin-loading-spinner" style="margin: 0 auto 12px; width: 28px; height: 28px; border: 3px solid rgba(68,99,123,0.2); border-top-color: var(--color-primary); border-radius: 50%; animation: adminSpin 0.8s linear infinite;"></div>
+            <div class="body-14" style="color: var(--color-text-muted);">Querying measurements for <strong>${escapeHtml(currentCustomerProfile.name || 'Customer')}</strong>...</div>
+          </div>
+        `;
+      }
+
+      modal.classList.add('open');
+
+      // On-demand query from database: only queried after being clicked
+      const client = getSupabase();
+      if (!client) {
+        if (listContent) {
+          listContent.innerHTML = `
+            <div class="admin-empty-state" style="padding: 30px;">
+              <span class="admin-empty-icon">⚠️</span>
+              <strong>Database Connection Error</strong>
+              <p class="body-12" style="color: var(--color-text-muted); margin-top: 4px;">Unable to initialize database client.</p>
+            </div>
+          `;
+        }
         return;
       }
 
-      const m = measurements[0];
-      const modal = document.getElementById('measureModal');
-      const title = document.getElementById('measureClientName');
-      const grid = document.getElementById('measureGridDisplay');
+      try {
+        const { data, error } = await client
+          .from('custom_measurement')
+          .select('*')
+          .eq('user_id', customerId)
+          .order('updated_at', { ascending: false });
 
-      if (title) title.innerText = `${profile.name || 'Client'} (${m.label || 'Bespoke Sizing Profile'})`;
-      if (grid) {
-        const fields = [
-          { label: 'CHEST', val: m.round_chest },
-          { label: 'SHOULDER', val: m.shoulder },
-          { label: 'WAIST', val: m.waist },
-          { label: 'HIPS', val: m.hip },
-          { label: 'SLEEVE (LONG)', val: m.sleeve_length_long },
-          { label: 'TROUSER LENGTH', val: m.trouser_length_long || m.trouser_length_ankle },
-          { label: 'ARMHOLE', val: m.armhole },
-          { label: 'NECK', val: m.neck },
-          { label: 'AGBADA LENGTH', val: m.agbada_length },
-          { label: 'AGBADA SLEEVES', val: m.agbada_sleeves }
-        ];
+        if (error) throw error;
 
-        grid.innerHTML = fields.map(f => `
-          <div class="measure-mini-item body-12">
-            <span>${f.label}</span>
-            <input type="text" value="${f.val ? f.val + '"' : '&mdash;'}" readonly>
+        currentCustomerMeasurements = data || [];
+        renderCustomerMeasurementsList();
+      } catch (err) {
+        console.error('[Admin] Error querying customer measurements:', err);
+        if (listContent) {
+          listContent.innerHTML = `
+            <div class="admin-empty-state" style="padding: 30px;">
+              <span class="admin-empty-icon">⚠️</span>
+              <strong>Failed to Query Measurements</strong>
+              <p class="body-12" style="color: var(--color-text-muted); margin-top: 4px;">${escapeHtml(err.message || 'Error occurred while querying measurements.')}</p>
+            </div>
+          `;
+        }
+      }
+    }
+
+    function renderCustomerMeasurementsList() {
+      const listContent = document.getElementById('measureListContent');
+      if (!listContent) return;
+
+      if (!currentCustomerMeasurements || currentCustomerMeasurements.length === 0) {
+        listContent.innerHTML = `
+          <div class="admin-empty-state" style="padding: 40px 20px; text-align: center;">
+            <span class="admin-empty-icon" style="font-size: 32px; display: block; margin-bottom: 10px;">📏</span>
+            <strong class="body-16" style="color: var(--color-obsidian);">No Measurements Recorded</strong>
+            <p class="body-12" style="color: var(--color-text-muted); margin-top: 6px; max-width: 400px; margin-left: auto; margin-right: auto; line-height: 1.5;">
+              ${escapeHtml(currentCustomerProfile.name || 'This customer')} does not have any saved bespoke tailoring measurements on record.
+            </p>
           </div>
-        `).join('');
+        `;
+        return;
       }
 
-      if (modal) modal.classList.add('open');
+      const count = currentCustomerMeasurements.length;
+      const subtitle = document.getElementById('measureModalSubtitle');
+      if (subtitle) {
+        const clientName = currentCustomerProfile.name || 'Customer';
+        subtitle.innerText = `${clientName} • ${count} Sizing Profile${count === 1 ? '' : 's'}`;
+      }
+
+      const listHtml = `
+        <div style="margin-bottom: 14px;">
+          <span class="body-12" style="color: var(--color-text-muted);">
+            Found <strong>${count}</strong> saved measurement profile${count === 1 ? '' : 's'}. Click on any profile below to view its full measurement specifications.
+          </span>
+        </div>
+        <div style="display: flex; flex-direction: column; gap: 10px;">
+          ${currentCustomerMeasurements.map((m, idx) => {
+            const label = m.label || `Sizing Profile #${idx + 1}`;
+            const gender = m.gender ? (m.gender.charAt(0).toUpperCase() + m.gender.slice(1)) : 'Bespoke';
+            const dateStr = formatDate(m.updated_at || m.created_at);
+
+            const previews = [];
+            if (m.round_chest) previews.push(`Chest: ${m.round_chest}"`);
+            if (m.round_bust) previews.push(`Bust: ${m.round_bust}"`);
+            if (m.waist) previews.push(`Waist: ${m.waist}"`);
+            if (m.shoulder) previews.push(`Shoulder: ${m.shoulder}"`);
+            if (m.hip) previews.push(`Hip: ${m.hip}"`);
+            if (m.trouser_length_long || m.trouser_length_ankle) previews.push(`Trouser: ${m.trouser_length_long || m.trouser_length_ankle}"`);
+            if (m.agbada_length) previews.push(`Agbada: ${m.agbada_length}"`);
+
+            return `
+              <div class="customer-meas-profile-card" onclick="viewMeasurementDetails('${m.id}')">
+                <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 12px;">
+                  <div style="flex: 1;">
+                    <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+                      <strong class="body-14" style="color: var(--color-obsidian);">${escapeHtml(label)}</strong>
+                      <span class="admin-nav-pill body-10" style="background: #F1F5F9; color: #475569; text-transform: capitalize;">${gender}</span>
+                      ${idx === 0 ? '<span class="admin-nav-pill body-10" style="background: rgba(68,99,123,0.12); color: #44637B; font-weight: 700;">Latest</span>' : ''}
+                    </div>
+                    ${previews.length ? `
+                      <div style="margin-top: 8px; display: flex; flex-wrap: wrap; gap: 6px;">
+                        ${previews.map(p => `<span class="body-10" style="background: #FAF8F5; padding: 2px 7px; border-radius: 4px; border: 1px solid #EAE5DE; color: var(--color-obsidian); font-weight: 600;">${p}</span>`).join('')}
+                      </div>
+                    ` : ''}
+                    <div class="body-10" style="color: var(--color-text-muted); margin-top: 8px;">
+                      Recorded / Updated: ${dateStr}
+                    </div>
+                  </div>
+                  <div style="display: flex; align-items: center; gap: 4px; color: var(--color-primary); font-weight: 600; white-space: nowrap; margin-top: 4px;" class="body-12">
+                    <span>View Details</span>
+                    <span style="font-size: 15px;">&rarr;</span>
+                  </div>
+                </div>
+              </div>
+            `;
+          }).join('')}
+        </div>
+      `;
+
+      listContent.innerHTML = listHtml;
+    }
+
+    function viewMeasurementDetails(measurementId) {
+      const m = currentCustomerMeasurements.find(x => x.id === measurementId);
+      if (!m) return;
+
+      const listView = document.getElementById('measureListView');
+      const detailView = document.getElementById('measureDetailView');
+      const backBtn = document.getElementById('measureBackToListBtn');
+      const subtitle = document.getElementById('measureModalSubtitle');
+
+      if (listView) listView.style.display = 'none';
+      if (detailView) detailView.style.display = 'block';
+      if (backBtn) backBtn.style.display = 'inline-flex';
+
+      const label = m.label || 'Sizing Profile';
+      const gender = m.gender ? (m.gender.charAt(0).toUpperCase() + m.gender.slice(1)) : 'Bespoke';
+      const dateStr = formatDate(m.updated_at || m.created_at);
+
+      if (subtitle) {
+        subtitle.innerText = `Full Details: ${label} (${gender})`;
+      }
+
+      // Categories of all tailoring fields
+      const categories = [
+        {
+          title: 'Upper Body & Torso',
+          fields: [
+            { key: 'neck', label: 'Neck' },
+            { key: 'shoulder', label: 'Shoulder' },
+            { key: 'round_chest', label: 'Chest' },
+            { key: 'round_bust', label: 'Bust' },
+            { key: 'round_underbust', label: 'Underbust' },
+            { key: 'half_length', label: 'Half Length / Top' },
+            { key: 'apex_nipple_to_nipple', label: 'Apex (Nipple-to-Nipple)' },
+            { key: 'shoulder_to_bust_point', label: 'Shoulder to Bust' },
+            { key: 'shoulder_to_underbust', label: 'Shoulder to Underbust' }
+          ]
+        },
+        {
+          title: 'Arms & Sleeves',
+          fields: [
+            { key: 'armhole', label: 'Armhole' },
+            { key: 'round_bicep', label: 'Bicep' },
+            { key: 'round_3_4', label: '3/4 Sleeve Round' },
+            { key: 'round_longsleeve', label: 'Long Sleeve Round / Wrist' },
+            { key: 'sleeve_length_short', label: 'Short Sleeve Length' },
+            { key: 'sleeve_length_3_4', label: '3/4 Sleeve Length' },
+            { key: 'sleeve_length_long', label: 'Long Sleeve Length' }
+          ]
+        },
+        {
+          title: 'Waist & Lower Body',
+          fields: [
+            { key: 'waist', label: 'Waist' },
+            { key: 'hip', label: 'Hip' },
+            { key: 'thigh_lap', label: 'Thigh / Lap' },
+            { key: 'knee_round', label: 'Knee' },
+            { key: 'calf', label: 'Calf' },
+            { key: 'ankle_round', label: 'Ankle' },
+            { key: 'flap', label: 'Crotch / Flap' },
+            { key: 'skirt_band', label: 'Skirt Band' }
+          ]
+        },
+        {
+          title: 'Lengths & Traditional Garments',
+          fields: [
+            { key: 'trouser_length_short', label: 'Trouser Length (Short)' },
+            { key: 'trouser_length_3_4', label: 'Trouser Length (3/4)' },
+            { key: 'trouser_length_ankle', label: 'Trouser Length (Ankle)' },
+            { key: 'trouser_length_long', label: 'Trouser Length (Long)' },
+            { key: 'agbada_length', label: 'Agbada Length' },
+            { key: 'agbada_sleeves', label: 'Agbada Sleeves' },
+            { key: 'head_cap', label: 'Cap / Head Size' }
+          ]
+        }
+      ];
+
+      let totalRecorded = 0;
+      let totalPossible = 0;
+
+      const categoryHtml = categories.map(cat => {
+        let catRecorded = 0;
+        const chipsHtml = cat.fields.map(f => {
+          totalPossible++;
+          const rawVal = m[f.key];
+          const hasVal = rawVal !== undefined && rawVal !== null && String(rawVal).trim() !== '';
+          if (hasVal) {
+            totalRecorded++;
+            catRecorded++;
+          }
+          const valDisplay = hasVal ? `${rawVal}"` : '&mdash;';
+          const mutedStyle = hasVal ? '' : 'opacity: 0.55;';
+
+          return `
+            <div class="measure-chip" style="${mutedStyle}">
+              <div class="measure-chip-name">${f.label}</div>
+              <div class="measure-chip-val" style="${hasVal ? '' : 'color: var(--color-text-muted); font-size: 13px; font-weight: 500;'}">${valDisplay}</div>
+            </div>
+          `;
+        }).join('');
+
+        return `
+          <div class="meas-category-block">
+            <div class="meas-category-title">
+              <span>${cat.title}</span>
+              <span class="body-10" style="font-weight: 600; color: ${catRecorded > 0 ? 'var(--color-primary)' : 'var(--color-text-muted)'};">
+                ${catRecorded} of ${cat.fields.length} recorded
+              </span>
+            </div>
+            <div class="measure-chips-grid">
+              ${chipsHtml}
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      const notesHtml = m.notes ? `
+        <div style="margin-top: 14px; padding: 12px 16px; background: #FAF8F5; border: 1px solid #EAE5DE; border-left: 4px solid var(--color-primary); border-radius: 6px;">
+          <strong class="body-12" style="color: var(--color-obsidian); text-transform: uppercase; letter-spacing: 0.5px; display: block; margin-bottom: 4px;">Tailor Notes & Observations</strong>
+          <div class="body-12" style="color: var(--color-obsidian); line-height: 1.5;">${escapeHtml(m.notes)}</div>
+        </div>
+      ` : '';
+
+      detailView.innerHTML = `
+        <div style="background: #FFFFFF; border: 1px solid var(--color-border); border-radius: 8px; padding: 16px; margin-bottom: 16px;">
+          <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+            <div>
+              <div style="display: flex; align-items: center; gap: 8px;">
+                <h4 class="h3" style="margin: 0; font-size: 18px; color: var(--color-obsidian);">${escapeHtml(label)}</h4>
+                <span class="admin-nav-pill body-10" style="background: #F1F5F9; color: #475569; text-transform: capitalize;">${gender}</span>
+              </div>
+              <div class="body-10" style="color: var(--color-text-muted); margin-top: 4px;">
+                Customer: <strong>${escapeHtml(currentCustomerProfile.name || 'Customer')}</strong> • Recorded / Updated: ${dateStr}
+              </div>
+            </div>
+            <div>
+              <span class="admin-nav-pill body-12" style="background: rgba(68,99,123,0.1); color: var(--color-primary); font-weight: 700; padding: 6px 12px;">
+                ${totalRecorded} of ${totalPossible} Fields Measured
+              </span>
+            </div>
+          </div>
+        </div>
+
+        ${categoryHtml}
+        ${notesHtml}
+      `;
+    }
+
+    function backToMeasurementListView() {
+      const listView = document.getElementById('measureListView');
+      const detailView = document.getElementById('measureDetailView');
+      const backBtn = document.getElementById('measureBackToListBtn');
+      const subtitle = document.getElementById('measureModalSubtitle');
+
+      if (listView) listView.style.display = 'block';
+      if (detailView) detailView.style.display = 'none';
+      if (backBtn) backBtn.style.display = 'none';
+
+      if (subtitle) {
+        const clientName = currentCustomerProfile?.name || 'Customer';
+        const count = currentCustomerMeasurements.length;
+        subtitle.innerText = `${clientName} • ${count} Sizing Profile${count === 1 ? '' : 's'}`;
+      }
+    }
+
+    function viewClientMeasurementCard(profileId) {
+      openCustomerMeasurementsModal(profileId);
     }
 
     function closeMeasureModal() {
       const modal = document.getElementById('measureModal');
       if (modal) modal.classList.remove('open');
+      currentCustomerMeasurements = [];
+      currentCustomerProfile = null;
     }
 
     /* -------------------------------------------------------------------------
