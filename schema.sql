@@ -1465,14 +1465,22 @@ BEGIN
     RAISE EXCEPTION 'SUPABASE_SERVICE_ROLE_KEY not found in Supabase Vault. Please add your service_role secret in Project Settings -> Vault.';
   END IF;
 
-  -- Read Project URL from Vault or fallback to default
-  SELECT decrypted_secret INTO v_project_url 
-  FROM vault.decrypted_secrets 
-  WHERE name = 'SUPABASE_URL' 
-  LIMIT 1;
+  -- Detect Project URL dynamically from incoming request header or Vault
+  BEGIN
+    v_project_url := 'https://' || (current_setting('request.headers', true)::json->>'host');
+  EXCEPTION WHEN OTHERS THEN
+    v_project_url := NULL;
+  END;
 
-  IF v_project_url IS NULL OR v_project_url = '' THEN
-    v_project_url := 'https://gwknzycxxafhcyubtpps.supabase.co';
+  IF v_project_url IS NULL OR v_project_url = 'https://' THEN
+    SELECT decrypted_secret INTO v_project_url 
+    FROM vault.decrypted_secrets 
+    WHERE name = 'SUPABASE_URL' 
+    LIMIT 1;
+  END IF;
+
+  IF v_project_url IS NULL OR v_project_url = '' OR v_project_url = 'https://' THEN
+    v_project_url := 'https://myqtjagrzcgchfxhixzw.supabase.co';
   END IF;
 
   -- 5. Trigger official Supabase invitation via pg_net (sends email through Brevo SMTP)

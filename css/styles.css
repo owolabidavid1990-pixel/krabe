@@ -4629,6 +4629,11 @@ ul {
   display: flex;
   flex-direction: column;
   flex-shrink: 0;
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  overflow-y: auto;
+  align-self: flex-start;
 }
 
 .admin-sidebar-section {
@@ -5203,6 +5208,10 @@ ul {
     border-bottom: 1px solid var(--color-border);
     padding: 12px 16px;
     overflow-x: auto;
+    position: relative;
+    top: auto;
+    height: auto;
+    align-self: auto;
   }
   .admin-sidebar-section {
     margin-bottom: 0;

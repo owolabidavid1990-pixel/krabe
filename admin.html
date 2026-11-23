@@ -452,7 +452,7 @@
         </button>
       </div>
 
-      <div class="admin-sidebar-section" style="margin-top: auto;">
+      <div class="admin-sidebar-section" id="adminSidebarStaffSection" style="display: none;">
         <div class="admin-sidebar-title body-10">Administration</div>
         <button type="button" class="admin-nav-item body-14" data-tab="users" onclick="switchAdminTab('users', this)" id="navItemUsers" style="display: none;">
           <div class="admin-nav-item-content">
@@ -2676,7 +2676,8 @@
         adminState.profile = profile;
 
         // Verify if user is an admin or super admin strictly from database profile role
-        const role = profile?.role;
+        const rawRole = (profile?.role || '').toLowerCase().trim();
+        const role = rawRole.replace(/_/g, ' '); // normalizes 'super_admin' or 'super admin'
         const isStaff = role === 'admin' || role === 'super admin';
 
         if (!isStaff) {
@@ -2721,11 +2722,13 @@
       const isSuper = adminState.activeRole === 'super_admin';
       const superAuth = document.getElementById('superAdminAuthorized');
       const superRestricted = document.getElementById('superAdminRestricted');
+      const staffSection = document.getElementById('adminSidebarStaffSection');
       const navUsers = document.getElementById('navItemUsers');
 
       if (superAuth) superAuth.style.display = isSuper ? 'block' : 'none';
       if (superRestricted) superRestricted.style.display = isSuper ? 'none' : 'block';
-      if (navUsers) navUsers.style.display = isSuper ? 'block' : 'none';
+      if (staffSection) staffSection.style.display = isSuper ? 'block' : 'none';
+      if (navUsers) navUsers.style.display = isSuper ? 'flex' : 'none';
     }
 
     /* -------------------------------------------------------------------------
@@ -10362,7 +10365,7 @@
       }
       if (modal) {
         modal.style.display = 'flex';
-        modal.classList.add('active');
+        modal.classList.add('open');
         document.body.style.overflow = 'hidden';
       }
       setTimeout(() => {
@@ -10374,7 +10377,7 @@
       const modal = document.getElementById('inviteAdminModal');
       if (modal) {
         modal.style.display = 'none';
-        modal.classList.remove('active');
+        modal.classList.remove('open');
         document.body.style.overflow = '';
       }
     }
@@ -10464,7 +10467,7 @@
 
       if (modal) {
         modal.style.display = 'flex';
-        modal.classList.add('active');
+        modal.classList.add('open');
         document.body.style.overflow = 'hidden';
       }
     }
@@ -10473,7 +10476,7 @@
       const modal = document.getElementById('removeAdminModal');
       if (modal) {
         modal.style.display = 'none';
-        modal.classList.remove('active');
+        modal.classList.remove('open');
         document.body.style.overflow = '';
       }
       pendingRemoveAdminId = null;
@@ -10724,6 +10727,8 @@
         closeOrderDetailModal();
         closeGarmentSpecModal();
         closeMeasureModal();
+        closeInviteAdminModal();
+        closeRemoveAdminModal();
       }
     });
 
