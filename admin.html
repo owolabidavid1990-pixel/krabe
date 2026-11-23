@@ -604,7 +604,7 @@
               <span class="admin-nav-pill gold body-10" id="bespokeTableCount">0 Active</span>
             </div>
             <div class="admin-table-controls">
-              <input type="text" class="admin-search-input body-12" id="bespokeSearchInput" placeholder="Filter by Client, ID, Phone..." oninput="filterBespokeTable()">
+              <input type="text" class="admin-search-input body-12" id="bespokeSearchInput" placeholder="Search by email, number, name..." oninput="filterBespokeTable()" aria-label="Search by email, number, name">
               <select class="admin-filter-select body-12" id="bespokeMilestoneFilter" onchange="filterBespokeTable()">
                 <option value="all">All Milestones</option>
                 <option value="placed">Placed / In Discussion</option>
@@ -621,9 +621,9 @@
             <table class="admin-table body-14" id="bespokeOrdersTable">
               <thead>
                 <tr class="body-12">
-                  <th>Commission # / Date</th>
+                  <th>Order # / Date</th>
                   <th>Client &amp; Contact</th>
-                  <th>Garment &amp; Specs</th>
+                  <th>Items &amp; Specs</th>
                   <th>Pricing &amp; Balance</th>
                   <th>Target Deadline</th>
                   <th>Milestone Status</th>
@@ -632,10 +632,18 @@
               </thead>
               <tbody id="bespokeTableBody">
                 <tr>
-                  <td colspan="7" class="admin-loading-row">Loading bespoke commissions...</td>
+                  <td colspan="7" class="admin-loading-row">Loading custom orders...</td>
                 </tr>
               </tbody>
             </table>
+          </div>
+
+          <!-- Custom Orders Pagination Bar (20 per page) -->
+          <div id="bespokePaginationContainer" style="display: none; padding: 14px 20px; border-top: 1px solid var(--color-border); justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; background: #FAF8F5;">
+            <div class="body-12" id="bespokePaginationInfo" style="color: var(--color-text-muted);">
+              Showing 0 orders
+            </div>
+            <div id="bespokePaginationControls" style="display: flex; gap: 6px; align-items: center;"></div>
           </div>
         </div>
       </section>
@@ -2590,6 +2598,11 @@
       }
     }
 
+    let bespokePagination = {
+      currentPage: 1,
+      pageSize: 20
+    };
+
     function renderBespokeTable() {
       const tbody = document.getElementById('bespokeTableBody');
       const countEl = document.getElementById('bespokeTableCount');
@@ -2603,28 +2616,41 @@
         if (!matchesStatus) return false;
         if (!query) return true;
 
-        const name = (b.customer_name || '').toLowerCase();
         const email = (b.customer_email || '').toLowerCase();
-        const reqId = (b.request_id || b.id || '').toLowerCase();
-        return name.includes(query) || email.includes(query) || reqId.includes(query);
+        const phone = (b.customer_phone || b.phone || '').toLowerCase();
+        const orderNum = (b.request_id || b.id || '').toLowerCase();
+        const name = (b.customer_name || '').toLowerCase();
+
+        return email.includes(query) || phone.includes(query) || orderNum.includes(query) || name.includes(query);
       });
 
-      if (countEl) countEl.innerText = `${filtered.length} Active`;
+      const totalItems = filtered.length;
+      const pageSize = bespokePagination.pageSize || 20;
+      const totalPages = Math.ceil(totalItems / pageSize) || 1;
 
-      if (filtered.length === 0) {
+      if (bespokePagination.currentPage > totalPages) bespokePagination.currentPage = totalPages;
+      if (bespokePagination.currentPage < 1) bespokePagination.currentPage = 1;
+
+      if (countEl) countEl.innerText = `${totalItems} Order${totalItems === 1 ? '' : 's'}`;
+
+      if (totalItems === 0) {
         tbody.innerHTML = `
           <tr>
             <td colspan="7" class="admin-empty-state">
               <span class="admin-empty-icon">🪡</span>
-              <strong>No Bespoke commissions found</strong>
-              <div class="body-12" style="margin-top: 4px;">Click "+ Log Bespoke Commission" to record a new client commission.</div>
+              <strong>No custom orders found</strong>
+              <div class="body-12" style="margin-top: 4px;">Click "+ Log Custom Order" to record a new client order.</div>
             </td>
           </tr>
         `;
+        renderBespokePagination(0, 1, pageSize);
         return;
       }
 
-      const rowsHtml = filtered.map(b => {
+      const startIndex = (bespokePagination.currentPage - 1) * pageSize;
+      const pageItems = filtered.slice(startIndex, startIndex + pageSize);
+
+      const rowsHtml = pageItems.map(b => {
         const refId = b.request_id || ('#BES-' + b.id.slice(0, 6).toUpperCase());
         const dateStr = formatDate(b.created_at);
         const deadlineStr = formatDate(b.deadline_date);
@@ -2633,7 +2659,7 @@
         const paid = Number(b.payment_made) || 0;
         const balance = total - paid;
 
-        // Garments summary for this bespoke order
+        // Items summary for this custom order
         const items = Array.isArray(b.custom_order_item) ? b.custom_order_item : [];
         let itemsHtml = '';
 
@@ -2678,7 +2704,7 @@
                         <strong class="body-12" style="color: var(--color-obsidian);">${escapeHtml(title)}</strong>
                       </div>
                       <div class="body-10" style="color: var(--color-text-muted); margin-top: 2px;">
-                        <span style="text-transform: capitalize;">${escapeHtml(it.category || 'garment')}</span> &bull; Size: ${escapeHtml(sizeText)}${priceText ? ` &bull; <strong>${priceText}</strong>` : ''}
+                        <span style="text-transform: capitalize;">${escapeHtml(it.category || 'piece')}</span> &bull; Size: ${escapeHtml(sizeText)}${priceText ? ` &bull; <strong>${priceText}</strong>` : ''}
                       </div>
                     </div>
                   </div>
@@ -2688,6 +2714,9 @@
           `;
         }
 
+        const phoneVal = b.customer_phone || b.phone || '';
+        const phoneHtml = phoneVal ? `<div class="body-10" style="color: var(--color-text-muted); margin-top: 2px;">📞 ${escapeHtml(phoneVal)}</div>` : '';
+
         const milestones = ['placed', 'order confirmed', 'processing order', 'order ready', 'delivered', 'cancelled'];
         const optionsHtml = milestones.map(m => `
           <option value="${m}" ${b.status === m ? 'selected' : ''}>${m.charAt(0).toUpperCase() + m.slice(1)}</option>
@@ -2695,15 +2724,16 @@
 
         return `
           <tr data-bespoke-id="${b.id}">
-            <td onclick="openEditBespokeOrder('${b.id}')" style="cursor: pointer;" title="Click to view and edit commission">
+            <td onclick="openEditBespokeOrder('${b.id}')" style="cursor: pointer;" title="Click to view and edit order">
               <strong>${refId}</strong>
               <div class="body-10" style="color: var(--color-text-muted);">${dateStr}</div>
             </td>
             <td>
-              <strong>${escapeHtml(b.customer_name || 'VIP Client')}</strong>
+              <strong>${escapeHtml(b.customer_name || 'Client')}</strong>
               <div class="body-12" style="color: var(--color-text-muted);">${escapeHtml(b.customer_email || 'No email logged')}</div>
+              ${phoneHtml}
             </td>
-            <td onclick="openEditBespokeOrder('${b.id}')" style="cursor: pointer;" title="Click to view and edit garments">
+            <td onclick="openEditBespokeOrder('${b.id}')" style="cursor: pointer;" title="Click to view and edit items">
               ${itemsHtml}
             </td>
             <td>
@@ -2715,21 +2745,115 @@
               <strong style="color: #92400E;">${deadlineStr}</strong>
             </td>
             <td>
-              <select class="admin-status-select body-12" onchange="handleBespokeStatusChange('${b.id}', this.value)" aria-label="Commission Status">
+              <select class="admin-status-select body-12" onchange="handleBespokeStatusChange('${b.id}', this.value)" aria-label="Order Status">
                 ${optionsHtml}
               </select>
             </td>
             <td>
-              <button type="button" class="btn btn-outline body-12" style="padding: 4px 10px; font-weight: 500;" onclick="openEditBespokeOrder('${b.id}')" title="Edit Commission Details">Edit</button>
+              <button type="button" class="btn btn-outline body-12" style="padding: 4px 10px; font-weight: 500;" onclick="openEditBespokeOrder('${b.id}')" title="Edit Order Details">Edit</button>
             </td>
           </tr>
         `;
       }).join('');
 
       tbody.innerHTML = rowsHtml;
+      renderBespokePagination(totalItems, bespokePagination.currentPage, pageSize);
+    }
+
+    function renderBespokePagination(totalItems, currentPage, pageSize) {
+      const container = document.getElementById('bespokePaginationContainer');
+      const infoEl = document.getElementById('bespokePaginationInfo');
+      const controlsEl = document.getElementById('bespokePaginationControls');
+      if (!container || !infoEl || !controlsEl) return;
+
+      if (totalItems === 0) {
+        container.style.display = 'none';
+        return;
+      }
+
+      container.style.display = 'flex';
+
+      const totalPages = Math.ceil(totalItems / pageSize) || 1;
+      const startItem = (currentPage - 1) * pageSize + 1;
+      const endItem = Math.min(currentPage * pageSize, totalItems);
+
+      infoEl.innerHTML = `Showing <strong>${startItem}&ndash;${endItem}</strong> of <strong>${totalItems}</strong> orders (20 per page)`;
+
+      if (totalPages <= 1) {
+        controlsEl.innerHTML = `<span class="body-12" style="color: var(--color-text-muted); font-weight: 600;">Page 1 of 1</span>`;
+        return;
+      }
+
+      let html = '';
+
+      // Previous button
+      const prevDisabled = currentPage <= 1;
+      html += `
+        <button type="button" class="btn btn-outline body-12" 
+                onclick="goToBespokePage(${currentPage - 1})" 
+                ${prevDisabled ? 'disabled style="opacity: 0.4; cursor: not-allowed; padding: 5px 12px;"' : 'style="padding: 5px 12px; font-weight: 600;"'}>
+          &larr; Prev
+        </button>
+      `;
+
+      // Page numbers (smart windowing)
+      const pages = [];
+      if (totalPages <= 7) {
+        for (let p = 1; p <= totalPages; p++) pages.push(p);
+      } else {
+        pages.push(1);
+        if (currentPage > 3) pages.push('...');
+
+        const start = Math.max(2, currentPage - 1);
+        const end = Math.min(totalPages - 1, currentPage + 1);
+        for (let p = start; p <= end; p++) {
+          if (!pages.includes(p)) pages.push(p);
+        }
+
+        if (currentPage < totalPages - 2) pages.push('...');
+        if (!pages.includes(totalPages)) pages.push(totalPages);
+      }
+
+      pages.forEach(p => {
+        if (p === '...') {
+          html += `<span style="padding: 5px 6px; color: var(--color-text-muted); font-size: 12px;">...</span>`;
+        } else {
+          const isCur = p === currentPage;
+          html += `
+            <button type="button" class="btn ${isCur ? 'btn-primary' : 'btn-outline'} body-12" 
+                    onclick="goToBespokePage(${p})" 
+                    style="padding: 5px 10px; min-width: 32px; ${isCur ? 'font-weight: 700;' : ''}">
+              ${p}
+            </button>
+          `;
+        }
+      });
+
+      // Next button
+      const nextDisabled = currentPage >= totalPages;
+      html += `
+        <button type="button" class="btn btn-outline body-12" 
+                onclick="goToBespokePage(${currentPage + 1})" 
+                ${nextDisabled ? 'disabled style="opacity: 0.4; cursor: not-allowed; padding: 5px 12px;"' : 'style="padding: 5px 12px; font-weight: 600;"'}>
+          Next &rarr;
+        </button>
+      `;
+
+      controlsEl.innerHTML = html;
+    }
+
+    function goToBespokePage(page) {
+      bespokePagination.currentPage = page;
+      renderBespokeTable();
+
+      const tableWrap = document.querySelector('#view-bespoke .admin-card');
+      if (tableWrap) {
+        tableWrap.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
     }
 
     function filterBespokeTable() {
+      bespokePagination.currentPage = 1;
       renderBespokeTable();
     }
 
