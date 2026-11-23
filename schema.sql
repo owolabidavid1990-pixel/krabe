@@ -1465,25 +1465,10 @@ BEGIN
     RAISE EXCEPTION 'SUPABASE_SERVICE_ROLE_KEY not found in Supabase Vault. Please add your service_role secret in Project Settings -> Vault.';
   END IF;
 
-  -- Detect Project URL dynamically from incoming request header or Vault
-  BEGIN
-    v_project_url := 'https://' || (current_setting('request.headers', true)::json->>'host');
-  EXCEPTION WHEN OTHERS THEN
-    v_project_url := NULL;
-  END;
+  -- 5. Native project URL from active request (zero hardcoding, works on every branch)
+  v_project_url := 'https://' || (current_setting('request.headers', true)::json->>'host');
 
-  IF v_project_url IS NULL OR v_project_url = 'https://' THEN
-    SELECT decrypted_secret INTO v_project_url 
-    FROM vault.decrypted_secrets 
-    WHERE name = 'SUPABASE_URL' 
-    LIMIT 1;
-  END IF;
-
-  IF v_project_url IS NULL OR v_project_url = '' OR v_project_url = 'https://' THEN
-    v_project_url := 'https://myqtjagrzcgchfxhixzw.supabase.co';
-  END IF;
-
-  -- 5. Trigger official Supabase invitation via pg_net (sends email through Brevo SMTP)
+  -- 6. Trigger official Supabase invitation via pg_net (sends email through Brevo SMTP)
   v_payload := jsonb_build_object(
     'email', v_clean_email,
     'data', jsonb_build_object(
@@ -1494,7 +1479,7 @@ BEGIN
   );
 
   PERFORM net.http_post(
-    url := rtrim(v_project_url, '/') || '/auth/v1/admin/invite',
+    url := rtrim(v_project_url, '/') || '/auth/v1/invite',
     headers := jsonb_build_object(
       'apikey', v_service_key,
       'Authorization', 'Bearer ' || v_service_key,
