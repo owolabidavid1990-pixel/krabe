@@ -341,11 +341,6 @@
     </div>
 
     <div class="admin-subbar-right">
-      <button type="button" class="admin-refresh-btn" onclick="refreshAdminData()" title="Reload data from database">
-        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/></svg>
-        <span>Refresh Data</span>
-      </button>
-
       <!-- Active Staff / Super Admin Profile -->
       <div class="admin-user-profile" style="padding: 0;">
         <div class="admin-avatar body-12" id="userAvatar" style="width: 28px; height: 28px; font-size: 11px;">DA</div>
@@ -354,11 +349,6 @@
           <span class="body-10" style="color: var(--color-gold);" id="userRoleBadge">Super Admin</span>
         </div>
       </div>
-
-      <!-- Live Storefront Link -->
-      <a href="index.html" class="store-link-btn body-12" title="Open Customer Storefront" target="_blank" style="margin: 0; padding: 4px 10px;">
-        <span>Store &rarr;</span>
-      </a>
     </div>
   </div>
 
@@ -412,11 +402,11 @@
       </div>
 
       <div class="admin-sidebar-section">
-        <div class="admin-sidebar-title body-10">Client Knowledge</div>
+        <div class="admin-sidebar-title body-10">Client Management</div>
         <button type="button" class="admin-nav-item body-14" data-tab="vault" onclick="switchAdminTab('vault', this)">
           <div class="admin-nav-item-content">
-            <span class="admin-nav-icon">📐</span>
-            <span>Client Vault &amp; Sizing</span>
+            <span class="admin-nav-icon">👥</span>
+            <span>Customers</span>
           </div>
           <span class="admin-nav-pill body-10" id="vaultNavCount">0</span>
         </button>
@@ -750,7 +740,7 @@
               <span class="admin-nav-pill body-10" id="catalogTableCount">0 Products</span>
             </div>
             <div class="admin-table-controls">
-              <input type="text" class="admin-search-input body-12" id="catalogSearchInput" placeholder="Search by title, category..." oninput="filterCatalogTable()">
+              <input type="text" class="admin-search-input body-12" id="catalogSearchInput" placeholder="Search catalog (title, color, type, fabric)..." oninput="filterCatalogTable()">
               <select class="admin-filter-select body-12" id="catalogCategoryFilter" onchange="filterCatalogTable()">
                 <option value="all">All Categories</option>
                 <option value="native">Native</option>
@@ -790,14 +780,14 @@
       </section>
 
       <!-- =====================================================================
-           VIEW 6: CLIENT VAULT & SIZING PROFILES
+           VIEW 6: CUSTOMERS
            ===================================================================== -->
       <section class="admin-tab-view" id="view-vault" style="display: none;">
         <div class="admin-page-header">
           <div>
-            <h1 class="admin-header-title h1">Client Sizing Vault &amp; Profiles</h1>
+            <h1 class="admin-header-title h1">Customers</h1>
             <p class="admin-header-sub body-14">
-              Database of registered clients and their saved bespoke tailoring measurements recorded during fittings or online orders.
+              Database of registered customers and their saved bespoke tailoring measurements recorded during fittings or online orders.
             </p>
           </div>
         </div>
@@ -805,11 +795,11 @@
         <div class="admin-card">
           <div class="admin-card-header">
             <div class="admin-card-title h3">
-              <span>Client Tailoring Registry</span>
-              <span class="admin-nav-pill body-10" id="vaultTableCount">0 Clients</span>
+              <span>Customer Registry</span>
+              <span class="admin-nav-pill body-10" id="vaultTableCount">0 Customers</span>
             </div>
             <div class="admin-table-controls">
-              <input type="text" class="admin-search-input body-12" id="vaultSearchInput" placeholder="Search by name, phone, email..." oninput="filterVaultTable()">
+              <input type="text" class="admin-search-input body-12" id="vaultSearchInput" placeholder="Search customers by name, phone, email..." oninput="filterVaultTable()">
             </div>
           </div>
 
@@ -817,7 +807,7 @@
             <table class="admin-table body-14" id="vaultTable">
               <thead>
                 <tr class="body-12">
-                  <th>Client</th>
+                  <th>Customer</th>
                   <th>Contact Info</th>
                   <th>Role</th>
                   <th>Joined Date</th>
@@ -827,15 +817,15 @@
               </thead>
               <tbody id="vaultTableBody">
                 <tr>
-                  <td colspan="6" class="admin-loading-row">Loading client profiles...</td>
+                  <td colspan="6" class="admin-loading-row">Loading customers...</td>
                 </tr>
               </tbody>
             </table>
           </div>
 
-          <!-- Client Vault Pagination Bar (20 per page) -->
+          <!-- Customer Pagination Bar (20 per page) -->
           <div id="vaultPaginationContainer" style="display: none; padding: 14px 20px; border-top: 1px solid var(--color-border); justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; background: #FAF8F5;">
-            <div class="body-12" id="vaultPaginationInfo" style="color: var(--color-text-muted);">Showing 0 clients</div>
+            <div class="body-12" id="vaultPaginationInfo" style="color: var(--color-text-muted);">Showing 0 customers</div>
             <div id="vaultPaginationControls" style="display: flex; gap: 6px; align-items: center;"></div>
           </div>
         </div>
@@ -1825,7 +1815,6 @@
               <select id="cp_type" class="form-input-admin body-14" onchange="handleProductTypeChange('create'); saveProductDraft();">
                 <option value="made to order" selected>Made to Order</option>
                 <option value="ready to wear">Ready to Wear</option>
-                <option value="bespoke">Bespoke</option>
               </select>
               <div id="cp_type_locked_note" style="display: none; font-size: 11px; color: #9A6825; background: #FFFBEB; border: 1px solid #FDE68A; padding: 4px 8px; border-radius: 4px; margin-top: 5px;">
                 🔒 Product type locked because items have been added. Discard draft to change product type.
@@ -1957,7 +1946,7 @@
               <!-- Quantity: Hidden for MTW / Bespoke, Only shown for RTW -->
               <div class="form-group-admin" id="cp_v_quantity_group" style="display: none;">
                 <label class="form-label-admin body-12" for="cp_v_quantity">Stock Quantity *</label>
-                <input type="number" id="cp_v_quantity" class="form-input-admin body-14" placeholder="e.g. 5" min="1">
+                <input type="number" id="cp_v_quantity" class="form-input-admin body-14" placeholder="Enter stock quantity" min="0">
               </div>
 
               <!-- Size: Hidden for MTW / Bespoke, Only shown for RTW -->
@@ -1981,8 +1970,8 @@
               <!-- 1. Cover Photo (main_image) -->
               <div class="form-group-admin" style="margin-bottom: 0;">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
-                  <label class="form-label-admin body-12" style="margin: 0; font-weight: 600;">Cover Photo (Main Image)</label>
-                  <span class="body-10" style="color: var(--color-text-muted);">WebP (&le; 5MB)</span>
+                  <label class="form-label-admin body-12" style="margin: 0; font-weight: 600;">Cover Photo (Main Image) *</label>
+                  <span class="body-10" style="color: var(--color-text-muted);">Required &bull; WebP (&le; 5MB)</span>
                 </div>
 
                 <div id="cp_v_dropzone" style="border: 1px dashed var(--color-border); border-radius: 6px; padding: 12px 10px; background: #fff; text-align: center; cursor: pointer; transition: all 0.2s;" onclick="document.getElementById('cp_v_file_input').click()" ondragover="event.preventDefault(); this.style.borderColor='var(--color-primary)';" ondragleave="this.style.borderColor='var(--color-border)';" ondrop="handleProductMainPhotoDrop(event, 'create');">
@@ -2116,12 +2105,12 @@
           </div>
 
           <div class="form-group-admin">
-            <label class="form-label-admin body-12" for="ep_type">Type *</label>
-            <select id="ep_type" class="form-input-admin body-14" onchange="handleProductTypeChange('edit')">
-              <option value="made to order">Made to Order</option>
-              <option value="ready to wear">Ready to Wear</option>
-              <option value="bespoke">Bespoke</option>
-            </select>
+            <label class="form-label-admin body-12">Product Type</label>
+            <div style="padding: 10px 14px; background: #F8F9FA; border: 1px solid var(--color-border); border-radius: 4px; display: flex; align-items: center; justify-content: space-between; min-height: 42px;">
+              <span id="ep_type_text" class="body-14" style="font-weight: 500; text-transform: capitalize;">Made to Order</span>
+              <span style="font-size: 11px; color: var(--color-text-muted); display: inline-flex; align-items: center; gap: 3px;">🔒 Immutable</span>
+            </div>
+            <input type="hidden" id="ep_type" value="made to order">
           </div>
         </div>
 
@@ -2228,7 +2217,7 @@
               <!-- Quantity: Hidden for MTW / Bespoke, Only shown for RTW -->
               <div class="form-group-admin" id="ep_v_quantity_group" style="display: none;">
                 <label class="form-label-admin body-12" for="ep_v_quantity">Stock Quantity *</label>
-                <input type="number" id="ep_v_quantity" class="form-input-admin body-14" placeholder="e.g. 5" min="1">
+                <input type="number" id="ep_v_quantity" class="form-input-admin body-14" placeholder="Enter stock quantity" min="0">
               </div>
 
               <!-- Size: Hidden for MTW / Bespoke, Only shown for RTW -->
@@ -2252,8 +2241,8 @@
               <!-- 1. Cover Photo (main_image) -->
               <div class="form-group-admin" style="margin-bottom: 0;">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
-                  <label class="form-label-admin body-12" style="margin: 0; font-weight: 600;">Cover Photo (Main Image)</label>
-                  <span class="body-10" style="color: var(--color-text-muted);">WebP (&le; 5MB)</span>
+                  <label class="form-label-admin body-12" style="margin: 0; font-weight: 600;">Cover Photo (Main Image) *</label>
+                  <span class="body-10" style="color: var(--color-text-muted);">Required &bull; WebP (&le; 5MB)</span>
                 </div>
 
                 <div id="ep_v_dropzone" style="border: 1px dashed var(--color-border); border-radius: 6px; padding: 12px 10px; background: #fff; text-align: center; cursor: pointer; transition: all 0.2s;" onclick="document.getElementById('ep_v_file_input').click()" ondragover="event.preventDefault(); this.style.borderColor='var(--color-primary)';" ondragleave="this.style.borderColor='var(--color-border)';" ondrop="handleProductMainPhotoDrop(event, 'edit');">
@@ -2424,7 +2413,7 @@
           bespoke: 'Custom Orders',
           fittings: 'Studio Fittings',
           catalog: 'Product Catalog & Inventory',
-          vault: 'Client Vault & Measurements',
+          vault: 'Customers',
           users: 'Staff & Role Management'
         };
         indicator.innerText = titles[tabName] || tabName;
@@ -4289,12 +4278,7 @@
         const inMemory = q
           ? adminState.products.filter(p => {
               const term = q.toLowerCase();
-              const title = (p.title || '').toLowerCase();
-              const cat = (p.category || '').toLowerCase();
-              const type = (p.type || '').toLowerCase();
-              const vars = p.product_variation || [];
-              const hasVarMatch = vars.some(v => (v.color || '').toLowerCase().includes(term) || (v.fabric || '').toLowerCase().includes(term));
-              return title.includes(term) || cat.includes(term) || type.includes(term) || hasVarMatch;
+              return (p.search_text || '').toLowerCase().includes(term);
             }).slice(0, 10)
           : adminState.products.slice(0, 10);
 
@@ -4325,6 +4309,7 @@
             category,
             type,
             gender,
+            search_text,
             created_at,
             product_variation (
               id,
@@ -4338,8 +4323,8 @@
           `);
 
         if (q) {
-          const safeTerm = q.replace(/[%_,]/g, ' ').trim();
-          dbQuery = dbQuery.or(`title.ilike.%${safeTerm}%,category.ilike.%${safeTerm}%`);
+          const safeTerm = q.replace(/[%_,]/g, ' ').trim().toLowerCase();
+          dbQuery = dbQuery.ilike('search_text', `%${safeTerm}%`);
         }
 
         dbQuery = dbQuery.order('created_at', { ascending: false }).limit(10);
@@ -4358,7 +4343,7 @@
         console.warn('[Admin BespokeSearch] Database query failed, using in-memory results:', err);
         if (adminState.products && adminState.products.length > 0) {
           const inMemory = q
-            ? adminState.products.filter(p => (p.title || '').toLowerCase().includes(q.toLowerCase())).slice(0, 10)
+            ? adminState.products.filter(p => (p.search_text || '').toLowerCase().includes(q.toLowerCase())).slice(0, 10)
             : adminState.products.slice(0, 10);
           currentCatalogSearchResults = inMemory;
           renderCatalogSearchResults(inMemory, q);
@@ -5935,6 +5920,7 @@
             category,
             gender,
             type,
+            search_text,
             created_at,
             product_variation (
               id,
@@ -5950,7 +5936,8 @@
           .order('created_at', { ascending: false });
 
         if (q) {
-          dbQuery = dbQuery.or(`title.ilike.%${q}%,category.ilike.%${q}%`);
+          const safeTerm = q.replace(/[%_,]/g, ' ').trim().toLowerCase();
+          dbQuery = dbQuery.ilike('search_text', `%${safeTerm}%`);
         } else {
           dbQuery = dbQuery.limit(10);
         }
@@ -5964,7 +5951,7 @@
         console.warn('[Admin] Fallback to in-memory catalog search:', err);
         const inMemory = (adminState.products || []).filter(p => {
           if (!q) return true;
-          return (p.title || '').toLowerCase().includes(q) || (p.category || '').toLowerCase().includes(q);
+          return (p.search_text || '').toLowerCase().includes(q);
         }).slice(0, 10);
         currentEditCatalogSearchResults = inMemory;
         renderEditCatalogSearchResults(inMemory, q);
@@ -7302,7 +7289,7 @@
         const matchesCat = catFilter === 'all' || p.category === catFilter;
         if (!matchesCat) return false;
         if (!query) return true;
-        return (p.title || '').toLowerCase().includes(query);
+        return (p.search_text || '').toLowerCase().includes(query);
       });
 
       const totalItems = filtered.length;
@@ -8104,6 +8091,12 @@
         }
       }
 
+      if (!createProductState.activeVariantImage) {
+        showToast('Please upload a cover photo (main image) for this item.');
+        document.getElementById('cp_v_dropzone')?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        return;
+      }
+
       const variantData = {
         color,
         color_code,
@@ -8217,8 +8210,9 @@
             const colorCode = v.color_code || '#121212';
             const isRTW = productType === 'ready to wear';
             const priceText = formatNaira(v.price);
+            const stockCount = (v.quantity != null && v.quantity !== '' && !isNaN(Number(v.quantity))) ? parseInt(v.quantity, 10) : 0;
             const variantDetails = isRTW
-              ? `${priceText} &bull; Size: ${escapeHtml(v.size || 'M')} &bull; Qty: ${v.quantity != null ? v.quantity : 1}`
+              ? `${priceText} &bull; Size: ${escapeHtml(v.size || 'M')} &bull; Qty: ${stockCount}`
               : `${priceText} &bull; Made to Order`;
             const galleryCount = Array.isArray(v.gallery_images) ? v.gallery_images.length : 0;
 
@@ -8268,8 +8262,12 @@
             const fabricLabel = escapeHtml(v.fabric ? v.fabric.charAt(0).toUpperCase() + v.fabric.slice(1) : 'Standard Fabric');
             const isRTW = productType === 'ready to wear';
             const priceText = formatNaira(v.price);
+            const stockCount = (v.quantity != null && v.quantity !== '' && !isNaN(Number(v.quantity))) ? parseInt(v.quantity, 10) : 0;
+            const stockText = stockCount > 0
+              ? `${stockCount} in stock`
+              : `<span style="color: #991B1B; font-weight: 600;">0 in stock (Out of stock)</span>`;
             const variantDetails = isRTW
-              ? `${priceText} &bull; ${v.quantity != null ? v.quantity : 1} in stock &bull; Size: ${escapeHtml(v.size || 'M')}`
+              ? `${priceText} &bull; ${stockText} &bull; Size: ${escapeHtml(v.size || 'M')}`
               : `${priceText} &bull; Made to Order`;
             const galleryCount = Array.isArray(v.gallery_images) ? v.gallery_images.length : 0;
 
@@ -8398,7 +8396,7 @@
               color_code: v.color_code || '#2F475A',
               fabric: v.fabric || null,
               price: Number(v.price) || 0,
-              quantity: type === 'ready to wear' ? (v.quantity != null && v.quantity !== '' ? parseInt(v.quantity, 10) : 1) : null,
+              quantity: type === 'ready to wear' ? (v.quantity != null && v.quantity !== '' ? parseInt(v.quantity, 10) : 0) : null,
               size: type === 'ready to wear' ? (v.size || 'M') : null,
               main_image: v.main_image || null,
               gallery_images: Array.isArray(v.gallery_images) ? v.gallery_images : [],
@@ -8456,7 +8454,7 @@
             main_image: v.main_image || null,
             gallery_images: Array.isArray(v.gallery_images) ? v.gallery_images : [],
             available: v.available !== false,
-            quantity: type === 'ready to wear' ? (v.quantity != null && v.quantity !== '' ? parseInt(v.quantity, 10) : 1) : null,
+            quantity: type === 'ready to wear' ? (v.quantity != null && v.quantity !== '' ? parseInt(v.quantity, 10) : 0) : null,
             size: type === 'ready to wear' ? (v.size || 'M') : null,
             created_at: new Date().toISOString(),
             updated_at: new Date().toISOString()
@@ -8552,7 +8550,13 @@
       document.getElementById('ep_title').value = product.title || '';
       document.getElementById('ep_category').value = product.category || 'native';
       document.getElementById('ep_gender').value = product.gender || 'male';
-      document.getElementById('ep_type').value = product.type || 'made to order';
+      const epTypeEl = document.getElementById('ep_type');
+      const epTypeTextEl = document.getElementById('ep_type_text');
+      const rawProductType = product.type || 'made to order';
+      if (epTypeEl) epTypeEl.value = rawProductType;
+      if (epTypeTextEl) {
+        epTypeTextEl.innerText = rawProductType === 'ready to wear' ? 'Ready to Wear' : (rawProductType === 'made to order' ? 'Made to Order' : rawProductType);
+      }
       document.getElementById('ep_description').value = product.description || '';
       document.getElementById('ep_is_new_arrival').checked = Boolean(product.is_new_arrival);
       document.getElementById('ep_is_featured').checked = Boolean(product.is_featured);
@@ -8565,6 +8569,7 @@
 
       editProductState = {
         id: product.id,
+        type: product.type || 'made to order',
         variations: JSON.parse(JSON.stringify(variations || [])),
         deletedVariantIds: [],
         activeVariantImage: null,
@@ -8675,6 +8680,11 @@
       let main_image = editProductState.activeVariantImage;
       if (!main_image && editProductState.editingVariantIndex >= 0) {
         main_image = editProductState.variations[editProductState.editingVariantIndex].main_image || null;
+      }
+      if (!main_image) {
+        showToast('Please upload a cover photo (main image) for this item.');
+        document.getElementById('ep_v_dropzone')?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        return;
       }
 
       const gallery_images = [...editProductState.activeVariantGallery];
@@ -8797,8 +8807,12 @@
         const fabricLabel = escapeHtml(v.fabric ? v.fabric.charAt(0).toUpperCase() + v.fabric.slice(1) : 'Standard Fabric');
         const isRTW = productType === 'ready to wear';
         const priceText = formatNaira(v.price);
+        const stockCount = (v.quantity != null && v.quantity !== '' && !isNaN(Number(v.quantity))) ? parseInt(v.quantity, 10) : 0;
+        const stockText = stockCount > 0
+          ? `${stockCount} in stock`
+          : `<span style="color: #991B1B; font-weight: 600;">0 in stock (Out of stock)</span>`;
         const variantDetails = isRTW
-          ? `${priceText} &bull; ${v.quantity != null ? v.quantity : 1} in stock &bull; Size: ${escapeHtml(v.size || 'M')}`
+          ? `${priceText} &bull; ${stockText} &bull; Size: ${escapeHtml(v.size || 'M')}`
           : `${priceText} &bull; Made to Order`;
         const galleryCount = Array.isArray(v.gallery_images) ? v.gallery_images.length : 0;
 
@@ -8843,7 +8857,7 @@
       const title = document.getElementById('ep_title')?.value.trim();
       const category = document.getElementById('ep_category')?.value;
       const gender = document.getElementById('ep_gender')?.value;
-      const type = document.getElementById('ep_type')?.value;
+      const type = editProductState.type || document.getElementById('ep_type')?.value || 'made to order';
       const description = document.getElementById('ep_description')?.value.trim();
       const is_new_arrival = document.getElementById('ep_is_new_arrival')?.checked || false;
       const is_featured = document.getElementById('ep_is_featured')?.checked || false;
@@ -8912,7 +8926,6 @@
               title,
               category,
               gender,
-              type,
               description: description || null,
               is_new_arrival,
               is_featured,
@@ -8924,7 +8937,7 @@
               color_code: v.color_code || '#2F475A',
               fabric: v.fabric || null,
               price: Number(v.price) || 0,
-              quantity: type === 'ready to wear' ? (v.quantity != null && v.quantity !== '' ? parseInt(v.quantity, 10) : 1) : null,
+              quantity: type === 'ready to wear' ? (v.quantity != null && v.quantity !== '' ? parseInt(v.quantity, 10) : 0) : null,
               size: type === 'ready to wear' ? (v.size || 'M') : null,
               main_image: v.main_image || null,
               gallery_images: Array.isArray(v.gallery_images) ? v.gallery_images : [],
@@ -8946,14 +8959,13 @@
           const colorNames = editProductState.variations.map(v => v.color).filter(Boolean).join(' ');
           const search_text = `${title} ${category} ${gender} ${type} ${description} ${colorNames}`.toLowerCase();
 
-          // 1. Update product header record
+          // 1. Update product header record (type is immutable and excluded)
           const { error: prodErr } = await client
             .from('product')
             .update({
               title,
               category,
               gender,
-              type,
               description: description || null,
               is_new_arrival,
               is_featured,
@@ -8985,7 +8997,7 @@
               main_image: v.main_image || null,
               gallery_images: Array.isArray(v.gallery_images) ? v.gallery_images : [],
               available: v.available !== false,
-              quantity: type === 'ready to wear' ? (v.quantity != null && v.quantity !== '' ? parseInt(v.quantity, 10) : 1) : null,
+              quantity: type === 'ready to wear' ? (v.quantity != null && v.quantity !== '' ? parseInt(v.quantity, 10) : 0) : null,
               size: type === 'ready to wear' ? (v.size || 'M') : null,
               updated_at: new Date().toISOString()
             };
@@ -9065,7 +9077,9 @@
           p.custom_measurement = measurementMap.get(pId) || [];
         });
 
-        adminState.vaultProfiles = profiles || [];
+        adminState.allProfiles = profiles || [];
+        // Strictly filter to customers only — exclude admin and super admin
+        adminState.vaultProfiles = (profiles || []).filter(p => p.role !== 'admin' && p.role !== 'super admin');
         adminState.allMeasurements = measurements || [];
         adminState.studioMeasurements = (measurements || []).filter(m => {
           const uid = normId(m.user_id);
@@ -9082,7 +9096,7 @@
           if (typeof populateBespokeCatalogDropdowns === 'function') populateBespokeCatalogDropdowns();
         }
       } catch (err) {
-        console.error('[Admin] Error loading client vault:', err);
+        console.error('[Admin] Error loading customers:', err);
       }
     }
 
@@ -9098,7 +9112,9 @@
 
       const query = (document.getElementById('vaultSearchInput')?.value || '').toLowerCase().trim();
 
-      const filtered = adminState.vaultProfiles.filter(p => {
+      const filtered = (adminState.vaultProfiles || []).filter(p => {
+        // Strictly search only customers — exclude admin and super admin
+        if (p.role === 'admin' || p.role === 'super admin') return false;
         if (!query) return true;
         const name = (p.name || '').toLowerCase();
         const email = (p.email || '').toLowerCase();
@@ -9113,14 +9129,14 @@
       if (vaultPagination.currentPage > totalPages) vaultPagination.currentPage = totalPages;
       if (vaultPagination.currentPage < 1) vaultPagination.currentPage = 1;
 
-      if (countEl) countEl.innerText = `${totalItems} Client${totalItems === 1 ? '' : 's'}`;
+      if (countEl) countEl.innerText = `${totalItems} Customer${totalItems === 1 ? '' : 's'}`;
 
       if (totalItems === 0) {
         tbody.innerHTML = `
           <tr>
             <td colspan="6" class="admin-empty-state">
-              <span class="admin-empty-icon">📐</span>
-              <strong>No Client Profiles Found</strong>
+              <span class="admin-empty-icon">👥</span>
+              <strong>No Customers Found</strong>
             </td>
           </tr>
         `;
@@ -9133,7 +9149,7 @@
       const pageItems = filtered.slice(startIndex, startIndex + pageSize);
 
       const rowsHtml = pageItems.map(p => {
-        const name = p.name || 'Anonymous Client';
+        const name = p.name || 'Anonymous Customer';
         const phone = p.phone_number || p.whatsapp_number || 'No phone recorded';
         const dateStr = formatDate(p.created_at);
         const measurements = p.custom_measurement || [];
@@ -9156,7 +9172,7 @@
               <div class="body-12">${phone}</div>
             </td>
             <td>
-              <span class="admin-nav-pill ${p.role === 'super admin' ? 'super' : (p.role === 'admin' ? 'gold' : '')} body-10" style="text-transform: capitalize;">
+              <span class="admin-nav-pill body-10" style="text-transform: capitalize;">
                 ${p.role || 'Customer'}
               </span>
             </td>
@@ -9196,7 +9212,7 @@
       const startItem = (currentPage - 1) * pageSize + 1;
       const endItem = Math.min(currentPage * pageSize, totalItems);
 
-      infoEl.innerHTML = `Showing <strong>${startItem}&ndash;${endItem}</strong> of <strong>${totalItems}</strong> clients (20 per page)`;
+      infoEl.innerHTML = `Showing <strong>${startItem}&ndash;${endItem}</strong> of <strong>${totalItems}</strong> customers (20 per page)`;
       controlsEl.innerHTML = buildPaginationControlsHtml(currentPage, totalPages, 'goToVaultPage');
     }
 

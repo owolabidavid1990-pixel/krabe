@@ -1230,11 +1230,17 @@
       try {
         const { data: profile, error: profErr } = await client
           .from('profile')
-          .select('avatar_url, name, phone_number, whatsapp_number')
+          .select('avatar_url, name, phone_number, whatsapp_number, role')
           .eq('id', user.id)
           .maybeSingle();
 
         if (!profErr && profile) {
+          // Admins have no business in customer account page — redirect to admin operations
+          if (profile.role === 'admin' || profile.role === 'super admin') {
+            window.location.replace('admin.html');
+            return;
+          }
+
           if (profile.avatar_url) avatarUrl = profile.avatar_url;
           if (profile.name) fullName = profile.name.trim();
           if (profile.phone_number) phone = profile.phone_number.trim();

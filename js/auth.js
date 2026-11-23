@@ -102,6 +102,21 @@
             // Sync Admin Navigation Links & Account Page Portal Link strictly from database role
             const isStaff = profile?.role === 'admin' || profile?.role === 'super admin';
 
+            if (isStaff) {
+              if (isAccountPage()) {
+                window.location.replace('admin.html');
+                return;
+              }
+              accountBtns.forEach(btn => {
+                btn.href = 'admin.html';
+                btn.setAttribute('title', `Logged in as ${priorityName} — Go to Atelier Admin`);
+              });
+              mobileAccountLinks.forEach(link => {
+                link.href = 'admin.html';
+                link.textContent = 'Admin Operations';
+              });
+            }
+
             document.querySelectorAll('.js-admin-nav-link').forEach(link => {
               link.style.display = isStaff ? '' : 'none';
             });
@@ -214,6 +229,10 @@
           if (finalPhone) phone = finalPhone;
 
           const isStaff = profile.role === 'admin' || profile.role === 'super admin';
+          if (isStaff && isAccountPage()) {
+            window.location.replace('admin.html');
+            return;
+          }
           const accountAdminBtn = document.getElementById('accountAdminPortalBtn');
           if (accountAdminBtn) {
             accountAdminBtn.style.display = isStaff ? 'inline-flex' : 'none';

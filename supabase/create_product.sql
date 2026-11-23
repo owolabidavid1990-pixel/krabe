@@ -68,7 +68,10 @@ BEGIN
   -- Parse product attributes
   v_category := COALESCE((p_product->>'category')::public.clothing_category, 'native'::public.clothing_category);
   v_gender := COALESCE((p_product->>'gender')::public.gender_type, 'male'::public.gender_type);
-  v_type := COALESCE((p_product->>'type')::public.product_type, 'made to order'::public.product_type);
+  v_type := (p_product->>'type')::public.product_type;
+  IF v_type IS NULL OR v_type NOT IN ('ready to wear'::public.product_type, 'made to order'::public.product_type) THEN
+    RAISE EXCEPTION 'Validation error: Product type must be either "ready to wear" or "made to order".';
+  END IF;
   v_description := NULLIF(TRIM(p_product->>'description'), '');
   v_is_new_arrival := COALESCE((p_product->>'is_new_arrival')::boolean, true);
   v_is_featured := COALESCE((p_product->>'is_featured')::boolean, false);
@@ -145,11 +148,11 @@ BEGIN
       RAISE EXCEPTION 'Validation error: Price cannot be negative.';
     END IF;
 
-    -- Type-specific logic: RTW requires quantity >= 1 and size; MTW forces quantity = NULL, size = NULL
+    -- Type-specific logic: RTW requires quantity >= 0 and size; MTW forces quantity = NULL, size = NULL
     IF v_type = 'ready to wear' THEN
-      v_quantity := COALESCE(NULLIF(v_item->>'quantity', '')::integer, 1);
-      IF v_quantity < 1 THEN
-        v_quantity := 1;
+      v_quantity := COALESCE(NULLIF(v_item->>'quantity', '')::integer, 0);
+      IF v_quantity < 0 THEN
+        v_quantity := 0;
       END IF;
       v_size := COALESCE(NULLIF(TRIM(v_item->>'size'), ''), 'M');
     ELSE
@@ -158,6 +161,9 @@ BEGIN
     END IF;
 
     v_main_image := NULLIF(TRIM(v_item->>'main_image'), '');
+    IF v_main_image IS NULL THEN
+      RAISE EXCEPTION 'Validation error: A cover photo (main image) is required for variation (%).', COALESCE(v_item->>'color', 'Item');
+    END IF;
 
     IF jsonb_typeof(v_item->'gallery_images') = 'array' THEN
       v_gallery := ARRAY(SELECT jsonb_array_elements_text(v_item->'gallery_images'));
@@ -259,6 +265,12 @@ BEGIN
     RAISE EXCEPTION 'Validation error: Missing product ID for update.';
   END IF;
 
+  -- Validate existing product and retrieve its immutable type
+  SELECT type INTO v_type FROM public.product WHERE id = v_product_id;
+  IF v_type IS NULL THEN
+    RAISE EXCEPTION 'Validation error: Product with ID % not found.', v_product_id;
+  END IF;
+
   -- Validate title
   v_title := TRIM(p_product->>'title');
   IF v_title IS NULL OR v_title = '' THEN
@@ -270,10 +282,9 @@ BEGIN
     RAISE EXCEPTION 'Validation error: A product must have at least one item/variation.';
   END IF;
 
-  -- Parse product attributes
+  -- Parse product attributes (type is immutable and cannot be updated)
   v_category := COALESCE((p_product->>'category')::public.clothing_category, 'native'::public.clothing_category);
   v_gender := COALESCE((p_product->>'gender')::public.gender_type, 'male'::public.gender_type);
-  v_type := COALESCE((p_product->>'type')::public.product_type, 'made to order'::public.product_type);
   v_description := NULLIF(TRIM(p_product->>'description'), '');
   v_is_new_arrival := COALESCE((p_product->>'is_new_arrival')::boolean, true);
   v_is_featured := COALESCE((p_product->>'is_featured')::boolean, false);
@@ -289,12 +300,11 @@ BEGIN
 
   v_search_text := LOWER(TRIM(v_title || ' ' || v_category::text || ' ' || v_gender::text || ' ' || v_type::text || ' ' || COALESCE(v_description, '') || ' ' || v_all_colors));
 
-  -- Update product header
+  -- Update product header (excluding type)
   UPDATE public.product
   SET title = v_title,
       category = v_category,
       gender = v_gender,
-      type = v_type,
       description = v_description,
       is_new_arrival = v_is_new_arrival,
       is_featured = v_is_featured,
@@ -327,11 +337,11 @@ BEGIN
       RAISE EXCEPTION 'Validation error: Price cannot be negative.';
     END IF;
 
-    -- Type-specific logic: RTW requires quantity >= 1 and size; MTW forces quantity = NULL, size = NULL
+    -- Type-specific logic: RTW requires quantity >= 0 and size; MTW forces quantity = NULL, size = NULL
     IF v_type = 'ready to wear' THEN
-      v_quantity := COALESCE(NULLIF(v_item->>'quantity', '')::integer, 1);
-      IF v_quantity < 1 THEN
-        v_quantity := 1;
+      v_quantity := COALESCE(NULLIF(v_item->>'quantity', '')::integer, 0);
+      IF v_quantity < 0 THEN
+        v_quantity := 0;
       END IF;
       v_size := COALESCE(NULLIF(TRIM(v_item->>'size'), ''), 'M');
     ELSE
@@ -340,6 +350,9 @@ BEGIN
     END IF;
 
     v_main_image := NULLIF(TRIM(v_item->>'main_image'), '');
+    IF v_main_image IS NULL THEN
+      RAISE EXCEPTION 'Validation error: A cover photo (main image) is required for variation (%).', COALESCE(v_item->>'color', 'Item');
+    END IF;
 
     IF jsonb_typeof(v_item->'gallery_images') = 'array' THEN
       v_gallery := ARRAY(SELECT jsonb_array_elements_text(v_item->'gallery_images'));
