@@ -408,7 +408,8 @@ DECLARE
   assigned_role user_role := 'customer'::user_role;
 BEGIN
   -- If officially INVITED via Admin API (secret key), allow the assigned role
-  IF new.invited_at IS NOT NULL AND new.raw_user_meta_data->>'role' IS NOT NULL THEN
+  IF (new.raw_user_meta_data->>'role') IN ('admin', 'super admin') 
+     AND (new.raw_user_meta_data->>'invited_by' IS NOT NULL OR new.invited_at IS NOT NULL) THEN
     assigned_role := (new.raw_user_meta_data->>'role')::user_role;
   ELSE
     -- Every public website signup is FORCED to be 'customer'
@@ -463,7 +464,8 @@ DECLARE
   assigned_role user_role := 'customer'::user_role;
 BEGIN
   -- If officially INVITED via Admin API (secret key), allow the assigned role
-  IF new.invited_at IS NOT NULL AND new.raw_user_meta_data->>'role' IS NOT NULL THEN
+  IF (new.raw_user_meta_data->>'role') IN ('admin', 'super admin') 
+     AND (new.raw_user_meta_data->>'invited_by' IS NOT NULL OR new.invited_at IS NOT NULL) THEN
     assigned_role := (new.raw_user_meta_data->>'role')::user_role;
   ELSE
     -- Every public website signup is FORCED to be 'customer'
